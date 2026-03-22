@@ -1,0 +1,406 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// USERS
+// ============================================================
+
+model User {
+  id                    String    @id @default(cuid())
+  clerkId               String    @unique
+  email                 String    @unique
+  name                  String
+  avatarUrl             String?
+  timezone              String    @default("America/New_York")
+  morningCheckinTime    String    @default("08:00")
+  nightCheckinTime      String    @default("21:00")
+  briefingTime          String    @default("07:00")
+  reminderIntensity     ReminderIntensity @default(STANDARD)
+  emailBriefingEnabled  Boolean   @default(true)
+  emailBriefingDays     String[]  @default(["MON", "TUE", "WED", "THU", "FRI"])
+  planType              PlanType  @default(FREE)
+  aiAssistsUsed         Int       @default(0)
+  aiAssistsResetAt      DateTime  @default(now())
+  trialEndsAt           DateTime?
+  onboardingCompleted   Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  tasks                 Task[]
+  projects              Project[]
+  tags                  Tag[]
+  checkins              Checkin[]
+  reminders             Reminder[]
+  productivityEvents    ProductivityEvent[]
+  aiInteractions        AiInteraction[]
+  billingSubscription   BillingSubscription?
+  emailBriefings        EmailBriefing[]
+
+  @@map("users")
+}
+
+enum PlanType {
+  FREE
+  PRO
+  TEAM
+}
+
+enum ReminderIntensity {
+  GENTLE
+  STANDARD
+  RELENTLESS
+}
+
+// ============================================================
+// TASKS
+// ============================================================
+
+model Task {
+  id                   String       @id @default(cuid())
+  userId               String
+  projectId            String?
+  parentTaskId         String?
+  title                String
+  description          String?
+  status               TaskStatus   @default(INBOX)
+  priority             TaskPriority @default(MEDIUM)
+  effortEstimate       EffortLevel?
+  dueAt                DateTime?
+  nextActionAt         DateTime?
+  followUpRequired     Boolean      @default(false)
+  nextFollowUpAt       DateTime?
+  followUpIntervalDays Int?
+  followUpMode         FollowUpMode?
+  followUpStopCondition String?
+  blockedReason        String?
+  snoozedUntil         DateTime?
+  completedAt          DateTime?
+  archivedAt           DateTime?
+  archiveReason        String?
+  source               TaskSource   @default(MANUAL)
+  aiConfidence         Float?
+  aiSuggestions        Json?
+  recurrenceRule       String?
+  isRecurring          Boolean      @default(false)
+  notes                String?
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  user                 User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project              Project?     @relation(fields: [projectId], references: [id])
+  parentTask           Task?        @relation("SubTasks", fields: [parentTaskId], references: [id])
+  subtasks             Task[]       @relation("SubTasks")
+  tags                 TaskTag[]
+  reminders            Reminder[]
+  productivityEvents   ProductivityEvent[]
+  aiInteractions       AiInteraction[]
+
+  @@map("tasks")
+  @@index([userId, status])
+  @@index([userId, dueAt])
+  @@index([userId, nextFollowUpAt])
+}
+
+enum TaskStatus {
+  INBOX
+  OPEN
+  PLANNED
+  IN_PROGRESS
+  BLOCKED
+  WAITING
+  SNOOZED
+  COMPLETED
+  ARCHIVED
+}
+
+enum TaskPriority {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  SOMEDAY
+}
+
+enum EffortLevel {
+  FIVE_MIN
+  FIFTEEN_MIN
+  THIRTY_MIN
+  ONE_HOUR
+  TWO_HOURS
+  HALF_DAY
+  FULL_DAY
+  MULTI_DAY
+}
+
+enum FollowUpMode {
+  ONE_TIME
+  REPEATING
+  ESCALATING
+}
+
+enum TaskSource {
+  MANUAL
+  AI_CHAT
+  AI_EXTRACTION
+  EMAIL
+  CHECKIN
+  API
+}
+
+// ============================================================
+// PROJECTS
+// ============================================================
+
+model Project {
+  id          String        @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  status      ProjectStatus @default(ACTIVE)
+  color       String?
+  icon        String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+
+  @@map("projects")
+  @@index([userId])
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+  ON_HOLD
+}
+
+// ============================================================
+// TAGS
+// ============================================================
+
+model Tag {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  parentTagId String?
+  color       String?
+  icon        String?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentTag   Tag?     @relation("SubTags", fields: [parentTagId], references: [id])
+  subTags     Tag[]    @relation("SubTags")
+  tasks       TaskTag[]
+
+  @@map("tags")
+  @@unique([userId, name])
+}
+
+model TaskTag {
+  taskId String
+  tagId  String
+
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, tagId])
+  @@map("task_tags")
+}
+
+// ============================================================
+// CHECK-INS
+// ============================================================
+
+model Checkin {
+  id            String       @id @default(cuid())
+  userId        String
+  type          CheckinType
+  promptedAt    DateTime
+  startedAt     DateTime?
+  completedAt   DateTime?
+  summaryJson   Json?
+  rawTranscript Json?
+  taskIds       String[]
+  createdAt     DateTime     @default(now())
+
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("checkins")
+  @@index([userId, type])
+}
+
+enum CheckinType {
+  MORNING
+  NIGHT
+}
+
+// ============================================================
+// REMINDERS
+// ============================================================
+
+model Reminder {
+  id             String         @id @default(cuid())
+  userId         String
+  taskId         String?
+  reminderType   ReminderType
+  scheduledAt    DateTime
+  sentAt         DateTime?
+  channel        ReminderChannel
+  status         ReminderStatus  @default(PENDING)
+  metadataJson   Json?
+  createdAt      DateTime        @default(now())
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task           Task?           @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("reminders")
+  @@index([scheduledAt, status])
+}
+
+enum ReminderType {
+  DUE_SOON
+  DUE_NOW
+  OVERDUE
+  FOLLOW_UP
+  MORNING_CHECKIN
+  NIGHT_CHECKIN
+  DAILY_BRIEFING
+  SNOOZE_END
+}
+
+enum ReminderChannel {
+  EMAIL
+  PUSH
+  IN_APP
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+  FAILED
+  CANCELLED
+}
+
+// ============================================================
+// PRODUCTIVITY EVENTS
+// ============================================================
+
+model ProductivityEvent {
+  id           String    @id @default(cuid())
+  userId       String
+  taskId       String?
+  eventType    EventType
+  eventValue   String?
+  metadataJson Json?
+  createdAt    DateTime  @default(now())
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task         Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@map("productivity_events")
+  @@index([userId, createdAt])
+  @@index([userId, eventType])
+}
+
+enum EventType {
+  TASK_CREATED
+  TASK_COMPLETED
+  TASK_SNOOZED
+  TASK_OVERDUE
+  TASK_ARCHIVED
+  TASK_BLOCKED
+  FOLLOW_UP_COMPLETED
+  CHECKIN_STARTED
+  CHECKIN_COMPLETED
+  AI_BREAKDOWN_USED
+  AI_SIMPLIFY_USED
+  PAYWALL_SEEN
+  UPGRADE_STARTED
+  UPGRADE_COMPLETED
+}
+
+// ============================================================
+// AI INTERACTIONS
+// ============================================================
+
+model AiInteraction {
+  id              String          @id @default(cuid())
+  userId          String
+  taskId          String?
+  interactionType AiInteractionType
+  provider        String
+  model           String
+  inputText       String
+  outputJson      Json
+  tokenUsage      Json?
+  durationMs      Int?
+  createdAt       DateTime        @default(now())
+
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task            Task?           @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@map("ai_interactions")
+  @@index([userId, createdAt])
+}
+
+enum AiInteractionType {
+  TASK_EXTRACTION
+  TASK_DECOMPOSITION
+  TASK_SIMPLIFY
+  TASK_REWRITE
+  PRIORITIZATION
+  DAILY_SUMMARY
+  PRODUCTIVITY_COACHING
+  CHAT
+}
+
+// ============================================================
+// EMAIL BRIEFINGS
+// ============================================================
+
+model EmailBriefing {
+  id          String   @id @default(cuid())
+  userId      String
+  subject     String
+  htmlContent String
+  sentAt      DateTime?
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("email_briefings")
+  @@index([userId, createdAt])
+}
+
+// ============================================================
+// BILLING
+// ============================================================
+
+model BillingSubscription {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  stripePriceId        String?
+  provider             String    @default("stripe")
+  planType             PlanType  @default(FREE)
+  status               String    @default("active")
+  startedAt            DateTime  @default(now())
+  renewsAt             DateTime?
+  cancelledAt          DateTime?
+  trialEndsAt          DateTime?
+  metadataJson         Json?
+
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("billing_subscriptions")
+}
