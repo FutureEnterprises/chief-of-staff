@@ -89,6 +89,8 @@ model Task {
   recurrenceRule       String?
   isRecurring          Boolean      @default(false)
   notes                String?
+  lastTouchedAt        DateTime?
+  snoozeCount          Int          @default(0)
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
 
@@ -274,6 +276,10 @@ enum ReminderType {
   NIGHT_CHECKIN
   DAILY_BRIEFING
   SNOOZE_END
+  FOLLOW_UP_ESCALATED
+  WAITING_STALE
+  WEEKLY_REVIEW
+  OVERDUE_ESCALATED
 }
 
 enum ReminderChannel {
@@ -325,6 +331,15 @@ enum EventType {
   PAYWALL_SEEN
   UPGRADE_STARTED
   UPGRADE_COMPLETED
+  TASK_REOPENED
+  TASK_DECOMPOSED
+  DUE_DATE_CHANGED
+  FOLLOW_UP_CREATED
+  FOLLOW_UP_ESCALATED
+  SNOOZE_EXPIRED
+  ONBOARDING_COMPLETED
+  TRIAL_STARTED
+  NOTIFICATION_OPENED
 }
 
 // ============================================================

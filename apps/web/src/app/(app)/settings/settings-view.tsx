@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { toast } from '@/hooks/use-toast'
 import { updateUserSettings } from '@/app/actions/settings'
 import { UserButton } from '@clerk/nextjs'
+import { PaywallDialog } from '@/components/paywall/paywall-dialog'
 
 interface SettingsViewProps {
   user: User
@@ -18,6 +19,8 @@ export function SettingsView({ user }: SettingsViewProps) {
   const [timezone, setTimezone] = useState(user.timezone)
   const [emailBriefing, setEmailBriefing] = useState(user.emailBriefingEnabled)
   const [saving, setSaving] = useState(false)
+  const [showPaywall, setShowPaywall] = useState(false)
+  const isPro = user.planType === 'PRO' || user.planType === 'TEAM'
 
   async function handleSave() {
     setSaving(true)
@@ -54,15 +57,25 @@ export function SettingsView({ user }: SettingsViewProps) {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant={user.planType === 'PRO' ? 'default' : 'secondary'}>
-                {user.planType === 'PRO' ? 'Pro' : 'Free'} Plan
+              <Badge variant={isPro ? 'default' : 'secondary'}>
+                {isPro ? 'Pro' : 'Free'} Plan
               </Badge>
-              {user.planType !== 'PRO' && (
+              {!isPro && (
                 <span className="text-xs text-zinc-400">
-                  {user.aiAssistsUsed ?? 0} / {20} AI assists used this month
+                  {user.aiAssistsUsed ?? 0} / 20 AI assists used this month
                 </span>
               )}
             </div>
+            {!isPro && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="mt-2 border-amber-300 text-amber-700 hover:bg-amber-50"
+                onClick={() => setShowPaywall(true)}
+              >
+                Upgrade to Pro →
+              </Button>
+            )}
           </CardContent>
         </Card>
 
@@ -118,6 +131,8 @@ export function SettingsView({ user }: SettingsViewProps) {
           </Button>
         </div>
       </div>
+
+      <PaywallDialog open={showPaywall} onClose={() => setShowPaywall(false)} />
     </div>
   )
 }

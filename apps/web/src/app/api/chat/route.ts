@@ -2,6 +2,7 @@ import { streamText, convertToModelMessages } from 'ai'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
 import { SYSTEM_PROMPTS, AI_MODEL } from '@repo/ai'
+import { checkAiQuota, consumeAiAssist } from '@/lib/services/entitlement.service'
 import type { UIMessage } from 'ai'
 
 export const maxDuration = 60
@@ -12,6 +13,19 @@ export async function POST(req: Request) {
 
   const user = await prisma.user.findUnique({ where: { clerkId } })
   if (!user) return new Response('User not found', { status: 404 })
+
+  const quota = await checkAiQuota(user.id)
+  if (!quota.allowed) {
+    return new Response(
+      JSON.stringify({
+        error: 'ai_quota_exceeded',
+        message: `You've used all ${quota.limit} AI assists this month. Upgrade to Pro for unlimited AI.`,
+        used: quota.used,
+        limit: quota.limit,
+      }),
+      { status: 402, headers: { 'Content-Type': 'application/json' } }
+    )
+  }
 
   const { messages, mode }: { messages: UIMessage[]; mode?: string } = await req.json()
 
@@ -60,6 +74,9 @@ export async function POST(req: Request) {
 
   // AI SDK v6: convertToModelMessages is async
   const modelMessages = await convertToModelMessages(messages)
+
+  // Consume one AI assist (fire-and-forget — don't block the stream)
+  void consumeAiAssist(user.id)
 
   const result = streamText({
     model: AI_MODEL as any,

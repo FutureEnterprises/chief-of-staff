@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { Resend } from 'resend'
 import { MorningCheckinEmail } from '@repo/email'
+import { isWithinUserTimeWindow } from '@/lib/services/reminder.service'
 import * as React from 'react'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -9,25 +10,32 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export const maxDuration = 300
 
 export async function GET(req: Request) {
-  // Verify cron secret
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new NextResponse('Unauthorized', { status: 401 })
   }
 
-  // Find users with email briefing enabled
   const users = await prisma.user.findMany({
-    where: {
-      emailBriefingEnabled: true,
-      onboardingCompleted: true,
+    where: { emailBriefingEnabled: true, onboardingCompleted: true },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      timezone: true,
+      morningCheckinTime: true,
     },
   })
 
-  const results = { sent: 0, errors: 0 }
+  const results = { sent: 0, skipped: 0, errors: 0 }
 
   for (const user of users) {
     try {
-      // Get top open tasks for context
+      // Only send to users whose local morning check-in time matches now (±30 min)
+      if (!isWithinUserTimeWindow(user.timezone, user.morningCheckinTime, 30)) {
+        results.skipped++
+        continue
+      }
+
       const openTasks = await prisma.task.findMany({
         where: {
           userId: user.id,
