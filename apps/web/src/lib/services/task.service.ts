@@ -1,4 +1,5 @@
 import { prisma } from '@repo/database'
+import type { Prisma } from '@repo/database'
 import { validateTransition } from '@/lib/task-state-machine'
 import type { TaskStatus } from '@/lib/task-state-machine'
 import {
@@ -63,7 +64,7 @@ export async function updateTaskStatus(
 
   if (newStatus === 'ARCHIVED' && !reason) throw new Error('Archive reason is required')
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.task.update({
       where: { id: taskId },
       data: {
