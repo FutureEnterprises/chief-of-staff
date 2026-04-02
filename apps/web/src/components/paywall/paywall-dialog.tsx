@@ -135,9 +135,9 @@ export function PaywallDialog({ open, onClose, trigger }: PaywallDialogProps) {
 function getTriggerHeadline(trigger?: string): string {
   switch (trigger) {
     case 'task_limit':
-      return 'You've hit the free plan limit'
+      return "You've hit the free plan limit"
     case 'ai_quota':
-      return 'You've used all your AI assists'
+      return "You've used all your AI assists"
     case 'follow_up_automation':
       return 'Never miss a follow-up again'
     case 'insights':
