@@ -46,10 +46,10 @@ export default async function InsightsPage() {
       where: {
         userId: user.id,
         eventType: 'TASK_COMPLETED',
-        occurredAt: { gte: thirtyDaysAgo },
+        createdAt: { gte: thirtyDaysAgo },
       },
-      orderBy: { occurredAt: 'asc' },
-      select: { occurredAt: true },
+      orderBy: { createdAt: 'asc' },
+      select: { createdAt: true },
     }),
   ])
 
@@ -60,7 +60,7 @@ export default async function InsightsPage() {
       openTasks={openTasks}
       overdueTasks={overdueTasks}
       tasksByPriority={(tasksByPriority as Array<{ priority: string; _count: { id: number } }>).map((r) => ({ priority: r.priority, count: r._count.id }))}
-      completionEvents={(completionEvents as Array<{ occurredAt: Date }>).map((e) => e.occurredAt.toISOString())}
+      completionEvents={(completionEvents as Array<{ createdAt: Date }>).map((e) => e.createdAt.toISOString())}
     />
   )
 }

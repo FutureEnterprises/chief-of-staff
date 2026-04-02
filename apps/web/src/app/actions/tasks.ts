@@ -9,7 +9,7 @@ import type { TaskStatus } from '@/lib/task-state-machine'
 
 export async function completeTask(taskId: string) {
   const user = await requireDbUser()
-  const task = await prisma.task.findUnique({ where: { id: taskId, userId: user.id } })
+  const task = await prisma.task.findFirst({ where: { id: taskId, userId: user.id } })
   if (!task) throw new Error('Task not found')
 
   validateTransition(task.status, 'COMPLETED')
@@ -30,7 +30,7 @@ export async function completeTask(taskId: string) {
 
 export async function updateTaskStatus(taskId: string, newStatus: TaskStatus, reason?: string) {
   const user = await requireDbUser()
-  const task = await prisma.task.findUnique({ where: { id: taskId, userId: user.id } })
+  const task = await prisma.task.findFirst({ where: { id: taskId, userId: user.id } })
   if (!task) throw new Error('Task not found')
 
   validateTransition(task.status, newStatus)
@@ -55,7 +55,7 @@ export async function updateTaskStatus(taskId: string, newStatus: TaskStatus, re
 
 export async function snoozeTask(taskId: string, until: Date) {
   const user = await requireDbUser()
-  const task = await prisma.task.findUnique({ where: { id: taskId, userId: user.id } })
+  const task = await prisma.task.findFirst({ where: { id: taskId, userId: user.id } })
   if (!task) throw new Error('Task not found')
 
   validateTransition(task.status, 'SNOOZED')
@@ -183,7 +183,7 @@ export async function createTask(data: {
 
 export async function decomposeTask(taskId: string) {
   const user = await requireDbUser()
-  const task = await prisma.task.findUnique({ where: { id: taskId, userId: user.id } })
+  const task = await prisma.task.findFirst({ where: { id: taskId, userId: user.id } })
   if (!task) throw new Error('Task not found')
 
   const { AI_MODEL, TaskDecompositionSchema, SYSTEM_PROMPTS: prompts } = await import('@repo/ai')

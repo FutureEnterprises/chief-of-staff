@@ -54,10 +54,10 @@ export function SettingsView({ user }: SettingsViewProps) {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant={user.plan === 'PRO' ? 'default' : 'secondary'}>
-                {user.plan === 'PRO' ? 'Pro' : 'Free'} Plan
+              <Badge variant={user.planType === 'PRO' ? 'default' : 'secondary'}>
+                {user.planType === 'PRO' ? 'Pro' : 'Free'} Plan
               </Badge>
-              {user.plan !== 'PRO' && (
+              {user.planType !== 'PRO' && (
                 <span className="text-xs text-zinc-400">
                   {user.aiAssistsUsed ?? 0} / {20} AI assists used this month
                 </span>
