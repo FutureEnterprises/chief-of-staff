@@ -9,7 +9,7 @@ export const maxDuration = 300
  * Computes attention events for all active users and schedules their reminders.
  *
  * Add to vercel.json:
- *   { "path": "/api/cron/reminders", "schedule": "*/15 * * * *" }
+ *   { "path": "/api/cron/reminders", "schedule": "* /15 * * * *" (every 15 min) }
  */
 export async function GET(req: Request) {
   const authHeader = req.headers.get('authorization')
