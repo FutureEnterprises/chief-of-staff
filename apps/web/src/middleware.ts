@@ -1,4 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -8,11 +9,18 @@ const isPublicRoute = createRouteMatcher([
   '/api/cron/(.*)',
 ])
 
-export default clerkMiddleware(async (auth, req) => {
+const clerkHandler = clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
     await auth.protect()
   }
 })
+
+export default function middleware(req: NextRequest) {
+  if (!process.env.CLERK_SECRET_KEY) {
+    return NextResponse.next()
+  }
+  return clerkHandler(req)
+}
 
 export const config = {
   matcher: [
