@@ -13,15 +13,3 @@ export const prisma =
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 export * from '@prisma/client'
-export type {
-  User,
-  Task,
-  Tag,
-  Project,
-  Checkin,
-  Reminder,
-  ProductivityEvent,
-  AiInteraction,
-  EmailBriefing,
-  BillingSubscription,
-} from '@prisma/client'
