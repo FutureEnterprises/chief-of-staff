@@ -1,5 +1,4 @@
 {
-  "framework": "nextjs",
   "outputDirectory": "apps/web/.next",
   "crons": [
     {
