@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
-        await handleCheckoutCompleted(session)
+        await handleCheckoutCompleted(session, stripe)
         break
       }
       case 'customer.subscription.updated': {
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       }
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice
-        await handlePaymentFailed(invoice)
+        await handlePaymentFailed(invoice, stripe)
         break
       }
     }
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
   return NextResponse.json({ received: true })
 }
 
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe: Stripe) {
   const userId = session.metadata?.userId
   if (!userId || session.mode !== 'subscription') return
 
@@ -145,7 +145,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   ])
 }
 
-async function handlePaymentFailed(invoice: Stripe.Invoice) {
+async function handlePaymentFailed(invoice: Stripe.Invoice, stripe: Stripe) {
   const subscription =
     typeof invoice.subscription === 'string'
       ? await stripe.subscriptions.retrieve(invoice.subscription)
