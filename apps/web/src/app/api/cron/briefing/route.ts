@@ -6,11 +6,10 @@ import { getDaysOverdue } from '@/lib/utils'
 import { isWithinUserTimeWindow } from '@/lib/services/reminder.service'
 import * as React from 'react'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export const maxDuration = 300
 
 export async function GET(req: Request) {
+  const resend = new Resend(process.env.RESEND_API_KEY)
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new NextResponse('Unauthorized', { status: 401 })
