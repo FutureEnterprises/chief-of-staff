@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "chief-of-staff-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@repo/web", "dev"],
+      "port": 3000
+    }
+  ]
+}
