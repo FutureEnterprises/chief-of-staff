@@ -3,15 +3,12 @@ import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-02-24.acacia' })
-
-// Price IDs — set these in your Vercel env vars
-const PRICE_IDS = {
-  pro_monthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID!,
-  pro_annual: process.env.STRIPE_PRO_ANNUAL_PRICE_ID!,
-}
-
 export async function POST(req: Request) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-02-24.acacia' })
+  const PRICE_IDS = {
+    pro_monthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID!,
+    pro_annual: process.env.STRIPE_PRO_ANNUAL_PRICE_ID!,
+  }
   const { userId: clerkId } = await auth()
   if (!clerkId) return new NextResponse('Unauthorized', { status: 401 })
 
