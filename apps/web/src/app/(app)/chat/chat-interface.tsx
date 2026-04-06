@@ -3,27 +3,39 @@ import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { useSearchParams } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
+import { motion, AnimatePresence } from 'motion/react'
+import { MotionButton } from '@/components/ui/motion-button'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { SendHorizontal, Bot, User, Loader2, Sun, Moon } from 'lucide-react'
+import { PageTransition } from '@/components/motion/animations'
+import { SendHorizontal, Bot, User, Sun, Moon, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+const STARTERS = {
+  chat: [
+    'Follow up with David on Friday about the Q2 proposal',
+    'I need to ship the homepage update by end of month',
+    "What's the most important thing I should do today?",
+    'Break down my website redesign project into steps',
+  ],
+  morning: ["Good morning. Let's do my morning planning."],
+  night: ["Let's do the nightly review."],
+}
 
 export function ChatInterface() {
   const searchParams = useSearchParams()
-  const mode = searchParams.get('mode') ?? 'chat'
+  const mode = (searchParams.get('mode') ?? 'chat') as 'chat' | 'morning' | 'night'
   const [inputValue, setInputValue] = useState('')
-  const messagesEndRef = useRef<HTMLDivElement>(null)
   const initialSentRef = useRef(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  // AI SDK v6: body must be passed via DefaultChatTransport, not directly on useChat
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat',
       body: { mode },
     }),
   })
-
   const isLoading = status === 'streaming' || status === 'submitted'
 
   useEffect(() => {
@@ -35,15 +47,14 @@ export function ChatInterface() {
     if (initialSentRef.current) return
     if (mode === 'morning') {
       initialSentRef.current = true
-      sendMessage({ text: "Good morning. Let's do my morning planning." })
+      sendMessage({ text: STARTERS.morning[0]! })
     } else if (mode === 'night') {
       initialSentRef.current = true
-      sendMessage({ text: "Let's do the nightly review." })
+      sendMessage({ text: STARTERS.night[0]! })
     }
   }, [mode, sendMessage])
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  function handleSend() {
     if (!inputValue.trim() || isLoading) return
     sendMessage({ text: inputValue })
     setInputValue('')
@@ -52,117 +63,142 @@ export function ChatInterface() {
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      handleSubmit(e as unknown as React.FormEvent)
+      handleSend()
     }
   }
 
-  const modeLabel =
-    mode === 'morning' ? 'Morning Interview' : mode === 'night' ? 'Night Review' : 'AI Assistant'
-  const ModeIcon = mode === 'morning' ? Sun : mode === 'night' ? Moon : Bot
+  const modeConfig = {
+    chat: { label: 'AI Assistant', Icon: Zap, badge: null },
+    morning: { label: 'Morning Planning', Icon: Sun, badge: 'Planning Session' },
+    night: { label: 'Night Review', Icon: Moon, badge: 'Review Session' },
+  }[mode]
 
   return (
-    <div className="flex h-full flex-col">
+    <PageTransition className="flex h-full flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 border-b px-6 py-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-100">
-          <ModeIcon className="h-4 w-4 text-zinc-600" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground">
+          <modeConfig.Icon className="h-4 w-4 text-background" />
         </div>
-        <div>
-          <h1 className="text-sm font-semibold text-zinc-900">{modeLabel}</h1>
-          <p className="text-xs text-zinc-400">Your AI Chief of Staff</p>
+        <div className="flex-1">
+          <h1 className="text-sm font-semibold">{modeConfig.label}</h1>
+          <p className="text-xs text-muted-foreground">Chief of Staff AI</p>
         </div>
-        {mode !== 'chat' && (
-          <Badge variant="secondary" className="ml-auto text-xs">
-            {mode === 'morning' ? 'Planning Session' : 'Review Session'}
+        {modeConfig.badge && (
+          <Badge variant="secondary" className="text-xs">
+            {modeConfig.badge}
           </Badge>
         )}
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6">
-        {messages.length === 0 && mode === 'chat' && (
-          <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
-              <Bot className="h-6 w-6 text-zinc-600" />
-            </div>
-            <h3 className="font-semibold text-zinc-900">Your Chief of Staff is ready</h3>
-            <p className="mt-1 max-w-sm text-sm text-zinc-500">
-              Ask me to capture a task, break down a project, or tell me what you&apos;re working on.
-            </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-2">
-              {[
-                'Follow up with Sarah on Friday about the proposal',
-                'I need to launch the landing page next month',
-                'Break down the Q2 planning project',
-                'What should I focus on today?',
-              ].map((prompt) => (
-                <button
-                  key={prompt}
-                  onClick={() => sendMessage({ text: prompt })}
-                  className="rounded-full border px-3 py-1.5 text-xs text-zinc-600 transition-colors hover:bg-zinc-50"
-                >
-                  {prompt}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="mx-auto max-w-3xl space-y-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={cn('flex gap-3', message.role === 'user' ? 'justify-end' : 'justify-start')}
+      <div className="flex-1 overflow-y-auto px-6 py-4">
+        <AnimatePresence>
+          {messages.length === 0 && mode === 'chat' && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex h-full flex-col items-center justify-center text-center"
             >
-              {message.role === 'assistant' && (
-                <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-900">
-                  <Bot className="h-3.5 w-3.5 text-white" />
-                </div>
-              )}
-              <div
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-foreground">
+                <Zap className="h-7 w-7 text-background" />
+              </div>
+              <h3 className="font-semibold">Your Chief of Staff is ready</h3>
+              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                Capture a task, plan your day, or tell me what&apos;s on your mind.
+              </p>
+              <div className="mt-6 flex w-full max-w-sm flex-col gap-2">
+                {STARTERS.chat.map((s) => (
+                  <motion.button
+                    key={s}
+                    whileHover={{ x: 2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => sendMessage({ text: s })}
+                    className="rounded-xl border bg-card px-4 py-2.5 text-left text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:bg-muted hover:text-foreground"
+                  >
+                    {s}
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="mx-auto max-w-2xl space-y-4">
+          <AnimatePresence initial={false}>
+            {messages.map((message) => (
+              <motion.div
+                key={message.id}
+                initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
                 className={cn(
-                  'max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed',
-                  message.role === 'user' ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-800'
+                  'flex gap-3',
+                  message.role === 'user' ? 'justify-end' : 'justify-start'
                 )}
               >
-                {message.parts?.map((part, i) => {
-                  if (part.type === 'text') {
-                    return (
-                      <span key={i} className="whitespace-pre-wrap">
+                {message.role === 'assistant' && (
+                  <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground">
+                    <Bot className="h-3.5 w-3.5 text-background" />
+                  </div>
+                )}
+                <div
+                  className={cn(
+                    'max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed',
+                    message.role === 'user'
+                      ? 'bg-foreground text-background'
+                      : 'bg-muted text-foreground'
+                  )}
+                >
+                  {message.parts?.map((part, pi) =>
+                    part.type === 'text' ? (
+                      <span key={pi} className="whitespace-pre-wrap">
                         {part.text}
                       </span>
-                    )
-                  }
-                  return null
-                })}
-              </div>
-              {message.role === 'user' && (
-                <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-200">
-                  <User className="h-3.5 w-3.5 text-zinc-600" />
+                    ) : null
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
+                {message.role === 'user' && (
+                  <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted">
+                    <User className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
 
           {isLoading && (
-            <div className="flex justify-start gap-3">
-              <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-900">
-                <Bot className="h-3.5 w-3.5 text-white" />
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex gap-3"
+            >
+              <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground">
+                <Bot className="h-3.5 w-3.5 text-background" />
               </div>
-              <div className="rounded-2xl bg-zinc-100 px-4 py-3">
-                <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />
+              <div className="flex items-center gap-1.5 rounded-2xl bg-muted px-4 py-3">
+                {[0, 0.15, 0.3].map((delay, i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ opacity: [0.4, 1, 0.4], y: [0, -3, 0] }}
+                    transition={{ duration: 0.8, delay, repeat: Infinity }}
+                    className="h-1.5 w-1.5 rounded-full bg-muted-foreground"
+                  />
+                ))}
               </div>
-            </div>
+            </motion.div>
           )}
           <div ref={messagesEndRef} />
         </div>
       </div>
 
       {/* Input */}
-      <div className="border-t p-4">
-        <form onSubmit={handleSubmit} className="mx-auto max-w-3xl">
-          <div className="flex items-end gap-2 rounded-xl border bg-zinc-50 px-3 py-2">
+      <div className="border-t px-6 py-4">
+        <div className="mx-auto max-w-2xl">
+          <div className="flex items-end gap-2 rounded-xl border bg-card px-3 py-2">
             <Textarea
+              ref={textareaRef}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -170,27 +206,27 @@ export function ChatInterface() {
                 mode === 'morning'
                   ? 'What needs to get done today?'
                   : mode === 'night'
-                    ? 'What got done today?'
-                    : 'Capture a task or ask anything...'
+                    ? 'How did the day go?'
+                    : 'Capture a task or ask anything\u2026'
               }
-              className="max-h-[160px] min-h-[40px] flex-1 resize-none border-0 bg-transparent p-0 text-sm focus-visible:ring-0"
+              className="min-h-[36px] max-h-[140px] flex-1 resize-none border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
               rows={1}
               disabled={isLoading}
             />
-            <Button
-              type="submit"
-              size="icon"
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={handleSend}
               disabled={!inputValue.trim() || isLoading}
-              className="shrink-0"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-foreground text-background transition-opacity disabled:opacity-40"
             >
-              <SendHorizontal className="h-4 w-4" />
-            </Button>
+              <SendHorizontal className="h-3.5 w-3.5" />
+            </motion.button>
           </div>
-          <p className="mt-1.5 text-center text-xs text-zinc-400">
-            Press Enter to send · Shift+Enter for new line
+          <p className="mt-1.5 text-center text-[11px] text-muted-foreground">
+            Enter to send &middot; Shift+Enter for new line
           </p>
-        </form>
+        </div>
       </div>
-    </div>
+    </PageTransition>
   )
 }

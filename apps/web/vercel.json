@@ -12,6 +12,10 @@
     {
       "path": "/api/cron/briefing",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/night",
+      "schedule": "0 * * * *"
     }
   ]
 }

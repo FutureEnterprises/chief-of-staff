@@ -1,99 +1,99 @@
 'use client'
+import { motion, AnimatePresence } from 'motion/react'
 import type { Task, Tag } from '@repo/database'
 import { TaskCard } from '@/components/tasks/task-card'
+import { EmptyState } from '@/components/ui/empty-state'
+import { PageTransition, StaggerList, StaggerItem } from '@/components/motion/animations'
 import { Badge } from '@/components/ui/badge'
-import { Clock, AlertTriangle, Calendar, HelpCircle } from 'lucide-react'
+import { RefreshCw, CheckCircle2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
-type TaskWithTags = Task & { tags: Array<{ tag: Tag }> }
+type FollowUpTask = Task & { tags: Array<{ tag: Tag }> }
 
 interface FollowUpsViewProps {
-  overdue: TaskWithTags[]
-  dueToday: TaskWithTags[]
-  upcoming: TaskWithTags[]
-  noDate: TaskWithTags[]
+  overdue: FollowUpTask[]
+  dueToday: FollowUpTask[]
+  upcoming: FollowUpTask[]
+  noDate: FollowUpTask[]
 }
 
 export function FollowUpsView({ overdue, dueToday, upcoming, noDate }: FollowUpsViewProps) {
   const total = overdue.length + dueToday.length + upcoming.length + noDate.length
 
   return (
-    <div className="mx-auto max-w-4xl p-8">
+    <PageTransition className="mx-auto max-w-3xl px-6 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900">Follow-ups</h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          {total} task{total !== 1 ? 's' : ''} requiring follow-up
+        <h1 className="text-2xl font-bold tracking-tight">Follow-ups</h1>
+        <p className="mt-0.5 text-sm text-muted-foreground">
+          {total > 0
+            ? `${total} open follow-up${total !== 1 ? 's' : ''}`
+            : 'All follow-ups are handled'}
         </p>
       </div>
 
-      {total === 0 && (
-        <div className="rounded-xl border border-dashed p-12 text-center">
-          <Clock className="mx-auto mb-3 h-10 w-10 text-zinc-300" />
-          <h3 className="font-semibold text-zinc-900">No follow-ups needed</h3>
-          <p className="mt-1 text-sm text-zinc-500">
-            Tasks with follow-up requirements will appear here.
-          </p>
+      {total === 0 ? (
+        <EmptyState
+          icon={CheckCircle2}
+          title="All follow-ups handled"
+          description="No outstanding follow-ups. Add follow-up requirements to tasks via AI capture."
+        />
+      ) : (
+        <div className="space-y-8">
+          {overdue.length > 0 && (
+            <FollowUpSection title="Overdue" tasks={overdue} variant="destructive" />
+          )}
+          {dueToday.length > 0 && (
+            <FollowUpSection title="Due today" tasks={dueToday} variant="warning" />
+          )}
+          {upcoming.length > 0 && (
+            <FollowUpSection title="Upcoming" tasks={upcoming} variant="default" />
+          )}
+          {noDate.length > 0 && (
+            <FollowUpSection title="No date set" tasks={noDate} variant="muted" />
+          )}
         </div>
       )}
+    </PageTransition>
+  )
+}
 
-      {overdue.length > 0 && (
-        <section className="mb-6">
-          <div className="mb-3 flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-red-500" />
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-red-500">Overdue</h2>
-            <Badge variant="destructive">{overdue.length}</Badge>
-          </div>
-          <div className="space-y-2">
-            {overdue.map((task) => (
-              <TaskCard key={task.id} task={task} showFollowUp />
-            ))}
-          </div>
-        </section>
-      )}
+function FollowUpSection({
+  title,
+  tasks,
+  variant,
+}: {
+  title: string
+  tasks: FollowUpTask[]
+  variant: 'destructive' | 'warning' | 'default' | 'muted'
+}) {
+  const iconColors: Record<string, string> = {
+    destructive: 'text-red-500',
+    warning: 'text-amber-500',
+    default: 'text-foreground',
+    muted: 'text-muted-foreground',
+  }
 
-      {dueToday.length > 0 && (
-        <section className="mb-6">
-          <div className="mb-3 flex items-center gap-2">
-            <Clock className="h-4 w-4 text-amber-500" />
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Due Today</h2>
-            <Badge variant="secondary">{dueToday.length}</Badge>
-          </div>
-          <div className="space-y-2">
-            {dueToday.map((task) => (
-              <TaskCard key={task.id} task={task} showFollowUp />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {upcoming.length > 0 && (
-        <section className="mb-6">
-          <div className="mb-3 flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-blue-500" />
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Upcoming</h2>
-            <Badge variant="secondary">{upcoming.length}</Badge>
-          </div>
-          <div className="space-y-2">
-            {upcoming.map((task) => (
-              <TaskCard key={task.id} task={task} showFollowUp />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {noDate.length > 0 && (
-        <section className="mb-6">
-          <div className="mb-3 flex items-center gap-2">
-            <HelpCircle className="h-4 w-4 text-zinc-400" />
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">No Date Set</h2>
-            <Badge variant="secondary">{noDate.length}</Badge>
-          </div>
-          <div className="space-y-2">
-            {noDate.map((task) => (
-              <TaskCard key={task.id} task={task} showFollowUp />
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
+  return (
+    <section>
+      <div className="mb-2.5 flex items-center gap-2">
+        <RefreshCw className={cn('h-3.5 w-3.5', iconColors[variant])} />
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          {title}
+        </h2>
+        <Badge
+          variant={variant === 'destructive' ? 'destructive' : 'secondary'}
+          className="h-4 px-1.5 text-[10px]"
+        >
+          {tasks.length}
+        </Badge>
+      </div>
+      <StaggerList className="space-y-2">
+        {tasks.map((task) => (
+          <StaggerItem key={task.id}>
+            <TaskCard task={task} showFollowUp />
+          </StaggerItem>
+        ))}
+      </StaggerList>
+    </section>
   )
 }
