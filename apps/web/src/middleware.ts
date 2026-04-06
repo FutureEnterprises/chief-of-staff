@@ -15,8 +15,14 @@ const clerkHandler = clerkMiddleware(async (auth, req) => {
   }
 })
 
+const clerkConfigured =
+  process.env.CLERK_SECRET_KEY &&
+  !process.env.CLERK_SECRET_KEY.startsWith('sk_...') &&
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+  !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_...')
+
 export default function middleware(req: NextRequest) {
-  if (!process.env.CLERK_SECRET_KEY) {
+  if (!clerkConfigured) {
     return NextResponse.next()
   }
   return clerkHandler(req)

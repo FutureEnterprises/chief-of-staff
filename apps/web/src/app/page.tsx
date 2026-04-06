@@ -6,8 +6,12 @@ import { CoylLogo } from '@/components/brand/logo'
 import { CheckCircle2, Clock, MessageSquare, TrendingUp, ArrowRight, Zap } from 'lucide-react'
 
 export default async function HomePage() {
-  const { userId } = await auth()
-  if (userId) redirect('/today')
+  const clerkReady = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+    !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_...')
+  if (clerkReady) {
+    const { userId } = await auth()
+    if (userId) redirect('/today')
+  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
