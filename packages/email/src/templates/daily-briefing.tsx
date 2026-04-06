@@ -45,7 +45,7 @@ export function DailyBriefingEmail({
         <Container style={container}>
           {/* Header */}
           <Section style={header}>
-            <Text style={logo}>Chief of Staff</Text>
+            <Text style={logo}>COYL</Text>
             <Text style={dateText}>{date}</Text>
           </Section>
 
@@ -164,7 +164,7 @@ export function DailyBriefingEmail({
                 textDecoration: 'none',
               }}
             >
-              Open Chief of Staff
+              Open COYL
             </Button>
           </Section>
 

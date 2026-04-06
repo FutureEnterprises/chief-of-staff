@@ -55,7 +55,7 @@ export function PaywallDialog({ open, onClose, trigger }: PaywallDialogProps) {
           <div className="mb-1 flex items-center gap-2">
             <Zap className="h-5 w-5 text-amber-500" />
             <Badge variant="secondary" className="text-xs">
-              Chief of Staff Pro
+              COYL Pro
             </Badge>
           </div>
           <DialogTitle className="text-xl leading-snug">{headline}</DialogTitle>

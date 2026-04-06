@@ -5,10 +5,11 @@ import { UserButton } from '@clerk/nextjs'
 import { motion } from 'motion/react'
 import type { User } from '@repo/database'
 import {
-  CalendarDays, CheckSquare, Clock, FolderOpen, Home,
-  Inbox, MessageSquare, Settings, TrendingUp, Zap,
+  CheckSquare, Clock, FolderOpen, Home,
+  Inbox, MessageSquare, Settings, TrendingUp,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { CoylLogo } from '@/components/brand/logo'
 
 const navItems = [
   { label: 'Today', href: '/today', icon: Home },
@@ -31,11 +32,8 @@ export function AppSidebar({ user }: AppSidebarProps) {
       className="flex h-full w-56 shrink-0 flex-col border-r"
     >
       {/* Brand */}
-      <div className="flex h-14 items-center gap-2 border-b px-4" style={{ borderColor: 'hsl(var(--sidebar-border))' }}>
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground">
-          <Zap className="h-4 w-4 text-background" />
-        </div>
-        <span className="text-sm font-semibold tracking-tight">Chief of Staff</span>
+      <div className="flex h-14 items-center border-b px-4" style={{ borderColor: 'hsl(var(--sidebar-border))' }}>
+        <CoylLogo size="sm" />
       </div>
 
       {/* Nav */}

@@ -67,7 +67,7 @@ export async function POST(req: Request) {
   } else if (mode === 'night') {
     systemPrompt = SYSTEM_PROMPTS.nightReview.replace('{DATE}', now.toLocaleDateString())
   } else {
-    systemPrompt = SYSTEM_PROMPTS.chiefOfStaff
+    systemPrompt = SYSTEM_PROMPTS.coyl
   }
 
   systemPrompt += taskContext + overdueContext

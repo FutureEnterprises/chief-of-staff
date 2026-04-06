@@ -99,7 +99,7 @@ export async function GET(req: Request) {
       ])
 
       await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL ?? 'briefing@chiefofstaff.app',
+        from: process.env.RESEND_FROM_EMAIL ?? 'briefing@coyl.app',
         to: user.email,
         subject: `Your daily briefing: ${priorities.length} priorities${overdue.length > 0 ? `, ${overdue.length} overdue` : ''}`,
         react: React.createElement(DailyBriefingEmail, {
@@ -121,7 +121,7 @@ export async function GET(req: Request) {
             priorities.length > 5
               ? 'You have a lot on your plate. Focus on the top 2-3 things that move the needle most.'
               : '',
-          appUrl: process.env.NEXT_PUBLIC_APP_URL ?? 'https://chiefofstaff.app',
+          appUrl: process.env.NEXT_PUBLIC_APP_URL ?? 'https://coyl.app',
         }),
       })
 

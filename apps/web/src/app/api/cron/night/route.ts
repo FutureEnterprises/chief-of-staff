@@ -61,7 +61,7 @@ export async function GET(req: Request) {
       ])
 
       await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL ?? 'briefing@chiefofstaff.app',
+        from: process.env.RESEND_FROM_EMAIL ?? 'briefing@coyl.app',
         to: user.email,
         subject:
           completedToday.length > 0

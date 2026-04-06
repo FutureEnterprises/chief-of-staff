@@ -156,7 +156,7 @@ export function NightReviewEmail({
           </Button>
 
           <Text style={{ fontSize: '12px', color: '#52525b', margin: '24px 0 0', textAlign: 'center' }}>
-            Chief of Staff · Unsubscribe in settings
+            COYL · Unsubscribe in settings
           </Text>
         </Container>
       </Body>

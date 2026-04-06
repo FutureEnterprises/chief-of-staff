@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { ensureUserExists } from '@/lib/auth'
 import { OnboardingWizard } from './onboarding-wizard'
 
-export const metadata = { title: 'Welcome to Chief of Staff' }
+export const metadata = { title: 'Welcome to COYL' }
 
 export default async function OnboardingPage() {
   const { userId } = await auth()

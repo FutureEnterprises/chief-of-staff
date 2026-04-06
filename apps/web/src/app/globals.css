@@ -4,53 +4,58 @@
 
 @layer base {
   :root {
-    /* Light mode */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    /* COYL — Hermès Orange · Charcoal · Cream */
+    --background: 40 20% 96%;          /* #f5f5f0 cream */
+    --foreground: 0 0% 10%;            /* #1a1a1a charcoal */
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 173 80% 40%;
-    --accent-foreground: 0 0% 98%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 0 0% 10%;               /* #1a1a1a charcoal */
+    --primary-foreground: 40 20% 96%;
+    --secondary: 40 15% 92%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 40 10% 93%;
+    --muted-foreground: 0 0% 42%;
+    --accent: 24 100% 50%;             /* #ff6600 Hermès orange */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 173 80% 40%;
+    --border: 40 10% 88%;
+    --input: 40 10% 88%;
+    --ring: 24 100% 50%;               /* orange focus ring */
     --radius: 0.5rem;
-    --sidebar: 240 4.8% 97%;
-    --sidebar-border: 240 5.9% 90%;
+    --sidebar: 40 15% 93%;
+    --sidebar-border: 40 10% 86%;
+
+    /* Brand tokens */
+    --coyl-orange: #ff6600;
+    --coyl-charcoal: #1a1a1a;
+    --coyl-cream: #f5f5f0;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 8% 6%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 8% 6%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 173 80% 40%;
-    --accent-foreground: 0 0% 98%;
+    --background: 0 0% 7%;             /* near-black */
+    --foreground: 40 20% 95%;          /* warm white */
+    --card: 0 0% 10%;
+    --card-foreground: 40 20% 95%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 40 20% 95%;
+    --primary: 40 20% 95%;
+    --primary-foreground: 0 0% 10%;
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 40 20% 95%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 24 100% 50%;             /* orange stays consistent */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 173 80% 40%;
-    --sidebar: 240 8% 5%;
-    --sidebar-border: 240 3.7% 12%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 24 100% 50%;
+    --sidebar: 0 0% 8%;
+    --sidebar-border: 0 0% 13%;
   }
 }
 

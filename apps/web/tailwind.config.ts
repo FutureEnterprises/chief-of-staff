@@ -39,6 +39,22 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        /* COYL brand tokens */
+        orange: {
+          DEFAULT: '#ff6600',
+          50: '#fff3e6',
+          100: '#ffe0bf',
+          200: '#ffbf80',
+          300: '#ff9d40',
+          400: '#ff8020',
+          500: '#ff6600',
+          600: '#e05c00',
+          700: '#b34800',
+          800: '#803400',
+          900: '#4d1f00',
+        },
+        charcoal: '#1a1a1a',
+        cream: '#f5f5f0',
       },
       borderRadius: {
         lg: 'var(--radius)',

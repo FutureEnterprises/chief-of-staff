@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "chief-of-staff-web",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@repo/web", "dev"],
-      "port": 3000
+      "name": "coyl-web",
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": ["-c", "cd /Users/imanschrock/Desktop/coyl && PATH=/opt/homebrew/bin:$PATH /opt/homebrew/bin/pnpm --filter @repo/web dev --port 3004"],
+      "port": 3004
     }
   ]
 }

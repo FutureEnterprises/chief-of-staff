@@ -120,7 +120,7 @@ export function SettingsView({ user }: SettingsViewProps) {
                 </div>
                 <div>
                   <CardTitle className="text-base">Preferences</CardTitle>
-                  <CardDescription>Customize how Chief of Staff works for you</CardDescription>
+                  <CardDescription>Customize how COYL works for you</CardDescription>
                 </div>
               </div>
             </CardHeader>

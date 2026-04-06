@@ -38,7 +38,7 @@ export function Sidebar() {
         <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-900">
           <Zap className="h-4 w-4 text-white" />
         </div>
-        <span className="text-sm font-semibold tracking-tight">Chief of Staff</span>
+        <span className="text-sm font-semibold tracking-tight">COYL</span>
       </div>
 
       {/* Main Nav */}

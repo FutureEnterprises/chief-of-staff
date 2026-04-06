@@ -82,7 +82,7 @@ export function ChatInterface() {
         </div>
         <div className="flex-1">
           <h1 className="text-sm font-semibold">{modeConfig.label}</h1>
-          <p className="text-xs text-muted-foreground">Chief of Staff AI</p>
+          <p className="text-xs text-muted-foreground">COYL AI</p>
         </div>
         {modeConfig.badge && (
           <Badge variant="secondary" className="text-xs">
@@ -104,7 +104,7 @@ export function ChatInterface() {
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-foreground">
                 <Zap className="h-7 w-7 text-background" />
               </div>
-              <h3 className="font-semibold">Your Chief of Staff is ready</h3>
+              <h3 className="font-semibold">Your COYL is ready</h3>
               <p className="mt-1 max-w-sm text-sm text-muted-foreground">
                 Capture a task, plan your day, or tell me what&apos;s on your mind.
               </p>

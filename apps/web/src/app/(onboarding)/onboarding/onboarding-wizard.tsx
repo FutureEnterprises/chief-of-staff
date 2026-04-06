@@ -78,7 +78,7 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground">
           <Zap className="h-4 w-4 text-background" />
         </div>
-        <span className="text-sm font-semibold tracking-tight">Chief of Staff</span>
+        <span className="text-sm font-semibold tracking-tight">COYL</span>
       </motion.div>
 
       {/* Step indicator */}

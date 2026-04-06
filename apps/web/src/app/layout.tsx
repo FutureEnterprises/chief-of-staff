@@ -6,12 +6,12 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Chief of Staff',
-    template: '%s | Chief of Staff',
+    default: 'COYL',
+    template: '%s | COYL',
   },
   description:
-    'Your AI-powered execution partner. Morning planning, follow-up enforcement, and daily briefings — so nothing important slips through.',
-  keywords: ['productivity', 'ai assistant', 'task management', 'follow-up', 'daily briefing'],
+    'Control Your Life. COYL is your AI-powered execution partner — wound tight and ready to release on your command.',
+  keywords: ['productivity', 'task management', 'ai assistant', 'control your life', 'coyl', 'follow-up', 'daily briefing'],
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
