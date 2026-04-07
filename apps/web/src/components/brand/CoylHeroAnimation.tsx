@@ -260,23 +260,24 @@ export function CoylHeroAnimation({ className }: { className?: string }) {
           >{char}</text>
         ))}
 
-        {/* ── Tagline ───────────────────────────────────────────────────── */}
+        {/* ── Tagline — CONTROL [orange YOUR] LIFE ─────────────────────── */}
         <text
           x={CX} y={376}
           textAnchor="middle"
-          fontSize={11.5} fontWeight={600}
-          letterSpacing={5.5}
-          fill={CHARCOAL}
+          fontSize={15} fontWeight={700}
+          letterSpacing={4}
           fontFamily="-apple-system, 'Inter', sans-serif"
           style={{
-            opacity: showTagline ? 0.38 : 0,
+            opacity: showTagline ? 1 : 0,
             transform: showTagline ? 'translateY(0px)' : 'translateY(8px)',
             transition: showTagline
               ? 'opacity 0.55s cubic-bezier(0.23,1,0.32,1), transform 0.55s cubic-bezier(0.23,1,0.32,1)'
               : 'none',
           }}
         >
-          CONTROL YOUR LIFE
+          <tspan fill={CHARCOAL} opacity={0.55}>CONTROL </tspan>
+          <tspan fill={ORANGE} opacity={0.9}>YOUR</tspan>
+          <tspan fill={CHARCOAL} opacity={0.55}> LIFE</tspan>
         </text>
       </svg>
     </div>
