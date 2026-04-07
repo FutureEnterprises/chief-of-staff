@@ -30,14 +30,19 @@ export async function ensureUserExists(): Promise<User> {
   const email = clerkUser.emailAddresses[0]?.emailAddress ?? ''
   const name = `${clerkUser.firstName ?? ''} ${clerkUser.lastName ?? ''}`.trim() || email
 
-  return prisma.user.upsert({
-    where: { clerkId: clerkUser.id },
-    update: { email, name, avatarUrl: clerkUser.imageUrl },
-    create: {
-      clerkId: clerkUser.id,
-      email,
-      name,
-      avatarUrl: clerkUser.imageUrl,
-    },
-  })
+  try {
+    return await prisma.user.upsert({
+      where: { clerkId: clerkUser.id },
+      update: { email, name, avatarUrl: clerkUser.imageUrl },
+      create: {
+        clerkId: clerkUser.id,
+        email,
+        name,
+        avatarUrl: clerkUser.imageUrl,
+      },
+    })
+  } catch (err) {
+    console.error('[ensureUserExists] Prisma error:', JSON.stringify(err, null, 2))
+    throw err
+  }
 }
