@@ -127,7 +127,7 @@ export async function GET(req: Request) {
 
       results.sent++
     } catch (error) {
-      console.error('Failed to send briefing email', { userId: user.id, error })
+      console.error('Failed to send briefing email', { userId: user.id, error: error instanceof Error ? error.message : 'Unknown error' })
       results.errors++
     }
   }

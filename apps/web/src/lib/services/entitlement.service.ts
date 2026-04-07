@@ -76,6 +76,8 @@ export async function checkAiQuota(
 
 /**
  * Atomically check + consume one AI assist.
+ * Uses a single SQL statement to handle both the monthly reset and the quota
+ * check, preventing TOCTOU races on concurrent requests.
  * Returns false if over quota (no increment performed).
  */
 export async function consumeAiAssistAtomic(
@@ -98,28 +100,33 @@ export async function consumeAiAssistAtomic(
     return { consumed: true, used: user.aiAssistsUsed + 1, limit: -1 }
   }
 
-  // Reset counter if window passed
+  // Single atomic SQL: reset-if-expired AND increment-if-under-limit in one statement.
+  // This eliminates the TOCTOU race between checking the reset window and consuming.
   const now = new Date()
-  if (user.aiAssistsResetAt < now) {
-    const nextReset = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
-    await prisma.user.update({
-      where: { id: userId },
-      data: { aiAssistsUsed: 1, aiAssistsResetAt: nextReset },
-    })
-    return { consumed: true, used: 1, limit: monthlyLimit }
-  }
+  const nextReset = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
 
-  // Atomic conditional increment: only if under limit
-  const result = await prisma.user.updateMany({
-    where: { id: userId, aiAssistsUsed: { lt: monthlyLimit } },
-    data: { aiAssistsUsed: { increment: 1 } },
-  })
+  const result = await prisma.$executeRaw`
+    UPDATE users
+    SET
+      "aiAssistsUsed" = CASE
+        WHEN "aiAssistsResetAt" < ${now} THEN 1
+        ELSE "aiAssistsUsed" + 1
+      END,
+      "aiAssistsResetAt" = CASE
+        WHEN "aiAssistsResetAt" < ${now} THEN ${nextReset}
+        ELSE "aiAssistsResetAt"
+      END,
+      "updatedAt" = ${now}
+    WHERE id = ${userId}
+      AND ("aiAssistsUsed" < ${monthlyLimit} OR "aiAssistsResetAt" < ${now})
+  `
 
-  if (result.count === 0) {
+  if (result === 0) {
     return { consumed: false, used: user.aiAssistsUsed, limit: monthlyLimit }
   }
 
-  return { consumed: true, used: user.aiAssistsUsed + 1, limit: monthlyLimit }
+  const newUsed = user.aiAssistsResetAt < now ? 1 : user.aiAssistsUsed + 1
+  return { consumed: true, used: newUsed, limit: monthlyLimit }
 }
 
 /** @deprecated Use consumeAiAssistAtomic instead */

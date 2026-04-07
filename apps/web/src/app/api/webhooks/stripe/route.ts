@@ -161,7 +161,6 @@ async function handlePaymentFailed(invoice: Stripe.Invoice, stripe: Stripe) {
   console.warn('Payment failed for user', {
     userId,
     invoiceId: invoice.id,
-    amountDue: invoice.amount_due,
   })
   // Could send a payment-failed email here via Resend
 }

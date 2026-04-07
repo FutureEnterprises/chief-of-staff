@@ -73,7 +73,7 @@ export async function GET(req: Request) {
         })
       }
     } catch (error) {
-      console.error('Failed to schedule reminders for user', { userId: user.id, error })
+      console.error('Failed to schedule reminders for user', { userId: user.id, error: error instanceof Error ? error.message : 'Unknown error' })
       results.errors++
     }
   }

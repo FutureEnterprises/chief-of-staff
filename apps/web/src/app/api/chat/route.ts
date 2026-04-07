@@ -23,6 +23,16 @@ export async function POST(req: Request) {
     })
   }
 
+  // Validate body BEFORE consuming quota — malformed requests must not burn credits
+  const { chatSchema } = await import('@/lib/validations')
+  const parsed = chatSchema.safeParse(await req.json())
+  if (!parsed.success) {
+    return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
   // Atomic check+consume — prevents race condition on concurrent requests
   const quota = await consumeAiAssistAtomic(user.id)
   if (!quota.consumed) {
@@ -37,7 +47,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const { messages, mode }: { messages: UIMessage[]; mode?: string } = await req.json()
+  const { messages, mode } = parsed.data as unknown as { messages: UIMessage[]; mode?: string }
 
   // Get recent tasks for context
   const [openTasks, overdueCount] = await Promise.all([

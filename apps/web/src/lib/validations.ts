@@ -42,6 +42,15 @@ export const chatSchema = z.object({
   messages: z.array(z.object({
     role: z.string(),
     content: z.string(),
-  }).passthrough()),
+  }).passthrough()).min(1).max(100),
   mode: z.enum(['morning', 'night', 'general']).optional(),
+})
+
+export const onboardingSchema = z.object({
+  name: z.string().min(1).max(200),
+  timezone: z.string().min(1).max(100),
+  morningCheckinTime: z.string().regex(/^\d{2}:\d{2}$/),
+  nightCheckinTime: z.string().regex(/^\d{2}:\d{2}$/),
+  emailBriefingEnabled: z.boolean(),
+  firstTask: z.string().max(1000),
 })

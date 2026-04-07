@@ -2,35 +2,39 @@
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@repo/database'
 import { requireDbUser } from '@/lib/auth'
+import { onboardingSchema } from '@/lib/validations'
 import { createTaskFromChat } from './tasks'
 
-interface OnboardingData {
+export async function completeOnboarding(data: {
   name: string
   timezone: string
   morningCheckinTime: string
   nightCheckinTime: string
   emailBriefingEnabled: boolean
   firstTask: string
-}
-
-export async function completeOnboarding(data: OnboardingData) {
+}) {
   const user = await requireDbUser()
+
+  const parsed = onboardingSchema.safeParse(data)
+  if (!parsed.success) {
+    throw new Error('Invalid onboarding data')
+  }
 
   try {
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        name: data.name || user.name,
-        timezone: data.timezone,
-        morningCheckinTime: data.morningCheckinTime,
-        nightCheckinTime: data.nightCheckinTime,
-        emailBriefingEnabled: data.emailBriefingEnabled,
+        name: parsed.data.name || user.name,
+        timezone: parsed.data.timezone,
+        morningCheckinTime: parsed.data.morningCheckinTime,
+        nightCheckinTime: parsed.data.nightCheckinTime,
+        emailBriefingEnabled: parsed.data.emailBriefingEnabled,
         onboardingCompleted: true,
       },
     })
 
-    if (data.firstTask.trim()) {
-      await createTaskFromChat(data.firstTask)
+    if (parsed.data.firstTask.trim()) {
+      await createTaskFromChat(parsed.data.firstTask)
     }
 
     await prisma.billingSubscription.upsert({

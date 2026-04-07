@@ -5,13 +5,17 @@ import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
 import { getPendingReminders } from '@/lib/services/reminder.service'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export async function GET() {
   const { userId: clerkId } = await auth()
-  if (!clerkId) return new NextResponse('Unauthorized', { status: 401 })
+  if (!clerkId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const user = await prisma.user.findUnique({ where: { clerkId } })
-  if (!user) return new NextResponse('User not found', { status: 404 })
+  if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
+
+  const rl = await checkRateLimit('api', user.id)
+  if (rl.limited) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: rl.headers })
 
   const now = new Date()
   const todayStart = new Date(now)
