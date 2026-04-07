@@ -18,11 +18,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
   // Treat placeholder/invalid keys the same as missing — skip ClerkProvider
   const clerkReady = publishableKey && !publishableKey.startsWith('pk_...')
-  const html = (
+
+  return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans antialiased">{children}</body>
+      <body className="min-h-screen bg-background font-sans antialiased">
+        {clerkReady
+          ? <ClerkProvider publishableKey={publishableKey!}>{children}</ClerkProvider>
+          : children
+        }
+      </body>
     </html>
   )
-  if (!clerkReady) return html
-  return <ClerkProvider publishableKey={publishableKey!}>{html}</ClerkProvider>
 }
