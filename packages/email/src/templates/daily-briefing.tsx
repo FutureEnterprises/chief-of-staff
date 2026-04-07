@@ -1,5 +1,4 @@
 import {
-  Body,
   Button,
   Container,
   Head,
@@ -41,7 +40,7 @@ export function DailyBriefingEmail({
     <Html>
       <Head />
       <Preview>{subject}</Preview>
-      <Body style={main}>
+      <Section style={main}>
         <Container style={container}>
           {/* Header */}
           <Section style={header}>
@@ -177,7 +176,7 @@ export function DailyBriefingEmail({
             </a>
           </Text>
         </Container>
-      </Body>
+      </Section>
     </Html>
   )
 }

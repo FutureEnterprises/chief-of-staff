@@ -271,7 +271,7 @@ export function isWithinUserTimeWindow(
 /**
  * Get pending reminders for a user, ready to be displayed in-app.
  */
-export async function getPendingReminders(userId: string) {
+export async function getPendingReminders(userId: string): Promise<Awaited<ReturnType<typeof prisma.reminder.findMany>>> {
   return prisma.reminder.findMany({
     where: {
       userId,

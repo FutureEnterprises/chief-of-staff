@@ -1,4 +1,5 @@
 'use client'
+import * as React from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import type { Task, Tag } from '@repo/database'
 import { TaskCard } from '@/components/tasks/task-card'
@@ -17,7 +18,7 @@ interface FollowUpsViewProps {
   noDate: FollowUpTask[]
 }
 
-export function FollowUpsView({ overdue, dueToday, upcoming, noDate }: FollowUpsViewProps) {
+export function FollowUpsView({ overdue, dueToday, upcoming, noDate }: FollowUpsViewProps): React.JSX.Element {
   const total = overdue.length + dueToday.length + upcoming.length + noDate.length
 
   return (

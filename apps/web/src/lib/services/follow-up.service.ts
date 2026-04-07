@@ -47,7 +47,7 @@ export async function completeFollowUp(taskId: string, userId: string): Promise<
 /**
  * Get all follow-ups that are overdue (past nextFollowUpAt and not completed/archived).
  */
-export async function getOverdueFollowUps(userId: string) {
+export async function getOverdueFollowUps(userId: string): Promise<Awaited<ReturnType<typeof prisma.task.findMany>>> {
   return prisma.task.findMany({
     where: {
       userId,

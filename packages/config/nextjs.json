@@ -9,6 +9,8 @@
     "jsx": "preserve",
     "lib": ["dom", "dom.iterable", "esnext"],
     "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
     "target": "ES2017",
     "paths": {
       "@/*": ["./src/*"]
