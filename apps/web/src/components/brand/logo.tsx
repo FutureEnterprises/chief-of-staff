@@ -3,83 +3,86 @@ import { cn } from '@/lib/utils'
 
 interface CoylLogoProps {
   className?: string
-  /** Show wordmark beside icon */
   showWordmark?: boolean
-  /** Icon + wordmark size variant */
   size?: 'sm' | 'md' | 'lg' | 'xl'
-  /** Force a specific theme regardless of system */
   theme?: 'light' | 'dark' | 'auto'
 }
 
 const sizes = {
-  sm: { icon: 24, text: 'text-base', gap: 'gap-1.5' },
-  md: { icon: 32, text: 'text-xl',  gap: 'gap-2' },
-  lg: { icon: 48, text: 'text-3xl', gap: 'gap-3' },
-  xl: { icon: 64, text: 'text-4xl', gap: 'gap-4' },
+  sm: { icon: 22, text: 'text-sm',  gap: 'gap-1.5' },
+  md: { icon: 30, text: 'text-lg',  gap: 'gap-2' },
+  lg: { icon: 44, text: 'text-2xl', gap: 'gap-3' },
+  xl: { icon: 60, text: 'text-4xl', gap: 'gap-4' },
 }
 
-/** The COYL coil mark — an "O" shaped as a spring/coil in Hermès orange */
-export function CoylMark({ size = 32, className }: { size?: number; className?: string }) {
-  const r = size * 0.36      // coil outer radius
-  const cx = size / 2
-  const cy = size / 2
-  const strokeW = size * 0.085
+/**
+ * CoylMark — a miniature cylindrical coil spring.
+ * 4 loops viewed from a slight angle: front arcs heavy, back arcs light.
+ * End caps close the cylinder top and bottom.
+ */
+export function CoylMark({ size = 30, className }: { size?: number; className?: string }) {
+  const W = size
+  const H = size * 1.1   // slightly taller than wide
+  const cx = W / 2
+  const rx = W * 0.42    // horizontal radius of each loop
+  const ry = H * 0.085   // vertical radius — flat ellipses for cylinder depth
+  const loops = 4
+  const spacing = (H * 0.72) / loops
+  const top = H * 0.14   // start of coil top
+  const sw = W * 0.09    // front arc stroke
+  const swb = W * 0.055  // back arc stroke
 
-  // The coil: a 300° arc that doesn't close, leaving an opening
-  // suggesting a wound spring with controlled tension
-  const startAngle = 130   // degrees
-  const endAngle   = 430   // = 70° (wraps past 360)
-  const toRad = (d: number) => (d * Math.PI) / 180
-
-  const x1 = cx + r * Math.cos(toRad(startAngle))
-  const y1 = cy + r * Math.sin(toRad(startAngle))
-  const x2 = cx + r * Math.cos(toRad(endAngle))
-  const y2 = cy + r * Math.sin(toRad(endAngle))
-
-  // Inner arc (smaller radius) for the coil's inner loop
-  const ri = r * 0.55
-  const ix1 = cx + ri * Math.cos(toRad(startAngle + 20))
-  const iy1 = cy + ri * Math.sin(toRad(startAngle + 20))
-  const ix2 = cx + ri * Math.cos(toRad(endAngle - 20))
-  const iy2 = cy + ri * Math.sin(toRad(endAngle - 20))
+  const arcs: { d: string; front: boolean; y: number }[] = []
+  for (let i = 0; i <= loops; i++) {
+    const y = top + i * spacing
+    // Back arc — top half of ellipse
+    arcs.push({
+      d: `M ${cx - rx} ${y} A ${rx} ${ry} 0 0 1 ${cx + rx} ${y}`,
+      front: false,
+      y,
+    })
+    // Front arc — bottom half connecting to next loop
+    if (i < loops) {
+      arcs.push({
+        d: `M ${cx + rx} ${y} A ${rx} ${ry * 1.3} 0 0 0 ${cx - rx} ${y + spacing}`,
+        front: true,
+        y,
+      })
+    }
+  }
 
   return (
     <svg
-      width={size}
-      height={size}
-      viewBox={`0 0 ${size} ${size}`}
+      width={W}
+      height={H}
+      viewBox={`0 0 ${W} ${H}`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       aria-hidden="true"
     >
-      {/* Outer coil arc */}
-      <path
-        d={`M ${x1} ${y1} A ${r} ${r} 0 1 1 ${x2} ${y2}`}
-        stroke="#ff6600"
-        strokeWidth={strokeW}
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* Inner coil arc — gives the spring/wound depth */}
-      <path
-        d={`M ${ix1} ${iy1} A ${ri} ${ri} 0 1 1 ${ix2} ${iy2}`}
-        stroke="#ff6600"
-        strokeWidth={strokeW * 0.65}
-        strokeLinecap="round"
-        strokeOpacity="0.45"
-        fill="none"
-      />
-      {/* Tension line — the gap tail suggesting energy ready to release */}
-      <line
-        x1={x1}
-        y1={y1}
-        x2={cx + r * 0.15 * Math.cos(toRad(startAngle))}
-        y2={cy + r * 0.15 * Math.sin(toRad(startAngle))}
-        stroke="#ff6600"
-        strokeWidth={strokeW}
-        strokeLinecap="round"
-        strokeOpacity="0.3"
+      {/* Top cap */}
+      <ellipse cx={cx} cy={top} rx={rx} ry={ry} stroke="#ff6600" strokeWidth={swb} fill="none" opacity={0.4} />
+
+      {/* Coil arcs */}
+      {arcs.map((arc, i) => (
+        <path
+          key={i}
+          d={arc.d}
+          stroke="#ff6600"
+          strokeWidth={arc.front ? sw : swb}
+          strokeLinecap="round"
+          fill="none"
+          opacity={arc.front ? 1 : 0.22}
+        />
+      ))}
+
+      {/* Bottom cap */}
+      <ellipse
+        cx={cx} cy={top + loops * spacing}
+        rx={rx} ry={ry}
+        stroke="#ff6600" strokeWidth={swb}
+        fill="none" opacity={0.4}
       />
     </svg>
   )
@@ -97,8 +100,8 @@ export function CoylLogo({
   const wordmarkClass = cn(
     'font-bold tracking-[-0.04em] leading-none select-none',
     text,
-    theme === 'dark'  ? 'text-[#f5f5f0]'
-    : theme === 'light' ? 'text-[#1a1a1a]'
+    theme === 'dark'   ? 'text-[#f5f5f0]'
+    : theme === 'light'  ? 'text-[#1a1a1a]'
     : 'text-foreground'
   )
 
