@@ -8,6 +8,7 @@ const isPublicRoute = createRouteMatcher([
   '/sign-up(.*)',
   '/api/webhooks/(.*)',
   '/api/cron/(.*)',
+  '/api/debug-db',
 ])
 
 const secretKey = process.env.CLERK_SECRET_KEY
