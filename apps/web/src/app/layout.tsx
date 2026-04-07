@@ -12,10 +12,6 @@ export const metadata: Metadata = {
   description:
     'Control Your Life. COYL is your AI-powered execution partner — wound tight and ready to release on your command.',
   keywords: ['productivity', 'task management', 'ai assistant', 'control your life', 'coyl', 'follow-up', 'daily briefing'],
-  icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

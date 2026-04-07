@@ -236,48 +236,27 @@ export function CoylHeroAnimation({ className }: { className?: string }) {
           )}
         </AnimatePresence>
 
-        {/* ── COYL — letters on one line (CSS transitions, rAF-independent) ── */}
-        {[
-          { char: 'C', x: 108, fill: CHARCOAL, delay: '0ms' },
-          { char: 'O', x: 271, fill: CHARCOAL, delay: '70ms' },
-          { char: 'Y', x: 437, fill: ORANGE,   delay: '140ms' },
-          { char: 'L', x: 596, fill: CHARCOAL, delay: '210ms' },
-        ].map(({ char, x, fill, delay }) => (
-          <text
-            key={char}
-            x={x} y={320}
-            textAnchor="middle"
-            fontSize={174} fontWeight={800}
-            fill={fill}
-            fontFamily="-apple-system, 'Inter', sans-serif"
-            style={{
-              opacity: showLetters ? 1 : 0,
-              transform: showLetters ? 'translateY(0px)' : 'translateY(-25px)',
-              transition: showLetters
-                ? `opacity 0.5s cubic-bezier(0.23,1,0.32,1) ${delay}, transform 0.6s cubic-bezier(0.23,1,0.32,1) ${delay}`
-                : 'none',
-            }}
-          >{char}</text>
-        ))}
-
-        {/* ── Tagline — CONTROL [orange YOUR] LIFE ─────────────────────── */}
+        {/* ── "Control Your Life" — C Y L orange, centred ─────────────── */}
         <text
-          x={CX} y={376}
+          x={CX} y={308}
           textAnchor="middle"
-          fontSize={15} fontWeight={700}
-          letterSpacing={4}
+          fontSize={68} fontWeight={800}
+          letterSpacing={-1}
           fontFamily="-apple-system, 'Inter', sans-serif"
           style={{
-            opacity: showTagline ? 1 : 0,
-            transform: showTagline ? 'translateY(0px)' : 'translateY(8px)',
-            transition: showTagline
-              ? 'opacity 0.55s cubic-bezier(0.23,1,0.32,1), transform 0.55s cubic-bezier(0.23,1,0.32,1)'
+            opacity: showLetters ? 1 : 0,
+            transform: showLetters ? 'translateY(0px)' : 'translateY(-20px)',
+            transition: showLetters
+              ? 'opacity 0.55s cubic-bezier(0.23,1,0.32,1), transform 0.65s cubic-bezier(0.23,1,0.32,1)'
               : 'none',
           }}
         >
-          <tspan fill={CHARCOAL} opacity={0.55}>CONTROL </tspan>
-          <tspan fill={ORANGE} opacity={0.9}>YOUR</tspan>
-          <tspan fill={CHARCOAL} opacity={0.55}> LIFE</tspan>
+          <tspan fill={ORANGE}>C</tspan>
+          <tspan fill={CHARCOAL}>ontrol </tspan>
+          <tspan fill={ORANGE}>Y</tspan>
+          <tspan fill={CHARCOAL}>our </tspan>
+          <tspan fill={ORANGE}>L</tspan>
+          <tspan fill={CHARCOAL}>ife</tspan>
         </text>
       </svg>
     </div>
