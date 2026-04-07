@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "COYL",
+    "slug": "coyl",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "coyl",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#ff6600",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "bundleIdentifier": "ai.coyl.app",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "ai.coyl.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#ff6600"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#ff6600"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
