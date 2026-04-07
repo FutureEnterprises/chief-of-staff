@@ -15,12 +15,16 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+  const clerkReady = publishableKey && !publishableKey.startsWith('pk_...')
+
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <ClerkProvider>
-          {children}
-        </ClerkProvider>
+        {clerkReady
+          ? <ClerkProvider publishableKey={publishableKey!}>{children}</ClerkProvider>
+          : children
+        }
       </body>
     </html>
   )
