@@ -74,6 +74,55 @@ export async function checkAiQuota(
   }
 }
 
+/**
+ * Atomically check + consume one AI assist.
+ * Returns false if over quota (no increment performed).
+ */
+export async function consumeAiAssistAtomic(
+  userId: string
+): Promise<{ consumed: boolean; used: number; limit: number }> {
+  const user = await prisma.user.findFirst({
+    where: { id: userId },
+    select: { planType: true, aiAssistsUsed: true, aiAssistsResetAt: true },
+  })
+  if (!user) return { consumed: false, used: 0, limit: 0 }
+
+  const limits = PLAN_LIMITS[user.planType] ?? PLAN_LIMITS.FREE!
+  const monthlyLimit = limits.aiAssistsPerMonth
+
+  if (monthlyLimit === Infinity) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { aiAssistsUsed: { increment: 1 } },
+    })
+    return { consumed: true, used: user.aiAssistsUsed + 1, limit: -1 }
+  }
+
+  // Reset counter if window passed
+  const now = new Date()
+  if (user.aiAssistsResetAt < now) {
+    const nextReset = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+    await prisma.user.update({
+      where: { id: userId },
+      data: { aiAssistsUsed: 1, aiAssistsResetAt: nextReset },
+    })
+    return { consumed: true, used: 1, limit: monthlyLimit }
+  }
+
+  // Atomic conditional increment: only if under limit
+  const result = await prisma.user.updateMany({
+    where: { id: userId, aiAssistsUsed: { lt: monthlyLimit } },
+    data: { aiAssistsUsed: { increment: 1 } },
+  })
+
+  if (result.count === 0) {
+    return { consumed: false, used: user.aiAssistsUsed, limit: monthlyLimit }
+  }
+
+  return { consumed: true, used: user.aiAssistsUsed + 1, limit: monthlyLimit }
+}
+
+/** @deprecated Use consumeAiAssistAtomic instead */
 export async function consumeAiAssist(userId: string): Promise<void> {
   await prisma.user.update({
     where: { id: userId },

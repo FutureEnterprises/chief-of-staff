@@ -2,27 +2,45 @@ import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
 import Stripe from 'stripe'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export async function POST(req: Request) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-02-24.acacia' })
-  const PRICE_IDS = {
-    pro_monthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID!,
-    pro_annual: process.env.STRIPE_PRO_ANNUAL_PRICE_ID!,
+  const stripeKey = process.env.STRIPE_SECRET_KEY
+  if (!stripeKey) {
+    return NextResponse.json({ error: 'Payments not configured' }, { status: 503 })
   }
+
+  const stripe = new Stripe(stripeKey, { apiVersion: '2025-02-24.acacia' })
+  const PRICE_IDS = {
+    pro_monthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
+    pro_annual: process.env.STRIPE_PRO_ANNUAL_PRICE_ID,
+  }
+
   const { userId: clerkId } = await auth()
-  if (!clerkId) return new NextResponse('Unauthorized', { status: 401 })
+  if (!clerkId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const user = await prisma.user.findUnique({
     where: { clerkId },
     include: { billingSubscription: true },
   })
-  if (!user) return new NextResponse('User not found', { status: 404 })
+  if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  const { interval } = await req.json()
+  const rl = await checkRateLimit('checkout', user.id)
+  if (rl.limited) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: rl.headers })
+  }
+
+  const { checkoutSchema } = await import('@/lib/validations')
+  const parsed = checkoutSchema.safeParse(await req.json())
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid interval' }, { status: 400 })
+  }
+
+  const { interval } = parsed.data
   const priceId = interval === 'annual' ? PRICE_IDS.pro_annual : PRICE_IDS.pro_monthly
 
   if (!priceId) {
-    return new NextResponse('Stripe price IDs not configured', { status: 500 })
+    return NextResponse.json({ error: 'Stripe price IDs not configured' }, { status: 503 })
   }
 
   // Reuse existing Stripe customer if possible

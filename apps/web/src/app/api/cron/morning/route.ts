@@ -3,16 +3,22 @@ import { prisma } from '@repo/database'
 import { Resend } from 'resend'
 import { MorningCheckinEmail } from '@repo/email'
 import { isWithinUserTimeWindow } from '@/lib/services/reminder.service'
+import { batchProcess } from '@/lib/batch'
 import * as React from 'react'
 
 export const maxDuration = 300
 
 export async function GET(req: Request) {
-  const resend = new Resend(process.env.RESEND_API_KEY)
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new NextResponse('Unauthorized', { status: 401 })
   }
+
+  if (!process.env.RESEND_API_KEY) {
+    return NextResponse.json({ error: 'Resend not configured' }, { status: 503 })
+  }
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
 
   const users = await prisma.user.findMany({
     where: { emailBriefingEnabled: true, onboardingCompleted: true },
@@ -25,41 +31,43 @@ export async function GET(req: Request) {
     },
   })
 
-  const results = { sent: 0, skipped: 0, errors: 0 }
+  // Filter to users in the right time window first (no DB queries needed)
+  const eligibleUsers = users.filter((u) =>
+    isWithinUserTimeWindow(u.timezone, u.morningCheckinTime, 30)
+  )
 
-  for (const user of users) {
-    try {
-      // Only send to users whose local morning check-in time matches now (±30 min)
-      if (!isWithinUserTimeWindow(user.timezone, user.morningCheckinTime, 30)) {
-        results.skipped++
-        continue
-      }
+  const results = { sent: 0, skipped: users.length - eligibleUsers.length, errors: 0 }
 
-      const openTasks = await prisma.task.findMany({
-        where: {
-          userId: user.id,
-          status: { notIn: ['COMPLETED', 'ARCHIVED'] },
-        },
-        orderBy: [{ priority: 'asc' }],
-        take: 5,
-        select: { title: true },
-      })
+  // Process eligible users in batches of 10
+  const outcomes = await batchProcess(eligibleUsers, async (user) => {
+    const openTasks = await prisma.task.findMany({
+      where: {
+        userId: user.id,
+        status: { notIn: ['COMPLETED', 'ARCHIVED'] },
+      },
+      orderBy: [{ priority: 'asc' }],
+      take: 5,
+      select: { title: true },
+    })
 
-      await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL ?? 'briefing@coyl.app',
-        to: user.email,
-        subject: 'Your morning planning session is ready',
-        react: React.createElement(MorningCheckinEmail, {
-          userName: user.name.split(' ')[0] ?? user.name,
-          checkinUrl: `${process.env.NEXT_PUBLIC_APP_URL}/chat?mode=morning`,
-          topOpenTasks: (openTasks as Array<{ title: string }>).map((t) => t.title),
-        }),
-      })
+    await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL ?? 'briefing@coyl.app',
+      to: user.email,
+      subject: 'Your morning planning session is ready',
+      react: React.createElement(MorningCheckinEmail, {
+        userName: user.name.split(' ')[0] ?? user.name,
+        checkinUrl: `${process.env.NEXT_PUBLIC_APP_URL}/chat?mode=morning`,
+        topOpenTasks: (openTasks as Array<{ title: string }>).map((t) => t.title),
+      }),
+    })
+  }, 10)
 
-      results.sent++
-    } catch (error) {
-      console.error('Failed to send morning email', { userId: user.id, error })
+  for (const outcome of outcomes) {
+    if (outcome.error) {
+      console.error('Failed to send morning email', { userId: outcome.item.id })
       results.errors++
+    } else {
+      results.sent++
     }
   }
 

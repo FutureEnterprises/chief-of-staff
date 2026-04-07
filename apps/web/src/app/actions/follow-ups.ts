@@ -5,7 +5,11 @@ import { completeFollowUp } from '@/lib/services/follow-up.service'
 
 export async function completeFollowUpAction(taskId: string) {
   const user = await requireDbUser()
-  await completeFollowUp(taskId, user.id)
+  try {
+    await completeFollowUp(taskId, user.id)
+  } catch {
+    throw new Error('Failed to complete follow-up')
+  }
   revalidatePath('/follow-ups')
   revalidatePath('/today')
 }

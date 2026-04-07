@@ -3,8 +3,13 @@ import { prisma } from '@repo/database'
 import Stripe from 'stripe'
 
 export async function POST(req: Request) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-02-24.acacia' })
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+  const stripeKey = process.env.STRIPE_SECRET_KEY
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+  if (!stripeKey || !webhookSecret) {
+    return NextResponse.json({ error: 'Stripe not configured' }, { status: 503 })
+  }
+
+  const stripe = new Stripe(stripeKey, { apiVersion: '2025-02-24.acacia' })
   const body = await req.text()
   const signature = req.headers.get('stripe-signature')
 
@@ -14,8 +19,8 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
   } catch (err: any) {
-    console.error('Stripe webhook signature verification failed', err.message)
-    return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 })
+    console.error('Stripe webhook signature verification failed')
+    return new NextResponse('Invalid webhook signature', { status: 400 })
   }
 
   try {
@@ -111,15 +116,15 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   if (!userId) return
 
   const isActive = subscription.status === 'active' || subscription.status === 'trialing'
-  const planType = isActive ? 'PRO' : 'FREE'
+  const planType: 'PRO' | 'FREE' = isActive ? 'PRO' : 'FREE'
 
   await prisma.$transaction([
-    prisma.user.update({ where: { id: userId }, data: { planType: planType as any } }),
+    prisma.user.update({ where: { id: userId }, data: { planType } }),
     prisma.billingSubscription.updateMany({
       where: { stripeSubscriptionId: subscription.id },
       data: {
         status: subscription.status,
-        planType: planType as any,
+        planType,
         renewsAt: subscription.current_period_end
           ? new Date(subscription.current_period_end * 1000)
           : null,

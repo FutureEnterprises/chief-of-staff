@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
+import { pushTokenSchema } from '@/lib/validations'
 
 export async function POST(req: Request) {
   const { userId } = await auth()
@@ -8,16 +9,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const body = await req.json()
-  const { expoPushToken } = body
-
-  if (!expoPushToken || typeof expoPushToken !== 'string') {
-    return NextResponse.json({ error: 'Missing expoPushToken' }, { status: 400 })
+  const parsed = pushTokenSchema.safeParse(await req.json())
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid push token' }, { status: 400 })
   }
 
   const user = await prisma.user.update({
     where: { clerkId: userId },
-    data: { expoPushToken },
+    data: { expoPushToken: parsed.data.expoPushToken },
   })
 
   return NextResponse.json({ ok: true, expoPushToken: user.expoPushToken })

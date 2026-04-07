@@ -10,18 +10,22 @@ export async function updateUserSettings(data: {
 }) {
   const user = await requireDbUser()
 
-  await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      ...(data.timezone !== undefined && { timezone: data.timezone }),
-      ...(data.emailBriefingEnabled !== undefined && {
-        emailBriefingEnabled: data.emailBriefingEnabled,
-      }),
-      ...(data.emailBriefingDays !== undefined && {
-        emailBriefingDays: data.emailBriefingDays,
-      }),
-    },
-  })
+  try {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        ...(data.timezone !== undefined && { timezone: data.timezone }),
+        ...(data.emailBriefingEnabled !== undefined && {
+          emailBriefingEnabled: data.emailBriefingEnabled,
+        }),
+        ...(data.emailBriefingDays !== undefined && {
+          emailBriefingDays: data.emailBriefingDays,
+        }),
+      },
+    })
+  } catch {
+    throw new Error('Failed to update settings')
+  }
 
   revalidatePath('/settings')
 }

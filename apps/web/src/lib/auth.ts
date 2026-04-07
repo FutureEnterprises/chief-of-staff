@@ -42,7 +42,8 @@ export async function ensureUserExists(): Promise<User> {
       },
     })
   } catch (err) {
-    console.error('[ensureUserExists] Prisma error:', JSON.stringify(err, null, 2))
+    const e = err as { message?: string; code?: string }
+    console.error('[ensureUserExists] error:', e.code ?? 'UNKNOWN', e.message ?? '')
     throw err
   }
 }

@@ -52,31 +52,22 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   const { userId: clerkId } = await auth()
-  if (!clerkId) return new NextResponse('Unauthorized', { status: 401 })
+  if (!clerkId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const user = await prisma.user.findUnique({ where: { clerkId } })
-  if (!user) return new NextResponse('User not found', { status: 404 })
+  if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  const body = await req.json()
-  const allowed = [
-    'timezone',
-    'morningCheckinTime',
-    'nightCheckinTime',
-    'briefingTime',
-    'reminderIntensity',
-    'emailBriefingEnabled',
-    'emailBriefingDays',
-  ] as const
-
-  const data: Record<string, unknown> = {}
-  for (const key of allowed) {
-    if (key in body) data[key] = body[key]
+  const { updateUserSchema } = await import('@/lib/validations')
+  const parsed = updateUserSchema.safeParse(await req.json())
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Validation failed', details: parsed.error.flatten() }, { status: 400 })
   }
 
+  const data = parsed.data
   if (Object.keys(data).length === 0) {
-    return new NextResponse('No updatable fields provided', { status: 400 })
+    return NextResponse.json({ error: 'No updatable fields provided' }, { status: 400 })
   }
 
-  const updated = await prisma.user.update({ where: { id: user.id }, data })
-  return NextResponse.json({ success: true, user: updated })
+  await prisma.user.update({ where: { id: user.id }, data })
+  return NextResponse.json({ success: true })
 }
