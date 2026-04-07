@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { CoylLogo } from '@/components/brand/logo'
+import { CoylHeroAnimation } from '@/components/brand/CoylHeroAnimation'
 
 export default async function HomePage() {
   const clerkReady = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
@@ -25,22 +26,17 @@ export default async function HomePage() {
         </Link>
       </header>
 
-      {/* Hero — full viewport, typographic */}
-      <section className="flex min-h-[85vh] flex-col justify-between px-8 pb-12 pt-16 md:pt-24">
-        <div className="max-w-5xl">
-          <p className="mb-8 text-sm font-medium uppercase tracking-[0.2em] text-stone-400">
-            Control Your Life
-          </p>
-          <h1
-            className="text-[clamp(3rem,8vw,7rem)] font-bold leading-[0.95] tracking-[-0.03em]"
-            style={{ color: '#1a1a1a' }}
-          >
-            Nothing important<br />
-            gets dropped.
-          </h1>
+      {/* Hero — animation takes center stage */}
+      <section className="relative flex min-h-[90vh] flex-col">
+        {/* Animation — full bleed */}
+        <div className="relative flex flex-1 items-center justify-center overflow-hidden">
+          <div className="w-full max-w-3xl mx-auto" style={{ aspectRatio: '800/600' }}>
+            <CoylHeroAnimation className="h-full w-full" />
+          </div>
         </div>
 
-        <div className="flex flex-col gap-12 md:flex-row md:items-end md:justify-between">
+        {/* Below animation: copy + CTA */}
+        <div className="flex flex-col gap-8 px-8 pb-16 md:flex-row md:items-end md:justify-between">
           <p className="max-w-sm text-base leading-relaxed text-stone-500">
             A system that remembers everything you commit to, follows up until it&apos;s resolved,
             and surfaces what matters — every morning, every night.
