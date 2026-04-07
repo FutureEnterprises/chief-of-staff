@@ -4,11 +4,12 @@ import type { Task, Tag, Project } from '@repo/database'
 import { TaskCard } from '@/components/tasks/task-card'
 import { QuickAddTask } from '@/components/tasks/quick-add-task'
 import { EmptyState } from '@/components/ui/empty-state'
-import { MotionButton } from '@/components/ui/motion-button'
+import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { GlassCard } from '@/components/ui/glass-card'
 import { PageTransition, StaggerList, StaggerItem, motion, AnimatePresence } from '@/components/motion/animations'
 import { CheckCircle2, Plus } from 'lucide-react'
-import { getStatusLabel } from '@/lib/utils'
+import { getStatusLabel, getStatusHex } from '@/lib/utils'
 
 type TaskWithRelations = Task & {
   tags: Array<{ tag: Tag }>
@@ -48,43 +49,36 @@ export function TasksView({ tasks }: TasksViewProps) {
   }, {})
 
   return (
-    <PageTransition className="mx-auto max-w-4xl p-8">
+    <PageTransition className="relative mx-auto max-w-4xl p-8">
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-mesh opacity-40" />
+
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-            All Tasks
-          </h1>
-          <p className="mt-1 text-sm text-zinc-500">{tasks.length} total</p>
+          <h1 className="heading-1">All Tasks</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{tasks.length} total</p>
         </div>
-        <MotionButton size="sm" onClick={() => setShowQuickAdd(true)}>
-          <Plus className="h-4 w-4" />
-          Add Task
-        </MotionButton>
+        <Button variant="brand" size="sm" onClick={() => setShowQuickAdd(true)}>
+          <Plus className="h-4 w-4" /> Add Task
+        </Button>
       </div>
 
-      {/* Filter tabs with spring indicator */}
-      <div className="mb-6 flex items-center gap-1">
+      {/* Filter tabs with gradient underline */}
+      <div className="mb-6 flex items-center gap-1 border-b border-border">
         {FILTERS.map((f) => (
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className="relative rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+            className="relative px-4 py-2.5 text-sm font-medium transition-colors"
           >
             {filter === f.key && (
               <motion.span
-                layoutId="tasks-filter-pill"
-                className="absolute inset-0 rounded-md bg-zinc-900 dark:bg-zinc-50"
+                layoutId="tasks-filter-underline"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-warm"
                 transition={{ type: 'spring', bounce: 0.2, duration: 0.35 }}
               />
             )}
-            <span
-              className={`relative z-10 ${
-                filter === f.key
-                  ? 'text-white dark:text-zinc-900'
-                  : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100'
-              }`}
-            >
+            <span className={filter === f.key ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}>
               {f.label}
             </span>
           </button>
@@ -100,11 +94,15 @@ export function TasksView({ tasks }: TasksViewProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <EmptyState
-              icon={CheckCircle2}
-              title={filter === 'completed' ? 'No completed tasks yet' : 'No tasks here'}
-              description={filter === 'active' ? 'Add a task to get started.' : 'Complete some tasks and they\'ll show up here.'}
-            />
+            <GlassCard className="py-12 text-center">
+              <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-500 mb-3" />
+              <h3 className="heading-3">
+                {filter === 'completed' ? 'No completed tasks yet' : 'No tasks here'}
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {filter === 'active' ? 'Add a task to get started.' : 'Complete some tasks and they\'ll show up here.'}
+              </p>
+            </GlassCard>
           </motion.div>
         ) : (
           <motion.div
@@ -118,12 +116,12 @@ export function TasksView({ tasks }: TasksViewProps) {
             {Object.entries(grouped).map(([status, statusTasks]) => (
               <section key={status}>
                 <div className="mb-3 flex items-center gap-2">
-                  <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                    {getStatusLabel(status)}
-                  </h2>
-                  <Badge variant="secondary" className="text-xs">
-                    {statusTasks.length}
-                  </Badge>
+                  <span
+                    className="inline-block h-2 w-2 rounded-full"
+                    style={{ backgroundColor: getStatusHex(status) }}
+                  />
+                  <h2 className="label-xs text-muted-foreground">{getStatusLabel(status)}</h2>
+                  <Badge variant="secondary" className="text-xs">{statusTasks.length}</Badge>
                 </div>
                 <StaggerList className="space-y-2">
                   {statusTasks.map((task) => (

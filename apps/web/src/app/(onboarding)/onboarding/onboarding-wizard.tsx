@@ -3,9 +3,10 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useRouter } from 'next/navigation'
 import type { User } from '@repo/database'
-import { Zap, MapPin, Bell, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react'
-import { MotionButton } from '@/components/ui/motion-button'
+import { Zap, MapPin, ArrowRight, ArrowLeft } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { GlassCard } from '@/components/ui/glass-card'
 import { completeOnboarding } from '@/app/actions/onboarding'
 import { cn } from '@/lib/utils'
 
@@ -45,14 +46,8 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
     { id: 'first-task', label: 'First Task' },
   ]
 
-  function goNext() {
-    setDirection(1)
-    setStep((s) => s + 1)
-  }
-  function goBack() {
-    setDirection(-1)
-    setStep((s) => s - 1)
-  }
+  function goNext() { setDirection(1); setStep((s) => s + 1) }
+  function goBack() { setDirection(-1); setStep((s) => s - 1) }
 
   async function handleFinish() {
     setLoading(true)
@@ -68,72 +63,81 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+      <div className="pointer-events-none fixed inset-0 bg-gradient-mesh opacity-50" />
+
       {/* Logo */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="mb-12 flex items-center gap-2"
+        className="relative z-10 mb-12 flex items-center gap-2"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground">
-          <Zap className="h-4 w-4 text-background" />
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-warm shadow-glow-orange">
+          <Zap className="h-4 w-4 text-white" />
         </div>
-        <span className="text-sm font-semibold tracking-tight">COYL</span>
+        <span className="text-sm font-bold tracking-tight">COYL</span>
       </motion.div>
 
       {/* Step indicator */}
-      <div className="mb-8 flex items-center gap-2">
+      <div className="relative z-10 mb-8 flex items-center gap-3">
         {steps.map((s, i) => (
-          <div key={s.id} className="flex items-center gap-2">
+          <div key={s.id} className="flex items-center gap-3">
             <motion.div
               animate={{
-                backgroundColor: i <= step ? 'hsl(var(--foreground))' : 'hsl(var(--border))',
-                scale: i === step ? 1.1 : 1,
+                background: i <= step
+                  ? 'linear-gradient(135deg, var(--gradient-warm-start), var(--gradient-warm-end))'
+                  : 'hsl(var(--border))',
+                scale: i === step ? 1.15 : 1,
               }}
-              transition={{ duration: 0.2 }}
-              className="h-1.5 w-8 rounded-full"
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+              className="h-2 w-10 rounded-full"
             />
           </div>
         ))}
       </div>
 
       {/* Card */}
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border bg-card p-8 shadow-lg">
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={step}
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
-          >
-            {step === 0 && <WelcomeStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
-            {step === 1 && <ScheduleStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
-            {step === 2 && <FirstTaskStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
-          </motion.div>
-        </AnimatePresence>
+      <div className="relative z-10 w-full max-w-md">
+        <GlassCard className="overflow-hidden p-8">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+            >
+              {step === 0 && <WelcomeStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
+              {step === 1 && <ScheduleStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
+              {step === 2 && <FirstTaskStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
+            </motion.div>
+          </AnimatePresence>
+        </GlassCard>
       </div>
 
       {/* Navigation */}
-      <div className="mt-6 flex items-center gap-3">
+      <div className="relative z-10 mt-6 flex items-center gap-3">
         {step > 0 && (
-          <MotionButton variant="outline" size="sm" onClick={goBack}>
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Back
-          </MotionButton>
+          <Button variant="glass" size="sm" onClick={goBack}>
+            <ArrowLeft className="h-3.5 w-3.5" /> Back
+          </Button>
         )}
         {step < steps.length - 1 ? (
-          <MotionButton size="sm" onClick={goNext}>
-            Continue
-            <ArrowRight className="h-3.5 w-3.5" />
-          </MotionButton>
+          <Button variant="brand" size="sm" onClick={goNext}>
+            Continue <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
         ) : (
-          <MotionButton size="sm" onClick={handleFinish} loading={loading}>
-            {loading ? 'Setting up...' : 'Start my day'}
-            {!loading && <Zap className="h-3.5 w-3.5" />}
-          </MotionButton>
+          <Button variant="brand" size="sm" onClick={handleFinish} disabled={loading}>
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                Setting up...
+              </span>
+            ) : (
+              <>Start my day <Zap className="h-3.5 w-3.5" /></>
+            )}
+          </Button>
         )}
       </div>
     </div>
@@ -144,7 +148,7 @@ function WelcomeStep({ data, onChange }: { data: any; onChange: (v: any) => void
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-bold tracking-tight">Welcome aboard.</h1>
+        <h1 className="heading-2">Welcome aboard.</h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
           Let's set up your command center. This takes under 2 minutes.
         </p>
@@ -156,21 +160,21 @@ function WelcomeStep({ data, onChange }: { data: any; onChange: (v: any) => void
             value={data.name}
             onChange={(e) => onChange({ name: e.target.value })}
             placeholder="Your name"
-            className="h-10"
+            className="h-10 focus-glow"
           />
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium">
-            <MapPin className="mr-1.5 inline h-3.5 w-3.5" />
+            <MapPin className="mr-1.5 inline h-3.5 w-3.5 text-orange-500" />
             Your timezone
           </label>
           <select
             value={data.timezone}
             onChange={(e) => onChange({ timezone: e.target.value })}
-            className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="flex h-10 w-full rounded-xl border border-input bg-transparent px-3 py-1 text-sm focus-visible:outline-none focus-glow"
           >
             {TIMEZONES.map((tz) => (
-              <option key={tz} value={tz}>{tz.replace('_', ' ').replace('/', ' · ')}</option>
+              <option key={tz} value={tz}>{tz.replace('_', ' ').replace('/', ' / ')}</option>
             ))}
           </select>
         </div>
@@ -183,7 +187,7 @@ function ScheduleStep({ data, onChange }: { data: any; onChange: (v: any) => voi
   return (
     <div>
       <div className="mb-6">
-        <h2 className="text-xl font-bold tracking-tight">Your daily rhythm</h2>
+        <h2 className="heading-2">Your daily rhythm</h2>
         <p className="mt-1.5 text-sm text-muted-foreground">
           We'll send your planning prompts and briefings at these times.
         </p>
@@ -197,9 +201,9 @@ function ScheduleStep({ data, onChange }: { data: any; onChange: (v: any) => voi
                 key={t}
                 onClick={() => onChange({ morningCheckinTime: t })}
                 className={cn(
-                  'rounded-md border px-2 py-1.5 text-xs font-medium transition-colors',
+                  'rounded-xl border px-2 py-2 text-xs font-medium transition-all',
                   data.morningCheckinTime === t
-                    ? 'border-foreground bg-foreground text-background'
+                    ? 'bg-gradient-warm text-white border-transparent shadow-glow-orange'
                     : 'hover:bg-muted'
                 )}
               >
@@ -216,9 +220,9 @@ function ScheduleStep({ data, onChange }: { data: any; onChange: (v: any) => voi
                 key={t}
                 onClick={() => onChange({ nightCheckinTime: t })}
                 className={cn(
-                  'rounded-md border px-2 py-1.5 text-xs font-medium transition-colors',
+                  'rounded-xl border px-2 py-2 text-xs font-medium transition-all',
                   data.nightCheckinTime === t
-                    ? 'border-foreground bg-foreground text-background'
+                    ? 'bg-gradient-warm text-white border-transparent shadow-glow-orange'
                     : 'hover:bg-muted'
                 )}
               >
@@ -227,22 +231,22 @@ function ScheduleStep({ data, onChange }: { data: any; onChange: (v: any) => voi
             ))}
           </div>
         </div>
-        <label className="flex cursor-pointer items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50">
+        <label className="glass flex cursor-pointer items-center justify-between rounded-xl p-3 transition-colors hover:shadow-card-hover">
           <div>
             <p className="text-sm font-medium">Daily email briefing</p>
-            <p className="text-xs text-muted-foreground">Morning summary of priorities, follow-ups, and overdue items</p>
+            <p className="text-xs text-muted-foreground">Morning summary of priorities and follow-ups</p>
           </div>
           <div
             onClick={() => onChange({ emailBriefingEnabled: !data.emailBriefingEnabled })}
             className={cn(
-              'relative h-5 w-9 cursor-pointer rounded-full transition-colors',
-              data.emailBriefingEnabled ? 'bg-foreground' : 'bg-muted'
+              'relative h-6 w-11 cursor-pointer rounded-full transition-colors',
+              data.emailBriefingEnabled ? 'bg-gradient-warm' : 'bg-muted'
             )}
           >
             <motion.div
-              animate={{ x: data.emailBriefingEnabled ? 16 : 2 }}
+              animate={{ x: data.emailBriefingEnabled ? 20 : 2 }}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-              className="absolute top-0.5 h-4 w-4 rounded-full bg-background shadow"
+              className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow"
             />
           </div>
         </label>
@@ -255,9 +259,9 @@ function FirstTaskStep({ data, onChange }: { data: any; onChange: (v: any) => vo
   return (
     <div>
       <div className="mb-6">
-        <h2 className="text-xl font-bold tracking-tight">Capture your first task</h2>
+        <h2 className="heading-2">Capture your first task</h2>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          Say it naturally. "Follow up with Sarah on Friday" or "Launch the homepage by end of month."
+          Say it naturally. The AI will extract dates, follow-ups, and priority automatically.
         </p>
       </div>
       <div className="space-y-3">
@@ -265,13 +269,10 @@ function FirstTaskStep({ data, onChange }: { data: any; onChange: (v: any) => vo
           value={data.firstTask}
           onChange={(e) => onChange({ firstTask: e.target.value })}
           placeholder="What's the one thing you need to make sure doesn't slip through the cracks?"
-          className="min-h-[100px] w-full rounded-lg border bg-transparent p-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+          className="min-h-[100px] w-full rounded-xl border bg-transparent p-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-glow resize-none"
           autoFocus
         />
-        <p className="text-xs text-muted-foreground">
-          The AI will extract dates, follow-ups, and priority automatically. You can skip this.
-        </p>
-        <div className="rounded-lg border border-dashed p-3">
+        <div className="glass rounded-xl p-3">
           <p className="text-xs font-medium text-muted-foreground">Try something like:</p>
           <ul className="mt-1.5 space-y-1">
             {[
@@ -282,9 +283,9 @@ function FirstTaskStep({ data, onChange }: { data: any; onChange: (v: any) => vo
               <li key={ex}>
                 <button
                   onClick={() => onChange({ firstTask: ex })}
-                  className="text-left text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                  className="text-left text-xs text-muted-foreground underline-offset-2 hover:text-orange-500 hover:underline transition-colors"
                 >
-                  "{ex}"
+                  &ldquo;{ex}&rdquo;
                 </button>
               </li>
             ))}

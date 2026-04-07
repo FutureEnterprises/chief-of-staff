@@ -3,22 +3,17 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
 import type { Task, User, Tag } from '@repo/database'
-import { MotionButton } from '@/components/ui/motion-button'
+import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { GlassCard } from '@/components/ui/glass-card'
 import { TaskCard } from '@/components/tasks/task-card'
 import { TaskCreateModal } from '@/components/tasks/task-create-modal'
 import { EmptyState } from '@/components/ui/empty-state'
-import { StaggerList, StaggerItem, PageTransition } from '@/components/motion/animations'
+import { StaggerList, StaggerItem, PageTransition, AnimatedCounter } from '@/components/motion/animations'
 import {
-  Sun,
-  Moon,
-  Plus,
-  CheckCircle2,
-  AlertTriangle,
-  RefreshCw,
-  Clock,
-  Zap,
+  Sun, Moon, Plus, CheckCircle2, AlertTriangle,
+  RefreshCw, Clock, Zap,
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 
@@ -52,44 +47,50 @@ export function TodayView({
     .slice(0, 3)
 
   return (
-    <PageTransition className="mx-auto max-w-3xl px-6 py-8">
+    <PageTransition className="relative mx-auto max-w-3xl px-6 py-8">
+      {/* Decorative gradient mesh */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-mesh opacity-60" />
+
       {/* Header */}
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {greeting}, {firstName}.
+          <h1 className="heading-1">
+            {greeting}, <span className="text-gradient-warm">{firstName}</span>.
           </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">{formatDate(new Date())}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{formatDate(new Date())}</p>
         </div>
         <div className="flex gap-2">
-          <MotionButton variant="outline" size="sm" asChild>
+          <Button variant="glass" size="sm" asChild>
             <Link href="/chat?mode=morning">
-              <Sun className="h-3.5 w-3.5" /> Morning
+              <Sun className="h-3.5 w-3.5 text-amber-500" /> Morning
             </Link>
-          </MotionButton>
-          <MotionButton variant="outline" size="sm" asChild>
+          </Button>
+          <Button variant="glass" size="sm" asChild>
             <Link href="/chat?mode=night">
-              <Moon className="h-3.5 w-3.5" /> Night review
+              <Moon className="h-3.5 w-3.5 text-indigo-400" /> Night review
             </Link>
-          </MotionButton>
+          </Button>
         </div>
       </div>
 
       {/* Stats */}
       <StaggerList className="mb-8 grid grid-cols-4 gap-3">
         {[
-          { label: 'Due today', value: dueTodayTasks.length, color: 'blue', icon: Clock },
-          {
-            label: 'Overdue',
-            value: overdueTasks.length,
-            color: overdueTasks.length > 0 ? 'red' : 'green',
-            icon: AlertTriangle,
-          },
-          { label: 'Follow-ups', value: followUpsDueToday.length, color: 'amber', icon: RefreshCw },
-          { label: 'Done today', value: recentlyCompleted.length, color: 'teal', icon: CheckCircle2 },
+          { label: 'Due today', value: dueTodayTasks.length, color: 'var(--status-open)', icon: Clock },
+          { label: 'Overdue', value: overdueTasks.length, color: overdueTasks.length > 0 ? 'var(--status-blocked)' : 'var(--status-completed)', icon: AlertTriangle },
+          { label: 'Follow-ups', value: followUpsDueToday.length, color: 'var(--status-in-progress)', icon: RefreshCw },
+          { label: 'Done today', value: recentlyCompleted.length, color: 'var(--status-completed)', icon: CheckCircle2 },
         ].map((stat) => (
           <StaggerItem key={stat.label}>
-            <StatCard {...stat} />
+            <GlassCard borderColor={stat.color} hover>
+              <div className="flex items-start justify-between">
+                <AnimatedCounter value={stat.value} className="text-2xl font-bold leading-none" />
+                <div className="rounded-lg p-1.5" style={{ backgroundColor: `${stat.color}15` }}>
+                  <stat.icon className="h-4 w-4" style={{ color: stat.color }} />
+                </div>
+              </div>
+              <div className="mt-2 label-xs text-muted-foreground">{stat.label}</div>
+            </GlassCard>
           </StaggerItem>
         ))}
       </StaggerList>
@@ -169,37 +170,40 @@ export function TodayView({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
         >
-          <EmptyState
-            icon={CheckCircle2}
-            title="All caught up"
-            description="Nothing urgent needs your attention right now. Great execution."
-            action={
-              <MotionButton size="sm" onClick={() => setShowCreateModal(true)}>
-                <Plus className="h-3.5 w-3.5" /> Add a task
-              </MotionButton>
-            }
-          />
+          <GlassCard className="py-12 text-center">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.1 }}
+              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-warm"
+            >
+              <CheckCircle2 className="h-8 w-8 text-white" />
+            </motion.div>
+            <h3 className="heading-3 text-foreground">All caught up</h3>
+            <p className="mx-auto mt-1 max-w-xs text-sm text-muted-foreground">
+              Nothing urgent needs your attention right now. Great execution.
+            </p>
+            <Button variant="brand" size="sm" className="mt-4" onClick={() => setShowCreateModal(true)}>
+              <Plus className="h-3.5 w-3.5" /> Add a task
+            </Button>
+          </GlassCard>
         </motion.div>
       )}
 
       {/* Recently completed */}
       <AnimatePresence>
         {recentlyCompleted.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-8"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-8">
             <Separator className="mb-6" />
             <Section
               title="Completed today"
-              icon={<CheckCircle2 className="h-3.5 w-3.5 text-teal-500" />}
+              icon={<CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />}
               count={recentlyCompleted.length}
             >
               <div className="space-y-1">
                 {recentlyCompleted.map((task) => (
-                  <div key={task.id} className="flex items-center gap-2 rounded-md px-2 py-1.5">
-                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-teal-500" />
+                  <div key={task.id} className="flex items-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-muted/50">
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
                     <span className="text-sm text-muted-foreground line-through">{task.title}</span>
                   </div>
                 ))}
@@ -214,13 +218,13 @@ export function TodayView({
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.3, type: 'spring', stiffness: 400, damping: 25 }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.92 }}
         onClick={() => setShowCreateModal(true)}
-        className="fixed bottom-6 right-6 flex h-12 w-12 items-center justify-center rounded-full bg-foreground text-background shadow-lg"
+        className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-warm text-white shadow-lg shadow-orange-500/25 animate-pulse-glow"
         aria-label="Add task"
       >
-        <Plus className="h-5 w-5" />
+        <Plus className="h-6 w-6" />
       </motion.button>
 
       <AnimatePresence>
@@ -233,12 +237,7 @@ export function TodayView({
 }
 
 function Section({
-  title,
-  icon,
-  count,
-  countVariant = 'secondary',
-  children,
-  className,
+  title, icon, count, countVariant = 'secondary', children, className,
 }: {
   title: string
   icon?: React.ReactNode
@@ -249,47 +248,14 @@ function Section({
 }) {
   return (
     <section className={className}>
-      <div className="mb-2.5 flex items-center gap-1.5">
+      <div className="mb-3 flex items-center gap-2">
         {icon}
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          {title}
-        </h2>
+        <h2 className="label-xs text-muted-foreground">{title}</h2>
         {count !== undefined && (
-          <Badge variant={countVariant} className="h-4 px-1.5 text-[10px]">
-            {count}
-          </Badge>
+          <Badge variant={countVariant} className="h-4 px-1.5 text-[10px]">{count}</Badge>
         )}
       </div>
       {children}
     </section>
-  )
-}
-
-function StatCard({
-  label,
-  value,
-  color,
-  icon: Icon,
-}: {
-  label: string
-  value: number
-  color: string
-  icon: React.ElementType
-}) {
-  const styles: Record<string, string> = {
-    blue: 'text-blue-600 bg-blue-50 dark:bg-blue-950/40 dark:text-blue-400',
-    red: 'text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-400',
-    amber: 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-400',
-    green: 'text-green-600 bg-green-50 dark:bg-green-950/40 dark:text-green-400',
-    teal: 'text-teal-600 bg-teal-50 dark:bg-teal-950/40 dark:text-teal-400',
-  }
-  return (
-    <div className={`rounded-xl p-3.5 ${styles[color] ?? styles['blue']}`}>
-      <div className="flex items-start justify-between">
-        <div className="text-2xl font-bold leading-none">{value}</div>
-        <Icon className="h-4 w-4 opacity-70" />
-      </div>
-      <div className="mt-1.5 text-[11px] font-medium opacity-80">{label}</div>
-    </div>
   )
 }

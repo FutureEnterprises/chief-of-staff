@@ -1,11 +1,11 @@
 'use client'
 import { useState } from 'react'
 import type { User } from '@repo/database'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
-import { MotionButton } from '@/components/ui/motion-button'
+import { Button } from '@/components/ui/button'
+import { GlassCard } from '@/components/ui/glass-card'
 import { PageTransition, StaggerList, StaggerItem, motion } from '@/components/motion/animations'
 import { toast } from '@/hooks/use-toast'
 import { updateUserSettings } from '@/app/actions/settings'
@@ -37,131 +37,114 @@ export function SettingsView({ user }: SettingsViewProps) {
   }
 
   return (
-    <PageTransition className="mx-auto max-w-2xl p-8">
+    <PageTransition className="relative mx-auto max-w-2xl p-8">
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-mesh opacity-40" />
+
       <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Settings
-        </h1>
-        <p className="mt-1 text-sm text-zinc-500">Manage your account and preferences</p>
+        <h1 className="heading-1">Settings</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Manage your account and preferences</p>
       </div>
 
       <StaggerList className="space-y-6">
-        {/* Account card */}
+        {/* Account */}
         <StaggerItem>
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <div className="rounded-md bg-zinc-100 p-1.5 dark:bg-zinc-800">
-                  <UserIcon className="h-3.5 w-3.5 text-zinc-600 dark:text-zinc-400" />
-                </div>
-                <div>
-                  <CardTitle className="text-base">Account</CardTitle>
-                  <CardDescription>Your profile and plan</CardDescription>
-                </div>
+          <GlassCard>
+            <div className="mb-4 flex items-center gap-2">
+              <div className="rounded-xl bg-orange-500/10 p-2">
+                <UserIcon className="h-4 w-4 text-orange-500" />
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              <div>
+                <h3 className="heading-4">Account</h3>
+                <p className="text-xs text-muted-foreground">Your profile and plan</p>
+              </div>
+            </div>
+            <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <UserButton />
                 <div>
-                  <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{user.name}</p>
-                  <p className="text-xs text-zinc-500">{user.email}</p>
+                  <p className="text-sm font-semibold text-foreground">{user.name}</p>
+                  <p className="text-xs text-muted-foreground">{user.email}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 rounded-lg bg-zinc-50 p-3 dark:bg-zinc-800/50">
-                <Badge variant={isPro ? 'default' : 'secondary'} className={isPro ? 'bg-teal-600' : ''}>
+              <div className="glass flex items-center gap-3 rounded-xl p-3">
+                <Badge variant={isPro ? 'brand' : 'secondary'}>
                   {isPro ? 'Pro' : 'Free'} Plan
                 </Badge>
-                {!isPro && (
-                  <span className="text-xs text-zinc-400">
-                    {user.aiAssistsUsed ?? 0} / 20 AI assists used this month
-                  </span>
-                )}
-                {isPro && (
-                  <span className="text-xs text-zinc-500">Unlimited AI assists</span>
-                )}
+                <span className="text-xs text-muted-foreground">
+                  {isPro ? 'Unlimited AI assists' : `${user.aiAssistsUsed ?? 0} / 20 AI assists used this month`}
+                </span>
               </div>
 
               {!isPro && (
-                <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-900 dark:bg-amber-950/30">
+                <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-4 shadow-glow-orange/20">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-medium text-amber-800 dark:text-amber-400">
-                        Upgrade to Pro
-                      </p>
-                      <p className="mt-0.5 text-xs text-amber-700 dark:text-amber-500">
+                      <p className="text-sm font-semibold text-orange-600 dark:text-orange-400">Upgrade to Pro</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
                         Unlimited AI assists, follow-up escalation, and advanced insights for $12/mo.
                       </p>
                     </div>
-                    <MotionButton
-                      size="sm"
-                      variant="outline"
-                      className="shrink-0 border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-400"
-                      onClick={() => setShowPaywall(true)}
-                    >
-                      <Zap className="h-3 w-3" />
-                      Upgrade
-                    </MotionButton>
+                    <Button variant="brand" size="sm" onClick={() => setShowPaywall(true)}>
+                      <Zap className="h-3 w-3" /> Upgrade
+                    </Button>
                   </div>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </GlassCard>
         </StaggerItem>
 
-        {/* Preferences card */}
+        {/* Preferences */}
         <StaggerItem>
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <div className="rounded-md bg-zinc-100 p-1.5 dark:bg-zinc-800">
-                  <Bell className="h-3.5 w-3.5 text-zinc-600 dark:text-zinc-400" />
-                </div>
-                <div>
-                  <CardTitle className="text-base">Preferences</CardTitle>
-                  <CardDescription>Customize how COYL works for you</CardDescription>
-                </div>
+          <GlassCard>
+            <div className="mb-4 flex items-center gap-2">
+              <div className="rounded-xl bg-orange-500/10 p-2">
+                <Bell className="h-4 w-4 text-orange-500" />
               </div>
-            </CardHeader>
-            <CardContent className="space-y-5">
+              <div>
+                <h3 className="heading-4">Preferences</h3>
+                <p className="text-xs text-muted-foreground">Customize how COYL works for you</p>
+              </div>
+            </div>
+            <div className="space-y-5">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  Timezone
-                </label>
+                <label className="text-sm font-medium text-foreground">Timezone</label>
                 <Input
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
                   placeholder="America/New_York"
+                  className="focus-glow"
                 />
-                <p className="text-xs text-zinc-400">
-                  IANA timezone format. Used for scheduling reminders and date calculations.
-                </p>
+                <p className="text-xs text-muted-foreground">IANA timezone format. Used for scheduling reminders.</p>
               </div>
 
               <Separator />
 
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                    Daily Email Briefing
-                  </p>
-                  <p className="mt-0.5 text-xs text-zinc-400">
+                  <p className="text-sm font-medium text-foreground">Daily Email Briefing</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
                     Receive a morning summary of priorities, overdue tasks, and follow-ups
                   </p>
                 </div>
                 <Toggle checked={emailBriefing} onChange={setEmailBriefing} />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </GlassCard>
         </StaggerItem>
 
-        {/* Save button */}
+        {/* Save */}
         <StaggerItem>
           <div className="flex justify-end">
-            <MotionButton onClick={handleSave} loading={saving}>
-              {saving ? 'Saving…' : 'Save Changes'}
-            </MotionButton>
+            <Button variant="brand" onClick={handleSave} disabled={saving}>
+              {saving ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  Saving...
+                </span>
+              ) : 'Save Changes'}
+            </Button>
           </div>
         </StaggerItem>
       </StaggerList>
@@ -177,8 +160,8 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${
-        checked ? 'bg-teal-500' : 'bg-zinc-200 dark:bg-zinc-700'
+      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 ${
+        checked ? 'bg-gradient-warm' : 'bg-muted'
       }`}
     >
       <motion.span

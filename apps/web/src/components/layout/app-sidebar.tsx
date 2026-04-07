@@ -27,17 +27,14 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const pathname = usePathname()
 
   return (
-    <aside
-      style={{ backgroundColor: 'hsl(var(--sidebar))', borderColor: 'hsl(var(--sidebar-border))' }}
-      className="flex h-full w-56 shrink-0 flex-col border-r"
-    >
+    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-[hsl(var(--sidebar-border))] bg-[hsl(var(--sidebar))] backdrop-blur-xl">
       {/* Brand */}
-      <div className="flex h-14 items-center border-b px-4" style={{ borderColor: 'hsl(var(--sidebar-border))' }}>
+      <div className="flex h-14 items-center border-b border-[hsl(var(--sidebar-border))] px-5">
         <CoylLogo size="sm" />
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 space-y-0.5 overflow-y-auto p-2 pt-3">
+      <nav className="flex-1 space-y-0.5 overflow-y-auto p-3 pt-4">
         {navItems.map((item, i) => {
           const isActive = pathname === item.href || (item.href !== '/today' && pathname.startsWith(item.href))
           return (
@@ -50,20 +47,23 @@ export function AppSidebar({ user }: AppSidebarProps) {
               <Link
                 href={item.href}
                 className={cn(
-                  'relative flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-colors',
+                  'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
                   isActive
                     ? 'text-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                 )}
               >
                 {isActive && (
                   <motion.div
                     layoutId="sidebar-active"
-                    className="absolute inset-0 rounded-md bg-muted"
-                    transition={{ type: 'spring', stiffness: 500, damping: 40 }}
+                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-orange-500/10 to-transparent border-l-2 border-orange-500"
+                    transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                   />
                 )}
-                <item.icon className="relative h-4 w-4 shrink-0" />
+                <item.icon className={cn(
+                  'relative h-4 w-4 shrink-0 transition-colors',
+                  isActive && 'text-orange-500'
+                )} />
                 <span className="relative">{item.label}</span>
               </Link>
             </motion.div>
@@ -72,24 +72,32 @@ export function AppSidebar({ user }: AppSidebarProps) {
       </nav>
 
       {/* Footer */}
-      <div className="border-t p-2" style={{ borderColor: 'hsl(var(--sidebar-border))' }}>
+      <div className="border-t border-[hsl(var(--sidebar-border))] p-3">
         <Link
           href="/settings"
           className={cn(
-            'flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-colors',
+            'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
             pathname === '/settings'
-              ? 'bg-muted text-foreground'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              ? 'bg-gradient-to-r from-orange-500/10 to-transparent border-l-2 border-orange-500 text-foreground'
+              : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
           )}
         >
-          <Settings className="h-4 w-4 shrink-0" />
+          <Settings className={cn('h-4 w-4 shrink-0', pathname === '/settings' && 'text-orange-500')} />
           Settings
         </Link>
-        <div className="mt-1 flex items-center gap-2.5 rounded-md px-2.5 py-2">
-          <UserButton afterSignOutUrl="/" />
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-medium text-foreground">{user.name}</p>
-            <p className="truncate text-xs text-muted-foreground">{user.planType === 'FREE' ? 'Free plan' : 'Pro'}</p>
+        <div className="mt-2 glass rounded-xl px-3 py-2.5">
+          <div className="flex items-center gap-2.5">
+            <UserButton afterSignOutUrl="/" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-semibold text-foreground">{user.name}</p>
+              <p className="truncate text-[11px] text-muted-foreground">
+                {user.planType === 'FREE' ? (
+                  <span>Free plan <span className="text-orange-500">&#183; Upgrade</span></span>
+                ) : (
+                  <span className="text-orange-500">Pro</span>
+                )}
+              </p>
+            </div>
           </div>
         </div>
       </div>

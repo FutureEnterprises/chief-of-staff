@@ -2,10 +2,10 @@
 import { useState } from 'react'
 import type { Project, Task } from '@repo/database'
 import { Badge } from '@/components/ui/badge'
-import { EmptyState } from '@/components/ui/empty-state'
-import { MotionButton } from '@/components/ui/motion-button'
-import { PageTransition, StaggerList, StaggerItem, motion, AnimatePresence } from '@/components/motion/animations'
-import { FolderOpen, Plus, CheckCircle2, MoreHorizontal, Circle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { GlassCard } from '@/components/ui/glass-card'
+import { PageTransition, StaggerList, StaggerItem, motion, AnimatePresence, AnimatedCounter } from '@/components/motion/animations'
+import { FolderOpen, Plus, CheckCircle2, Circle } from 'lucide-react'
 
 type ProjectWithTasks = Project & {
   tasks: Array<Pick<Task, 'id' | 'status' | 'priority'>>
@@ -28,39 +28,37 @@ export function ProjectsView({ projects }: ProjectsViewProps) {
   ]
 
   return (
-    <PageTransition className="mx-auto max-w-4xl p-8">
-      {/* Header */}
+    <PageTransition className="relative mx-auto max-w-4xl p-8">
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-mesh opacity-40" />
+
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Projects
-          </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <h1 className="heading-1">Projects</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             {projects.length} project{projects.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <MotionButton size="sm">
-          <Plus className="h-4 w-4" />
-          New Project
-        </MotionButton>
+        <Button variant="brand" size="sm">
+          <Plus className="h-4 w-4" /> New Project
+        </Button>
       </div>
 
       {/* Filter tabs */}
-      <div className="mb-6 flex items-center gap-1">
+      <div className="mb-6 flex items-center gap-1 border-b border-border">
         {filters.map((f) => (
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className="relative rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+            className="relative px-4 py-2.5 text-sm font-medium transition-colors"
           >
             {filter === f.key && (
               <motion.span
-                layoutId="project-filter-pill"
-                className="absolute inset-0 rounded-md bg-zinc-900 dark:bg-zinc-50"
+                layoutId="project-filter-underline"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-warm"
                 transition={{ type: 'spring', bounce: 0.2, duration: 0.35 }}
               />
             )}
-            <span className={`relative z-10 ${filter === f.key ? 'text-white dark:text-zinc-900' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100'}`}>
+            <span className={filter === f.key ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}>
               {f.label}
             </span>
           </button>
@@ -69,21 +67,15 @@ export function ProjectsView({ projects }: ProjectsViewProps) {
 
       <AnimatePresence mode="wait">
         {filtered.length === 0 ? (
-          <motion.div
-            key="empty"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <EmptyState
-              icon={FolderOpen}
-              title="No projects yet"
-              description="Projects help group related tasks together. Create one to get started."
-            />
+          <motion.div key="empty" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+            <GlassCard className="py-12 text-center">
+              <FolderOpen className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
+              <h3 className="heading-3">No projects yet</h3>
+              <p className="mt-1 text-sm text-muted-foreground">Projects help group related tasks together.</p>
+            </GlassCard>
           </motion.div>
         ) : (
-          <StaggerList key="list" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <StaggerList key="list" className="grid gap-4 sm:grid-cols-2">
             {filtered.map((project) => (
               <StaggerItem key={project.id}>
                 <ProjectCard project={project} />
@@ -102,65 +94,49 @@ function ProjectCard({ project }: { project: ProjectWithTasks }) {
   const openTasks = project.tasks.filter((t) => !['COMPLETED', 'ARCHIVED'].includes(t.status)).length
   const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
 
-  const statusColors: Record<string, string> = {
-    ACTIVE: 'bg-emerald-500',
-    ON_HOLD: 'bg-amber-500',
-    COMPLETED: 'bg-zinc-400',
-    ARCHIVED: 'bg-zinc-300',
-  }
-
   return (
-    <motion.div
-      whileHover={{ y: -2 }}
-      transition={{ duration: 0.15, ease: [0.23, 1, 0.32, 1] }}
-      className="group cursor-pointer rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
-    >
-      {/* Card header */}
-      <div className="mb-3 flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2.5">
-          <div
-            className="h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: project.color ?? undefined }}
-          >
-            {!project.color && (
-              <div className={`h-2.5 w-2.5 rounded-full ${statusColors[project.status] ?? 'bg-zinc-400'}`} />
-            )}
-          </div>
-          <h3 className="font-semibold leading-tight text-zinc-900 dark:text-zinc-50">
-            {project.name}
-          </h3>
-        </div>
-        <button className="rounded p-0.5 text-zinc-300 opacity-0 transition-opacity group-hover:opacity-100 hover:text-zinc-600 dark:text-zinc-600 dark:hover:text-zinc-300">
-          <MoreHorizontal className="h-4 w-4" />
-        </button>
+    <GlassCard hover variant="orange-glow" className="cursor-pointer">
+      {/* Gradient header strip */}
+      <div
+        className="mb-4 h-1.5 w-full rounded-full"
+        style={{
+          background: project.color
+            ? `linear-gradient(135deg, ${project.color}, ${project.color}88)`
+            : 'linear-gradient(135deg, var(--gradient-warm-start), var(--gradient-warm-end))',
+        }}
+      />
+
+      <div className="flex items-start justify-between gap-2">
+        <h3 className="heading-3 text-foreground">{project.name}</h3>
+        {project.status !== 'ACTIVE' && (
+          <Badge variant="secondary" className="text-[10px]">
+            {project.status === 'ON_HOLD' ? 'On Hold' : project.status === 'COMPLETED' ? 'Completed' : 'Archived'}
+          </Badge>
+        )}
       </div>
 
       {project.description && (
-        <p className="mb-3 line-clamp-2 text-xs text-zinc-500">{project.description}</p>
+        <p className="mt-1.5 line-clamp-2 text-xs text-muted-foreground">{project.description}</p>
       )}
 
-      {/* Task counts */}
-      <div className="mb-3 flex items-center gap-3 text-xs text-zinc-500">
+      <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
-          <Circle className="h-3 w-3" />
-          {openTasks} open
+          <Circle className="h-3 w-3" /> {openTasks} open
         </span>
         <span className="flex items-center gap-1">
-          <CheckCircle2 className="h-3 w-3 text-emerald-500" />
-          {completedTasks} done
+          <CheckCircle2 className="h-3 w-3 text-emerald-500" /> {completedTasks} done
         </span>
       </div>
 
-      {/* Progress bar */}
       {totalTasks > 0 && (
-        <div>
-          <div className="mb-1 flex justify-between text-xs text-zinc-400">
+        <div className="mt-3">
+          <div className="mb-1 flex justify-between text-[11px] text-muted-foreground">
             <span>Progress</span>
-            <span>{progress}%</span>
+            <span className="font-semibold"><AnimatedCounter value={progress} />%</span>
           </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <motion.div
-              className="h-full rounded-full bg-teal-500"
+              className="h-full rounded-full bg-gradient-warm"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.6, delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
@@ -170,16 +146,8 @@ function ProjectCard({ project }: { project: ProjectWithTasks }) {
       )}
 
       {totalTasks === 0 && (
-        <p className="text-xs text-zinc-400">No tasks yet</p>
+        <p className="mt-3 text-xs text-muted-foreground/60">No tasks yet</p>
       )}
-
-      {project.status !== 'ACTIVE' && (
-        <div className="mt-3">
-          <Badge variant="secondary" className="text-xs">
-            {project.status === 'ON_HOLD' ? 'On Hold' : project.status === 'COMPLETED' ? 'Completed' : 'Archived'}
-          </Badge>
-        </div>
-      )}
-    </motion.div>
+    </GlassCard>
   )
 }
