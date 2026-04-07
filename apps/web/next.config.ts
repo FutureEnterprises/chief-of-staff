@@ -2,6 +2,9 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   turbopack: {},
+  outputFileTracingIncludes: {
+    '/**': ['../../packages/database/node_modules/.prisma/**/*'],
+  },
   async redirects() {
     return [
       { source: '/favicon.ico', destination: '/favicon.svg', permanent: false },
