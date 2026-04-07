@@ -129,13 +129,6 @@ export async function consumeAiAssistAtomic(
   return { consumed: true, used: newUsed, limit: monthlyLimit }
 }
 
-/** @deprecated Use consumeAiAssistAtomic instead */
-export async function consumeAiAssist(userId: string): Promise<void> {
-  await prisma.user.update({
-    where: { id: userId },
-    data: { aiAssistsUsed: { increment: 1 } },
-  })
-}
 
 export async function checkTaskLimit(
   userId: string

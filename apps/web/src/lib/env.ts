@@ -23,8 +23,14 @@ export const env = {
   // Database
   DATABASE_URL: required('DATABASE_URL'),
 
-  // Cron auth
-  CRON_SECRET: required('CRON_SECRET'),
+  // Cron auth — reject placeholder values
+  CRON_SECRET: (() => {
+    const v = required('CRON_SECRET')
+    if (v.length < 32 || v === 'your-cron-secret') {
+      throw new Error('CRON_SECRET must be at least 32 characters and not a placeholder')
+    }
+    return v
+  })(),
 
   // App URL
   NEXT_PUBLIC_APP_URL: required('NEXT_PUBLIC_APP_URL'),

@@ -11,6 +11,10 @@ export async function GET() {
   const { userId: clerkId } = await auth()
   if (!clerkId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  // Rate limit before any DB query to protect against enumeration
+  const rl = await checkRateLimit('auth', clerkId)
+  if (rl.limited) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: rl.headers })
+
   const user = await prisma.user.findUnique({
     where: { clerkId },
     select: {
@@ -35,9 +39,6 @@ export async function GET() {
     },
   })
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
-
-  const rl = await checkRateLimit('auth', user.id)
-  if (rl.limited) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: rl.headers })
 
   const limits = PLAN_LIMITS[user.planType] ?? PLAN_LIMITS.FREE!
 

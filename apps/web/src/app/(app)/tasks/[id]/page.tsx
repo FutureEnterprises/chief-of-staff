@@ -21,7 +21,7 @@ export default async function TaskPage({ params }: TaskPageProps) {
   const { id } = await params
   const user = await requireDbUser()
 
-  const task = await prisma.task.findUnique({
+  const task = await prisma.task.findFirst({
     where: { id, userId: user.id },
     include: {
       tags: { include: { tag: true } },
