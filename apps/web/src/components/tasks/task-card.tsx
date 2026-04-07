@@ -148,7 +148,7 @@ export function TaskCard({ task, compact, showFollowUp, showOverdue }: TaskCardP
             </span>
           )}
           {task.followUpRequired && !showFollowUp && (
-            <RefreshCw className="h-3 w-3 text-amber-400" title="Follow-up required" />
+            <RefreshCw className="h-3 w-3 text-amber-400" aria-label="Follow-up required" />
           )}
         </div>
       </div>
