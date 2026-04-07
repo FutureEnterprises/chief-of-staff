@@ -8,6 +8,10 @@ const redis = process.env.UPSTASH_REDIS_REST_URL
     })
   : null
 
+if (!redis && process.env.NODE_ENV === 'production') {
+  console.warn('[SECURITY] Rate limiting is DISABLED — UPSTASH_REDIS_REST_URL not configured')
+}
+
 /**
  * Rate limiters for different API tiers.
  * Falls back to no-op if Upstash is not configured (dev mode).

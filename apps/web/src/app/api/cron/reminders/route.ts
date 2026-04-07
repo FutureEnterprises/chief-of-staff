@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { scheduleAttentionEvents, isWithinUserTimeWindow } from '@/lib/services/reminder.service'
+import { verifyCronAuth } from '@/lib/cron-auth'
 
 export const maxDuration = 300
 
@@ -12,10 +13,8 @@ export const maxDuration = 300
  *   { "path": "/api/cron/reminders", "schedule": "* /15 * * * *" (every 15 min) }
  */
 export async function GET(req: Request) {
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new NextResponse('Unauthorized', { status: 401 })
-  }
+  const authError = verifyCronAuth(req)
+  if (authError) return authError
 
   const users = await prisma.user.findMany({
     where: { onboardingCompleted: true },

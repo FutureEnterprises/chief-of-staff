@@ -9,7 +9,11 @@ interface TaskPageProps {
 
 export async function generateMetadata({ params }: TaskPageProps) {
   const { id } = await params
-  const task = await prisma.task.findUnique({ where: { id }, select: { title: true } })
+  const user = await requireDbUser()
+  const task = await prisma.task.findFirst({
+    where: { id, userId: user.id },
+    select: { title: true },
+  })
   return { title: task?.title ?? 'Task' }
 }
 

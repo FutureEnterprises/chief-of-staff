@@ -61,6 +61,9 @@ export async function POST(req: Request) {
   const user = await getDbUser(clerkId)
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
+  const rl2 = await checkRateLimit('api', user.id)
+  if (rl2.limited) return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: rl2.headers })
+
   const parsed = createTaskSchema.safeParse(await req.json())
   if (!parsed.success) {
     return NextResponse.json({ error: 'Validation failed', details: parsed.error.flatten() }, { status: 400 })

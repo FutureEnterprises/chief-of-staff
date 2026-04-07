@@ -4,8 +4,7 @@ import { validateTransition } from '@/lib/task-state-machine'
 import type { TaskStatus } from '@/lib/task-state-machine'
 import {
   checkTaskLimit,
-  consumeAiAssist,
-  checkAiQuota,
+  consumeAiAssistAtomic,
   EntitlementError,
 } from './entitlement.service'
 import { generateText, Output } from 'ai'
@@ -150,10 +149,10 @@ export async function createTaskFromNaturalLanguage(
   input: string,
   userTimezone: string
 ): Promise<{ task: { id: string; title: string }; extracted: unknown }> {
-  // Check both task limit and AI quota
+  // Check task limit and atomically consume AI quota
   const [taskLimit, aiQuota] = await Promise.all([
     checkTaskLimit(userId),
-    checkAiQuota(userId),
+    consumeAiAssistAtomic(userId),
   ])
 
   if (!taskLimit.allowed) {
@@ -162,7 +161,7 @@ export async function createTaskFromNaturalLanguage(
       `Free plan is limited to ${taskLimit.limit} active tasks. Upgrade to Pro for unlimited tasks.`
     )
   }
-  if (!aiQuota.allowed) {
+  if (!aiQuota.consumed) {
     throw new EntitlementError(
       'ai_quota',
       `You've used all ${aiQuota.limit} AI assists for this month. Upgrade to Pro for unlimited AI.`
@@ -229,7 +228,6 @@ export async function createTaskFromNaturalLanguage(
     prisma.productivityEvent.create({
       data: { userId, taskId: task.id, eventType: 'TASK_CREATED' },
     }),
-    consumeAiAssist(userId),
   ])
 
   return { task, extracted: output }
@@ -242,8 +240,8 @@ export async function decomposeTask(
   const task = await prisma.task.findFirst({ where: { id: taskId, userId } })
   if (!task) throw new Error('Task not found')
 
-  const aiQuota = await checkAiQuota(userId)
-  if (!aiQuota.allowed) {
+  const aiQuota = await consumeAiAssistAtomic(userId)
+  if (!aiQuota.consumed) {
     throw new EntitlementError(
       'ai_quota',
       `You've used all ${aiQuota.limit} AI assists for this month. Upgrade to Pro for unlimited AI.`
@@ -285,7 +283,6 @@ export async function decomposeTask(
     prisma.productivityEvent.create({
       data: { userId, taskId: task.id, eventType: 'TASK_DECOMPOSED' },
     }),
-    consumeAiAssist(userId),
   ])
 
   return output

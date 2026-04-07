@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       }
     }
   } catch (err) {
-    console.error('Error processing Stripe webhook', { type: event.type, err })
+    console.error('Error processing Stripe webhook', { type: event.type, error: err instanceof Error ? err.message : 'Unknown error' })
     return new NextResponse('Webhook handler error', { status: 500 })
   }
 

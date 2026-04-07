@@ -40,8 +40,8 @@ export const checkoutSchema = z.object({
 
 export const chatSchema = z.object({
   messages: z.array(z.object({
-    role: z.string(),
-    content: z.string(),
+    role: z.enum(['user', 'assistant']),
+    content: z.string().max(50000),
   }).passthrough()).min(1).max(100),
   mode: z.enum(['morning', 'night', 'general']).optional(),
 })

@@ -76,6 +76,13 @@ export async function createTask(data: {
   tagIds?: string[]
 }) {
   const user = await requireDbUser()
+  const { createTaskSchema } = await import('@/lib/validations')
+  const parsed = createTaskSchema.safeParse({
+    ...data,
+    dueAt: data.dueAt?.toISOString(),
+  })
+  if (!parsed.success) throw new Error('Invalid task data')
+
   try {
     const task = await createTaskService(user.id, data)
     revalidatePath('/today')
