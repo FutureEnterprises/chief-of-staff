@@ -2,14 +2,17 @@ import { useEffect, useState, useCallback } from 'react'
 import { View, Text, ScrollView, RefreshControl, SafeAreaView, TouchableOpacity } from 'react-native'
 import { useApiClient } from '../../lib/api'
 import { BRAND, STATUS_COLORS } from '@repo/shared'
-import type { TodayResponse, CoylTask } from '@repo/shared'
+import type { TodayResponse, CoylTask, TaskPriority } from '@repo/shared'
 import { TaskCardMobile } from '../../components/task-card'
+import { TaskCreateSheet } from '../../components/task-create-sheet'
 import { Ionicons } from '@expo/vector-icons'
+import * as Haptics from 'expo-haptics'
 
 export default function TodayScreen() {
   const api = useApiClient()
   const [data, setData] = useState<TodayResponse | null>(null)
   const [refreshing, setRefreshing] = useState(false)
+  const [showCreate, setShowCreate] = useState(false)
 
   const load = useCallback(async () => {
     try {
@@ -26,6 +29,11 @@ export default function TodayScreen() {
     setRefreshing(true)
     await load()
     setRefreshing(false)
+  }
+
+  async function handleCreateTask(title: string, priority: TaskPriority) {
+    await api.createTask({ title, priority })
+    await load()
   }
 
   if (!data) {
@@ -47,7 +55,7 @@ export default function TodayScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: BRAND.cream }}>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 20 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={BRAND.orange} />}
       >
         {/* Header */}
@@ -103,6 +111,29 @@ export default function TodayScreen() {
           </View>
         )}
       </ScrollView>
+
+      {/* FAB */}
+      <TouchableOpacity
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+          setShowCreate(true)
+        }}
+        style={{
+          position: 'absolute', bottom: 24, right: 20,
+          width: 56, height: 56, borderRadius: 18,
+          backgroundColor: BRAND.orange, alignItems: 'center', justifyContent: 'center',
+          shadowColor: BRAND.orange, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 12,
+          elevation: 8,
+        }}
+      >
+        <Ionicons name="add" size={28} color="#fff" />
+      </TouchableOpacity>
+
+      <TaskCreateSheet
+        visible={showCreate}
+        onClose={() => setShowCreate(false)}
+        onSubmit={handleCreateTask}
+      />
     </SafeAreaView>
   )
 }

@@ -2,8 +2,9 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { BRAND, PRIORITY_COLORS, STATUS_COLORS, PRIORITY_LABELS } from '@repo/shared'
 import type { CoylTask } from '@repo/shared'
+import * as Haptics from 'expo-haptics'
 
-export function TaskCardMobile({ task }: { task: CoylTask }) {
+export function TaskCardMobile({ task, onComplete }: { task: CoylTask; onComplete?: (id: string) => void }) {
   return (
     <View style={{
       backgroundColor: '#fff',
@@ -18,7 +19,15 @@ export function TaskCardMobile({ task }: { task: CoylTask }) {
       shadowRadius: 8,
     }}>
       <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
-        <TouchableOpacity style={{ marginTop: 2 }}>
+        <TouchableOpacity
+          style={{ marginTop: 2 }}
+          onPress={() => {
+            if (onComplete && task.status !== 'COMPLETED') {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+              onComplete(task.id)
+            }
+          }}
+        >
           <Ionicons
             name={task.status === 'COMPLETED' ? 'checkmark-circle' : 'ellipse-outline'}
             size={20}
