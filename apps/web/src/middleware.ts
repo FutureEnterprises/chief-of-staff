@@ -1,5 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -21,12 +21,10 @@ const clerkConfigured =
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
   !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_...')
 
-export default function middleware(req: NextRequest) {
-  if (!clerkConfigured) {
-    return NextResponse.next()
-  }
-  return clerkHandler(req)
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const passthrough = (_req: any) => NextResponse.next()
+
+export default clerkConfigured ? clerkHandler : passthrough
 
 export const config = {
   matcher: [
