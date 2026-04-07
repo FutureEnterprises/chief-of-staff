@@ -7,37 +7,37 @@ const CY = 280
 const ORANGE = '#ff6600'
 const CHARCOAL = '#1a1a1a'
 
-/* ── Real coil spring geometry ───────────────────────────────────────────────
-   A helical spring viewed slightly from above:
-   - Front arcs: bottom half of each loop, heavy stroke (facing viewer)
-   - Back arcs:  top half of each loop, light stroke (going away)
-   - Each front arc spans from (right, y) to (left, y + spacing)
-   - This creates the interlocking coil illusion
+/* ── Cylindrical coil spring geometry ────────────────────────────────────────
+   Wire wound around a cylinder viewed from a low angle:
+   - RX wide, RY tall → deep ellipses give strong 3D cylinder illusion
+   - Back arcs (top half of loop): recede, light opacity
+   - Front arcs (bottom half): come toward viewer, heavy stroke
+   - End caps: filled ellipses at top & bottom close the cylinder
 */
-const LOOPS      = 8
-const RX         = 118   // horizontal radius
-const RY_FRONT   = 20    // vertical radius — front arc (closer, slightly taller)
-const RY_BACK    = 14    // vertical radius — back arc (farther, flatter)
-const SPACING    = 28    // px between loop centers
+const LOOPS      = 10
+const RX         = 100   // horizontal radius — narrower for cylinder feel
+const RY_FRONT   = 28    // tall vertical radius → deep perspective
+const RY_BACK    = 20    // back arc slightly flatter
+const SPACING    = 24    // tighter winding
 const COIL_TOP   = CY - (LOOPS * SPACING) / 2
 
-// Build ordered draw list: back arc N, then front arc N (front overlaps back of N+1)
+// Build ordered draw list: back arc N, then front arc N
 const SEGMENTS: { d: string; sw: number; op: number; delay: number; key: string }[] = []
 for (let i = 0; i <= LOOPS; i++) {
   const y = COIL_TOP + i * SPACING
-  // Back arc (top half, lighter — recedes behind front arcs)
+  // Back arc (top half — recedes into cylinder)
   SEGMENTS.push({
     d: `M ${CX - RX} ${y} A ${RX} ${RY_BACK} 0 0 1 ${CX + RX} ${y}`,
-    sw: 3, op: 0.22,
-    delay: i * 0.09 + 0.05,
+    sw: 3, op: 0.18,
+    delay: i * 0.08 + 0.04,
     key: `back-${i}`,
   })
-  // Front arc (bottom half, full — connects to next loop's left side)
+  // Front arc (bottom half — faces viewer, full opacity)
   if (i < LOOPS) {
     SEGMENTS.push({
       d: `M ${CX + RX} ${y} A ${RX} ${RY_FRONT} 0 0 0 ${CX - RX} ${y + SPACING}`,
-      sw: 5.5, op: 1,
-      delay: i * 0.09,
+      sw: 6, op: 1,
+      delay: i * 0.08,
       key: `front-${i}`,
     })
   }
@@ -131,9 +131,19 @@ export function CoylHeroAnimation({ className }: { className?: string }) {
                 transition: { duration: 0.5, ease: 'easeInOut' },
               } : {}}
             >
+              {/* Top end-cap ellipse — closes the cylinder */}
+              {drawProgress > 0.02 && (
+                <ellipse
+                  cx={CX} cy={COIL_TOP}
+                  rx={RX} ry={RY_BACK}
+                  stroke={ORANGE} strokeWidth={3}
+                  fill="none" opacity={0.35}
+                />
+              )}
+
               {SEGMENTS.map((seg) => {
                 // Each segment draws in sequentially based on its delay relative to total
-                const segStart = seg.delay / (LOOPS * 0.09 + 0.1)
+                const segStart = seg.delay / (LOOPS * 0.08 + 0.08)
                 const segProgress = Math.max(0, Math.min(1,
                   (drawProgress - segStart) / (1 - segStart)
                 ))
@@ -154,6 +164,16 @@ export function CoylHeroAnimation({ className }: { className?: string }) {
                   />
                 )
               })}
+
+              {/* Bottom end-cap ellipse */}
+              {drawProgress > 0.9 && (
+                <ellipse
+                  cx={CX} cy={COIL_TOP + LOOPS * SPACING}
+                  rx={RX} ry={RY_BACK}
+                  stroke={ORANGE} strokeWidth={3}
+                  fill="none" opacity={0.35}
+                />
+              )}
 
               {/* Hook at top */}
               {drawProgress > 0.05 && (
