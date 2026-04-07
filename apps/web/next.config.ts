@@ -1,11 +1,13 @@
+import path from 'path'
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   turbopack: {},
+  outputFileTracingRoot: path.join(__dirname, '../../'),
   outputFileTracingIncludes: {
     '/**': [
-      './node_modules/.prisma/**/*',
-      '../../packages/database/node_modules/.prisma/**/*',
+      'packages/database/node_modules/.prisma/**/*',
+      'node_modules/.pnpm/**/node_modules/.prisma/**/*',
     ],
   },
   async redirects() {
