@@ -10,13 +10,17 @@ export async function getCurrentDbUser(): Promise<User | null> {
 }
 
 export async function requireDbUser(): Promise<User> {
-  const { userId } = await auth()
-  if (!userId) throw new Error('Unauthorized')
+  const clerkUser = await currentUser()
+  if (!clerkUser) throw new Error('Unauthorized')
 
-  const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-  if (!user) throw new Error('User not found in database')
+  const email = clerkUser.emailAddresses[0]?.emailAddress ?? ''
+  const name = `${clerkUser.firstName ?? ''} ${clerkUser.lastName ?? ''}`.trim() || email
 
-  return user
+  return prisma.user.upsert({
+    where: { clerkId: clerkUser.id },
+    update: { email, name, avatarUrl: clerkUser.imageUrl },
+    create: { clerkId: clerkUser.id, email, name, avatarUrl: clerkUser.imageUrl },
+  })
 }
 
 export async function ensureUserExists(): Promise<User> {
