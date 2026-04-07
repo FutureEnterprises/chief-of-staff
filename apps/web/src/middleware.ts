@@ -22,15 +22,51 @@ if (!clerkConfigured && process.env.NODE_ENV === 'production') {
   throw new Error('CLERK_SECRET_KEY and NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY must be configured in production')
 }
 
+function generateNonce(): string {
+  const array = new Uint8Array(16)
+  crypto.getRandomValues(array)
+  return btoa(String.fromCharCode(...array))
+}
+
+function applyCSPHeaders(response: NextResponse, nonce: string): NextResponse {
+  const csp = [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}' https://js.stripe.com https://*.clerk.accounts.dev`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' https://img.clerk.com https://*.public.blob.vercel-storage.com data:",
+    "connect-src 'self' https://*.clerk.dev https://*.clerk.accounts.dev https://api.stripe.com",
+    "font-src 'self' data:",
+    "frame-src https://js.stripe.com https://*.clerk.accounts.dev",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; ')
+
+  response.headers.set('Content-Security-Policy', csp)
+  // Pass nonce to Next.js so it can inject into inline scripts
+  response.headers.set('x-nonce', nonce)
+  return response
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const clerkHandler: any = clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
     await auth.protect()
   }
+
+  const nonce = generateNonce()
+  const response = NextResponse.next({
+    request: { headers: new Headers(req.headers) },
+  })
+  response.headers.set('x-nonce', nonce)
+  return applyCSPHeaders(response, nonce)
 })
 
 function devPassthrough(_req: NextRequest) {
-  return NextResponse.next()
+  const nonce = generateNonce()
+  const response = NextResponse.next()
+  response.headers.set('x-nonce', nonce)
+  return applyCSPHeaders(response, nonce)
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
