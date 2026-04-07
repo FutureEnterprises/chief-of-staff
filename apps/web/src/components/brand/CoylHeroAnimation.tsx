@@ -251,8 +251,8 @@ export function CoylHeroAnimation({ className }: { className?: string }) {
               : 'none',
           }}
         >
-          <tspan fill={ORANGE}>C</tspan>
-          <tspan fill={CHARCOAL}>ontrol </tspan>
+          <tspan fill={ORANGE}>Co</tspan>
+          <tspan fill={CHARCOAL}>ntrol </tspan>
           <tspan fill={ORANGE}>Y</tspan>
           <tspan fill={CHARCOAL}>our </tspan>
           <tspan fill={ORANGE}>L</tspan>
