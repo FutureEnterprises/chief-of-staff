@@ -5,10 +5,7 @@ const nextConfig: NextConfig = {
   turbopack: {},
   outputFileTracingRoot: path.join(__dirname, '../../'),
   outputFileTracingIncludes: {
-    '/**': [
-      'packages/database/node_modules/.prisma/**/*',
-      'node_modules/.pnpm/**/node_modules/.prisma/**/*',
-    ],
+    '/**': ['apps/web/.prisma/client/**/*'],
   },
   async redirects() {
     return [
