@@ -18,7 +18,7 @@ export function verifyCronAuth(req: Request): NextResponse | null {
   const actual = Buffer.from(provided)
 
   if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) {
-    return new NextResponse('Unauthorized', { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   return null

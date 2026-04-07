@@ -6,7 +6,7 @@ import { prisma } from '@repo/database'
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET
   if (!WEBHOOK_SECRET) {
-    return new NextResponse('Missing webhook secret', { status: 500 })
+    return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 503 })
   }
 
   const headerPayload = await headers()
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   const svixSignature = headerPayload.get('svix-signature')
 
   if (!svixId || !svixTimestamp || !svixSignature) {
-    return new NextResponse('Missing svix headers', { status: 400 })
+    return NextResponse.json({ error: 'Missing svix headers' }, { status: 400 })
   }
 
   const payload = await req.json()
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       'svix-signature': svixSignature,
     }) as typeof evt
   } catch {
-    return new NextResponse('Invalid webhook signature', { status: 400 })
+    return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 400 })
   }
 
   const { type, data } = evt

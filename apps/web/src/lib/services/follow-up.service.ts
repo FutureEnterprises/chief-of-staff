@@ -1,5 +1,6 @@
 import { prisma } from '@repo/database'
 import { hasFeature } from './entitlement.service'
+import { toTaskPriority } from '@/lib/prisma-enums'
 
 /**
  * Mark a follow-up as complete and schedule the next one if repeating.
@@ -90,7 +91,7 @@ export async function escalateFollowUp(taskId: string, userId: string): Promise<
   await prisma.task.update({
     where: { id: taskId },
     data: {
-      priority: escalatedPriority as any,
+      priority: toTaskPriority(escalatedPriority),
       nextFollowUpAt: nextFollowUp,
       lastTouchedAt: now,
     },

@@ -1,4 +1,5 @@
 import { prisma } from '@repo/database'
+import { toReminderType } from '@/lib/prisma-enums'
 
 type AttentionEventType =
   | 'DUE_SOON'
@@ -44,7 +45,7 @@ async function createReminderIfAbsent(params: {
     where: {
       userId: params.userId,
       ...(params.taskId ? { taskId: params.taskId } : {}),
-      reminderType: params.reminderType as any,
+      reminderType: toReminderType(params.reminderType),
       status: { in: ['PENDING', 'SENT'] },
       createdAt: { gte: windowStart },
     },
@@ -56,11 +57,11 @@ async function createReminderIfAbsent(params: {
     data: {
       userId: params.userId,
       taskId: params.taskId,
-      reminderType: params.reminderType as any,
+      reminderType: toReminderType(params.reminderType),
       scheduledAt: params.scheduledAt,
       channel: 'IN_APP',
       status: 'PENDING',
-      metadataJson: params.metadataJson as any,
+      metadataJson: params.metadataJson as Record<string, string | number | boolean> | undefined,
     },
   })
 

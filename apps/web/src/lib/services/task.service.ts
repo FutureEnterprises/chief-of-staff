@@ -7,6 +7,7 @@ import {
   consumeAiAssistAtomic,
   EntitlementError,
 } from './entitlement.service'
+import { toTaskPriority, toTaskSource, toEffortLevel } from '@/lib/prisma-enums'
 import { generateText, Output } from 'ai'
 import { ExtractedTaskSchema, SYSTEM_PROMPTS, AI_MODEL_FAST, AI_MODEL, TaskDecompositionSchema } from '@repo/ai'
 
@@ -123,11 +124,11 @@ export async function createTask(
       userId,
       title: data.title,
       description: data.description,
-      priority: (data.priority as any) ?? 'MEDIUM',
+      priority: toTaskPriority(data.priority),
       dueAt: data.dueAt,
       projectId: data.projectId,
       status: 'OPEN',
-      source: (data.source as any) ?? 'MANUAL',
+      source: toTaskSource(data.source),
       lastTouchedAt: new Date(),
       ...(data.tagIds &&
         data.tagIds.length > 0 && {
@@ -174,7 +175,7 @@ export async function createTaskFromNaturalLanguage(
     .replace('{TIMEZONE}', userTimezone)
 
   const { output } = await generateText({
-    model: AI_MODEL_FAST as any,
+    model: AI_MODEL_FAST,
     system: systemPrompt,
     prompt: `Extract task from: "${input}"`,
     output: Output.object({ schema: ExtractedTaskSchema }),
@@ -186,8 +187,8 @@ export async function createTaskFromNaturalLanguage(
       title: output.title,
       description: output.description,
       status: output.confidence > 0.8 ? 'OPEN' : 'INBOX',
-      priority: output.priority as any,
-      effortEstimate: (output.effortEstimate as any) ?? null,
+      priority: toTaskPriority(output.priority),
+      effortEstimate: toEffortLevel(output.effortEstimate),
       dueAt: output.dueAt ? new Date(output.dueAt) : null,
       followUpRequired: output.followUpRequired,
       nextFollowUpAt: output.nextFollowUpAt ? new Date(output.nextFollowUpAt) : null,
@@ -222,7 +223,7 @@ export async function createTaskFromNaturalLanguage(
         provider: 'anthropic',
         model: String(AI_MODEL_FAST),
         inputText: input,
-        outputJson: output as any,
+        outputJson: JSON.parse(JSON.stringify(output)),
       },
     }),
     prisma.productivityEvent.create({
@@ -249,7 +250,7 @@ export async function decomposeTask(
   }
 
   const { output } = await generateText({
-    model: AI_MODEL as any,
+    model: AI_MODEL,
     system: SYSTEM_PROMPTS.taskDecomposition,
     prompt: `Break down this task: "${task.title}"\n\nContext: ${task.description ?? 'No additional context.'}`,
     output: Output.object({ schema: TaskDecompositionSchema }),
@@ -261,7 +262,7 @@ export async function decomposeTask(
       parentTaskId: task.id,
       title: subtask.title,
       description: subtask.description,
-      effortEstimate: subtask.effortEstimate as any,
+      effortEstimate: toEffortLevel(subtask.effortEstimate),
       status: 'OPEN' as const,
       priority: task.priority,
       source: 'AI_EXTRACTION' as const,
@@ -277,7 +278,7 @@ export async function decomposeTask(
         provider: 'anthropic',
         model: String(AI_MODEL),
         inputText: task.title,
-        outputJson: output as any,
+        outputJson: JSON.parse(JSON.stringify(output)),
       },
     }),
     prisma.productivityEvent.create({
