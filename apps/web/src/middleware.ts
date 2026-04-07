@@ -1,4 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -8,14 +10,27 @@ const isPublicRoute = createRouteMatcher([
   '/api/cron/(.*)',
 ])
 
-// Explicit `any` breaks the type inference chain that would otherwise reference
-// Clerk's bundled copy of next/server, causing "cannot be named" errors.
+const secretKey = process.env.CLERK_SECRET_KEY
+const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+const clerkConfigured =
+  secretKey &&
+  !secretKey.startsWith('sk_...') &&
+  publishableKey &&
+  !publishableKey.startsWith('pk_...')
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const middleware: any = clerkMiddleware(async (auth, req) => {
+const clerkHandler: any = clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
     await auth.protect()
   }
 })
+
+function passthrough(req: NextRequest) {
+  return NextResponse.next()
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const middleware: any = clerkConfigured ? clerkHandler : passthrough
 
 export default middleware
 
