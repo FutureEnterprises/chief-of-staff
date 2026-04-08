@@ -109,6 +109,10 @@ model Task {
 
   @@map("tasks")
   @@index([userId, status])
+  @@index([userId, status, dueAt])
+  @@index([userId, status, completedAt])
+  @@index([userId, status, priority])
+  @@index([userId, followUpRequired, nextFollowUpAt])
   @@index([userId, dueAt])
   @@index([userId, nextFollowUpAt])
 }
