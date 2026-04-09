@@ -1,6 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import type { NextRequest, NextFetchEvent } from 'next/server'
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -28,10 +28,10 @@ function generateNonce(): string {
   return btoa(String.fromCharCode(...array))
 }
 
-function applyCSPHeaders(response: NextResponse, nonce: string): NextResponse {
+function applySecurityHeaders(headers: Headers, nonce: string): void {
   const csp = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' https://js.stripe.com https://*.clerk.accounts.dev`,
+    `script-src 'self' 'nonce-${nonce}' https://js.stripe.com https://*.clerk.accounts.dev https://*.clerk.dev`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' https://img.clerk.com https://*.public.blob.vercel-storage.com data:",
     "connect-src 'self' https://*.clerk.dev https://*.clerk.accounts.dev https://api.stripe.com",
@@ -42,37 +42,38 @@ function applyCSPHeaders(response: NextResponse, nonce: string): NextResponse {
     "form-action 'self'",
   ].join('; ')
 
-  response.headers.set('Content-Security-Policy', csp)
-  // Pass nonce to Next.js so it can inject into inline scripts
-  response.headers.set('x-nonce', nonce)
-  return response
+  headers.set('Content-Security-Policy', csp)
+  headers.set('x-nonce', nonce)
 }
 
+// Clerk middleware that protects non-public routes
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const clerkHandler: any = clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
     await auth.protect()
   }
-
-  const nonce = generateNonce()
-  const response = NextResponse.next({
-    request: { headers: new Headers(req.headers) },
-  })
-  response.headers.set('x-nonce', nonce)
-  return applyCSPHeaders(response, nonce)
 })
+
+// Wrap Clerk middleware to add CSP headers AFTER Clerk processes the request
+async function withSecurityHeaders(req: NextRequest, evt: NextFetchEvent): Promise<NextResponse> {
+  // Let Clerk handle auth first
+  const response: NextResponse = await clerkHandler(req, evt)
+
+  // Add security headers to whatever response Clerk produced
+  const nonce = generateNonce()
+  applySecurityHeaders(response.headers, nonce)
+
+  return response
+}
 
 function devPassthrough(_req: NextRequest) {
   const nonce = generateNonce()
   const response = NextResponse.next()
-  response.headers.set('x-nonce', nonce)
-  return applyCSPHeaders(response, nonce)
+  applySecurityHeaders(response.headers, nonce)
+  return response
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const middleware: any = clerkConfigured ? clerkHandler : devPassthrough
-
-export default middleware
+export default clerkConfigured ? withSecurityHeaders : devPassthrough
 
 export const config = {
   matcher: [
