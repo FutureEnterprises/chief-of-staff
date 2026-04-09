@@ -18,7 +18,21 @@ const nextConfig: NextConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
           { key: 'X-DNS-Prefetch-Control', value: 'on' },
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
-          // CSP is set dynamically in middleware.ts with per-request nonces
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' https://js.stripe.com https://*.clerk.accounts.dev https://*.clerk.dev",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' https://img.clerk.com https://*.public.blob.vercel-storage.com data:",
+              "connect-src 'self' https://*.clerk.dev https://*.clerk.accounts.dev https://api.stripe.com",
+              "font-src 'self' data:",
+              "frame-src https://js.stripe.com https://*.clerk.accounts.dev",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join('; '),
+          },
         ],
       },
     ]

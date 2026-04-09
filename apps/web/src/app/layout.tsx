@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { headers } from 'next/headers'
 import { ClerkProvider } from '@clerk/nextjs'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
@@ -15,18 +14,15 @@ export const metadata: Metadata = {
   keywords: ['productivity', 'task management', 'ai assistant', 'control your life', 'coyl', 'follow-up', 'daily briefing'],
 }
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
   const clerkReady = publishableKey && !publishableKey.startsWith('pk_...')
 
-  const headersList = await headers()
-  const nonce = headersList.get('x-nonce') ?? undefined
-
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans antialiased" nonce={nonce}>
+      <body className="min-h-screen bg-background font-sans antialiased">
         {clerkReady
-          ? <ClerkProvider publishableKey={publishableKey!} nonce={nonce}>{children}</ClerkProvider>
+          ? <ClerkProvider publishableKey={publishableKey!}>{children}</ClerkProvider>
           : children
         }
       </body>
