@@ -13,9 +13,10 @@ const letterVariants = {
 } satisfies Record<string, unknown>
 
 const words = [
-  { text: 'C', highlight: true, rest: 'ontrol', indent: 0 },
-  { text: 'Y', highlight: true, rest: 'our', indent: 48 },
-  { text: 'L', highlight: true, rest: 'ife', indent: 96 },
+  { text: 'C', rest: 'ontrol', indent: 0 },
+  { text: 'O', rest: 'ver', indent: 32 },
+  { text: 'Y', rest: 'our', indent: 64 },
+  { text: 'L', rest: 'ife', indent: 96 },
 ]
 
 export function HeroSection() {
@@ -32,7 +33,7 @@ export function HeroSection() {
             className="mb-6 flex items-center gap-3 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-orange-500 backdrop-blur-sm"
           >
             <span className="h-2 w-2 animate-pulse rounded-full bg-orange-500" />
-            Now Hounding
+            AI Willpower
           </motion.div>
 
           {/* Big type */}
