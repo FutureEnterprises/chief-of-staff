@@ -25,15 +25,17 @@ export function HeroSection() {
       <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
         {/* Typography */}
         <div className="relative z-20 flex flex-col items-start lg:col-span-7">
-          {/* Status badge */}
+          {/* AI Willpower label */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.5 }}
-            className="mb-6 flex items-center gap-3 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-orange-500 backdrop-blur-sm"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1, duration: 0.6 }}
+            className="mb-6 flex items-center gap-3"
           >
-            <span className="h-2 w-2 animate-pulse rounded-full bg-orange-500" />
-            AI Willpower
+            <div className="h-px w-8 bg-orange-500" />
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500" style={{ textShadow: '0 0 20px rgba(255, 102, 0, 0.4)' }}>
+              AI Willpower
+            </span>
           </motion.div>
 
           {/* Big type */}

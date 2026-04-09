@@ -48,6 +48,13 @@ export default function AppTabLayout() {
         }}
       />
       <Tabs.Screen
+        name="assessment"
+        options={{
+          title: 'Assessment',
+          tabBarIcon: ({ color, size }) => <Ionicons name="analytics-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="chat"
         options={{
           title: 'Chat',
