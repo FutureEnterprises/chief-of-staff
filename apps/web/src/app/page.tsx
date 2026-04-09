@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import { AnimatedGrid } from '@/components/landing/animated-grid'
+import { CrystalBackground } from '@/components/landing/crystal-bg'
 import { GlassNav } from '@/components/landing/glass-nav'
 import { HeroSection } from '@/components/landing/hero-section'
 import { BrandStatement } from '@/components/landing/brand-statement'
@@ -17,18 +17,19 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white selection:bg-orange-500 selection:text-white">
-      <AnimatedGrid />
-      <GlassNav />
+    <CrystalBackground>
+      <div className="relative min-h-screen text-white selection:bg-orange-500 selection:text-white">
+        <GlassNav />
 
-      <main className="relative z-10">
-        <HeroSection />
-        <BrandStatement />
-        <FeaturesGrid />
-        <PricingSection />
-      </main>
+        <main className="relative z-10">
+          <HeroSection />
+          <BrandStatement />
+          <FeaturesGrid />
+          <PricingSection />
+        </main>
 
-      <LandingFooter />
-    </div>
+        <LandingFooter />
+      </div>
+    </CrystalBackground>
   )
 }

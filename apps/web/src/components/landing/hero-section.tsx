@@ -61,7 +61,7 @@ export function HeroSection() {
             className="mt-8 max-w-xl text-lg text-gray-400 sm:text-xl"
           >
             The AI agent that doesn&apos;t just plan. It{' '}
-            <span className="border-b border-orange-500/50 font-medium text-white">
+            <span className="border-b-2 border-orange-500 font-bold text-orange-400" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
               hounds you
             </span>{' '}
             until it&apos;s done. Morning briefings. Night reviews. Relentless follow-through.
