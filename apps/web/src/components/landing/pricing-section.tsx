@@ -22,7 +22,7 @@ export function PricingSection() {
             Pick Your Level of Accountability
           </h2>
           <p className="mx-auto max-w-xl text-lg font-light text-gray-400">
-            Free gets you started. Pro means the AI never shuts up until your shit is done.
+            Free gets you started. Pro means the AI never shuts up until your sh*t is done.
           </p>
         </motion.div>
 
@@ -117,7 +117,7 @@ export function PricingSection() {
                       <path d="M13 4L6 12L3 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                     <span className="border-b border-orange-500/30 text-sm font-bold text-orange-500">
-                      The AI that hounds your ass
+                      The AI that hounds your a$$
                     </span>
                   </li>
                 </ul>

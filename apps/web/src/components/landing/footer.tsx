@@ -9,7 +9,7 @@ export function LandingFooter() {
         <div className="flex flex-col items-center md:items-start">
           <CoylLogo size="sm" theme="dark" />
           <p className="mt-2 font-mono text-xs text-gray-600">
-            Take control of your shit.
+            Take control of your sh<span className="inline-block translate-y-[-1px]" role="img" aria-label="poop">💩</span>t.
           </p>
         </div>
 

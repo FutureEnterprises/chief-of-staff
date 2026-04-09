@@ -62,9 +62,9 @@ export function HeroSection() {
             transition={{ delay: 0.8, duration: 0.7 }}
             className="mt-8 max-w-xl text-lg text-gray-400 sm:text-xl"
           >
-            The AI that won&apos;t shut up until you handle your shit. It{' '}
+            The AI that won&apos;t shut up until you handle your sh*t. It{' '}
             <span className="border-b-2 border-orange-500 font-bold text-orange-400" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
-              hounds your ass
+              hounds your a$$
             </span>{' '}
             every morning and every night. No hiding. No excuses. Just done.
           </motion.p>
