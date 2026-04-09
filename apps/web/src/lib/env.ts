@@ -1,12 +1,13 @@
 /**
  * Runtime environment validation.
- * Import this at the top of layout.tsx or instrumentation.ts to fail fast on missing vars.
+ * Warns on missing vars instead of throwing — prevents app-wide crashes.
  */
 
 function required(name: string): string {
   const value = process.env[name]
   if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`)
+    console.warn(`[env] Missing environment variable: ${name}`)
+    return ''
   }
   return value
 }
@@ -16,20 +17,20 @@ function optional(name: string): string | undefined {
 }
 
 export const env = {
-  // Auth (required in production)
+  // Auth
   CLERK_SECRET_KEY: required('CLERK_SECRET_KEY'),
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: required('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY'),
 
   // Database
   DATABASE_URL: required('DATABASE_URL'),
 
-  // Cron auth — validated at request time in cron routes, not at startup
+  // Cron auth
   CRON_SECRET: optional('CRON_SECRET'),
 
   // App URL
   NEXT_PUBLIC_APP_URL: required('NEXT_PUBLIC_APP_URL'),
 
-  // Optional services — degrade gracefully if missing
+  // Optional services
   RESEND_API_KEY: optional('RESEND_API_KEY'),
   RESEND_FROM_EMAIL: optional('RESEND_FROM_EMAIL'),
   STRIPE_SECRET_KEY: optional('STRIPE_SECRET_KEY'),
