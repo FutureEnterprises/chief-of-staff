@@ -13,10 +13,9 @@ const letterVariants = {
 } satisfies Record<string, unknown>
 
 const words = [
-  { text: 'C', rest: 'ontrol', indent: 0 },
-  { text: 'O', rest: 'ver', indent: 32 },
-  { text: 'Y', rest: 'our', indent: 64 },
-  { text: 'L', rest: 'ife', indent: 96 },
+  { highlight: 'CO', rest: 'ntrol', indent: 0 },
+  { highlight: 'Y', rest: 'our', indent: 48 },
+  { highlight: 'L', rest: 'ife', indent: 96 },
 ]
 
 export function HeroSection() {
@@ -42,7 +41,7 @@ export function HeroSection() {
           <h1 className="text-[clamp(4rem,15vw,8rem)] font-black uppercase leading-[0.85] tracking-[-0.04em] text-white">
             {words.map((w, i) => (
               <motion.span
-                key={w.text}
+                key={w.highlight}
                 custom={i}
                 initial="hidden"
                 animate="visible"
@@ -50,7 +49,7 @@ export function HeroSection() {
                 className="block transition-transform duration-500 hover:translate-x-4"
                 style={{ marginLeft: w.indent }}
               >
-                <span className="text-orange-500">{w.text}</span>
+                <span className="text-orange-500">{w.highlight}</span>
                 {w.rest}
               </motion.span>
             ))}
