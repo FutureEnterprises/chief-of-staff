@@ -9,7 +9,7 @@ export function LandingFooter() {
         <div className="flex flex-col items-center md:items-start">
           <CoylLogo size="sm" theme="dark" />
           <p className="mt-2 font-mono text-xs text-gray-600">
-            Control Your Life. Execution Partner V2.0.
+            Take control of your shit.
           </p>
         </div>
 

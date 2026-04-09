@@ -19,10 +19,10 @@ export function PricingSection() {
           className="relative z-10 mb-20 text-center"
         >
           <h2 className="mb-6 text-4xl font-black tracking-tight text-white md:text-5xl">
-            Secure Your Execution Partner
+            Pick Your Level of Accountability
           </h2>
           <p className="mx-auto max-w-xl text-lg font-light text-gray-400">
-            Choose the tier that matches your required level of operational intensity.
+            Free gets you started. Pro means the AI never shuts up until your shit is done.
           </p>
         </motion.div>
 
@@ -39,7 +39,7 @@ export function PricingSection() {
               backdropFilter: 'blur(12px)',
             }}
           >
-            <h3 className="mb-2 text-xl font-medium text-gray-300">Base Protocol</h3>
+            <h3 className="mb-2 text-xl font-medium text-gray-300">Free</h3>
             <div className="mb-8 flex items-baseline gap-2">
               <span className="text-5xl font-black text-white">$0</span>
               <span className="font-medium text-gray-500">/forever</span>
@@ -58,7 +58,7 @@ export function PricingSection() {
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0 text-gray-500">
                   <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
-                <span className="text-sm text-gray-500 line-through">Relentless escalation engine</span>
+                <span className="text-sm text-gray-500 line-through">The AI that won&apos;t stop</span>
               </li>
             </ul>
 
@@ -89,10 +89,10 @@ export function PricingSection() {
 
               <div className="relative z-10">
                 <div className="mb-6 w-max rounded-full bg-orange-500 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white shadow-[0_0_15px_rgba(255,102,0,0.5)]">
-                  Full Control
+                  No Mercy
                 </div>
 
-                <h3 className="mb-2 text-xl font-bold text-white">Pro Execution</h3>
+                <h3 className="mb-2 text-xl font-bold text-white">Pro</h3>
                 <div className="mb-8 flex items-baseline gap-2">
                   <span className="text-5xl font-black text-white">$12</span>
                   <span className="font-medium text-gray-400">/mo</span>
@@ -102,8 +102,8 @@ export function PricingSection() {
                   {[
                     'Unlimited tasks',
                     'Unlimited AI assists',
-                    'Repeating follow-up automation',
-                    'Full productivity history',
+                    'Auto follow-ups that don\'t quit',
+                    'See every pattern and excuse',
                   ].map((f) => (
                     <li key={f} className="flex items-start gap-3">
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0 text-orange-500">
@@ -117,7 +117,7 @@ export function PricingSection() {
                       <path d="M13 4L6 12L3 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                     <span className="border-b border-orange-500/30 text-sm font-bold text-orange-500">
-                      Relentless Escalation Engine
+                      The AI that hounds your ass
                     </span>
                   </li>
                 </ul>
@@ -126,7 +126,7 @@ export function PricingSection() {
                   href="/sign-up"
                   className="block w-full rounded-xl bg-gradient-to-r from-orange-600 to-red-600 py-4 text-center font-bold uppercase tracking-wider text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-all hover:shadow-[0_0_40px_rgba(255,102,0,0.5)]"
                 >
-                  Deploy Pro Protocol
+                  Get Hounded
                 </Link>
               </div>
             </div>

@@ -10,9 +10,9 @@ const features = [
         <circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
       </svg>
     ),
-    title: 'Symmetric Briefings',
-    body: 'Morning calibration sets the tension. Nightly debrief assesses the release. Two unyielding bookends structuring every day.',
-    footer: { left: 'Status: Active', right: 'Daily: 0600 / 2200' },
+    title: 'Morning + Night Check-ins',
+    body: 'Every morning: what are you doing today? Every night: did you actually do it? Two check-ins that keep you honest. No more "I\'ll get to it tomorrow."',
+    footer: { left: 'Always on', right: '6am + 10pm' },
     glowColor: 'orange',
     offset: false,
   },
@@ -22,8 +22,8 @@ const features = [
         <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
       </svg>
     ),
-    title: 'Commitment Ledger',
-    body: 'Log it once. COYL logs it forever. An immutable ledger of what you said you would do. Excuses are filtered; only outcomes are recorded.',
+    title: 'You Said It. We Saved It.',
+    body: 'Every task, every promise, every "I\'ll do it later" — logged. COYL remembers what you committed to even when you conveniently forget.',
     progress: 78,
     glowColor: 'red',
     offset: false,
@@ -34,8 +34,8 @@ const features = [
         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
       </svg>
     ),
-    title: 'Autonomous Escalation',
-    body: 'Missed a deadline? The AI escalates. Gentle nudges turn into aggressive demands. It integrates with your calendar and will not let you stop.',
+    title: 'It Gets Louder',
+    body: 'Ignore a task? First reminder is friendly. Second is firm. Third? It\'s in your face. COYL escalates until you deal with it or admit you\'re ducking it.',
     glowColor: 'orange',
     offset: true,
   },
@@ -103,7 +103,7 @@ function FeatureCard({
               />
             </div>
             <span className="text-right font-mono text-xs text-gray-500">
-              {feature.progress}% Completion Rate (Moving Avg)
+              {feature.progress}% follow-through rate
             </span>
           </div>
         )}
@@ -139,10 +139,10 @@ export function FeaturesGrid() {
       >
         <h2 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          Core Architecture
+          How It Works
         </h2>
         <h3 className="max-w-2xl text-3xl font-bold tracking-tight text-white md:text-5xl">
-          Relentless follow-through, engineered by AI algorithms.
+          An AI that won&apos;t let you off the hook.
         </h3>
       </motion.div>
 

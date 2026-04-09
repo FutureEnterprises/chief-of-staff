@@ -32,7 +32,7 @@ export function HeroSection() {
             className="mb-6 flex items-center gap-3 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-orange-500 backdrop-blur-sm"
           >
             <span className="h-2 w-2 animate-pulse rounded-full bg-orange-500" />
-            Execution Engine Online
+            Now Hounding
           </motion.div>
 
           {/* Big type */}
@@ -60,11 +60,11 @@ export function HeroSection() {
             transition={{ delay: 0.8, duration: 0.7 }}
             className="mt-8 max-w-xl text-lg text-gray-400 sm:text-xl"
           >
-            The AI agent that doesn&apos;t just plan. It{' '}
+            The AI that won&apos;t shut up until you handle your shit. It{' '}
             <span className="border-b-2 border-orange-500 font-bold text-orange-400" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
-              hounds you
+              hounds your ass
             </span>{' '}
-            until it&apos;s done. Morning briefings. Night reviews. Relentless follow-through.
+            every morning and every night. No hiding. No excuses. Just done.
           </motion.p>
 
           {/* CTAs */}
@@ -78,7 +78,7 @@ export function HeroSection() {
               href="/sign-up"
               className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-orange-600 to-red-600 px-8 py-4 text-lg font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(255,102,0,0.5)]"
             >
-              <span className="relative z-10">Deploy Partner</span>
+              <span className="relative z-10">Get Hounded</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="relative z-10">
                 <path d="M8 1v14M1 8l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" transform="rotate(-90 8 8)" />
               </svg>
@@ -88,7 +88,7 @@ export function HeroSection() {
               href="#engine"
               className="group flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-8 py-4 text-lg font-semibold text-white transition-colors hover:bg-white/10"
             >
-              View Logistics
+              See How It Works
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:translate-y-1">
                 <path d="M7 1v12m0 0l5-5m-5 5L2 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -137,8 +137,8 @@ export function HeroSection() {
               >
                 <div className="h-10 w-1 rounded-full bg-red-600" />
                 <div>
-                  <p className="text-sm font-semibold text-white">Critical Task Pending</p>
-                  <p className="mt-1 text-xs text-gray-400">Finalize Q3 Architecture. You missed this yesterday.</p>
+                  <p className="text-sm font-semibold text-white">You dropped this yesterday</p>
+                  <p className="mt-1 text-xs text-gray-400">Finalize the proposal. No, seriously. Do it now.</p>
                 </div>
               </motion.div>
 
@@ -150,8 +150,8 @@ export function HeroSection() {
               >
                 <div className="h-10 w-1 rounded-full bg-gray-600" />
                 <div>
-                  <p className="text-sm font-semibold text-gray-300 line-through">Gym Session (Completed)</p>
-                  <p className="mt-1 text-xs text-gray-500">Heart rate metric verified.</p>
+                  <p className="text-sm font-semibold text-gray-300 line-through">Gym (Done)</p>
+                  <p className="mt-1 text-xs text-gray-500">At least you showed up for something.</p>
                 </div>
               </motion.div>
 
@@ -163,8 +163,8 @@ export function HeroSection() {
               >
                 <div className="h-10 w-1 rounded-full bg-orange-500" />
                 <div>
-                  <p className="text-sm font-semibold text-orange-400">Follow-up: Contract Review</p>
-                  <p className="mt-1 text-xs text-gray-400">3rd reminder. Escalation in 4 hours.</p>
+                  <p className="text-sm font-semibold text-orange-400">Still haven&apos;t followed up</p>
+                  <p className="mt-1 text-xs text-gray-400">3rd reminder. I&apos;m not going away.</p>
                 </div>
               </motion.div>
             </div>

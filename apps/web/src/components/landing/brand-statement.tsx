@@ -51,12 +51,12 @@ export function BrandStatement() {
           transition={{ delay: 0.2, duration: 0.8 }}
           className="text-4xl font-black tracking-tighter text-white md:text-6xl"
         >
-          A <span className="font-serif font-light italic text-gray-500">coil</span> stores energy.
+          You keep saying you&apos;ll do it.
           <br />
           <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-            Compressed tension
+            COYL makes sure
           </span>{' '}
-          under control.
+          you actually do.
         </motion.h2>
 
         <motion.p
@@ -65,9 +65,9 @@ export function BrandStatement() {
           transition={{ delay: 0.4, duration: 0.8 }}
           className="mx-auto mt-8 max-w-2xl text-xl font-light leading-relaxed text-gray-400"
         >
-          Human motivation is temporary. Discipline via systems is permanent. COYL is the structural
-          tension holding your ambitions in place — compressing potential energy into daily kinetic
-          execution.
+          Motivation fades. Willpower runs out. That&apos;s why you need something that doesn&apos;t.
+          COYL is the AI that tracks every commitment you make and won&apos;t stop bugging you
+          until it&apos;s handled. Think of it as a pitbull for your to-do list.
         </motion.p>
       </div>
     </section>
