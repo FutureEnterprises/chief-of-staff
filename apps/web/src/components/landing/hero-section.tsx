@@ -8,9 +8,9 @@ const letterVariants = {
   visible: (i: number) => ({
     opacity: 1,
     x: 0,
-    transition: { delay: 0.3 + i * 0.12, duration: 0.8, ease: [0.23, 1, 0.32, 1] },
+    transition: { delay: 0.3 + i * 0.12, duration: 0.8, ease: [0.23, 1, 0.32, 1] as const },
   }),
-}
+} satisfies Record<string, unknown>
 
 const words = [
   { text: 'C', highlight: true, rest: 'ontrol', indent: 0 },

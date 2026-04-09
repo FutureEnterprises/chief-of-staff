@@ -8,6 +8,7 @@ type PlanFeatures = {
   notificationEscalation: boolean
   advancedInsights: boolean
   emailSummaries: boolean
+  assessments: boolean
 }
 
 export const PLAN_LIMITS: Record<string, PlanFeatures> = {
@@ -19,6 +20,7 @@ export const PLAN_LIMITS: Record<string, PlanFeatures> = {
     notificationEscalation: false,
     advancedInsights: false,
     emailSummaries: false,
+    assessments: false,
   },
   PRO: {
     maxActiveTasks: Infinity,
@@ -28,6 +30,7 @@ export const PLAN_LIMITS: Record<string, PlanFeatures> = {
     notificationEscalation: true,
     advancedInsights: true,
     emailSummaries: true,
+    assessments: true,
   },
   TEAM: {
     maxActiveTasks: Infinity,
@@ -37,6 +40,7 @@ export const PLAN_LIMITS: Record<string, PlanFeatures> = {
     notificationEscalation: true,
     advancedInsights: true,
     emailSummaries: true,
+    assessments: true,
   },
 }
 

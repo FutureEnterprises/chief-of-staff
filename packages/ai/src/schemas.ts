@@ -87,3 +87,33 @@ export const DailySummarySchema = z.object({
 })
 
 export type DailySummary = z.infer<typeof DailySummarySchema>
+
+export const AssessmentResultSchema = z.object({
+  overallScore: z.number().min(0).max(100).describe('Overall execution score'),
+  executionGrade: z.enum(['A', 'B', 'C', 'D', 'F']).describe('Letter grade'),
+  headline: z.string().describe('One-line assessment summary'),
+  strengths: z.array(
+    z.object({
+      area: z.string(),
+      detail: z.string(),
+    })
+  ),
+  weaknesses: z.array(
+    z.object({
+      area: z.string(),
+      detail: z.string(),
+      suggestion: z.string(),
+    })
+  ),
+  patterns: z.array(
+    z.object({
+      type: z.enum(['positive', 'negative', 'neutral']),
+      title: z.string(),
+      description: z.string(),
+    })
+  ),
+  actionItems: z.array(z.string()).describe('Concrete next steps for this week'),
+  closingNote: z.string().describe('Final coaching message'),
+})
+
+export type AssessmentResult = z.infer<typeof AssessmentResultSchema>

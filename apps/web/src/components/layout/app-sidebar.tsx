@@ -1,12 +1,12 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { UserButton } from '@clerk/nextjs'
+import { UserButton, useClerk } from '@clerk/nextjs'
 import { motion } from 'motion/react'
 import type { User } from '@repo/database'
 import {
-  CheckSquare, Clock, FolderOpen, Home,
-  Inbox, MessageSquare, Settings, TrendingUp,
+  Brain, CheckSquare, Clock, FolderOpen, Home,
+  Inbox, LogOut, MessageSquare, Settings, TrendingUp,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CoylLogo } from '@/components/brand/logo'
@@ -18,6 +18,7 @@ const navItems = [
   { label: 'Follow-ups', href: '/follow-ups', icon: Clock },
   { label: 'Projects', href: '/projects', icon: FolderOpen },
   { label: 'Insights', href: '/insights', icon: TrendingUp },
+  { label: 'Assessment', href: '/assessment', icon: Brain },
   { label: 'Chat', href: '/chat', icon: MessageSquare },
 ]
 
@@ -25,6 +26,7 @@ interface AppSidebarProps { user: User }
 
 export function AppSidebar({ user }: AppSidebarProps) {
   const pathname = usePathname()
+  const { signOut } = useClerk()
 
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-[hsl(var(--sidebar-border))] bg-[hsl(var(--sidebar))] backdrop-blur-xl">
@@ -100,6 +102,13 @@ export function AppSidebar({ user }: AppSidebarProps) {
             </div>
           </div>
         </div>
+        <button
+          onClick={() => signOut({ redirectUrl: '/' })}
+          className="mt-1.5 flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-muted/50 hover:text-foreground"
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          Sign out
+        </button>
       </div>
     </aside>
   )

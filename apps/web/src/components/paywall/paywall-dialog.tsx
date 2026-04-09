@@ -144,6 +144,8 @@ function getTriggerHeadline(trigger?: string): string {
       return 'Unlock advanced insights'
     case 'escalation':
       return 'Enable relentless accountability'
+    case 'assessments':
+      return 'Get your AI performance assessment'
     default:
       return 'Capture it once. We make sure it gets done.'
   }

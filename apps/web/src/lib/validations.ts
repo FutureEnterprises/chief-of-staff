@@ -46,7 +46,7 @@ export const chatSchema = z.object({
     createdAt: z.unknown().optional(),
     parts: z.array(z.unknown()).optional(),
   })).min(1).max(100),
-  mode: z.enum(['morning', 'night', 'general']).optional(),
+  mode: z.enum(['morning', 'night', 'general', 'assessment-considerate', 'assessment-nobs']).optional(),
 })
 
 export const onboardingSchema = z.object({
