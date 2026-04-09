@@ -109,6 +109,8 @@ const config: Config = {
         float: 'float 3s ease-in-out infinite',
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
         shimmer: 'shimmer 1.5s ease-in-out infinite',
+        'mesh-1': 'mesh1 20s ease-in-out infinite alternate',
+        'mesh-2': 'mesh2 25s ease-in-out infinite alternate',
       },
     },
   },
