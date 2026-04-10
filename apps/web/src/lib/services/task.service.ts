@@ -165,7 +165,7 @@ export async function createTaskFromNaturalLanguage(
   if (!aiQuota.consumed) {
     throw new EntitlementError(
       'ai_quota',
-      `You've used all ${aiQuota.limit} AI assists for this month. Upgrade to Pro for unlimited AI.`
+      `You've used all ${aiQuota.limit} Charges this month. Upgrade to Pro for 500/mo.`
     )
   }
 
@@ -245,7 +245,7 @@ export async function decomposeTask(
   if (!aiQuota.consumed) {
     throw new EntitlementError(
       'ai_quota',
-      `You've used all ${aiQuota.limit} AI assists for this month. Upgrade to Pro for unlimited AI.`
+      `You've used all ${aiQuota.limit} Charges this month. Upgrade to Pro for 500/mo.`
     )
   }
 

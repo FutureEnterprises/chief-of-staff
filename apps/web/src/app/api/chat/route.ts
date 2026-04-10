@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   const { userId: clerkId } = await auth()
   if (!clerkId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const user = await prisma.user.findUnique({ where: { clerkId } })
+  const user = await prisma.user.findUnique({ where: { clerkId }, select: { id: true, planType: true, aiAssistsUsed: true, aiAssistsResetAt: true, reminderIntensity: true, timezone: true } })
   if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
 
   const rl = await checkRateLimit('chat', user.id)
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     return new Response(
       JSON.stringify({
         error: 'ai_quota_exceeded',
-        message: `You've used all ${quota.limit} AI assists this month. Upgrade to Pro for unlimited AI.`,
+        message: `You've burned through all ${quota.limit} Charges this month. Upgrade to Pro for 500/mo.`,
         used: quota.used,
         limit: quota.limit,
       }),
@@ -175,6 +175,21 @@ ${completedTasks.slice(0, 15).map((t) => `- [${t.priority}] ${t.title}${t.dueAt 
 
   if (!isAssessment) {
     systemPrompt += taskContext + overdueContext
+  }
+
+  // Apply tone based on user's COYL mode (Mentor vs Beast)
+  const intensity = user.reminderIntensity ?? 'STANDARD'
+  if (intensity === 'RELENTLESS' && !isAssessment) {
+    systemPrompt += `\n\nIMPORTANT TONE OVERRIDE — BEAST MODE ACTIVE:
+You are in Beast Mode. Be savage. Be direct. No hand-holding, no "great job", no softening.
+Call out procrastination. Use short, punchy sentences. Be the drill sergeant they asked for.
+If they're slacking, say it. If they're making excuses, call it out. Still helpful — but brutal.
+Sign off messages with "🔥" when appropriate.`
+  } else if (intensity === 'GENTLE' && !isAssessment) {
+    systemPrompt += `\n\nTONE: MENTOR MODE ACTIVE:
+You are in Mentor Mode. Be warm, supportive, and encouraging. Celebrate small wins.
+Frame challenges as growth opportunities. Use empathetic language. Be the coach who
+believes in them. Still be honest — but kind. End with encouragement when appropriate.`
   }
 
   // AI SDK v6: convertToModelMessages is async

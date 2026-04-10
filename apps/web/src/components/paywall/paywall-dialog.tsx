@@ -8,7 +8,7 @@ import { CheckCircle2, Zap } from 'lucide-react'
 
 const PRO_BENEFITS = [
   'Unlimited active tasks',
-  'Unlimited AI clarification and decomposition',
+  '500 Charges / month (AI interactions)',
   'Follow-up automation with escalation',
   'Relentless reminder logic — overdue rescue',
   'Advanced insights and completion analytics',
@@ -151,7 +151,7 @@ function getTriggerHeadline(trigger?: string): string {
     case 'task_limit':
       return "You've hit the free plan limit"
     case 'ai_quota':
-      return "You've used all your AI assists"
+      return "You've burned through all your Charges"
     case 'follow_up_automation':
       return 'Never miss a follow-up again'
     case 'insights':

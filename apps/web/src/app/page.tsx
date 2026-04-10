@@ -6,6 +6,7 @@ import { HeroSection } from '@/components/landing/hero-section'
 import { BrandStatement } from '@/components/landing/brand-statement'
 import { FeaturesGrid } from '@/components/landing/features-grid'
 import { InteractiveDemo } from '@/components/landing/interactive-demo'
+import { AiDemo } from '@/components/landing/ai-demo'
 import { PricingSection } from '@/components/landing/pricing-section'
 import { LandingFooter } from '@/components/landing/footer'
 
@@ -27,6 +28,7 @@ export default async function HomePage() {
           <BrandStatement />
           <FeaturesGrid />
           <InteractiveDemo />
+          <AiDemo />
           <PricingSection />
         </main>
 

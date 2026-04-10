@@ -46,7 +46,7 @@ export function PricingSection() {
             </div>
 
             <ul className="mb-10 space-y-4">
-              {['100 active tasks', 'Morning & night reviews', '20 AI assists / month', 'Daily email briefing'].map((f) => (
+              {['100 active tasks', 'Morning & night reviews', '20 Charges / month', 'Daily email briefing'].map((f) => (
                 <li key={f} className="flex items-start gap-3">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0 text-gray-400">
                     <path d="M13 4L6 12L3 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -101,7 +101,7 @@ export function PricingSection() {
                 <ul className="mb-10 flex-grow space-y-4">
                   {[
                     'Unlimited tasks',
-                    '500 AI assists / month',
+                    '500 Charges / month',
                     'Auto follow-ups that don\'t quit',
                     'See every pattern and excuse',
                   ].map((f) => (

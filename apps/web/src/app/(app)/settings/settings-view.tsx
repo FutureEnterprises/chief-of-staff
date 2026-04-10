@@ -11,7 +11,7 @@ import { toast } from '@/hooks/use-toast'
 import { updateUserSettings } from '@/app/actions/settings'
 import { UserButton } from '@clerk/nextjs'
 import { PaywallDialog } from '@/components/paywall/paywall-dialog'
-import { Bell, Zap, User as UserIcon } from 'lucide-react'
+import { Bell, Zap, User as UserIcon, Heart, Flame } from 'lucide-react'
 
 interface SettingsViewProps {
   user: User
@@ -20,6 +20,7 @@ interface SettingsViewProps {
 export function SettingsView({ user }: SettingsViewProps) {
   const [timezone, setTimezone] = useState(user.timezone)
   const [emailBriefing, setEmailBriefing] = useState(user.emailBriefingEnabled)
+  const [reminderIntensity, setReminderIntensity] = useState(user.reminderIntensity ?? 'STANDARD')
   const [saving, setSaving] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
   const isPro = user.planType === 'PRO' || user.planType === 'TEAM'
@@ -27,7 +28,7 @@ export function SettingsView({ user }: SettingsViewProps) {
   async function handleSave() {
     setSaving(true)
     try {
-      await updateUserSettings({ timezone, emailBriefingEnabled: emailBriefing })
+      await updateUserSettings({ timezone, emailBriefingEnabled: emailBriefing, reminderIntensity: reminderIntensity as 'GENTLE' | 'STANDARD' | 'RELENTLESS' })
       toast({ title: 'Settings saved', description: 'Your preferences have been updated.' })
     } catch {
       toast({ title: 'Error', description: 'Failed to save settings.', variant: 'destructive' })
@@ -72,7 +73,7 @@ export function SettingsView({ user }: SettingsViewProps) {
                   {isPro ? 'Pro' : 'Free'} Plan
                 </Badge>
                 <span className="text-xs text-muted-foreground">
-                  {isPro ? 'Unlimited AI assists' : `${user.aiAssistsUsed ?? 0} / 20 AI assists used this month`}
+                  {isPro ? '500 Charges / month' : `${user.aiAssistsUsed ?? 0} / 20 Charges used this month`}
                 </span>
               </div>
 
@@ -82,7 +83,7 @@ export function SettingsView({ user }: SettingsViewProps) {
                     <div>
                       <p className="text-sm font-semibold text-orange-600 dark:text-orange-400">Upgrade to Pro</p>
                       <p className="mt-0.5 text-xs text-muted-foreground">
-                        Unlimited AI assists, follow-up escalation, and advanced insights for $12/mo.
+                        500 Charges, follow-up escalation, Beast Mode, and advanced insights for $14.99/mo.
                       </p>
                     </div>
                     <Button variant="brand" size="sm" onClick={() => setShowPaywall(true)}>
@@ -117,6 +118,52 @@ export function SettingsView({ user }: SettingsViewProps) {
                   className="focus-glow"
                 />
                 <p className="text-xs text-muted-foreground">IANA timezone format. Used for scheduling reminders.</p>
+              </div>
+
+              <Separator />
+
+              {/* COYL Mode Toggle */}
+              <div>
+                <p className="mb-1 text-sm font-medium text-foreground">COYL Mode</p>
+                <p className="mb-3 text-xs text-muted-foreground">How should COYL talk to you?</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setReminderIntensity('GENTLE')}
+                    className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition-all ${
+                      reminderIntensity === 'GENTLE'
+                        ? 'border-orange-500/40 bg-orange-500/10 shadow-glow-orange/20'
+                        : 'border-border hover:bg-muted/50'
+                    }`}
+                  >
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                      reminderIntensity === 'GENTLE' ? 'bg-orange-500/20 text-orange-500' : 'bg-muted text-muted-foreground'
+                    }`}>
+                      <Heart className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-foreground">Mentor Mode</p>
+                      <p className="text-[10px] text-muted-foreground">Supportive, encouraging</p>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setReminderIntensity('RELENTLESS')}
+                    className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition-all ${
+                      reminderIntensity === 'RELENTLESS'
+                        ? 'border-red-500/40 bg-red-500/10 shadow-[0_0_15px_rgba(239,68,68,0.15)]'
+                        : 'border-border hover:bg-muted/50'
+                    }`}
+                  >
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                      reminderIntensity === 'RELENTLESS' ? 'bg-red-500/20 text-red-500' : 'bg-muted text-muted-foreground'
+                    }`}>
+                      <Flame className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-foreground">Beast Mode</p>
+                      <p className="text-[10px] text-muted-foreground">Savage, no mercy</p>
+                    </div>
+                  </button>
+                </div>
               </div>
 
               <Separator />
