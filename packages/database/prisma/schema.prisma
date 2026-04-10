@@ -45,6 +45,12 @@ model User {
   currentStreak         Int       @default(0)
   longestStreak         Int       @default(0)
   lastCompletionDate    DateTime?
+  // Gamification
+  level                 Int       @default(1)
+  xp                    Int       @default(0)
+  // Public profile
+  profilePublic         Boolean   @default(false)
+  profileSlug           String?   @unique
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
@@ -57,8 +63,73 @@ model User {
   aiInteractions        AiInteraction[]
   billingSubscription   BillingSubscription?
   emailBriefings        EmailBriefing[]
+  badges                UserBadge[]
+  challengeEntries      ChallengeEntry[]
 
   @@map("users")
+}
+
+model Badge {
+  id            String      @id @default(cuid())
+  slug          String      @unique
+  name          String
+  description   String
+  emoji         String
+  category      String      // "streak", "completion", "enforcement", "social"
+  xpReward      Int         @default(10)
+  requirement   Json        // e.g. { type: "streak", value: 7 }
+  createdAt     DateTime    @default(now())
+
+  users         UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+model Challenge {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  name          String
+  description   String
+  emoji         String
+  durationDays  Int       // 7, 14, 30
+  rules         Json      // { type: "daily_completions", min: 1 } or { type: "streak", min: 7 }
+  xpReward      Int       @default(50)
+  badgeSlug     String?   // badge awarded on completion
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+
+  entries       ChallengeEntry[]
+
+  @@map("challenges")
+}
+
+model ChallengeEntry {
+  id            String    @id @default(cuid())
+  userId        String
+  challengeId   String
+  startedAt     DateTime  @default(now())
+  completedAt   DateTime?
+  progress      Int       @default(0) // days completed
+  status        String    @default("active") // "active", "completed", "failed"
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge     Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@map("challenge_entries")
 }
 
 enum PlanType {
@@ -368,6 +439,11 @@ enum EventType {
   NIGHT_REVIEW
   STREAK_MILESTONE
   WEEKLY_REPORT_SENT
+  BADGE_EARNED
+  LEVEL_UP
+  CHALLENGE_STARTED
+  CHALLENGE_COMPLETED
+  CHALLENGE_FAILED
 }
 
 // ============================================================
