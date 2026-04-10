@@ -41,11 +41,15 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
     role: '',
     useCase: '',
     referralSource: '',
+    biggestGoal: '',
+    failurePattern: '',
   })
 
   const steps = [
     { id: 'welcome', label: 'Welcome' },
     { id: 'about-you', label: 'About You' },
+    { id: 'biggest-goal', label: 'Your Goal' },
+    { id: 'failure-pattern', label: 'Patterns' },
     { id: 'schedule', label: 'Your Schedule' },
     { id: 'first-task', label: 'First Task' },
   ]
@@ -114,8 +118,10 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
             >
               {step === 0 && <WelcomeStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
               {step === 1 && <AboutYouStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
-              {step === 2 && <ScheduleStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
-              {step === 3 && <FirstTaskStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
+              {step === 2 && <BiggestGoalStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
+              {step === 3 && <FailurePatternStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
+              {step === 4 && <ScheduleStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
+              {step === 5 && <FirstTaskStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
             </motion.div>
           </AnimatePresence>
         </GlassCard>
@@ -283,6 +289,68 @@ function AboutYouStep({ data, onChange }: { data: any; onChange: (v: any) => voi
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+const FAILURE_PATTERNS = [
+  { value: 'procrastinate', label: 'I procrastinate on big tasks', emoji: '🐌' },
+  { value: 'overcommit', label: 'I say yes to everything', emoji: '🤯' },
+  { value: 'start-not-finish', label: "I start but don't finish", emoji: '🔄' },
+  { value: 'forget-followups', label: 'I forget follow-ups', emoji: '🕳️' },
+  { value: 'avoid-hard', label: 'I avoid hard conversations', emoji: '😬' },
+  { value: 'last-minute', label: 'I wait until the last minute', emoji: '⏰' },
+]
+
+function BiggestGoalStep({ data, onChange }: { data: any; onChange: (v: any) => void }) {
+  return (
+    <div>
+      <div className="mb-6">
+        <h2 className="heading-2">What&apos;s the ONE thing?</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          The biggest thing you need to accomplish in the next 30 days. COYL will enforce it.
+        </p>
+      </div>
+      <textarea
+        value={data.biggestGoal}
+        onChange={(e) => onChange({ biggestGoal: e.target.value })}
+        placeholder="e.g. Launch my product, close 5 new clients, finish the thesis..."
+        className="min-h-[100px] w-full rounded-xl border bg-transparent p-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-glow resize-none"
+        autoFocus
+      />
+      <div className="mt-3 glass rounded-xl p-3">
+        <p className="text-xs font-medium text-muted-foreground">This becomes your enforcement anchor. COYL will reference it in every review.</p>
+      </div>
+    </div>
+  )
+}
+
+function FailurePatternStep({ data, onChange }: { data: any; onChange: (v: any) => void }) {
+  return (
+    <div>
+      <div className="mb-6">
+        <h2 className="heading-2">What usually stops you?</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          Be honest. COYL will watch for these patterns and call them out.
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {FAILURE_PATTERNS.map((p) => (
+          <button
+            key={p.value}
+            onClick={() => onChange({ failurePattern: p.value })}
+            className={cn(
+              'flex items-center gap-2.5 rounded-xl border px-3 py-3 text-left text-xs font-medium transition-all',
+              data.failurePattern === p.value
+                ? 'bg-gradient-warm text-white border-transparent shadow-glow-orange'
+                : 'hover:bg-muted'
+            )}
+          >
+            <span className="text-base">{p.emoji}</span>
+            {p.label}
+          </button>
+        ))}
       </div>
     </div>
   )

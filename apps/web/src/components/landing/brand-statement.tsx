@@ -51,12 +51,12 @@ export function BrandStatement() {
           transition={{ delay: 0.2, duration: 0.8 }}
           className="text-4xl font-black tracking-tighter text-white md:text-6xl"
         >
-          You keep saying you&apos;ll do it.
+          You don&apos;t need motivation.
           <br />
+          You need{' '}
           <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-            COYL makes sure
-          </span>{' '}
-          you actually do.
+            enforcement
+          </span>.
         </motion.h2>
 
         <motion.p
@@ -65,9 +65,9 @@ export function BrandStatement() {
           transition={{ delay: 0.4, duration: 0.8 }}
           className="mx-auto mt-8 max-w-2xl text-xl font-light leading-relaxed text-gray-400"
         >
-          Motivation fades. Willpower runs out. That&apos;s why you need something that doesn&apos;t.
-          COYL is the AI that tracks every commitment you make and won&apos;t stop bugging you
-          until it&apos;s handled. Think of it as a pitbull for your to-do list.
+          COYL doesn&apos;t care how you feel. It cares what you do. Every commitment tracked.
+          Every follow-up enforced. Your Execution Score tells the truth about your
+          follow-through — and it updates every single day.
         </motion.p>
       </div>
     </section>

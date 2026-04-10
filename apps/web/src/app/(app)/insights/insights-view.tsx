@@ -1,10 +1,16 @@
 'use client'
 import { GlassCard } from '@/components/ui/glass-card'
 import { PageTransition, StaggerList, StaggerItem, motion, AnimatedCounter } from '@/components/motion/animations'
-import { CheckCircle2, Clock, TrendingUp, AlertTriangle } from 'lucide-react'
+import { CheckCircle2, Clock, TrendingUp, AlertTriangle, Flame } from 'lucide-react'
 import { getPriorityLabel, getPriorityHex } from '@/lib/utils'
+import { ShareButton } from '@/components/share/share-card'
 
 interface InsightsViewProps {
+  userId: string
+  userName: string
+  executionScore: number
+  currentStreak: number
+  longestStreak: number
   completedLast7Days: number
   completedLast30Days: number
   openTasks: number
@@ -14,6 +20,11 @@ interface InsightsViewProps {
 }
 
 export function InsightsView({
+  userId,
+  userName,
+  executionScore,
+  currentStreak,
+  longestStreak,
   completedLast7Days,
   completedLast30Days,
   openTasks,
@@ -42,10 +53,35 @@ export function InsightsView({
     <PageTransition className="relative mx-auto max-w-4xl p-8">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-mesh opacity-40" />
 
-      <div className="mb-8">
-        <h1 className="heading-1">Insights</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Your productivity patterns over the last 30 days</p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="heading-1">Insights</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Your productivity patterns over the last 30 days</p>
+        </div>
+        <ShareButton userId={userId} executionScore={executionScore} currentStreak={currentStreak} userName={userName} />
       </div>
+
+      {/* Execution Score hero card */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+        <GlassCard variant="orange-glow" className="flex flex-col items-center p-8 text-center sm:flex-row sm:items-start sm:text-left sm:gap-8">
+          <div className="flex flex-col items-center sm:items-start">
+            <p className="label-xs mb-2 text-orange-500">Execution Score</p>
+            <div className="flex items-baseline gap-2">
+              <AnimatedCounter value={executionScore} className="text-6xl font-black tabular-nums text-foreground" />
+              <span className="text-xl text-muted-foreground">/100</span>
+            </div>
+          </div>
+          <div className="mt-4 flex gap-6 sm:mt-0 sm:flex-col sm:gap-2">
+            <div className="flex items-center gap-2">
+              <Flame className="h-4 w-4 text-orange-500" />
+              <span className="text-sm font-bold text-foreground">{currentStreak}-day streak</span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Longest: {longestStreak} days
+            </div>
+          </div>
+        </GlassCard>
+      </motion.div>
 
       {/* Metric cards */}
       <StaggerList className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">

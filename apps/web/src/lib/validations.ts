@@ -61,4 +61,6 @@ export const onboardingSchema = z.object({
   role: z.string().max(50).optional(),
   useCase: z.string().max(50).optional(),
   referralSource: z.string().max(50).optional(),
+  biggestGoal: z.string().max(500).optional(),
+  failurePattern: z.string().max(200).optional(),
 })

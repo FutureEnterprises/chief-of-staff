@@ -55,6 +55,11 @@ export default async function InsightsPage() {
 
   return (
     <InsightsView
+      userId={user.id}
+      userName={user.name}
+      executionScore={user.executionScore}
+      currentStreak={user.currentStreak}
+      longestStreak={user.longestStreak}
       completedLast7Days={completedLast7Days}
       completedLast30Days={completedLast30Days}
       openTasks={openTasks}

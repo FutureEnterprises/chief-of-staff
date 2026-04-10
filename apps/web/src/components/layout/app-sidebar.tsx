@@ -5,7 +5,7 @@ import { UserButton, useClerk } from '@clerk/nextjs'
 import { motion } from 'motion/react'
 import type { User } from '@repo/database'
 import {
-  Brain, CheckSquare, Clock, FolderOpen, Home,
+  Brain, CheckSquare, Clock, Flame, FolderOpen, Home,
   Inbox, LogOut, MessageSquare, Settings, TrendingUp,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -75,6 +75,20 @@ export function AppSidebar({ user }: AppSidebarProps) {
 
       {/* Footer */}
       <div className="border-t border-[hsl(var(--sidebar-border))] p-3">
+        {/* Execution Score + Streak */}
+        <div className="mb-2 flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-500/10 to-transparent px-3 py-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500/20 text-sm font-black text-orange-500">
+            {user.executionScore ?? 0}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Execution</p>
+            <div className="flex items-center gap-1">
+              <Flame className="h-3 w-3 text-orange-500" />
+              <span className="text-[11px] font-bold text-orange-500">{user.currentStreak ?? 0}d streak</span>
+            </div>
+          </div>
+        </div>
+
         <Link
           href="/settings"
           className={cn(

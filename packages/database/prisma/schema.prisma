@@ -34,10 +34,17 @@ model User {
   onboardingCompleted   Boolean   @default(false)
   expoPushToken         String?
   // Intent data (collected during onboarding)
-  role                  String?   // e.g. "founder", "manager", "freelancer", "student"
-  useCase               String?   // e.g. "work", "personal", "side-project", "team"
-  referralSource        String?   // e.g. "twitter", "friend", "google", "producthunt"
+  role                  String?
+  useCase               String?
+  referralSource        String?
+  biggestGoal           String?
+  failurePattern        String?
   lastActiveAt          DateTime  @default(now())
+  // Execution Score & Streaks
+  executionScore        Int       @default(0)
+  currentStreak         Int       @default(0)
+  longestStreak         Int       @default(0)
+  lastCompletionDate    DateTime?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
@@ -359,6 +366,8 @@ enum EventType {
   CHAT_SESSION
   MORNING_REVIEW
   NIGHT_REVIEW
+  STREAK_MILESTONE
+  WEEKLY_REPORT_SENT
 }
 
 // ============================================================

@@ -15,6 +15,8 @@ export async function completeOnboarding(data: {
   role?: string
   useCase?: string
   referralSource?: string
+  biggestGoal?: string
+  failurePattern?: string
 }) {
   const user = await requireDbUser()
 
@@ -36,6 +38,8 @@ export async function completeOnboarding(data: {
         ...(parsed.data.role && { role: parsed.data.role }),
         ...(parsed.data.useCase && { useCase: parsed.data.useCase }),
         ...(parsed.data.referralSource && { referralSource: parsed.data.referralSource }),
+        ...(parsed.data.biggestGoal && { biggestGoal: parsed.data.biggestGoal }),
+        ...(parsed.data.failurePattern && { failurePattern: parsed.data.failurePattern }),
       },
     })
 
