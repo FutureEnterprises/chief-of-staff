@@ -1,6 +1,9 @@
 import { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Privacy Policy' }
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'How COYL collects, uses, and protects your data. Covers task data, AI processing, third-party services, GDPR, CCPA, and your privacy rights.',
+}
 
 export default function PrivacyPage() {
   return (

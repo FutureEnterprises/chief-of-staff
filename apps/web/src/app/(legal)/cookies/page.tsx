@@ -1,6 +1,9 @@
 import { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Cookie Policy' }
+export const metadata: Metadata = {
+  title: 'Cookie Policy',
+  description: 'Cookie Policy for COYL. Details on authentication cookies, preferences, and how to manage your cookie settings.',
+}
 
 export default function CookiesPage() {
   return (

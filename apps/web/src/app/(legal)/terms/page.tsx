@@ -1,6 +1,9 @@
 import { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Terms of Service' }
+export const metadata: Metadata = {
+  title: 'Terms of Service',
+  description: 'Terms of Service for COYL — the AI productivity platform. Covers account usage, subscription plans, acceptable use, AI features, and liability.',
+}
 
 export default function TermsPage() {
   return (

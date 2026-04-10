@@ -3,6 +3,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { CookieConsent } from '@/components/cookie-consent'
+import { OrganizationSchema, WebSiteSchema } from './structured-data'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -38,6 +39,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+      <head>
+        <OrganizationSchema />
+        <WebSiteSchema />
+      </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         {clerkReady
           ? <ClerkProvider publishableKey={publishableKey!}>{children}</ClerkProvider>

@@ -1,0 +1,65 @@
+# COYL — AI Willpower
+
+> Control Over Your Life. The AI productivity partner that hounds you until it's done.
+
+## What is COYL?
+
+COYL is an AI-powered productivity platform built for people who are tired of dropping the ball. It tracks every task and commitment you make, conducts morning planning and night review sessions, and escalates follow-ups until they're resolved. It's not a passive to-do app — it's an accountability system with teeth.
+
+## Core Features
+
+- **Morning Planning**: AI-guided session every morning to set priorities, surface overdue items, and plan the day
+- **Night Review**: AI-guided session every night to assess what got done, carry forward open items, and close loops
+- **Task Capture**: Natural language task extraction with auto-detected due dates, priorities, and follow-up schedules
+- **Follow-Up Tracking**: Every outreach task (email, call, proposal) gets automatic follow-up reminders that escalate over time
+- **Task Decomposition**: AI breaks complex tasks into 5-8 actionable subtasks with effort estimates
+- **AI Performance Assessment**: 30-day analysis with two modes — Considerate (supportive coach) and No BS (brutal honesty)
+- **Mentor Mode vs Beast Mode**: Choose your AI tone. Mentor Mode is warm and encouraging. Beast Mode is savage and calls out avoidance.
+- **Daily Email Briefings**: Morning summary of priorities, overdue items, and follow-ups delivered to your inbox
+- **Churn Detection**: Re-engagement system that nudges inactive users with escalating messages
+
+## Pricing
+
+- **Free**: $0/forever — 50 active tasks, 20 Charges (AI interactions) per month, morning & night reviews, email briefings
+- **Pro**: $14.99/month or $99.99/year — Unlimited tasks, 500 Charges/month, Beast Mode, follow-up automation, AI assessments, advanced insights
+
+## What are Charges?
+
+Every AI interaction is called a "Charge." When the AI helps you plan, review, decompose tasks, or deliver an assessment, that's one Charge. Free users get 20/month. Pro users get 500/month.
+
+## Technology Stack
+
+- **Web**: Next.js 15, React 19, Tailwind CSS, Framer Motion
+- **Mobile**: React Native (Expo SDK 52), iOS + Android
+- **AI**: Anthropic Claude (Sonnet 4.6) via Vercel AI SDK
+- **Auth**: Clerk
+- **Database**: PostgreSQL via Supabase + Prisma ORM
+- **Payments**: Stripe
+- **Email**: Resend
+- **Hosting**: Vercel
+
+## Company
+
+- **Website**: https://coyl.ai
+- **Product**: SaaS productivity platform
+- **Platforms**: Web, iOS, Android
+
+## Key Pages
+
+- Homepage: https://coyl.ai
+- Terms of Service: https://coyl.ai/terms
+- Privacy Policy: https://coyl.ai/privacy
+- Cookie Policy: https://coyl.ai/cookies
+
+## API
+
+COYL provides REST API endpoints for authenticated users:
+- `GET /api/v1/today` — Today's briefing data (tasks, overdue, follow-ups)
+- `GET /api/v1/tasks` — All user tasks
+- `POST /api/v1/tasks` — Create a task
+- `POST /api/chat` — AI chat with mode support (chat, morning, night, assessment-considerate, assessment-nobs)
+
+## Contact
+
+- Email: legal@coyl.ai
+- Email: privacy@coyl.ai
