@@ -105,7 +105,7 @@ export async function GET(req: Request) {
       data: {
         userId: user.id,
         eventType: 'CHURN_EMAIL_SENT',
-        outputJson: { daysSinceActive, openTasks, tier: daysSinceActive >= 14 ? 'final' : daysSinceActive >= 7 ? 'direct' : 'gentle' },
+        metadataJson: { daysSinceActive, openTasks, tier: daysSinceActive >= 14 ? 'final' : daysSinceActive >= 7 ? 'direct' : 'gentle' },
       },
     })
   }

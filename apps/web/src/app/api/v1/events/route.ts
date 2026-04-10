@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       data: {
         userId: user.id,
         eventType,
-        ...(metadata ? { outputJson: metadata } : {}),
+        ...(metadata ? { metadataJson: metadata } : {}),
       },
     })
 
