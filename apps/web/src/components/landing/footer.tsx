@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { CoylLogo } from '@/components/brand/logo'
 
 export function LandingFooter() {
@@ -14,8 +15,9 @@ export function LandingFooter() {
         </div>
 
         <div className="flex items-center gap-6 text-sm text-gray-500">
-          <a href="#" className="transition-colors hover:text-orange-500">Terms</a>
-          <a href="#" className="transition-colors hover:text-orange-500">Privacy</a>
+          <Link href="/terms" className="transition-colors hover:text-orange-500">Terms</Link>
+          <Link href="/privacy" className="transition-colors hover:text-orange-500">Privacy</Link>
+          <Link href="/cookies" className="transition-colors hover:text-orange-500">Cookies</Link>
           <span className="text-gray-600">&copy; {new Date().getFullYear()} COYL</span>
         </div>
       </div>
