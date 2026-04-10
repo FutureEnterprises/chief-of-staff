@@ -56,4 +56,7 @@ export const onboardingSchema = z.object({
   nightCheckinTime: z.string().regex(/^\d{2}:\d{2}$/),
   emailBriefingEnabled: z.boolean(),
   firstTask: z.string().max(1000),
+  role: z.string().max(50).optional(),
+  useCase: z.string().max(50).optional(),
+  referralSource: z.string().max(50).optional(),
 })

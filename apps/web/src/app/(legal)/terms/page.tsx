@@ -50,9 +50,9 @@ export default function TermsPage() {
       </p>
       <h3>4.2 Pro Plan</h3>
       <p>
-        The Pro plan is available for $9.99/month or $79.99/year and provides unlimited access to
-        all features, including unlimited tasks, AI assists, follow-up automation, performance
-        assessments, and advanced insights.
+        The Pro plan is available for $14.99/month or $99.99/year and provides expanded access to
+        all features, including unlimited tasks, 500 AI assists per month, follow-up automation,
+        performance assessments, and advanced insights.
       </p>
       <h3>4.3 Billing</h3>
       <p>

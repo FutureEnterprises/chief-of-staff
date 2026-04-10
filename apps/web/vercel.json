@@ -16,6 +16,10 @@
     {
       "path": "/api/cron/night",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/churn",
+      "schedule": "0 10 * * *"
     }
   ]
 }

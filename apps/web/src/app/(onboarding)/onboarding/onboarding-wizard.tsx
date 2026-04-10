@@ -38,10 +38,14 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
     nightCheckinTime: '21:00',
     emailBriefingEnabled: true,
     firstTask: '',
+    role: '',
+    useCase: '',
+    referralSource: '',
   })
 
   const steps = [
     { id: 'welcome', label: 'Welcome' },
+    { id: 'about-you', label: 'About You' },
     { id: 'schedule', label: 'Your Schedule' },
     { id: 'first-task', label: 'First Task' },
   ]
@@ -109,8 +113,9 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
               transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
             >
               {step === 0 && <WelcomeStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
-              {step === 1 && <ScheduleStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
-              {step === 2 && <FirstTaskStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
+              {step === 1 && <AboutYouStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
+              {step === 2 && <ScheduleStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
+              {step === 3 && <FirstTaskStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
             </motion.div>
           </AnimatePresence>
         </GlassCard>
@@ -177,6 +182,106 @@ function WelcomeStep({ data, onChange }: { data: any; onChange: (v: any) => void
               <option key={tz} value={tz}>{tz.replace('_', ' ').replace('/', ' / ')}</option>
             ))}
           </select>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const ROLES = [
+  { value: 'founder', label: 'Founder / CEO', emoji: '🚀' },
+  { value: 'manager', label: 'Manager / Lead', emoji: '📋' },
+  { value: 'freelancer', label: 'Freelancer / Solo', emoji: '💼' },
+  { value: 'student', label: 'Student', emoji: '📚' },
+  { value: 'creative', label: 'Creative / Maker', emoji: '🎨' },
+  { value: 'other', label: 'Other', emoji: '✨' },
+]
+
+const USE_CASES = [
+  { value: 'work', label: 'Work tasks', emoji: '🏢' },
+  { value: 'personal', label: 'Personal goals', emoji: '🏠' },
+  { value: 'side-project', label: 'Side project', emoji: '⚡' },
+  { value: 'team', label: 'Team coordination', emoji: '👥' },
+  { value: 'everything', label: 'All of the above', emoji: '🔥' },
+]
+
+const REFERRALS = [
+  { value: 'twitter', label: 'Twitter/X' },
+  { value: 'friend', label: 'Friend' },
+  { value: 'google', label: 'Google' },
+  { value: 'producthunt', label: 'Product Hunt' },
+  { value: 'tiktok', label: 'TikTok' },
+  { value: 'other', label: 'Other' },
+]
+
+function AboutYouStep({ data, onChange }: { data: any; onChange: (v: any) => void }) {
+  return (
+    <div>
+      <div className="mb-6">
+        <h2 className="heading-2">Quick question.</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          Helps us make COYL hound you in the right way.
+        </p>
+      </div>
+      <div className="space-y-5">
+        <div>
+          <label className="mb-2 block text-sm font-medium">What&apos;s your role?</label>
+          <div className="grid grid-cols-3 gap-1.5">
+            {ROLES.map((r) => (
+              <button
+                key={r.value}
+                onClick={() => onChange({ role: r.value })}
+                className={cn(
+                  'flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-xs font-medium transition-all',
+                  data.role === r.value
+                    ? 'bg-gradient-warm text-white border-transparent shadow-glow-orange'
+                    : 'hover:bg-muted'
+                )}
+              >
+                <span className="text-base">{r.emoji}</span>
+                {r.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <label className="mb-2 block text-sm font-medium">Using COYL for?</label>
+          <div className="grid grid-cols-3 gap-1.5">
+            {USE_CASES.map((u) => (
+              <button
+                key={u.value}
+                onClick={() => onChange({ useCase: u.value })}
+                className={cn(
+                  'flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-xs font-medium transition-all',
+                  data.useCase === u.value
+                    ? 'bg-gradient-warm text-white border-transparent shadow-glow-orange'
+                    : 'hover:bg-muted'
+                )}
+              >
+                <span className="text-base">{u.emoji}</span>
+                {u.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <label className="mb-2 block text-sm font-medium">How&apos;d you find us?</label>
+          <div className="grid grid-cols-3 gap-1.5">
+            {REFERRALS.map((r) => (
+              <button
+                key={r.value}
+                onClick={() => onChange({ referralSource: r.value })}
+                className={cn(
+                  'rounded-xl border px-2 py-2.5 text-xs font-medium transition-all',
+                  data.referralSource === r.value
+                    ? 'bg-gradient-warm text-white border-transparent shadow-glow-orange'
+                    : 'hover:bg-muted'
+                )}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

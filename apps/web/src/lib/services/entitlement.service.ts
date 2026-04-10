@@ -24,7 +24,7 @@ export const PLAN_LIMITS: Record<string, PlanFeatures> = {
   },
   PRO: {
     maxActiveTasks: Infinity,
-    aiAssistsPerMonth: Infinity,
+    aiAssistsPerMonth: 500,
     maxProjects: Infinity,
     followUpAutomation: true,
     notificationEscalation: true,

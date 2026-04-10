@@ -94,14 +94,14 @@ export function PricingSection() {
 
                 <h3 className="mb-2 text-xl font-bold text-white">Pro</h3>
                 <div className="mb-8 flex items-baseline gap-2">
-                  <span className="text-5xl font-black text-white">$12</span>
+                  <span className="text-5xl font-black text-white">$14.99</span>
                   <span className="font-medium text-gray-400">/mo</span>
                 </div>
 
                 <ul className="mb-10 flex-grow space-y-4">
                   {[
                     'Unlimited tasks',
-                    'Unlimited AI assists',
+                    '500 AI assists / month',
                     'Auto follow-ups that don\'t quit',
                     'See every pattern and excuse',
                   ].map((f) => (

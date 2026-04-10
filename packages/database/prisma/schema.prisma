@@ -33,6 +33,11 @@ model User {
   trialEndsAt           DateTime?
   onboardingCompleted   Boolean   @default(false)
   expoPushToken         String?
+  // Intent data (collected during onboarding)
+  role                  String?   // e.g. "founder", "manager", "freelancer", "student"
+  useCase               String?   // e.g. "work", "personal", "side-project", "team"
+  referralSource        String?   // e.g. "twitter", "friend", "google", "producthunt"
+  lastActiveAt          DateTime  @default(now())
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 

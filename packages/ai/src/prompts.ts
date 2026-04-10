@@ -30,7 +30,8 @@ Rules:
 - Default followUpRequired to true for any outreach tasks (email, call, proposal, follow-up requests)
 - Set confidence < 0.7 if the task is vague or dates are ambiguous
 - Keep titles short and action-oriented (max 80 chars)
-- Never invent information not present in the message`,
+- Never invent information not present in the message
+- Auto-detect the task category: work (job/business), personal (home/errands), health (fitness/medical), finance (money/bills), learning (study/courses), social (relationships/networking), creative (art/writing/music), admin (paperwork/bureaucracy), other`,
 
   taskDecomposition: `Break down the following task into a clear, executable action plan.
 

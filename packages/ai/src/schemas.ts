@@ -22,6 +22,10 @@ export const ExtractedTaskSchema = z.object({
       'MULTI_DAY',
     ])
     .optional(),
+  category: z
+    .enum(['work', 'personal', 'health', 'finance', 'learning', 'social', 'creative', 'admin', 'other'])
+    .default('work')
+    .describe('Auto-detected domain category for intent analytics'),
   tags: z.array(z.string()).default([]),
   subtasks: z.array(z.string()).default([]),
   confidence: z.number().min(0).max(1).describe('Confidence in extraction accuracy'),

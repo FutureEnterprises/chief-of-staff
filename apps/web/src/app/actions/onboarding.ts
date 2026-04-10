@@ -12,6 +12,9 @@ export async function completeOnboarding(data: {
   nightCheckinTime: string
   emailBriefingEnabled: boolean
   firstTask: string
+  role?: string
+  useCase?: string
+  referralSource?: string
 }) {
   const user = await requireDbUser()
 
@@ -30,6 +33,9 @@ export async function completeOnboarding(data: {
         nightCheckinTime: parsed.data.nightCheckinTime,
         emailBriefingEnabled: parsed.data.emailBriefingEnabled,
         onboardingCompleted: true,
+        ...(parsed.data.role && { role: parsed.data.role }),
+        ...(parsed.data.useCase && { useCase: parsed.data.useCase }),
+        ...(parsed.data.referralSource && { referralSource: parsed.data.referralSource }),
       },
     })
 

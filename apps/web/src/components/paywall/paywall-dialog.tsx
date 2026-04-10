@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -25,6 +25,20 @@ interface PaywallDialogProps {
 export function PaywallDialog({ open, onClose, trigger }: PaywallDialogProps) {
   const [interval, setInterval] = useState<'monthly' | 'annual'>('annual')
   const [loading, setLoading] = useState(false)
+  const tracked = useRef(false)
+
+  // Track paywall impression for intent data
+  useEffect(() => {
+    if (open && !tracked.current) {
+      tracked.current = true
+      fetch('/api/v1/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventType: 'PAYWALL_SEEN', metadata: { trigger: trigger ?? 'unknown' } }),
+      }).catch(() => {}) // fire-and-forget
+    }
+    if (!open) tracked.current = false
+  }, [open, trigger])
 
   async function handleUpgrade() {
     setLoading(true)
@@ -92,7 +106,7 @@ export function PaywallDialog({ open, onClose, trigger }: PaywallDialogProps) {
 
         <div className="text-center">
           <div className="text-3xl font-bold text-zinc-900">
-            {interval === 'annual' ? '$79.99' : '$9.99'}
+            {interval === 'annual' ? '$99.99' : '$14.99'}
             <span className="text-base font-normal text-zinc-400">
               /{interval === 'annual' ? 'year' : 'mo'}
             </span>
