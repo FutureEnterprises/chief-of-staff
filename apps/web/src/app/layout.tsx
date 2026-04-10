@@ -6,12 +6,29 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: 'COYL',
+    default: 'COYL — AI Willpower',
     template: '%s | COYL',
   },
   description:
-    'Control Your Life. COYL is your AI-powered execution partner — wound tight and ready to release on your command.',
-  keywords: ['productivity', 'task management', 'ai assistant', 'control your life', 'coyl', 'follow-up', 'daily briefing'],
+    'Control Over Your Life. The AI that hounds you until it\'s done. Morning briefings. Night reviews. Relentless follow-through.',
+  keywords: ['productivity', 'task management', 'ai assistant', 'control your life', 'coyl', 'follow-up', 'daily briefing', 'ai willpower'],
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://coyl.ai'),
+  manifest: '/site.webmanifest',
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'COYL',
+    title: 'COYL — AI Willpower',
+    description: 'The AI that hounds your a$$ until it\'s done. Morning briefings. Night reviews. Zero excuses.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'COYL — AI Willpower',
+    description: 'The AI that hounds your a$$ until it\'s done.',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

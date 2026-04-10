@@ -1,0 +1,16 @@
+{
+  "name": "COYL — Control Over Your Life",
+  "short_name": "COYL",
+  "description": "The AI that hounds your a$$ until it's done.",
+  "start_url": "/today",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#ff6600",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
