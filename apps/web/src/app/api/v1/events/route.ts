@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
-import { prisma } from '@repo/database'
+import { prisma, type EventType } from '@repo/database'
 
 export async function POST(req: Request) {
   const { userId: clerkId } = await auth()
@@ -16,18 +16,18 @@ export async function POST(req: Request) {
     }
 
     // Allowlist of trackable events
-    const allowed = [
+    const allowed: EventType[] = [
       'PAYWALL_SEEN', 'UPGRADE_STARTED', 'FEATURE_USED',
       'ASSESSMENT_RUN', 'CHAT_SESSION', 'MORNING_REVIEW', 'NIGHT_REVIEW',
     ]
-    if (!allowed.includes(eventType)) {
+    if (!allowed.includes(eventType as EventType)) {
       return Response.json({ error: 'Invalid event type' }, { status: 400 })
     }
 
     await prisma.productivityEvent.create({
       data: {
         userId: user.id,
-        eventType,
+        eventType: eventType as EventType,
         ...(metadata ? { metadataJson: metadata } : {}),
       },
     })
