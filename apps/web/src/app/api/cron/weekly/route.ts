@@ -40,7 +40,7 @@ export async function GET(req: Request) {
 
     if (users.length === 0) break
 
-    await batchProcess(users, 10, async (user) => {
+    await batchProcess(users, async (user) => {
       const [completed, created, biggestWin, biggestMiss] = await Promise.all([
         prisma.task.count({
           where: { userId: user.id, status: 'COMPLETED', completedAt: { gte: sevenDaysAgo } },

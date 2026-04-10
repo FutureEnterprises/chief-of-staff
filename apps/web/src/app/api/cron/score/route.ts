@@ -31,7 +31,7 @@ export async function GET(req: Request) {
 
     if (users.length === 0) break
 
-    await batchProcess(users, 20, async (user) => {
+    await batchProcess(users, async (user) => {
       // Recalculate execution score
       await computeExecutionScore(user.id)
 
