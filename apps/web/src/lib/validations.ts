@@ -30,6 +30,8 @@ export const updateUserSchema = z.object({
   emailBriefingDays: z.array(z.enum(['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'])).optional(),
 })
 
+export type UpdateUserInput = z.infer<typeof updateUserSchema>
+
 export const pushTokenSchema = z.object({
   expoPushToken: z.string().min(1).startsWith('ExponentPushToken['),
 })

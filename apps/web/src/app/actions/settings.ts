@@ -8,6 +8,7 @@ export async function updateUserSettings(data: {
   timezone?: string
   emailBriefingEnabled?: boolean
   emailBriefingDays?: string[]
+  reminderIntensity?: 'GENTLE' | 'STANDARD' | 'RELENTLESS'
 }) {
   const user = await requireDbUser()
 
