@@ -353,6 +353,12 @@ enum EventType {
   ONBOARDING_COMPLETED
   TRIAL_STARTED
   NOTIFICATION_OPENED
+  CHURN_EMAIL_SENT
+  FEATURE_USED
+  ASSESSMENT_RUN
+  CHAT_SESSION
+  MORNING_REVIEW
+  NIGHT_REVIEW
 }
 
 // ============================================================
