@@ -51,6 +51,9 @@ export async function POST(req: Request) {
     },
   })
 
+  // Fire-and-forget: notify accountability partners
+  notifyPartnersOfSlip(user.id, trigger).catch(() => {})
+
   // If tied to a commitment, count it as broken
   if (commitmentId) {
     await prisma.commitment
@@ -105,5 +108,37 @@ function toneSuffix(mode: string | null | undefined) {
     case 'NO_BS': return 'NoBs'
     case 'BEAST': return 'Beast'
     default: return 'Mentor'
+  }
+}
+
+async function notifyPartnersOfSlip(userId: string, trigger?: string): Promise<void> {
+  const resendKey = process.env.RESEND_API_KEY
+  if (!resendKey) return
+
+  const partners = await prisma.accountabilityPartner.findMany({
+    where: { ownerId: userId, status: 'accepted' },
+    include: {
+      owner: { select: { name: true } },
+      peer: { select: { email: true, name: true } },
+    },
+  })
+  if (partners.length === 0) return
+
+  const { Resend } = await import('resend')
+  const resend = new Resend(resendKey)
+  const fromEmail = process.env.RESEND_FROM_EMAIL ?? 'COYL <noreply@coyl.ai>'
+
+  for (const p of partners) {
+    if (!p.peer?.email) continue
+    try {
+      await resend.emails.send({
+        from: fromEmail,
+        to: p.peer.email,
+        subject: `${p.owner.name} slipped — just a heads up`,
+        text: `${p.owner.name} just logged a slip${trigger ? ` (${trigger})` : ''}.\n\nYour job isn't to fix anything. Just be visible. A check-in text means more than you think.\n\n— COYL`,
+      })
+    } catch {
+      // silent
+    }
   }
 }
