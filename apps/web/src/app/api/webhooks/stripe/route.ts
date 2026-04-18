@@ -109,6 +109,34 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
       },
     }),
   ])
+
+  // Referral conversion — credit both sides once, only on real upgrade (not trial)
+  if (!subscription.trial_end) {
+    await creditReferralOnConversion(userId).catch(() => {})
+  }
+}
+
+async function creditReferralOnConversion(userId: string): Promise<void> {
+  const referral = await prisma.referral.findFirst({
+    where: { referredId: userId, converted: false },
+  })
+  if (!referral) return
+
+  const CREDIT_CENTS = 1000 // $10 credit both sides
+  await prisma.$transaction([
+    prisma.referral.update({
+      where: { id: referral.id },
+      data: {
+        converted: true,
+        convertedAt: new Date(),
+        referrerCredit: CREDIT_CENTS,
+        referredCredit: CREDIT_CENTS,
+      },
+    }),
+    prisma.productivityEvent.create({
+      data: { userId: referral.referrerId, eventType: 'REFERRAL_CONVERTED', eventValue: userId },
+    }),
+  ])
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
