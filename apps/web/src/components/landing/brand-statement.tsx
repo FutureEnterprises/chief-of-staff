@@ -51,11 +51,11 @@ export function BrandStatement() {
           transition={{ delay: 0.2, duration: 0.8 }}
           className="text-4xl font-black tracking-tighter text-white md:text-6xl"
         >
-          You don&apos;t need motivation.
+          You don&apos;t need more motivation.
           <br />
-          You need{' '}
+          You need a{' '}
           <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-            enforcement
+            wake-up system
           </span>.
         </motion.h2>
 
@@ -65,9 +65,9 @@ export function BrandStatement() {
           transition={{ delay: 0.4, duration: 0.8 }}
           className="mx-auto mt-8 max-w-2xl text-xl font-light leading-relaxed text-gray-400"
         >
-          COYL doesn&apos;t care how you feel. It cares what you do. Every commitment tracked.
-          Every follow-up enforced. Your Execution Score tells the truth about your
-          follow-through — and it updates every single day.
+          Most people don&apos;t fail because they don&apos;t know what to do. They fail in
+          moments — late at night, under stress, after one slip — where they go on autopilot
+          and run a script they&apos;ve run a hundred times. COYL is built for those moments.
         </motion.p>
       </div>
     </section>

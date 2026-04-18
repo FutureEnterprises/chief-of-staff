@@ -62,11 +62,11 @@ export function HeroSection() {
             transition={{ delay: 0.8, duration: 0.7 }}
             className="mt-8 max-w-xl text-lg text-gray-400 sm:text-xl"
           >
-            Every commitment tracked. Every deadline enforced. Every excuse{' '}
+            Stop the script before it runs your life. COYL catches you in the moments you usually{' '}
             <span className="border-b-2 border-orange-500 font-bold text-orange-400" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
-              eliminated
+              go on autopilot
             </span>
-            . Your Execution Score doesn&apos;t lie. Your streak doesn&apos;t care how you feel.
+            , calls out the excuse, and gets you back on track before one bad moment becomes a bad week.
           </motion.p>
 
           {/* CTAs */}
@@ -80,7 +80,7 @@ export function HeroSection() {
               href="/sign-up"
               className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-orange-600 to-red-600 px-8 py-4 text-lg font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(255,102,0,0.5)]"
             >
-              <span className="relative z-10">Start Enforcing</span>
+              <span className="relative z-10">Find my failure pattern</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="relative z-10">
                 <path d="M8 1v14M1 8l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" transform="rotate(-90 8 8)" />
               </svg>

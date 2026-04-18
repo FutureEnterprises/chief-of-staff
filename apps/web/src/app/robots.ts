@@ -7,7 +7,20 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: ['/', '/terms', '/privacy', '/cookies', '/llms.txt'],
+        allow: [
+          '/',
+          '/terms',
+          '/privacy',
+          '/cookies',
+          '/llms.txt',
+          '/how-it-works',
+          '/weight-loss',
+          '/destructive-behaviors',
+          '/decision-support',
+          '/recovery',
+          '/patterns',
+          '/science',
+        ],
         disallow: [
           '/today',
           '/inbox',

@@ -1,65 +1,74 @@
-# COYL — AI Willpower
+# COYL — Autopilot Interruption System
 
-> Control Over Your Life. The AI productivity partner that hounds you until it's done.
+> Stop the script before it runs your life. COYL is a behavior interruption and decision support system that catches self-sabotage in the moment, calls out the excuse, and helps you recover before one bad choice becomes a bad week.
 
 ## What is COYL?
 
-COYL is an AI-powered productivity platform built for people who are tired of dropping the ball. It tracks every task and commitment you make, conducts morning planning and night review sessions, and escalates follow-ups until they're resolved. It's not a passive to-do app — it's an accountability system with teeth.
+COYL is a behavior interruption + decision support system for real life. It learns the automatic patterns ("scripts") users run, interrupts them at the exact moment it matters, helps the user tell the truth about what's happening, and guides them back to a better decision — with shame-resistant recovery when they slip.
 
-## Core Features
+Category: behavior change / mental health-adjacent consumer app. Primary wedge: weight-loss autopilot interruption. Secondary wedges: cravings, destructive behaviors, consistency, spending, focus.
 
-- **Morning Planning**: AI-guided session every morning to set priorities, surface overdue items, and plan the day
-- **Night Review**: AI-guided session every night to assess what got done, carry forward open items, and close loops
-- **Task Capture**: Natural language task extraction with auto-detected due dates, priorities, and follow-up schedules
-- **Follow-Up Tracking**: Every outreach task (email, call, proposal) gets automatic follow-up reminders that escalate over time
-- **Task Decomposition**: AI breaks complex tasks into 5-8 actionable subtasks with effort estimates
-- **AI Performance Assessment**: 30-day analysis with two modes — Considerate (supportive coach) and No BS (brutal honesty)
-- **Mentor Mode vs Beast Mode**: Choose your AI tone. Mentor Mode is warm and encouraging. Beast Mode is savage and calls out avoidance.
-- **Daily Email Briefings**: Morning summary of priorities, overdue items, and follow-ups delivered to your inbox
-- **Churn Detection**: Re-engagement system that nudges inactive users with escalating messages
+## Core Engines
+
+- **Autopilot Map Engine** — learns danger windows, contexts, and failure sequences
+- **Decision Engine** — structured decision output: what you're deciding, best move, cost of worse, likely excuse, smallest next step
+- **Commitment Engine** — turns intentions into specific trackable rules
+- **Precision Interrupt Engine (JITAI)** — fires at learned risk moments, not randomly
+- **Excuse Detection Engine** — classifies self-deception in real time across 8 categories (Delay, Reward, Minimization, Collapse, Exhaustion, Exception, Compensation, Social Pressure)
+- **Recovery Engine** — shame-resistant re-entry, same-night recovery, no Monday reset, 1-day grace period on streaks
+- **Identity Engine** — tracks movement along Sleepwalking → Avoidant → Recovering → Resilient → High-Self-Trust
+- **Self-Trust Score** — measures commitment keeping, recovery speed, avoidance frequency
+
+## Tone Modes
+
+Four delivery styles, same underlying intelligence:
+- **Mentor** — warm, supportive, encouraging
+- **Strategist** — analytical, crisp, structured
+- **No-BS** — direct, blunt, calls out avoidance
+- **Beast** — high-pressure, drill sergeant energy
 
 ## Pricing
 
-- **Free**: $0/forever — 50 active tasks, 20 Charges (AI interactions) per month, morning & night reviews, email briefings
-- **Pro**: $14.99/month or $99.99/year — Unlimited tasks, 500 Charges/month, Beast Mode, follow-up automation, AI assessments, advanced insights
+- **Free** — $0 — 25 commitments, 20 Charges/month, basic autopilot map
+- **Core** — $19/mo ($179/yr) — unlimited commitments, 500 Charges, full rescue + recovery, pattern detection, assessments
+- **Plus** — $29/mo ($279/yr) — 1,500 Charges, accountability partner, challenge pods, precision interrupts (JITAI)
+- **Premium** — $49/mo ($469/yr) — unlimited Charges, scenario simulator, financial stakes, health + calendar integrations
 
-## What are Charges?
+## Scientific Basis
 
-Every AI interaction is called a "Charge." When the AI helps you plan, review, decompose tasks, or deliver an assessment, that's one Charge. Free users get 20/month. Pro users get 500/month.
+COYL's design is grounded in peer-reviewed research:
+- Habit automaticity research (behaviors become automatic in stable contexts)
+- Ecological momentary assessment of dietary lapses (moment-level triggers)
+- Just-in-time adaptive interventions (JITAI) for precision timing
+- NIDDK behavioral weight-loss components (self-monitoring, relapse prevention)
+- Implementation intentions ("if-then" planning) for translating intention into action
 
-## Technology Stack
+Full citations at https://coyl.ai/science
 
-- **Web**: Next.js 15, React 19, Tailwind CSS, Framer Motion
-- **Mobile**: React Native (Expo SDK 52), iOS + Android
-- **AI**: Anthropic Claude (Sonnet 4.6) via Vercel AI SDK
-- **Auth**: Clerk
-- **Database**: PostgreSQL via Supabase + Prisma ORM
-- **Payments**: Stripe
-- **Email**: Resend
-- **Hosting**: Vercel
+## Not Medical
 
-## Company
+COYL is a behavioral support tool. It is not medical treatment, not a substitute for a licensed clinician, and not for users experiencing serious addiction, eating disorder, or psychiatric distress.
 
-- **Website**: https://coyl.ai
-- **Product**: SaaS productivity platform
-- **Platforms**: Web, iOS, Android
+## Platforms
+
+- Web: https://coyl.ai (Next.js 15, React 19)
+- iOS + Android (Expo / React Native)
 
 ## Key Pages
 
 - Homepage: https://coyl.ai
-- Terms of Service: https://coyl.ai/terms
-- Privacy Policy: https://coyl.ai/privacy
-- Cookie Policy: https://coyl.ai/cookies
-
-## API
-
-COYL provides REST API endpoints for authenticated users:
-- `GET /api/v1/today` — Today's briefing data (tasks, overdue, follow-ups)
-- `GET /api/v1/tasks` — All user tasks
-- `POST /api/v1/tasks` — Create a task
-- `POST /api/chat` — AI chat with mode support (chat, morning, night, assessment-considerate, assessment-nobs)
+- How it works: https://coyl.ai/how-it-works
+- Weight loss wedge: https://coyl.ai/weight-loss
+- Destructive behaviors wedge: https://coyl.ai/destructive-behaviors
+- Decision support: https://coyl.ai/decision-support
+- Recovery: https://coyl.ai/recovery
+- Patterns: https://coyl.ai/patterns
+- Science: https://coyl.ai/science
+- Terms: https://coyl.ai/terms
+- Privacy: https://coyl.ai/privacy
 
 ## Contact
 
-- Email: legal@coyl.ai
-- Email: privacy@coyl.ai
+- Product: hello@coyl.ai
+- Legal: legal@coyl.ai
+- Privacy: privacy@coyl.ai
