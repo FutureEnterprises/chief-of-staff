@@ -51,6 +51,23 @@ model User {
   // Public profile
   profilePublic         Boolean   @default(false)
   profileSlug           String?   @unique
+  // Autopilot Interruption System
+  primaryWedge          PrimaryWedge  @default(PRODUCTIVITY)
+  selfTrustScore        Int       @default(0)
+  dangerWindows         Json?     // { "mon": ["21:00-23:00"], "sat": ["14:00-18:00"] }
+  excuseStyle           ExcuseCategory?
+  recoveryState         RecoveryState @default(ACTIVE)
+  identityState         IdentityState @default(SLEEPWALKING)
+  toneMode              ToneMode  @default(MENTOR)
+  lastSlipAt            DateTime?
+  slipsThisMonth        Int       @default(0)
+  // Referral / growth
+  referralCode          String?   @unique
+  referredByUserId      String?
+  // Stripe Connect for stakes
+  stripeConnectId       String?
+  // Integrations
+  healthIntegrations    Json?     // { apple: true, google: false, calendar: "google" }
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
@@ -65,8 +82,345 @@ model User {
   emailBriefings        EmailBriefing[]
   badges                UserBadge[]
   challengeEntries      ChallengeEntry[]
+  // Autopilot relations
+  excuses               Excuse[]
+  dangerWindowRecords   DangerWindow[]
+  rescueSessions        RescueSession[]
+  decisionLogs          DecisionLog[]
+  commitments           Commitment[]
+  slipRecords           SlipRecord[]
+  scenarios             ScenarioSim[]
+  // Accountability + stakes
+  partnersAsOwner       AccountabilityPartner[] @relation("PartnerOwner")
+  partnersAsPeer        AccountabilityPartner[] @relation("PartnerPeer")
+  podMemberships        PodMember[]
+  podsOwned             ChallengePod[]          @relation("PodOwner")
+  stakes                Stake[]
+  // Referrals
+  referralsMade         Referral[]              @relation("Referrer")
+  referralsReceived     Referral[]              @relation("Referred")
 
   @@map("users")
+}
+
+// ============================================================
+// AUTOPILOT INTERRUPTION SYSTEM
+// ============================================================
+
+model Excuse {
+  id           String          @id @default(cuid())
+  userId       String
+  text         String
+  category     ExcuseCategory
+  source       ExcuseSource    @default(CHAT)
+  context      Json?
+  createdAt    DateTime        @default(now())
+
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("excuses")
+  @@index([userId, category])
+  @@index([userId, createdAt])
+}
+
+enum ExcuseCategory {
+  DELAY                // "I'll start tomorrow"
+  REWARD               // "I deserve it"
+  MINIMIZATION         // "one time won't matter"
+  COLLAPSE             // "I already blew it"
+  EXHAUSTION           // "I'm too tired"
+  EXCEPTION            // "this week is weird"
+  COMPENSATION         // "I'll make up for it later"
+  SOCIAL_PRESSURE      // "I can't say no here"
+}
+
+enum ExcuseSource {
+  CHAT
+  DECISION
+  RESCUE
+  CHECKIN
+}
+
+model DangerWindow {
+  id           String    @id @default(cuid())
+  userId       String
+  label        String    // "Late-night kitchen", "Friday happy hour"
+  dayOfWeek    Int       // 0 (Sun) through 6 (Sat), -1 = all days
+  startHour    Int       // 0-23 local time
+  endHour      Int       // 0-23 local time
+  triggerType  String?   // "stress", "social", "idle", "post-work"
+  source       String    @default("user") // "user", "inferred"
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("danger_windows")
+  @@index([userId, active])
+}
+
+model RescueSession {
+  id            String         @id @default(cuid())
+  userId        String
+  trigger       RescueTrigger
+  customText    String?
+  intervention  Json           // AI response
+  outcome       RescueOutcome  @default(PENDING)
+  startedAt     DateTime       @default(now())
+  resolvedAt    DateTime?
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("rescue_sessions")
+  @@index([userId, startedAt])
+}
+
+enum RescueTrigger {
+  BINGE_URGE
+  DELIVERY_URGE
+  NICOTINE_URGE
+  ALCOHOL_URGE
+  SKIP_WORKOUT
+  SKIP_WEIGHIN
+  ALREADY_SLIPPED
+  SPIRALING
+  DOOMSCROLL
+  IMPULSE_SPEND
+  OTHER
+}
+
+enum RescueOutcome {
+  PENDING
+  INTERRUPTED    // user pulled back
+  SLIPPED        // user did the thing anyway
+  UNRESOLVED     // no follow-up
+}
+
+model DecisionLog {
+  id              String    @id @default(cuid())
+  userId          String
+  context         String    // what the user was deciding
+  bestMove        String?
+  worstCase       String?
+  excuseDetected  String?
+  smallestStep    String?
+  userChose       String?
+  outcome         String?   // "followed", "slipped", "unresolved"
+  savedAsTaskId   String?
+  createdAt       DateTime  @default(now())
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("decision_logs")
+  @@index([userId, createdAt])
+}
+
+model Commitment {
+  id            String              @id @default(cuid())
+  userId        String
+  rule          String              // "no food after 9 PM"
+  domain        CommitmentDomain    @default(OTHER)
+  frequency     CommitmentFrequency @default(DAILY)
+  active        Boolean             @default(true)
+  startedAt     DateTime            @default(now())
+  endsAt        DateTime?
+  stakeAmountCents Int?             // optional financial stake
+  stakeId       String?             @unique
+  keepCount     Int                 @default(0)
+  breakCount    Int                 @default(0)
+  lastCheckedAt DateTime?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stake         Stake?              @relation(fields: [stakeId], references: [id])
+
+  @@map("commitments")
+  @@index([userId, active])
+}
+
+enum CommitmentDomain {
+  FOOD
+  EXERCISE
+  CRAVING
+  SLEEP
+  SPENDING
+  FOCUS
+  RELATIONSHIP
+  DIGITAL
+  OTHER
+}
+
+enum CommitmentFrequency {
+  DAILY
+  WEEKLY
+  ONE_TIME
+}
+
+model SlipRecord {
+  id            String    @id @default(cuid())
+  userId        String
+  commitmentId  String?
+  trigger       String?
+  notes         String?
+  recoverySteps Json?
+  recoveredAt   DateTime?
+  createdAt     DateTime  @default(now())
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("slip_records")
+  @@index([userId, createdAt])
+}
+
+model ScenarioSim {
+  id           String    @id @default(cuid())
+  userId       String
+  scenario     String    // the hypothetical
+  immediate    String?
+  behavioral   String?
+  identityHit  String?
+  alternative  String?
+  createdAt    DateTime  @default(now())
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("scenario_sims")
+  @@index([userId, createdAt])
+}
+
+// ============================================================
+// ACCOUNTABILITY + STAKES
+// ============================================================
+
+model AccountabilityPartner {
+  id           String    @id @default(cuid())
+  ownerId      String
+  peerId       String?
+  peerEmail    String    // for pending invites
+  status       String    @default("pending") // "pending", "accepted", "declined"
+  invitedAt    DateTime  @default(now())
+  acceptedAt   DateTime?
+
+  owner        User      @relation("PartnerOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  peer         User?     @relation("PartnerPeer", fields: [peerId], references: [id], onDelete: SetNull)
+
+  @@map("accountability_partners")
+  @@index([ownerId])
+  @@index([peerId])
+  @@index([peerEmail])
+}
+
+model ChallengePod {
+  id           String    @id @default(cuid())
+  name         String
+  slug         String    @unique
+  ownerId      String
+  joinCode     String    @unique
+  maxMembers   Int       @default(5)
+  durationDays Int       @default(14)
+  startedAt    DateTime  @default(now())
+  endsAt       DateTime?
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+
+  owner        User      @relation("PodOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members      PodMember[]
+
+  @@map("challenge_pods")
+}
+
+model PodMember {
+  id         String   @id @default(cuid())
+  podId      String
+  userId     String
+  joinedAt   DateTime @default(now())
+  leftAt     DateTime?
+  role       String   @default("member") // "owner", "member"
+
+  pod        ChallengePod @relation(fields: [podId], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([podId, userId])
+  @@map("pod_members")
+}
+
+model Stake {
+  id              String    @id @default(cuid())
+  userId          String
+  amountCents     Int
+  currency        String    @default("USD")
+  charityLabel    String    @default("GiveDirectly")
+  stripeIntentId  String?   // Stripe payment intent (pre-auth)
+  status          String    @default("active") // "active", "released", "charged", "refunded"
+  chargedAt       DateTime?
+  refundedAt      DateTime?
+  createdAt       DateTime  @default(now())
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commitment      Commitment?
+
+  @@map("stakes")
+  @@index([userId])
+}
+
+model Referral {
+  id              String    @id @default(cuid())
+  referrerId      String
+  referredId      String?   // null until signup
+  referredEmail   String?
+  code            String    @unique
+  converted       Boolean   @default(false)
+  convertedAt     DateTime?
+  referrerCredit  Int       @default(0)  // cents
+  referredCredit  Int       @default(0)
+  createdAt       DateTime  @default(now())
+
+  referrer        User      @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred        User?     @relation("Referred", fields: [referredId], references: [id], onDelete: SetNull)
+
+  @@map("referrals")
+  @@index([code])
+  @@index([referrerId])
+}
+
+// ============================================================
+// ENUMS — AUTOPILOT
+// ============================================================
+
+enum PrimaryWedge {
+  PRODUCTIVITY
+  WEIGHT_LOSS
+  CRAVINGS
+  DESTRUCTIVE_BEHAVIORS
+  CONSISTENCY
+  SPENDING
+  FOCUS
+}
+
+enum RecoveryState {
+  ACTIVE       // in normal flow
+  SLIPPED      // just slipped, needs recovery
+  RECOVERING   // in recovery protocol
+  SILENT       // inactive 3+ days
+}
+
+enum IdentityState {
+  SLEEPWALKING          // pre-awareness
+  AVOIDANT              // dodging data
+  RECOVERING            // post-slip
+  UNSTABLE_BUT_TRYING   // trying, inconsistent
+  INCREASINGLY_CONSCIOUS
+  RESILIENT
+  DISCIPLINED
+  HIGH_SELF_TRUST
+}
+
+enum ToneMode {
+  MENTOR        // warm, supportive
+  STRATEGIST    // analytical, crisp
+  NO_BS         // blunt, calls out avoidance
+  BEAST         // high-pressure, confrontational
 }
 
 model Badge {
@@ -134,8 +488,11 @@ model ChallengeEntry {
 
 enum PlanType {
   FREE
-  PRO
-  TEAM
+  CORE
+  PLUS
+  PREMIUM
+  PRO          // legacy — maps to CORE for existing subscribers
+  TEAM         // legacy — maps to PLUS for existing subscribers
 }
 
 enum ReminderIntensity {
@@ -444,6 +801,28 @@ enum EventType {
   CHALLENGE_STARTED
   CHALLENGE_COMPLETED
   CHALLENGE_FAILED
+  SLIP_LOGGED
+  SLIP_RECOVERED
+  RESCUE_TRIGGERED
+  RESCUE_RESOLVED
+  DECISION_MADE
+  EXCUSE_DETECTED
+  DANGER_WINDOW_CROSSED
+  AUTOPILOT_INTERRUPTED
+  COMMITMENT_CREATED
+  COMMITMENT_KEPT
+  COMMITMENT_BROKEN
+  STAKE_PLACED
+  STAKE_CHARGED
+  STAKE_REFUNDED
+  PARTNER_INVITED
+  PARTNER_ACCEPTED
+  POD_CREATED
+  POD_JOINED
+  SCENARIO_SIMULATED
+  REFERRAL_SENT
+  REFERRAL_CONVERTED
+  IDENTITY_CHANGED
 }
 
 // ============================================================

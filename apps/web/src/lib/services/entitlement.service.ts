@@ -9,11 +9,26 @@ type PlanFeatures = {
   advancedInsights: boolean
   emailSummaries: boolean
   assessments: boolean
+  // Autopilot Interruption System
+  decisionEngine: boolean          // unlimited decision chats
+  rescueFlows: boolean             // all rescue triggers
+  recoveryEngine: boolean          // slip recovery protocols
+  patternDetection: boolean        // autopilot map, excuse history
+  selfTrustScore: boolean
+  // Plus tier
+  accountabilityPartner: boolean
+  challengePods: boolean
+  precisionInterrupt: boolean      // JITAI firing at learned windows
+  // Premium tier
+  scenarioSimulator: boolean
+  financialStakes: boolean
+  healthIntegrations: boolean
+  prioritySupport: boolean
 }
 
 export const PLAN_LIMITS: Record<string, PlanFeatures> = {
   FREE: {
-    maxActiveTasks: 50,
+    maxActiveTasks: 25,
     aiAssistsPerMonth: 20,
     maxProjects: 3,
     followUpAutomation: false,
@@ -21,7 +36,86 @@ export const PLAN_LIMITS: Record<string, PlanFeatures> = {
     advancedInsights: false,
     emailSummaries: false,
     assessments: false,
+    decisionEngine: false,
+    rescueFlows: false,
+    recoveryEngine: false,
+    patternDetection: false,
+    selfTrustScore: true,
+    accountabilityPartner: false,
+    challengePods: false,
+    precisionInterrupt: false,
+    scenarioSimulator: false,
+    financialStakes: false,
+    healthIntegrations: false,
+    prioritySupport: false,
   },
+  CORE: {
+    maxActiveTasks: Infinity,
+    aiAssistsPerMonth: 500,
+    maxProjects: Infinity,
+    followUpAutomation: true,
+    notificationEscalation: true,
+    advancedInsights: true,
+    emailSummaries: true,
+    assessments: true,
+    decisionEngine: true,
+    rescueFlows: true,
+    recoveryEngine: true,
+    patternDetection: true,
+    selfTrustScore: true,
+    accountabilityPartner: false,
+    challengePods: false,
+    precisionInterrupt: false,
+    scenarioSimulator: false,
+    financialStakes: false,
+    healthIntegrations: false,
+    prioritySupport: false,
+  },
+  PLUS: {
+    maxActiveTasks: Infinity,
+    aiAssistsPerMonth: 1500,
+    maxProjects: Infinity,
+    followUpAutomation: true,
+    notificationEscalation: true,
+    advancedInsights: true,
+    emailSummaries: true,
+    assessments: true,
+    decisionEngine: true,
+    rescueFlows: true,
+    recoveryEngine: true,
+    patternDetection: true,
+    selfTrustScore: true,
+    accountabilityPartner: true,
+    challengePods: true,
+    precisionInterrupt: true,
+    scenarioSimulator: false,
+    financialStakes: false,
+    healthIntegrations: false,
+    prioritySupport: true,
+  },
+  PREMIUM: {
+    maxActiveTasks: Infinity,
+    aiAssistsPerMonth: Infinity,
+    maxProjects: Infinity,
+    followUpAutomation: true,
+    notificationEscalation: true,
+    advancedInsights: true,
+    emailSummaries: true,
+    assessments: true,
+    decisionEngine: true,
+    rescueFlows: true,
+    recoveryEngine: true,
+    patternDetection: true,
+    selfTrustScore: true,
+    accountabilityPartner: true,
+    challengePods: true,
+    precisionInterrupt: true,
+    scenarioSimulator: true,
+    financialStakes: true,
+    healthIntegrations: true,
+    prioritySupport: true,
+  },
+  // Legacy alias — PRO maps to CORE for backwards compat
   PRO: {
     maxActiveTasks: Infinity,
     aiAssistsPerMonth: 500,
@@ -31,18 +125,50 @@ export const PLAN_LIMITS: Record<string, PlanFeatures> = {
     advancedInsights: true,
     emailSummaries: true,
     assessments: true,
+    decisionEngine: true,
+    rescueFlows: true,
+    recoveryEngine: true,
+    patternDetection: true,
+    selfTrustScore: true,
+    accountabilityPartner: false,
+    challengePods: false,
+    precisionInterrupt: false,
+    scenarioSimulator: false,
+    financialStakes: false,
+    healthIntegrations: false,
+    prioritySupport: false,
   },
+  // Legacy alias — TEAM maps to PLUS
   TEAM: {
     maxActiveTasks: Infinity,
-    aiAssistsPerMonth: Infinity,
+    aiAssistsPerMonth: 1500,
     maxProjects: Infinity,
     followUpAutomation: true,
     notificationEscalation: true,
     advancedInsights: true,
     emailSummaries: true,
     assessments: true,
+    decisionEngine: true,
+    rescueFlows: true,
+    recoveryEngine: true,
+    patternDetection: true,
+    selfTrustScore: true,
+    accountabilityPartner: true,
+    challengePods: true,
+    precisionInterrupt: true,
+    scenarioSimulator: false,
+    financialStakes: false,
+    healthIntegrations: false,
+    prioritySupport: true,
   },
 }
+
+export const PLAN_PRICING = {
+  FREE: { monthly: 0, annual: 0 },
+  CORE: { monthly: 19, annual: 179 },       // ~22% off annual
+  PLUS: { monthly: 29, annual: 279 },       // ~20% off annual
+  PREMIUM: { monthly: 49, annual: 469 },    // ~20% off annual
+} as const
 
 export type EntitlementFeature = keyof PlanFeatures
 

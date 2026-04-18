@@ -11,10 +11,15 @@ export async function POST(req: Request) {
   }
 
   const stripe = new Stripe(stripeKey, { apiVersion: '2025-02-24.acacia' })
+  // Backwards compat: PRO_* fall back to CORE_* if set (legacy naming)
   const PRICE_IDS = {
-    pro_monthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
-    pro_annual: process.env.STRIPE_PRO_ANNUAL_PRICE_ID,
-  }
+    core_monthly: process.env.STRIPE_CORE_MONTHLY_PRICE_ID ?? process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
+    core_annual: process.env.STRIPE_CORE_ANNUAL_PRICE_ID ?? process.env.STRIPE_PRO_ANNUAL_PRICE_ID,
+    plus_monthly: process.env.STRIPE_PLUS_MONTHLY_PRICE_ID,
+    plus_annual: process.env.STRIPE_PLUS_ANNUAL_PRICE_ID,
+    premium_monthly: process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID,
+    premium_annual: process.env.STRIPE_PREMIUM_ANNUAL_PRICE_ID,
+  } as const
 
   const { userId: clerkId } = await auth()
   if (!clerkId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -36,8 +41,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid interval' }, { status: 400 })
   }
 
-  const { interval } = parsed.data
-  const priceId = interval === 'annual' ? PRICE_IDS.pro_annual : PRICE_IDS.pro_monthly
+  const { interval, tier = 'core' } = parsed.data as { interval: 'monthly' | 'annual'; tier?: 'core' | 'plus' | 'premium' }
+  const priceKey = `${tier}_${interval}` as keyof typeof PRICE_IDS
+  const priceId = PRICE_IDS[priceKey]
 
   if (!priceId) {
     return NextResponse.json({ error: 'Stripe price IDs not configured' }, { status: 503 })

@@ -38,6 +38,7 @@ export const pushTokenSchema = z.object({
 
 export const checkoutSchema = z.object({
   interval: z.enum(['monthly', 'annual']),
+  tier: z.enum(['core', 'plus', 'premium']).optional().default('core'),
 })
 
 export const chatSchema = z.object({
