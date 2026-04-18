@@ -6,7 +6,7 @@ import { motion } from 'motion/react'
 import type { User } from '@repo/database'
 import {
   Brain, CheckSquare, Clock, Eye, Flame, FolderOpen, Home,
-  Inbox, LogOut, MessageSquare, Settings, Shield, Sparkles, TrendingUp,
+  Inbox, LogOut, MessageSquare, Settings, Shield, Sparkles, TrendingUp, Zap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CoylLogo } from '@/components/brand/logo'
@@ -17,6 +17,7 @@ const navItems = [
   { label: 'Rescue', href: '/rescue', icon: Flame },
   { label: 'Commitments', href: '/commitments', icon: Shield },
   { label: 'Patterns', href: '/patterns', icon: Eye },
+  { label: 'Simulate', href: '/simulate', icon: Zap },
   { label: 'Inbox', href: '/inbox', icon: Inbox },
   { label: 'Tasks', href: '/tasks', icon: CheckSquare },
   { label: 'Follow-ups', href: '/follow-ups', icon: Clock },
