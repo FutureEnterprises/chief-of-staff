@@ -5,20 +5,24 @@ import { UserButton, useClerk } from '@clerk/nextjs'
 import { motion } from 'motion/react'
 import type { User } from '@repo/database'
 import {
-  Brain, CheckSquare, Clock, Flame, FolderOpen, Home,
-  Inbox, LogOut, MessageSquare, Settings, TrendingUp,
+  Brain, CheckSquare, Clock, Eye, Flame, FolderOpen, Home,
+  Inbox, LogOut, MessageSquare, Settings, Shield, Sparkles, TrendingUp,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CoylLogo } from '@/components/brand/logo'
 
 const navItems = [
   { label: 'Today', href: '/today', icon: Home },
+  { label: 'Decide', href: '/decide', icon: Brain },
+  { label: 'Rescue', href: '/rescue', icon: Flame },
+  { label: 'Commitments', href: '/commitments', icon: Shield },
+  { label: 'Patterns', href: '/patterns', icon: Eye },
   { label: 'Inbox', href: '/inbox', icon: Inbox },
   { label: 'Tasks', href: '/tasks', icon: CheckSquare },
   { label: 'Follow-ups', href: '/follow-ups', icon: Clock },
   { label: 'Projects', href: '/projects', icon: FolderOpen },
   { label: 'Insights', href: '/insights', icon: TrendingUp },
-  { label: 'Assessment', href: '/assessment', icon: Brain },
+  { label: 'Assessment', href: '/assessment', icon: Sparkles },
   { label: 'Chat', href: '/chat', icon: MessageSquare },
 ]
 
