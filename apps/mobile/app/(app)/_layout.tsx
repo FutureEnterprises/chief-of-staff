@@ -34,6 +34,34 @@ export default function AppTabLayout() {
         }}
       />
       <Tabs.Screen
+        name="decide"
+        options={{
+          title: 'Decide',
+          tabBarIcon: ({ color, size }) => <Ionicons name="bulb-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="rescue"
+        options={{
+          title: 'Rescue',
+          tabBarIcon: ({ color, size }) => <Ionicons name="flame-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="commitments"
+        options={{
+          title: 'Rules',
+          tabBarIcon: ({ color, size }) => <Ionicons name="shield-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="patterns"
+        options={{
+          title: 'Patterns',
+          tabBarIcon: ({ color, size }) => <Ionicons name="eye-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="inbox"
         options={{
           title: 'Inbox',
