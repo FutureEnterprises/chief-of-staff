@@ -32,6 +32,10 @@
     {
       "path": "/api/cron/autopilot-autopsy",
       "schedule": "0 10 * * 1"
+    },
+    {
+      "path": "/api/cron/danger-window-interrupt",
+      "schedule": "*/15 * * * *"
     }
   ]
 }
