@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useRouter } from 'next/navigation'
 import type { User } from '@repo/database'
-import { Zap, MapPin, ArrowRight, ArrowLeft } from 'lucide-react'
+import { Zap, ArrowRight, ArrowLeft, Flame, Heart, BrainCircuit, Swords } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -13,16 +13,63 @@ import { cn } from '@/lib/utils'
 const TIMEZONES = [
   'America/New_York', 'America/Chicago', 'America/Denver',
   'America/Los_Angeles', 'America/Anchorage', 'Pacific/Honolulu',
-  'Europe/London', 'Europe/Paris', 'Europe/Berlin', 'Europe/Rome',
+  'Europe/London', 'Europe/Paris', 'Europe/Berlin',
   'Asia/Dubai', 'Asia/Kolkata', 'Asia/Singapore', 'Asia/Tokyo',
   'Australia/Sydney', 'Pacific/Auckland',
 ]
 
-const MORNING_TIMES = ['06:00', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00']
-const NIGHT_TIMES = ['19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00']
+const BATTLEFIELDS = [
+  { value: 'WEIGHT_LOSS', label: 'Weight loss', emoji: '⚖️', subtitle: 'Late-night eating, weekend collapse' },
+  { value: 'CRAVINGS', label: 'Cravings', emoji: '🔥', subtitle: 'Food, sugar, stress-eating' },
+  { value: 'DESTRUCTIVE_BEHAVIORS', label: 'Destructive behaviors', emoji: '🌀', subtitle: 'Patterns that keep running you' },
+  { value: 'CONSISTENCY', label: 'Consistency', emoji: '📈', subtitle: 'Can\'t stick with habits' },
+  { value: 'SPENDING', label: 'Spending', emoji: '💳', subtitle: 'Impulse buys, budget drift' },
+  { value: 'FOCUS', label: 'Focus', emoji: '🎯', subtitle: 'Procrastination, distraction' },
+  { value: 'PRODUCTIVITY', label: 'Productivity', emoji: '⚡', subtitle: 'General follow-through' },
+]
 
-interface OnboardingWizardProps {
-  user: User
+const DANGER_WINDOWS = [
+  { value: 'late-night', label: 'Late night', emoji: '🌙', hint: '9 PM – midnight' },
+  { value: 'weekends', label: 'Weekends', emoji: '📅', hint: 'Friday PM → Sunday' },
+  { value: 'post-work', label: 'After work', emoji: '🏠', hint: '5–8 PM decompression' },
+  { value: 'stress', label: 'Under stress', emoji: '💢', hint: 'Deadline, conflict, overwhelm' },
+  { value: 'after-slip', label: 'After one slip', emoji: '💥', hint: '"I already blew it" spiral' },
+  { value: 'social', label: 'Social settings', emoji: '🍷', hint: 'Peer pressure, FOMO' },
+  { value: 'alone', label: 'When alone', emoji: '🕯️', hint: 'No witnesses, no rules' },
+]
+
+const EXCUSES = [
+  { value: 'DELAY', label: "I'll start tomorrow", emoji: '🐌' },
+  { value: 'REWARD', label: 'I deserve it', emoji: '🎁' },
+  { value: 'MINIMIZATION', label: "One time won't matter", emoji: '🤏' },
+  { value: 'COLLAPSE', label: 'I already blew it', emoji: '💥' },
+  { value: 'EXHAUSTION', label: "I'm too tired", emoji: '😴' },
+  { value: 'EXCEPTION', label: 'This week is weird', emoji: '📌' },
+  { value: 'COMPENSATION', label: "I'll make up for it", emoji: '⚖️' },
+  { value: 'SOCIAL_PRESSURE', label: "I couldn't say no", emoji: '👥' },
+]
+
+const TONE_MODES = [
+  { value: 'MENTOR', label: 'Mentor', desc: 'Warm, supportive, encouraging', Icon: Heart, color: 'text-pink-400' },
+  { value: 'STRATEGIST', label: 'Strategist', desc: 'Analytical, crisp, structured', Icon: BrainCircuit, color: 'text-blue-400' },
+  { value: 'NO_BS', label: 'No-BS', desc: 'Direct, blunt, calls out avoidance', Icon: Swords, color: 'text-orange-400' },
+  { value: 'BEAST', label: 'Beast', desc: 'High-pressure, drill sergeant', Icon: Flame, color: 'text-red-500' },
+]
+
+interface OnboardingWizardProps { user: User }
+
+type FormData = {
+  name: string
+  timezone: string
+  morningCheckinTime: string
+  nightCheckinTime: string
+  emailBriefingEnabled: boolean
+  firstTask: string
+  primaryWedge: string
+  dangerWindowsPicked: string[]
+  excuseStyle: string
+  toneMode: string
+  firstCommitment: string
 }
 
 export function OnboardingWizard({ user }: OnboardingWizardProps) {
@@ -31,36 +78,56 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
   const [loading, setLoading] = useState(false)
   const [direction, setDirection] = useState(1)
 
-  const [data, setData] = useState({
+  const [data, setData] = useState<FormData>({
     name: user.name || '',
     timezone: user.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York',
     morningCheckinTime: '08:00',
     nightCheckinTime: '21:00',
     emailBriefingEnabled: true,
     firstTask: '',
-    role: '',
-    useCase: '',
-    referralSource: '',
-    biggestGoal: '',
-    failurePattern: '',
+    primaryWedge: 'WEIGHT_LOSS',
+    dangerWindowsPicked: [],
+    excuseStyle: '',
+    toneMode: 'MENTOR',
+    firstCommitment: '',
   })
 
   const steps = [
     { id: 'welcome', label: 'Welcome' },
-    { id: 'about-you', label: 'About You' },
-    { id: 'biggest-goal', label: 'Your Goal' },
-    { id: 'failure-pattern', label: 'Patterns' },
-    { id: 'schedule', label: 'Your Schedule' },
-    { id: 'first-task', label: 'First Task' },
+    { id: 'battlefield', label: 'Battlefield' },
+    { id: 'windows', label: 'Windows' },
+    { id: 'excuse', label: 'Excuse' },
+    { id: 'tone', label: 'Tone' },
+    { id: 'commitment', label: 'Commitment' },
   ]
 
   function goNext() { setDirection(1); setStep((s) => s + 1) }
   function goBack() { setDirection(-1); setStep((s) => s - 1) }
+  function updateData(v: Partial<FormData>) {
+    setData((d) => ({ ...d, ...v }))
+  }
 
   async function handleFinish() {
     setLoading(true)
-    await completeOnboarding(data)
-    router.push('/today')
+    try {
+      // Map form data to the onboarding action's expected shape
+      await completeOnboarding({
+        name: data.name,
+        timezone: data.timezone,
+        morningCheckinTime: data.morningCheckinTime,
+        nightCheckinTime: data.nightCheckinTime,
+        emailBriefingEnabled: data.emailBriefingEnabled,
+        firstTask: data.firstCommitment || data.firstTask || '',
+        biggestGoal: data.firstCommitment,
+        failurePattern: data.excuseStyle,
+        // New autopilot fields passed through metadata-style extras
+        primaryWedge: data.primaryWedge,
+        dangerWindowsPicked: data.dangerWindowsPicked,
+        toneMode: data.toneMode,
+      } as Parameters<typeof completeOnboarding>[0])
+    } finally {
+      router.push('/today')
+    }
   }
 
   const variants = {
@@ -69,15 +136,26 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
     exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -40 : 40 }),
   }
 
+  const canProceed = (() => {
+    switch (step) {
+      case 0: return data.name.trim().length > 0
+      case 1: return !!data.primaryWedge
+      case 2: return data.dangerWindowsPicked.length > 0
+      case 3: return !!data.excuseStyle
+      case 4: return !!data.toneMode
+      case 5: return data.firstCommitment.trim().length > 2
+      default: return true
+    }
+  })()
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
       <div className="pointer-events-none fixed inset-0 bg-gradient-mesh opacity-50" />
 
-      {/* Logo */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 mb-12 flex items-center gap-2"
+        className="relative z-10 mb-8 flex items-center gap-2"
       >
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-warm shadow-glow-orange">
           <Zap className="h-4 w-4 text-white" />
@@ -86,25 +164,23 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
       </motion.div>
 
       {/* Step indicator */}
-      <div className="relative z-10 mb-8 flex items-center gap-3">
+      <div className="relative z-10 mb-8 flex items-center gap-2">
         {steps.map((s, i) => (
-          <div key={s.id} className="flex items-center gap-3">
-            <motion.div
-              animate={{
-                background: i <= step
-                  ? 'linear-gradient(135deg, var(--gradient-warm-start), var(--gradient-warm-end))'
-                  : 'hsl(var(--border))',
-                scale: i === step ? 1.15 : 1,
-              }}
-              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-              className="h-2 w-10 rounded-full"
-            />
-          </div>
+          <motion.div
+            key={s.id}
+            animate={{
+              background: i <= step
+                ? 'linear-gradient(135deg, var(--gradient-warm-start), var(--gradient-warm-end))'
+                : 'hsl(var(--border))',
+              scale: i === step ? 1.15 : 1,
+            }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            className="h-2 w-8 rounded-full"
+          />
         ))}
       </div>
 
-      {/* Card */}
-      <div className="relative z-10 w-full max-w-md">
+      <div className="relative z-10 w-full max-w-lg">
         <GlassCard className="overflow-hidden p-8">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
@@ -116,18 +192,17 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
               exit="exit"
               transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
             >
-              {step === 0 && <WelcomeStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
-              {step === 1 && <AboutYouStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
-              {step === 2 && <BiggestGoalStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
-              {step === 3 && <FailurePatternStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
-              {step === 4 && <ScheduleStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
-              {step === 5 && <FirstTaskStep data={data} onChange={(v) => setData((d) => ({ ...d, ...v }))} />}
+              {step === 0 && <WelcomeStep data={data} onChange={updateData} />}
+              {step === 1 && <BattlefieldStep data={data} onChange={updateData} />}
+              {step === 2 && <DangerWindowsStep data={data} onChange={updateData} />}
+              {step === 3 && <ExcuseStyleStep data={data} onChange={updateData} />}
+              {step === 4 && <ToneStep data={data} onChange={updateData} />}
+              {step === 5 && <CommitmentStep data={data} onChange={updateData} />}
             </motion.div>
           </AnimatePresence>
         </GlassCard>
       </div>
 
-      {/* Navigation */}
       <div className="relative z-10 mt-6 flex items-center gap-3">
         {step > 0 && (
           <Button variant="glass" size="sm" onClick={goBack}>
@@ -135,18 +210,18 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
           </Button>
         )}
         {step < steps.length - 1 ? (
-          <Button variant="brand" size="sm" onClick={goNext}>
+          <Button variant="brand" size="sm" onClick={goNext} disabled={!canProceed}>
             Continue <ArrowRight className="h-3.5 w-3.5" />
           </Button>
         ) : (
-          <Button variant="brand" size="sm" onClick={handleFinish} disabled={loading}>
+          <Button variant="brand" size="sm" onClick={handleFinish} disabled={loading || !canProceed}>
             {loading ? (
               <span className="flex items-center gap-2">
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                Setting up...
+                Building your plan…
               </span>
             ) : (
-              <>Start my day <Zap className="h-3.5 w-3.5" /></>
+              <>Build my plan <Zap className="h-3.5 w-3.5" /></>
             )}
           </Button>
         )}
@@ -155,13 +230,13 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
   )
 }
 
-function WelcomeStep({ data, onChange }: { data: any; onChange: (v: any) => void }) {
+function WelcomeStep({ data, onChange }: { data: FormData; onChange: (v: Partial<FormData>) => void }) {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="heading-2">Welcome aboard.</h1>
+        <h1 className="heading-2">Welcome.</h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          Let's set up your command center. This takes under 2 minutes.
+          COYL catches you in the moments you usually betray yourself. Let&apos;s map your autopilot.
         </p>
       </div>
       <div className="space-y-4">
@@ -171,18 +246,15 @@ function WelcomeStep({ data, onChange }: { data: any; onChange: (v: any) => void
             value={data.name}
             onChange={(e) => onChange({ name: e.target.value })}
             placeholder="Your name"
-            className="h-10 focus-glow"
+            className="h-10"
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium">
-            <MapPin className="mr-1.5 inline h-3.5 w-3.5 text-orange-500" />
-            Your timezone
-          </label>
+          <label className="mb-1.5 block text-sm font-medium">Timezone</label>
           <select
             value={data.timezone}
             onChange={(e) => onChange({ timezone: e.target.value })}
-            className="flex h-10 w-full rounded-xl border border-input bg-transparent px-3 py-1 text-sm focus-visible:outline-none focus-glow"
+            className="flex h-10 w-full rounded-xl border border-input bg-transparent px-3 py-1 text-sm"
           >
             {TIMEZONES.map((tz) => (
               <option key={tz} value={tz}>{tz.replace('_', ' ').replace('/', ' / ')}</option>
@@ -194,161 +266,32 @@ function WelcomeStep({ data, onChange }: { data: any; onChange: (v: any) => void
   )
 }
 
-const ROLES = [
-  { value: 'founder', label: 'Founder / CEO', emoji: '🚀' },
-  { value: 'manager', label: 'Manager / Lead', emoji: '📋' },
-  { value: 'freelancer', label: 'Freelancer / Solo', emoji: '💼' },
-  { value: 'student', label: 'Student', emoji: '📚' },
-  { value: 'creative', label: 'Creative / Maker', emoji: '🎨' },
-  { value: 'other', label: 'Other', emoji: '✨' },
-]
-
-const USE_CASES = [
-  { value: 'work', label: 'Work tasks', emoji: '🏢' },
-  { value: 'personal', label: 'Personal goals', emoji: '🏠' },
-  { value: 'side-project', label: 'Side project', emoji: '⚡' },
-  { value: 'team', label: 'Team coordination', emoji: '👥' },
-  { value: 'everything', label: 'All of the above', emoji: '🔥' },
-]
-
-const REFERRALS = [
-  { value: 'twitter', label: 'Twitter/X' },
-  { value: 'friend', label: 'Friend' },
-  { value: 'google', label: 'Google' },
-  { value: 'producthunt', label: 'Product Hunt' },
-  { value: 'tiktok', label: 'TikTok' },
-  { value: 'other', label: 'Other' },
-]
-
-function AboutYouStep({ data, onChange }: { data: any; onChange: (v: any) => void }) {
+function BattlefieldStep({ data, onChange }: { data: FormData; onChange: (v: Partial<FormData>) => void }) {
   return (
     <div>
       <div className="mb-6">
-        <h2 className="heading-2">Quick question.</h2>
+        <h2 className="heading-2">Pick your battlefield.</h2>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          Helps us make COYL hound you in the right way.
+          Where does your autopilot hurt you most? You can add more later.
         </p>
       </div>
-      <div className="space-y-5">
-        <div>
-          <label className="mb-2 block text-sm font-medium">What&apos;s your role?</label>
-          <div className="grid grid-cols-3 gap-1.5">
-            {ROLES.map((r) => (
-              <button
-                key={r.value}
-                onClick={() => onChange({ role: r.value })}
-                className={cn(
-                  'flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-xs font-medium transition-all',
-                  data.role === r.value
-                    ? 'bg-gradient-warm text-white border-transparent shadow-glow-orange'
-                    : 'hover:bg-muted'
-                )}
-              >
-                <span className="text-base">{r.emoji}</span>
-                {r.label}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <label className="mb-2 block text-sm font-medium">Using COYL for?</label>
-          <div className="grid grid-cols-3 gap-1.5">
-            {USE_CASES.map((u) => (
-              <button
-                key={u.value}
-                onClick={() => onChange({ useCase: u.value })}
-                className={cn(
-                  'flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-xs font-medium transition-all',
-                  data.useCase === u.value
-                    ? 'bg-gradient-warm text-white border-transparent shadow-glow-orange'
-                    : 'hover:bg-muted'
-                )}
-              >
-                <span className="text-base">{u.emoji}</span>
-                {u.label}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <label className="mb-2 block text-sm font-medium">How&apos;d you find us?</label>
-          <div className="grid grid-cols-3 gap-1.5">
-            {REFERRALS.map((r) => (
-              <button
-                key={r.value}
-                onClick={() => onChange({ referralSource: r.value })}
-                className={cn(
-                  'rounded-xl border px-2 py-2.5 text-xs font-medium transition-all',
-                  data.referralSource === r.value
-                    ? 'bg-gradient-warm text-white border-transparent shadow-glow-orange'
-                    : 'hover:bg-muted'
-                )}
-              >
-                {r.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const FAILURE_PATTERNS = [
-  { value: 'procrastinate', label: 'I procrastinate on big tasks', emoji: '🐌' },
-  { value: 'overcommit', label: 'I say yes to everything', emoji: '🤯' },
-  { value: 'start-not-finish', label: "I start but don't finish", emoji: '🔄' },
-  { value: 'forget-followups', label: 'I forget follow-ups', emoji: '🕳️' },
-  { value: 'avoid-hard', label: 'I avoid hard conversations', emoji: '😬' },
-  { value: 'last-minute', label: 'I wait until the last minute', emoji: '⏰' },
-]
-
-function BiggestGoalStep({ data, onChange }: { data: any; onChange: (v: any) => void }) {
-  return (
-    <div>
-      <div className="mb-6">
-        <h2 className="heading-2">What&apos;s the ONE thing?</h2>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          The biggest thing you need to accomplish in the next 30 days. COYL will enforce it.
-        </p>
-      </div>
-      <textarea
-        value={data.biggestGoal}
-        onChange={(e) => onChange({ biggestGoal: e.target.value })}
-        placeholder="e.g. Launch my product, close 5 new clients, finish the thesis..."
-        className="min-h-[100px] w-full rounded-xl border bg-transparent p-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-glow resize-none"
-        autoFocus
-      />
-      <div className="mt-3 glass rounded-xl p-3">
-        <p className="text-xs font-medium text-muted-foreground">This becomes your enforcement anchor. COYL will reference it in every review.</p>
-      </div>
-    </div>
-  )
-}
-
-function FailurePatternStep({ data, onChange }: { data: any; onChange: (v: any) => void }) {
-  return (
-    <div>
-      <div className="mb-6">
-        <h2 className="heading-2">What usually stops you?</h2>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          Be honest. COYL will watch for these patterns and call them out.
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-2">
-        {FAILURE_PATTERNS.map((p) => (
+      <div className="grid grid-cols-1 gap-2">
+        {BATTLEFIELDS.map((b) => (
           <button
-            key={p.value}
-            onClick={() => onChange({ failurePattern: p.value })}
+            key={b.value}
+            onClick={() => onChange({ primaryWedge: b.value })}
             className={cn(
-              'flex items-center gap-2.5 rounded-xl border px-3 py-3 text-left text-xs font-medium transition-all',
-              data.failurePattern === p.value
-                ? 'bg-gradient-warm text-white border-transparent shadow-glow-orange'
-                : 'hover:bg-muted'
+              'flex items-center gap-3 rounded-xl border p-3 text-left transition-all',
+              data.primaryWedge === b.value
+                ? 'border-orange-500 bg-orange-500/10 shadow-glow-orange'
+                : 'border-border hover:bg-muted/50'
             )}
           >
-            <span className="text-base">{p.emoji}</span>
-            {p.label}
+            <span className="text-2xl">{b.emoji}</span>
+            <div>
+              <p className="text-sm font-semibold">{b.label}</p>
+              <p className="text-xs text-muted-foreground">{b.subtitle}</p>
+            </div>
           </button>
         ))}
       </div>
@@ -356,114 +299,131 @@ function FailurePatternStep({ data, onChange }: { data: any; onChange: (v: any) 
   )
 }
 
-function ScheduleStep({ data, onChange }: { data: any; onChange: (v: any) => void }) {
+function DangerWindowsStep({ data, onChange }: { data: FormData; onChange: (v: Partial<FormData>) => void }) {
+  function toggle(value: string) {
+    const current = data.dangerWindowsPicked
+    onChange({
+      dangerWindowsPicked: current.includes(value)
+        ? current.filter((v) => v !== value)
+        : [...current, value],
+    })
+  }
   return (
     <div>
       <div className="mb-6">
-        <h2 className="heading-2">Your daily rhythm</h2>
+        <h2 className="heading-2">When do you lose control?</h2>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          We'll send your planning prompts and briefings at these times.
+          These become your danger windows. COYL will watch them like a hawk. Pick as many as apply.
         </p>
       </div>
-      <div className="space-y-5">
-        <div>
-          <label className="mb-2 block text-sm font-medium">Morning planning session</label>
-          <div className="grid grid-cols-4 gap-1.5">
-            {MORNING_TIMES.map((t) => (
-              <button
-                key={t}
-                onClick={() => onChange({ morningCheckinTime: t })}
-                className={cn(
-                  'rounded-xl border px-2 py-2 text-xs font-medium transition-all',
-                  data.morningCheckinTime === t
-                    ? 'bg-gradient-warm text-white border-transparent shadow-glow-orange'
-                    : 'hover:bg-muted'
-                )}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <label className="mb-2 block text-sm font-medium">Night review session</label>
-          <div className="grid grid-cols-4 gap-1.5">
-            {NIGHT_TIMES.map((t) => (
-              <button
-                key={t}
-                onClick={() => onChange({ nightCheckinTime: t })}
-                className={cn(
-                  'rounded-xl border px-2 py-2 text-xs font-medium transition-all',
-                  data.nightCheckinTime === t
-                    ? 'bg-gradient-warm text-white border-transparent shadow-glow-orange'
-                    : 'hover:bg-muted'
-                )}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-        </div>
-        <label className="glass flex cursor-pointer items-center justify-between rounded-xl p-3 transition-colors hover:shadow-card-hover">
-          <div>
-            <p className="text-sm font-medium">Daily email briefing</p>
-            <p className="text-xs text-muted-foreground">Morning summary of priorities and follow-ups</p>
-          </div>
-          <div
-            onClick={() => onChange({ emailBriefingEnabled: !data.emailBriefingEnabled })}
-            className={cn(
-              'relative h-6 w-11 cursor-pointer rounded-full transition-colors',
-              data.emailBriefingEnabled ? 'bg-gradient-warm' : 'bg-muted'
-            )}
-          >
-            <motion.div
-              animate={{ x: data.emailBriefingEnabled ? 20 : 2 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-              className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow"
-            />
-          </div>
-        </label>
+      <div className="grid grid-cols-2 gap-2">
+        {DANGER_WINDOWS.map((w) => {
+          const picked = data.dangerWindowsPicked.includes(w.value)
+          return (
+            <button
+              key={w.value}
+              onClick={() => toggle(w.value)}
+              className={cn(
+                'flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition-all',
+                picked
+                  ? 'border-orange-500 bg-orange-500/10'
+                  : 'border-border hover:bg-muted/50'
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <span>{w.emoji}</span>
+                <span className="text-sm font-semibold">{w.label}</span>
+              </div>
+              <p className="text-[10px] text-muted-foreground">{w.hint}</p>
+            </button>
+          )
+        })}
       </div>
     </div>
   )
 }
 
-function FirstTaskStep({ data, onChange }: { data: any; onChange: (v: any) => void }) {
+function ExcuseStyleStep({ data, onChange }: { data: FormData; onChange: (v: Partial<FormData>) => void }) {
   return (
     <div>
       <div className="mb-6">
-        <h2 className="heading-2">Capture your first task</h2>
+        <h2 className="heading-2">Which excuse sounds like you?</h2>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          Say it naturally. The AI will extract dates, follow-ups, and priority automatically.
+          Be honest. COYL will call this exact pattern out in the moment.
         </p>
       </div>
-      <div className="space-y-3">
-        <textarea
-          value={data.firstTask}
-          onChange={(e) => onChange({ firstTask: e.target.value })}
-          placeholder="What's the one thing you need to make sure doesn't slip through the cracks?"
-          className="min-h-[100px] w-full rounded-xl border bg-transparent p-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-glow resize-none"
-          autoFocus
-        />
-        <div className="glass rounded-xl p-3">
-          <p className="text-xs font-medium text-muted-foreground">Try something like:</p>
-          <ul className="mt-1.5 space-y-1">
-            {[
-              'Email the Acme proposal to David — follow up Thursday if no response',
-              'Finish the Q2 board deck by next Friday',
-              "Call Mike about the budget — he's been waiting a week",
-            ].map((ex) => (
-              <li key={ex}>
-                <button
-                  onClick={() => onChange({ firstTask: ex })}
-                  className="text-left text-xs text-muted-foreground underline-offset-2 hover:text-orange-500 hover:underline transition-colors"
-                >
-                  &ldquo;{ex}&rdquo;
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="grid grid-cols-1 gap-2">
+        {EXCUSES.map((e) => (
+          <button
+            key={e.value}
+            onClick={() => onChange({ excuseStyle: e.value })}
+            className={cn(
+              'flex items-center gap-3 rounded-xl border p-3 text-left transition-all',
+              data.excuseStyle === e.value
+                ? 'border-orange-500 bg-orange-500/10 shadow-glow-orange'
+                : 'border-border hover:bg-muted/50'
+            )}
+          >
+            <span className="text-xl">{e.emoji}</span>
+            <span className="text-sm font-semibold">&ldquo;{e.label}&rdquo;</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ToneStep({ data, onChange }: { data: FormData; onChange: (v: Partial<FormData>) => void }) {
+  return (
+    <div>
+      <div className="mb-6">
+        <h2 className="heading-2">How should COYL talk to you?</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          Same intelligence. Different pressure. You can change this anytime.
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {TONE_MODES.map((t) => (
+          <button
+            key={t.value}
+            onClick={() => onChange({ toneMode: t.value })}
+            className={cn(
+              'flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-all',
+              data.toneMode === t.value
+                ? 'border-orange-500 bg-orange-500/10 shadow-glow-orange'
+                : 'border-border hover:bg-muted/50'
+            )}
+          >
+            <t.Icon className={`h-5 w-5 ${t.color}`} />
+            <p className="text-sm font-bold">{t.label}</p>
+            <p className="text-[11px] text-muted-foreground">{t.desc}</p>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function CommitmentStep({ data, onChange }: { data: FormData; onChange: (v: Partial<FormData>) => void }) {
+  return (
+    <div>
+      <div className="mb-6">
+        <h2 className="heading-2">Your first rule.</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          One specific commitment for the next 7 days. Concrete. Trackable. Yes/no.
+        </p>
+      </div>
+      <textarea
+        value={data.firstCommitment}
+        onChange={(e) => onChange({ firstCommitment: e.target.value })}
+        placeholder="e.g. No food after 9 PM. No delivery apps Sun–Thu. Weigh in 5×/week."
+        className="min-h-[100px] w-full rounded-xl border bg-transparent p-3 text-sm placeholder:text-muted-foreground resize-none"
+        autoFocus
+      />
+      <div className="mt-3 glass rounded-xl p-3">
+        <p className="text-xs font-medium text-muted-foreground">
+          COYL will build your first rescue protocol and danger windows from your picks. You&apos;ll see it on your home screen.
+        </p>
       </div>
     </div>
   )

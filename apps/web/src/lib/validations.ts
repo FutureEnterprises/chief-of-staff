@@ -64,4 +64,7 @@ export const onboardingSchema = z.object({
   referralSource: z.string().max(50).optional(),
   biggestGoal: z.string().max(500).optional(),
   failurePattern: z.string().max(200).optional(),
+  primaryWedge: z.enum(['PRODUCTIVITY', 'WEIGHT_LOSS', 'CRAVINGS', 'DESTRUCTIVE_BEHAVIORS', 'CONSISTENCY', 'SPENDING', 'FOCUS']).optional(),
+  dangerWindowsPicked: z.array(z.string()).max(10).optional(),
+  toneMode: z.enum(['MENTOR', 'STRATEGIST', 'NO_BS', 'BEAST']).optional(),
 })
