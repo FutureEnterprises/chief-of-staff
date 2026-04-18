@@ -95,6 +95,11 @@ export async function updateStreak(
     ? user.lastCompletionDate.toLocaleDateString('en-CA', { timeZone: userTimezone })
     : null
 
+  // Grace period: if lastDate was 2 days ago (one missed day), DON'T reset — keep streak.
+  // Only reset if gap is 3+ days. This is the "resume, don't restart" principle.
+  const twoDaysAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000)
+  const twoDaysAgoStr = twoDaysAgo.toLocaleDateString('en-CA', { timeZone: userTimezone })
+
   let newStreak: number
 
   if (lastDateStr === todayStr) {
@@ -103,8 +108,11 @@ export async function updateStreak(
   } else if (lastDateStr === yesterdayStr) {
     // Consecutive day — increment
     newStreak = user.currentStreak + 1
+  } else if (lastDateStr === twoDaysAgoStr) {
+    // Grace period: one missed day — keep streak, don't increment (streak holds)
+    newStreak = user.currentStreak
   } else {
-    // Gap or first completion — reset to 1
+    // Gap of 3+ days, or first completion — reset to 1
     newStreak = 1
   }
 

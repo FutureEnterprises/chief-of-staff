@@ -13,7 +13,7 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { StaggerList, StaggerItem, PageTransition, AnimatedCounter } from '@/components/motion/animations'
 import {
   Sun, Moon, Plus, CheckCircle2, AlertTriangle,
-  RefreshCw, Clock, Zap,
+  RefreshCw, Clock, Zap, Flame, Brain,
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 
@@ -59,7 +59,17 @@ export function TodayView({
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">{formatDate(new Date())}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="brand" size="sm" asChild>
+            <Link href="/rescue">
+              <Flame className="h-3.5 w-3.5" /> Rescue
+            </Link>
+          </Button>
+          <Button variant="glass" size="sm" asChild>
+            <Link href="/decide">
+              <Brain className="h-3.5 w-3.5 text-orange-500" /> Decide
+            </Link>
+          </Button>
           <Button variant="glass" size="sm" asChild>
             <Link href="/chat?mode=morning">
               <Sun className="h-3.5 w-3.5 text-amber-500" /> Morning

@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
 import { SYSTEM_PROMPTS, AI_MODEL } from '@repo/ai'
 import { consumeAiAssistAtomic, hasFeature } from '@/lib/services/entitlement.service'
+import { classifyAndStoreExcuse } from '@/lib/services/excuse-detection.service'
 import { checkRateLimit } from '@/lib/rate-limit'
 import type { UIMessage } from 'ai'
 
@@ -190,6 +191,15 @@ Sign off messages with "🔥" when appropriate.`
 You are in Mentor Mode. Be warm, supportive, and encouraging. Celebrate small wins.
 Frame challenges as growth opportunities. Use empathetic language. Be the coach who
 believes in them. Still be honest — but kind. End with encouragement when appropriate.`
+  }
+
+  // Fire-and-forget: classify the user's last message for excuse patterns
+  const lastUserMsg = [...messages].reverse().find((m) => m.role === 'user')
+  const lastText = lastUserMsg?.parts
+    ?.map((p) => (p.type === 'text' ? (p as { text: string }).text : ''))
+    .join(' ')
+  if (lastText && lastText.length >= 10) {
+    classifyAndStoreExcuse(user.id, lastText, 'CHAT').catch(() => {})
   }
 
   // AI SDK v6: convertToModelMessages is async

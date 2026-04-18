@@ -25,6 +25,22 @@ export async function completeTask(taskId: string, userId: string): Promise<void
       data: { userId, taskId, eventType: 'TASK_COMPLETED' },
     }),
   ])
+
+  // Recovery state transition: SLIPPED/RECOVERING → ACTIVE on any completion
+  await prisma.user
+    .updateMany({
+      where: { id: userId, recoveryState: { in: ['SLIPPED', 'RECOVERING'] } },
+      data: { recoveryState: 'ACTIVE' },
+    })
+    .catch(() => {})
+
+  // Mark any unresolved slips as recovered
+  await prisma.slipRecord
+    .updateMany({
+      where: { userId, recoveredAt: null },
+      data: { recoveredAt: new Date() },
+    })
+    .catch(() => {})
 }
 
 export async function snoozeTask(
