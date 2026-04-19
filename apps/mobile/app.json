@@ -14,13 +14,24 @@
     },
     "ios": {
       "bundleIdentifier": "ai.coyl.app",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "COYL reads your steps, weight, sleep, and heart rate to detect stress patterns and danger windows — so it can interrupt your autopilot before a slip.",
+        "NSHealthUpdateUsageDescription": "COYL does not write to HealthKit."
+      }
     },
     "android": {
       "package": "ai.coyl.app",
       "adaptiveIcon": {
         "backgroundColor": "#ff6600"
-      }
+      },
+      "permissions": [
+        "android.permission.health.READ_STEPS",
+        "android.permission.health.READ_WEIGHT",
+        "android.permission.health.READ_SLEEP",
+        "android.permission.health.READ_HEART_RATE",
+        "android.permission.health.READ_ACTIVE_CALORIES_BURNED"
+      ]
     },
     "plugins": [
       "expo-router",
@@ -31,6 +42,19 @@
         {
           "icon": "./assets/notification-icon.png",
           "color": "#ff6600"
+        }
+      ],
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "healthSharePermission": "Let COYL read steps, sleep, and weight to detect stress patterns.",
+          "healthUpdatePermission": "COYL does not write to HealthKit."
+        }
+      ],
+      [
+        "react-native-health-connect",
+        {
+          "package": "ai.coyl.app"
         }
       ]
     ],

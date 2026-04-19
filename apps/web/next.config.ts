@@ -1,5 +1,6 @@
 import path from 'path'
 import type { NextConfig } from 'next'
+import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
   turbopack: {},
@@ -25,7 +26,7 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' https://js.stripe.com https://*.clerk.accounts.dev https://*.clerk.dev",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' https://img.clerk.com https://*.public.blob.vercel-storage.com data:",
-              "connect-src 'self' https://*.clerk.dev https://*.clerk.accounts.dev https://api.stripe.com",
+              "connect-src 'self' https://*.clerk.dev https://*.clerk.accounts.dev https://api.stripe.com https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://*.ingest.de.sentry.io",
               "font-src 'self' data:",
               "frame-src https://js.stripe.com https://*.clerk.accounts.dev",
               "object-src 'none'",
@@ -55,4 +56,15 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+const sentryOptions = {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  disableLogger: true,
+  automaticVercelMonitors: true,
+}
+
+export default process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
+  ? withSentryConfig(nextConfig, sentryOptions)
+  : nextConfig
