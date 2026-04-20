@@ -35,26 +35,40 @@ export type ParsedSection = {
 }
 
 const SECTION_ICON: Record<string, SectionIcon> = {
-  // Decide (spec COYL_system_behavior_rules \u00a76)
-  'What\'s happening': 'target',
-  'What is happening': 'target',
-  'Prediction': 'alert',
-  'Your excuse': 'brain',
+  // Decide (spec COYL_AI_prompts_v2.md)
+  'What\'s actually happening': 'target',
+  'What is actually happening': 'target',
+  'What happens next': 'alert',
+  'What you\'re telling yourself': 'brain',
+  'What you are telling yourself': 'brain',
   'Best move': 'check',
-  'Next action': 'footprints',
+  'Do this now': 'footprints',
 
-  // Rescue (spec \u00a76)
-  'Pattern name': 'search',
-  'Callout': 'brain',
+  // Rescue (v2 \u2014 6 sections, Callout split back to Truth + Prediction)
+  'Pattern': 'search',
+  'Truth': 'brain',
+  'Prediction': 'alert',
   'Interrupt': 'stop',
   'Action': 'footprints',
   'Follow-up': 'bell',
 
-  // Slip recovery (spec \u00a76)
+  // Slip recovery (v2 \u2014 5 sections, Acknowledge split into What happened + Real problem)
+  'What happened': 'heart',
+  'The real problem': 'brain',
+  'Stop the spiral': 'stop',
+  'Next move': 'footprints',
+  'Tomorrow': 'calendar',
+
+  // Legacy v1 aliases kept for backward compatibility with in-flight
+  // responses that still use the previous section names.
+  'What\'s happening': 'target',
+  'Your excuse': 'brain',
+  'Next action': 'footprints',
+  'Pattern name': 'search',
+  'Callout': 'brain',
   'Acknowledge slip': 'heart',
   'Stop spiral': 'stop',
   'Stabilize': 'bandage',
-  'Next move': 'footprints',
   'Tomorrow plan': 'calendar',
 
   // Legacy aliases kept for backward compatibility with any in-flight
@@ -84,7 +98,6 @@ const SECTION_ICON: Record<string, SectionIcon> = {
   'Next 24 hours': 'calendar',
   'Pattern note': 'search',
   'Name the slip': 'tag',
-  'Stop the spiral': 'stop',
   'Smallest stabilizing move': 'bandage',
   'Next rule': 'clipboard',
   'Tomorrow re-entry': 'calendar',
