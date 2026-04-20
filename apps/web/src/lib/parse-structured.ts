@@ -4,55 +4,78 @@
  *
  * Returns an ordered array of { title, body } — preserves order from input.
  * Leading text before the first header becomes { title: null, body: '...' }.
+ *
+ * The `icon` field is a string key that maps to a lucide-react icon in
+ * StructuredResponse — we avoid emoji so the UI reads as polished, not cute.
  */
+export type SectionIcon =
+  | 'target'
+  | 'check'
+  | 'alert'
+  | 'brain'
+  | 'footprints'
+  | 'pause'
+  | 'bandage'
+  | 'repeat'
+  | 'timer'
+  | 'help'
+  | 'stop'
+  | 'bell'
+  | 'search'
+  | 'heart'
+  | 'ban'
+  | 'calendar'
+  | 'tag'
+  | 'clipboard'
+
 export type ParsedSection = {
   title: string | null
   body: string
-  emoji?: string
+  icon?: SectionIcon
 }
 
-const SECTION_EMOJI: Record<string, string> = {
+const SECTION_ICON: Record<string, SectionIcon> = {
   // Decide
-  'What you\'re actually deciding': '🎯',
-  'What you are actually deciding': '🎯',
-  'What\'s actually happening': '🎯',
-  'What is actually happening': '🎯',
-  'Best move': '✅',
-  'Cost of the worse move': '⚠️',
-  'What the worse move costs': '⚠️',
-  'The excuse you\'re probably using': '🧠',
-  'Likely excuse': '🧠',
-  'The excuse': '🧠',
-  'Smallest next move': '👣',
-  'Smallest next action': '👣',
-  'Next': '👣',
+  'What you\'re actually deciding': 'target',
+  'What you are actually deciding': 'target',
+  'What\'s actually happening': 'target',
+  'What is actually happening': 'target',
+  'Best move': 'check',
+  'Cost of the worse move': 'alert',
+  'What the worse move costs': 'alert',
+  'The excuse you\'re probably using': 'brain',
+  'Likely excuse': 'brain',
+  'The excuse': 'brain',
+  'Smallest next move': 'footprints',
+  'Smallest next action': 'footprints',
+  'Next': 'footprints',
 
   // Rescue (note: 'What\'s actually happening' is shared with Decide above)
-  'Pause': '⏸️',
-  'Least-damaging move right now': '🩹',
-  'Least-damaging move': '🩹',
-  'Replacement move': '🔁',
-  '10-minute delay': '⏱️',
-  'Delay': '⏱️',
-  'If you still want it after 10 minutes': '🤔',
-  'Interrupt': '🛑',
-  'Action': '👣',
-  'Follow-up': '🔔',
-  'Pattern': '🔍',
-  'Pattern name': '🔍',
-  'Interruption': '🛑',
+  'Pause': 'pause',
+  'Least-damaging move right now': 'bandage',
+  'Least-damaging move': 'bandage',
+  'Replacement move': 'repeat',
+  '10-minute delay': 'timer',
+  'Delay': 'timer',
+  'If you still want it after 10 minutes': 'help',
+  'Interrupt': 'stop',
+  'Action': 'footprints',
+  'Follow-up': 'bell',
+  'Pattern': 'search',
+  'Pattern name': 'search',
+  'Interruption': 'stop',
 
   // Slip recovery
-  'No shame, no spiral': '🫂',
-  'What NOT to do': '🚫',
-  'Next 2 hours': '⏱️',
-  'Next 24 hours': '📅',
-  'Pattern note': '🔍',
-  'Name the slip': '🏷️',
-  'Stop the spiral': '🛑',
-  'Smallest stabilizing move': '🩹',
-  'Next rule': '📋',
-  'Tomorrow re-entry': '📅',
+  'No shame, no spiral': 'heart',
+  'What NOT to do': 'ban',
+  'Next 2 hours': 'timer',
+  'Next 24 hours': 'calendar',
+  'Pattern note': 'search',
+  'Name the slip': 'tag',
+  'Stop the spiral': 'stop',
+  'Smallest stabilizing move': 'bandage',
+  'Next rule': 'clipboard',
+  'Tomorrow re-entry': 'calendar',
 }
 
 export function parseStructuredSections(text: string): ParsedSection[] {
@@ -72,7 +95,7 @@ export function parseStructuredSections(text: string): ParsedSection[] {
       parts.push({
         title: currentTitle,
         body: before,
-        emoji: currentTitle ? SECTION_EMOJI[currentTitle] : undefined,
+        icon: currentTitle ? SECTION_ICON[currentTitle] : undefined,
       })
     }
     currentTitle = match[1]?.trim() ?? null
@@ -85,11 +108,11 @@ export function parseStructuredSections(text: string): ParsedSection[] {
     parts.push({
       title: currentTitle,
       body: tail,
-      emoji: currentTitle ? SECTION_EMOJI[currentTitle] : undefined,
+      icon: currentTitle ? SECTION_ICON[currentTitle] : undefined,
     })
   } else if (currentTitle && parts.length === 0) {
     // Only a header with no body — still show it so streaming feels alive
-    parts.push({ title: currentTitle, body: '', emoji: SECTION_EMOJI[currentTitle] })
+    parts.push({ title: currentTitle, body: '', icon: SECTION_ICON[currentTitle] })
   }
 
   return parts

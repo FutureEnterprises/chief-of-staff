@@ -3,30 +3,78 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence, useInView } from 'motion/react'
+import {
+  Refrigerator, ShoppingCart, Wind, HeartCrack, MoonStar,
+  ArrowRight, type LucideIcon,
+} from 'lucide-react'
 import { StructuredResponse } from '@/components/structured-response'
 
-const DEMO_TRIGGERS = [
-  { key: 'BINGE_URGE', label: 'I want to binge', emoji: '🍔' },
-  { key: 'DELIVERY_URGE', label: "I'm ordering food", emoji: '📦' },
-  { key: 'SPIRALING', label: "I'm spiraling", emoji: '🌀' },
-  { key: 'ALREADY_SLIPPED', label: 'I already slipped', emoji: '💥' },
-  { key: 'SKIP_WORKOUT', label: 'I want to skip', emoji: '😴' },
+// Caught-moment triggers — all five assume the user has enough awareness to
+// type something (or in reality, open the app). Two new framings replaced the
+// pre-commitment "I want to binge" / "I'm ordering food" — those imply
+// metacognitive control that autopilot bypasses. Real "caught" moments look
+// more like hesitation or retrospection.
+type Trigger = {
+  key: string
+  title: string
+  sub: string
+  icon: LucideIcon
+  /** Variant tag for the narrative — past (retroactive), now (mid-hesitation), pre (pre-action tempted) */
+  variant: 'now' | 'past' | 'pre'
+}
+
+const DEMO_TRIGGERS: Trigger[] = [
+  {
+    key: 'FRIDGE_STARE',
+    title: 'I\u2019m staring into the fridge',
+    sub: 'Not hungry. Just restless.',
+    icon: Refrigerator,
+    variant: 'now',
+  },
+  {
+    key: 'CART_HOVER',
+    title: 'Cart\u2019s full. Finger on checkout',
+    sub: 'About to click. Something in me is asking.',
+    icon: ShoppingCart,
+    variant: 'now',
+  },
+  {
+    key: 'SPIRALING',
+    title: 'I\u2019m spiraling',
+    sub: 'One slip turning into a night.',
+    icon: Wind,
+    variant: 'now',
+  },
+  {
+    key: 'ALREADY_SLIPPED',
+    title: 'I already folded last night',
+    sub: 'Woke up thinking: not again.',
+    icon: HeartCrack,
+    variant: 'past',
+  },
+  {
+    key: 'SKIP_WORKOUT',
+    title: 'I want to skip today',
+    sub: 'The story\u2019s already writing itself.',
+    icon: MoonStar,
+    variant: 'pre',
+  },
 ]
 
 export function RescueDemo() {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-100px' })
 
-  const [selected, setSelected] = useState<(typeof DEMO_TRIGGERS)[number] | null>(null)
+  const [selected, setSelected] = useState<Trigger | null>(null)
   const [response, setResponse] = useState('')
   const [loading, setLoading] = useState(false)
-  const [rateLimited, setRateLimited] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
-  async function fire(trigger: (typeof DEMO_TRIGGERS)[number]) {
+  async function fire(trigger: Trigger) {
     setSelected(trigger)
     setResponse('')
+    setErrorMsg(null)
     setLoading(true)
-    setRateLimited(false)
 
     try {
       const res = await fetch('/api/demo/rescue', {
@@ -36,11 +84,18 @@ export function RescueDemo() {
       })
 
       if (res.status === 429) {
-        setRateLimited(true)
+        setErrorMsg('Demo limit hit. Sign up to try unlimited.')
+        setLoading(false)
+        return
+      }
+      if (!res.ok) {
+        setErrorMsg('Something hiccupped. Sign up and we\u2019ll do it for real.')
         setLoading(false)
         return
       }
 
+      // Plain-text stream — each chunk is raw text, no protocol framing.
+      // Much more robust than the UIMessage SSE format for this use case.
       const reader = res.body?.getReader()
       const decoder = new TextDecoder()
       if (!reader) throw new Error('no reader')
@@ -48,28 +103,18 @@ export function RescueDemo() {
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        const chunk = decoder.decode(value, { stream: true })
-        for (const line of chunk.split('\n')) {
-          if (line.startsWith('data: ')) {
-            try {
-              const obj = JSON.parse(line.slice(6))
-              if (obj.type === 'text-delta' && typeof obj.textDelta === 'string') {
-                accumulated += obj.textDelta
-                setResponse(accumulated)
-              }
-            } catch { /* skip */ }
-          }
-        }
+        accumulated += decoder.decode(value, { stream: true })
+        setResponse(accumulated)
       }
     } catch {
-      setResponse('Something went wrong. Sign up to try for real.')
+      setErrorMsg('Couldn\u2019t reach COYL. Try again or sign up.')
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    // Auto-track that someone clicked the demo (analytics hook point)
+    // Analytics hook — fires a CustomEvent you can wire to your tracker.
     if (selected && typeof window !== 'undefined') {
       try {
         window.dispatchEvent(new CustomEvent('coyl:demo-fired', { detail: { trigger: selected.key } }))
@@ -85,17 +130,18 @@ export function RescueDemo() {
         initial={{ opacity: 0, y: 20 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6 }}
-        className="mb-8"
+        className="mb-10"
       >
         <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           Try it right now
         </h2>
         <h3 className="text-3xl font-bold tracking-tight text-white md:text-5xl">
-          Feel what it&apos;s like<br />to be caught.
+          Pick a moment<br />you already know.
         </h3>
         <p className="mt-4 max-w-xl text-sm text-gray-400">
-          Tap one. COYL responds in real-time. No signup. No card. Just the raw interrupt.
+          Not a hypothetical. One of these has happened to you. COYL responds in real time.
+          No signup. No card.
         </p>
       </motion.div>
 
@@ -103,26 +149,41 @@ export function RescueDemo() {
         {/* Trigger list */}
         <div className="md:col-span-5">
           <div className="space-y-2">
-            {DEMO_TRIGGERS.map((t, i) => (
-              <motion.button
-                key={t.key}
-                initial={{ opacity: 0, x: -8 }}
-                animate={inView ? { opacity: 1, x: 0 } : {}}
-                transition={{ delay: 0.1 + i * 0.05 }}
-                whileHover={{ x: 4 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => fire(t)}
-                disabled={loading}
-                className={`flex w-full items-center gap-3 rounded-2xl border p-4 text-left text-sm font-semibold transition-all disabled:opacity-50 ${
-                  selected?.key === t.key
-                    ? 'border-orange-500 bg-orange-500/10 shadow-[0_0_20px_rgba(255,102,0,0.25)]'
-                    : 'border-white/10 bg-white/5 hover:border-orange-500/30 hover:bg-white/10'
-                }`}
-              >
-                <span className="text-2xl">{t.emoji}</span>
-                <span className="text-white">{t.label}</span>
-              </motion.button>
-            ))}
+            {DEMO_TRIGGERS.map((t, i) => {
+              const Icon = t.icon
+              const isSelected = selected?.key === t.key
+              return (
+                <motion.button
+                  key={t.key}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={inView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ delay: 0.1 + i * 0.05 }}
+                  whileHover={{ x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => fire(t)}
+                  disabled={loading}
+                  className={`group flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all disabled:opacity-50 ${
+                    isSelected
+                      ? 'border-orange-500 bg-orange-500/10 shadow-[0_0_24px_rgba(255,102,0,0.25)]'
+                      : 'border-white/10 bg-white/5 hover:border-orange-500/30 hover:bg-white/10'
+                  }`}
+                >
+                  <div
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${
+                      isSelected
+                        ? 'border-orange-500/50 bg-orange-500/15 text-orange-400'
+                        : 'border-white/10 bg-white/5 text-gray-400 group-hover:text-orange-400'
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" strokeWidth={1.75} />
+                  </div>
+                  <div className="min-w-0 flex-1 pt-0.5">
+                    <p className="text-sm font-semibold text-white">{t.title}</p>
+                    <p className="mt-0.5 text-xs text-gray-500">{t.sub}</p>
+                  </div>
+                </motion.button>
+              )
+            })}
           </div>
         </div>
 
@@ -135,9 +196,15 @@ export function RescueDemo() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex h-full min-h-[280px] items-center justify-center rounded-2xl border border-dashed border-white/10 p-8 text-center"
+                className="flex h-full min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 p-8 text-center"
               >
-                <p className="text-sm text-gray-500">← Tap a moment to see COYL interrupt it.</p>
+                <p className="text-sm text-gray-500">
+                  <span className="hidden md:inline">&larr; Pick one.</span>
+                  <span className="md:hidden">Pick one above.</span>
+                </p>
+                <p className="mt-2 max-w-xs text-xs text-gray-600">
+                  COYL will respond in 2\u20134 seconds with the same voice you&apos;d get at 9 PM.
+                </p>
               </motion.div>
             )}
 
@@ -148,9 +215,12 @@ export function RescueDemo() {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-3"
               >
-                <div className="flex items-center gap-2 rounded-xl border border-orange-500/20 bg-orange-500/5 p-3">
-                  <span className="text-lg">{selected.emoji}</span>
-                  <p className="text-sm font-semibold text-white">{selected.label}</p>
+                <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 p-3">
+                  <selected.icon className="h-4 w-4 shrink-0 text-orange-400" strokeWidth={1.75} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-white">{selected.title}</p>
+                    <p className="text-xs text-gray-400">{selected.sub}</p>
+                  </div>
                 </div>
 
                 {loading && !response && (
@@ -163,13 +233,13 @@ export function RescueDemo() {
                         className="h-1.5 w-1.5 rounded-full bg-orange-500"
                       />
                     ))}
-                    <span className="ml-1 text-xs text-gray-400">COYL is interrupting…</span>
+                    <span className="ml-1 text-xs text-gray-400">COYL is responding\u2026</span>
                   </div>
                 )}
 
-                {rateLimited && (
+                {errorMsg && (
                   <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-300">
-                    Demo rate limited. Sign up to try for real.
+                    {errorMsg}
                   </div>
                 )}
 
@@ -178,10 +248,10 @@ export function RescueDemo() {
                 {response && !loading && (
                   <Link
                     href={`/sign-up?ref=demo&t=${selected.key}`}
-                    className="flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 p-4 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+                    className="flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 p-4 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-transform hover:scale-[1.01]"
                   >
-                    <span>This is what 9pm looks like. Save your COYL.</span>
-                    <span>→</span>
+                    <span>Want this at 9 PM \u2014 not on a landing page?</span>
+                    <ArrowRight className="h-4 w-4 shrink-0" />
                   </Link>
                 )}
               </motion.div>
