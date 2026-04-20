@@ -55,18 +55,29 @@ export function HeroSection() {
             ))}
           </h1>
 
-          {/* Tagline */}
-          <motion.p
+          {/* Hook headline */}
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.7 }}
-            className="mt-8 max-w-xl text-lg text-gray-400 sm:text-xl"
+            className="mt-8 max-w-xl text-2xl font-black leading-tight tracking-tight text-white sm:text-3xl"
           >
-            Stop the script before it runs your life. COYL catches you in the moments you usually{' '}
-            <span className="border-b-2 border-orange-500 font-bold text-orange-400" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
-              go on autopilot
+            You don&apos;t fail because you don&apos;t know what to do.
+            <br />
+            <span className="border-b-2 border-orange-500 text-orange-400" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
+              You fail in the exact same moments
             </span>
-            , calls out the excuse, and gets you back on track before one bad moment becomes a bad week.
+            {' '}— over and over.
+          </motion.h2>
+
+          {/* Subhead */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.95, duration: 0.7 }}
+            className="mt-4 max-w-xl text-base text-gray-400 sm:text-lg"
+          >
+            COYL catches you in real time — before a bad choice turns into a bad day, and a bad day turns into a bad week.
           </motion.p>
 
           {/* CTAs */}
@@ -80,7 +91,7 @@ export function HeroSection() {
               href="/sign-up"
               className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-orange-600 to-red-600 px-8 py-4 text-lg font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(255,102,0,0.5)]"
             >
-              <span className="relative z-10">Find my failure pattern</span>
+              <span className="relative z-10">Start catching your patterns</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="relative z-10">
                 <path d="M8 1v14M1 8l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" transform="rotate(-90 8 8)" />
               </svg>
@@ -90,7 +101,7 @@ export function HeroSection() {
               href="#engine"
               className="group flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-8 py-4 text-lg font-semibold text-white transition-colors hover:bg-white/10"
             >
-              See How It Works
+              See how it works
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:translate-y-1">
                 <path d="M7 1v12m0 0l5-5m-5 5L2 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -123,51 +134,52 @@ export function HeroSection() {
             {/* Header */}
             <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-orange-500" />
-                <span className="text-sm font-bold uppercase tracking-wider text-white">Morning Briefing</span>
+                <motion.div
+                  animate={{ opacity: [1, 0.4, 1] }}
+                  transition={{ duration: 1.4, repeat: Infinity }}
+                  className="h-3 w-3 rounded-full bg-red-500"
+                />
+                <span className="text-sm font-bold uppercase tracking-wider text-white">Autopilot detected</span>
               </div>
-              <span className="font-mono text-xs text-gray-500">06:00 AM</span>
+              <span className="font-mono text-xs text-gray-500">9:12 PM</span>
             </div>
 
-            {/* Items */}
-            <div className="space-y-4">
+            {/* Scene */}
+            <div className="space-y-3">
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.2 }}
-                className="flex items-start gap-4 rounded-lg border border-white/5 bg-black/40 p-3"
+                className="rounded-lg border border-white/5 bg-black/40 p-3"
               >
-                <div className="h-10 w-1 rounded-full bg-red-600" />
-                <div>
-                  <p className="text-sm font-semibold text-white">You dropped this yesterday</p>
-                  <p className="mt-1 text-xs text-gray-400">Finalize the proposal. No, seriously. Do it now.</p>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 0.5, x: 0 }}
-                transition={{ delay: 1.4 }}
-                className="flex items-start gap-4 rounded-lg border border-white/5 bg-black/20 p-3"
-              >
-                <div className="h-10 w-1 rounded-full bg-gray-600" />
-                <div>
-                  <p className="text-sm font-semibold text-gray-300 line-through">Gym (Done)</p>
-                  <p className="mt-1 text-xs text-gray-500">At least you showed up for something.</p>
-                </div>
+                <p className="mb-1 text-[11px] font-mono uppercase tracking-wider text-gray-500">You</p>
+                <p className="text-sm text-white">Opened the fridge. Again.</p>
               </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.6 }}
-                className="flex items-start gap-4 rounded-lg border border-orange-500/20 bg-orange-500/5 p-3"
+                className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-3"
               >
-                <div className="h-10 w-1 rounded-full bg-orange-500" />
-                <div>
-                  <p className="text-sm font-semibold text-orange-400">Still haven&apos;t followed up</p>
-                  <p className="mt-1 text-xs text-gray-400">3rd reminder. I&apos;m not going away.</p>
-                </div>
+                <p className="mb-1 text-[11px] font-mono uppercase tracking-wider text-orange-500">COYL</p>
+                <p className="text-sm leading-relaxed text-orange-100">
+                  You&apos;re not hungry. This is your usual night loop.
+                  <br />
+                  Drink water. Walk 5 minutes. <span className="font-bold text-orange-400">Then</span> decide.
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 2.2 }}
+                className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3"
+              >
+                <span className="text-xs font-semibold text-emerald-400">Paused. Didn&apos;t binge.</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-emerald-400">
+                  <path d="M13 4L6 12L3 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </motion.div>
             </div>
           </motion.div>

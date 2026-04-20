@@ -51,23 +51,37 @@ export function BrandStatement() {
           transition={{ delay: 0.2, duration: 0.8 }}
           className="text-4xl font-black tracking-tighter text-white md:text-6xl"
         >
-          You don&apos;t need more motivation.
+          Why you keep failing
           <br />
-          You need a{' '}
+          (and it&apos;s{' '}
           <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-            wake-up system
-          </span>.
+            not what you think
+          </span>).
         </motion.h2>
+
+        <motion.ul
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="mx-auto mt-10 flex max-w-2xl flex-col gap-2 text-lg text-gray-400 md:text-xl"
+        >
+          <li>You don&apos;t forget what to do.</li>
+          <li>You don&apos;t lack discipline.</li>
+          <li>You don&apos;t need more motivation.</li>
+        </motion.ul>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="mx-auto mt-8 max-w-2xl text-xl font-light leading-relaxed text-gray-400"
+          transition={{ delay: 0.6, duration: 0.8 }}
+          className="mx-auto mt-10 max-w-2xl text-2xl font-bold leading-tight text-white md:text-3xl"
         >
-          Most people don&apos;t fail because they don&apos;t know what to do. They fail in
-          moments — late at night, under stress, after one slip — where they go on autopilot
-          and run a script they&apos;ve run a hundred times. COYL is built for those moments.
+          You go on{' '}
+          <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+            autopilot
+          </span>.
+          <br />
+          <span className="mt-2 inline-block text-xl font-medium text-gray-500">Autopilot wins.</span>
         </motion.p>
       </div>
     </section>

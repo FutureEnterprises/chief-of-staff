@@ -71,17 +71,19 @@ export function AiDemo() {
         >
           <h2 className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
             <span className="h-px w-6 bg-orange-500" />
-            Charges
+            Personality modes
           </h2>
           <h3 className="mb-6 text-3xl font-black tracking-tight text-white md:text-4xl">
-            Every interaction<br />is a Charge.
+            Pick how you<br />want to be pushed.
           </h3>
           <p className="mb-6 text-lg font-light leading-relaxed text-gray-400">
-            Each time the AI fires — planning, reviewing, breaking down tasks, calling you out — that&apos;s one Charge. Free gets 20/mo. Pro gets 500.
+            Same system. Different pressure. Flip between them anytime.
           </p>
           <p className="mb-8 text-sm text-gray-500">
-            Pick your vibe. <strong className="text-white">Mentor Mode</strong> is supportive.{' '}
-            <strong className="text-red-400">Beast Mode</strong> is savage. Same AI, different energy.
+            <strong className="text-white">Mentor</strong> is calm.{' '}
+            <strong className="text-white">Strategist</strong> is logical.{' '}
+            <strong className="text-white">No-BS</strong> is direct.{' '}
+            <strong className="text-red-400">Beast</strong> is aggressive.
           </p>
 
           <div className="space-y-4">

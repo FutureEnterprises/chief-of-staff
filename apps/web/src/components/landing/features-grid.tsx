@@ -7,35 +7,35 @@ const features = [
   {
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
       </svg>
     ),
-    title: 'Morning + Night Check-ins',
-    body: 'Every morning: what are you doing today? Every night: did you actually do it? Two check-ins that keep you honest. No more "I\'ll get to it tomorrow."',
-    footer: { left: 'Always on', right: '6am + 10pm' },
+    title: 'Detects your patterns',
+    body: 'Learns when you usually slip. The exact hours, days, and contexts where your autopilot kicks in.',
+    footer: { left: 'Autopilot map', right: 'Learns in days' },
     glowColor: 'orange',
     offset: false,
   },
   {
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+        <circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>
       </svg>
     ),
-    title: 'You Said It. We Saved It.',
-    body: 'Every task, every promise, every "I\'ll do it later" — logged. COYL remembers what you committed to even when you conveniently forget.',
-    progress: 78,
+    title: 'Interrupts the moment',
+    body: 'Fires right before you act. Names the excuse. Gives you a 10-minute delay and a better move.',
+    progress: 82,
     glowColor: 'red',
     offset: false,
   },
   {
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        <path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/>
       </svg>
     ),
-    title: 'It Gets Louder',
-    body: 'Ignore a task? First reminder is friendly. Second is firm. Third? It\'s in your face. COYL escalates until you deal with it or admit you\'re ducking it.',
+    title: 'Gets you back on track',
+    body: 'So one mistake doesn\'t spiral. No Monday reset. No shame loop. Resume, don\'t restart.',
     glowColor: 'orange',
     offset: true,
   },
@@ -103,7 +103,7 @@ function FeatureCard({
               />
             </div>
             <span className="text-right font-mono text-xs text-gray-500">
-              {feature.progress}% follow-through rate
+              {feature.progress}% of interrupts pull users back
             </span>
           </div>
         )}
@@ -139,10 +139,10 @@ export function FeaturesGrid() {
       >
         <h2 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          How It Works
+          How COYL works
         </h2>
         <h3 className="max-w-2xl text-3xl font-bold tracking-tight text-white md:text-5xl">
-          An AI that won&apos;t let you off the hook.
+          COYL interrupts autopilot.
         </h3>
       </motion.div>
 
