@@ -14,6 +14,7 @@ import { PatternIntelligence } from '@/components/landing/pattern-intelligence'
 import { RecoverySection } from '@/components/landing/recovery-section'
 import { RescueDemo } from '@/components/landing/rescue-demo'
 import { UniversalWedges } from '@/components/landing/universal-wedges'
+import { YouIf } from '@/components/landing/you-if'
 import { PricingSection } from '@/components/landing/pricing-section'
 import { FinalCta } from '@/components/landing/final-cta'
 import { LandingFooter } from '@/components/landing/footer'
@@ -67,6 +68,9 @@ export default async function HomePage({
 
           {/* Universality — the "not a weight-loss app" pillar */}
           <UniversalWedges />
+
+          {/* Recognition — "This is for you if..." content-hook section */}
+          <YouIf />
 
           {/* Truth */}
           <BrandStatement />

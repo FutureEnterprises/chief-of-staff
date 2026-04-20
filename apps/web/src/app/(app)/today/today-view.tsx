@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { CalloutPanel } from '@/components/callout/callout-panel'
+import { identitySentence } from '@/lib/identity-sentence'
 
 type TaskWithRelations = Task & {
   tags: Array<{ tag: Tag }>
@@ -39,15 +40,18 @@ interface TodayViewProps {
   selfTrustDelta?: number | null
 }
 
-const EXCUSE_EMOJI: Record<string, string> = {
-  DELAY: '🐌',
-  REWARD: '🎁',
-  MINIMIZATION: '🤏',
-  COLLAPSE: '💥',
-  EXHAUSTION: '😴',
-  EXCEPTION: '📌',
-  COMPENSATION: '⚖️',
-  SOCIAL_PRESSURE: '👥',
+// The word COYL uses to name this excuse category when calling it out.
+// "That's your 'tomorrow' excuse again" — the short tag goes inside the
+// quote. Keeps the spec voice consistent with onboarding + patterns.
+const EXCUSE_TAG: Record<string, string> = {
+  DELAY: 'tomorrow',
+  REWARD: 'deserving',
+  MINIMIZATION: 'just this once',
+  COLLAPSE: 'I already blew it',
+  EXHAUSTION: 'too tired',
+  EXCEPTION: 'special week',
+  COMPENSATION: "I'll make up for it",
+  SOCIAL_PRESSURE: "couldn't say no",
 }
 
 export function TodayView({
@@ -84,6 +88,43 @@ export function TodayView({
         <p className="text-xs text-muted-foreground">{formatDate(new Date())}</p>
       </div>
 
+      {/* IDENTITY LINE — the accusatory/affirming one-liner from
+          identity-sentence.ts. Sets the emotional register for the page.
+          Deterministic from user data, no AI latency. */}
+      {(() => {
+        const id = identitySentence({
+          identityState: user.identityState ?? null,
+          recoveryState: user.recoveryState ?? null,
+          currentStreak: user.currentStreak,
+          longestStreak: user.longestStreak,
+          slipsThisMonth: user.slipsThisMonth,
+          selfTrustScore: user.selfTrustScore ?? 0,
+        })
+        const borderColor =
+          id.tone === 'warning' ? 'border-red-500/30'
+          : id.tone === 'positive' ? 'border-emerald-500/30'
+          : 'border-orange-500/30'
+        const textColor =
+          id.tone === 'warning' ? 'text-red-300'
+          : id.tone === 'positive' ? 'text-emerald-300'
+          : 'text-orange-300'
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`mb-4 rounded-xl border-l-[3px] ${borderColor} bg-black/30 px-4 py-3`}
+          >
+            <p className={`text-[10px] font-mono uppercase tracking-widest ${textColor}`}>
+              Identity read
+            </p>
+            <p className="mt-1 text-base font-bold text-foreground sm:text-lg">
+              {id.headline}
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{id.evidence}</p>
+          </motion.div>
+        )
+      })()}
+
       {/* TONIGHT'S RULE — dominant hero */}
       {activeCommitment ? (
         <motion.div
@@ -116,26 +157,36 @@ export function TodayView({
         </motion.div>
       )}
 
-      {/* MASSIVE 2-CTA ROW — the core "what do I do right now" answer */}
+      {/* THREE-CTA ROW — the core UX primitives from the spec.
+          All three equal-weight; slip gets promoted out of the secondary
+          row because recovery is as important as prevention. Stacks
+          1-col mobile, 3-col desktop. */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2"
+        className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3"
       >
         <Link
           href="/rescue"
-          className="group flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-br from-red-500 to-orange-600 px-6 py-5 text-base font-black uppercase tracking-wider text-white shadow-[0_0_30px_-5px_rgba(239,68,68,0.5)] transition-all hover:scale-[1.02] hover:shadow-[0_0_50px_-5px_rgba(239,68,68,0.7)]"
+          className="group flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-br from-red-500 to-orange-600 px-5 py-5 text-sm font-black uppercase tracking-wider text-white shadow-[0_0_30px_-5px_rgba(239,68,68,0.5)] transition-all hover:scale-[1.02] hover:shadow-[0_0_50px_-5px_rgba(239,68,68,0.7)]"
         >
           <Flame className="h-5 w-5 transition-transform group-hover:rotate-12" />
-          I&apos;m about to mess up
+          I\u2019m about to mess up
         </Link>
         <Link
           href="/decide"
-          className="group flex items-center justify-center gap-3 rounded-2xl border-2 border-orange-500/40 bg-gradient-to-br from-orange-500/10 to-transparent px-6 py-5 text-base font-black uppercase tracking-wider text-foreground transition-all hover:scale-[1.02] hover:border-orange-500/60 hover:bg-orange-500/15"
+          className="group flex items-center justify-center gap-3 rounded-2xl border-2 border-orange-500/40 bg-gradient-to-br from-orange-500/10 to-transparent px-5 py-5 text-sm font-black uppercase tracking-wider text-foreground transition-all hover:scale-[1.02] hover:border-orange-500/60 hover:bg-orange-500/15"
         >
           <Brain className="h-5 w-5 text-orange-500 transition-transform group-hover:scale-110" />
           What should I do?
+        </Link>
+        <Link
+          href="/slip"
+          className="group flex items-center justify-center gap-3 rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-transparent px-5 py-5 text-sm font-black uppercase tracking-wider text-foreground transition-all hover:scale-[1.02] hover:border-amber-500/60 hover:bg-amber-500/15"
+        >
+          <AlertTriangle className="h-5 w-5 text-amber-500 transition-transform group-hover:scale-110" />
+          I already slipped
         </Link>
       </motion.div>
 
@@ -172,12 +223,16 @@ export function TodayView({
         </GlassCard>
 
         <GlassCard className="!p-4">
-          <p className="label-xs mb-2 text-orange-500">Pattern insight</p>
+          <p className="label-xs mb-2 text-orange-500">Excuse detected</p>
           {topExcuseCategory && topExcuseCount && topExcuseCount > 1 ? (
-            <p className="text-sm font-semibold text-foreground">
-              <span className="mr-1">{EXCUSE_EMOJI[topExcuseCategory] ?? '🧠'}</span>
-              &ldquo;{topExcuseCategory.toLowerCase().replace('_', ' ')}&rdquo; · {topExcuseCount}× this week
-            </p>
+            <>
+              <p className="text-sm font-bold leading-snug text-foreground">
+                That&apos;s your &ldquo;{EXCUSE_TAG[topExcuseCategory] ?? topExcuseCategory.toLowerCase().replace('_', ' ')}&rdquo; excuse again.
+              </p>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                {topExcuseCount}\u00d7 this week. We\u2019ll catch it when it fires.
+              </p>
+            </>
           ) : (
             <p className="text-sm text-muted-foreground">Not enough data yet</p>
           )}
@@ -194,11 +249,6 @@ export function TodayView({
         <Button variant="glass" size="sm" asChild>
           <Link href="/chat?mode=night">
             <Moon className="h-3.5 w-3.5 text-indigo-400" /> Did you keep your word?
-          </Link>
-        </Button>
-        <Button variant="glass" size="sm" asChild>
-          <Link href="/slip">
-            <AlertTriangle className="h-3.5 w-3.5 text-red-400" /> I slipped
           </Link>
         </Button>
         {/* Callout Mode — "Be brutally honest." Opens a modal that streams

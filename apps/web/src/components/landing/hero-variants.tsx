@@ -27,7 +27,7 @@ const COPY: Record<Variant, {
   primaryCta: string
 }> = {
   a: {
-    label: 'Behavior Enforcement',
+    label: 'Autopilot Interruption',
     headline: (
       <>
         This stops the moment<br />
@@ -37,7 +37,8 @@ const COPY: Record<Variant, {
         </span>.
       </>
     ),
-    subhead: 'Late night. Weekends. "I\'ll restart tomorrow." COYL catches those moments — before they turn into a spiral.',
+    subhead:
+      "You don't fail because you don't know what to do. You fail in the exact same moments \u2014 over and over. This catches them before they turn into a spiral. Built first for weight loss. Works anywhere you keep sabotaging yourself.",
     primaryCta: 'Stop the spiral',
   },
   b: {

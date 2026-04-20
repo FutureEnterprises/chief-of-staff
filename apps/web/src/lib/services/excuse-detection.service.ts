@@ -8,16 +8,29 @@ const CATEGORIES: ExcuseCategory[] = [
   'EXHAUSTION', 'EXCEPTION', 'COMPENSATION', 'SOCIAL_PRESSURE',
 ]
 
+export type ExcuseDetectionResult = {
+  detected: boolean
+  category: ExcuseCategory | null
+  evidence: string | null
+} | null
+
 /**
- * Silently classify a user's message for excuse patterns. Fire-and-forget.
+ * Classify a user's message for excuse patterns. Stores the result if detected.
+ *
+ * Returns the detection result so callers can surface it to the user if they
+ * want real-time UI feedback ("That's your 'tomorrow' excuse again"). Returning
+ * null means the classification itself failed; callers should treat that as
+ * "no detection" for UI purposes.
+ *
  * Called from chat/decide/rescue routes after the response is sent.
+ * Safe to await or fire-and-forget depending on caller needs.
  */
 export async function classifyAndStoreExcuse(
   userId: string,
   text: string,
   source: ExcuseSource = 'CHAT'
-): Promise<void> {
-  if (!text || text.trim().length < 10) return
+): Promise<ExcuseDetectionResult> {
+  if (!text || text.trim().length < 10) return null
 
   try {
     const { text: raw } = await generateText({
@@ -26,25 +39,26 @@ export async function classifyAndStoreExcuse(
       prompt: text.slice(0, 1000),
     })
 
-    // Parse JSON output
     const jsonMatch = raw.match(/\{[\s\S]*?\}/)
-    if (!jsonMatch) return
+    if (!jsonMatch) return null
     const parsed = JSON.parse(jsonMatch[0]) as {
       detected: boolean
       category: string | null
       evidence?: string
     }
 
-    if (!parsed.detected || !parsed.category) return
-    if (!CATEGORIES.includes(parsed.category as ExcuseCategory)) return
+    if (!parsed.detected || !parsed.category) {
+      return { detected: false, category: null, evidence: null }
+    }
+    if (!CATEGORIES.includes(parsed.category as ExcuseCategory)) {
+      return { detected: false, category: null, evidence: null }
+    }
+
+    const category = parsed.category as ExcuseCategory
+    const evidence = parsed.evidence ?? text.slice(0, 200)
 
     await prisma.excuse.create({
-      data: {
-        userId,
-        text: parsed.evidence ?? text.slice(0, 200),
-        category: parsed.category as ExcuseCategory,
-        source,
-      },
+      data: { userId, text: evidence, category, source },
     })
 
     await prisma.productivityEvent
@@ -52,12 +66,14 @@ export async function classifyAndStoreExcuse(
         data: {
           userId,
           eventType: 'EXCUSE_DETECTED',
-          eventValue: parsed.category,
-          metadataJson: { evidence: parsed.evidence?.slice(0, 200), source },
+          eventValue: category,
+          metadataJson: { evidence: evidence.slice(0, 200), source },
         },
       })
       .catch(() => {})
+
+    return { detected: true, category, evidence }
   } catch {
-    // Silent failure — excuse detection is best-effort
+    return null
   }
 }

@@ -36,6 +36,10 @@
     {
       "path": "/api/cron/danger-window-interrupt",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/post-slip-interrupt",
+      "schedule": "*/15 * * * *"
     }
   ]
 }

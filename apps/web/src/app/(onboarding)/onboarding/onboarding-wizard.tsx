@@ -470,39 +470,121 @@ function CommitmentStep({ data, onChange }: { data: FormData; onChange: (v: Part
   )
 }
 
+/**
+ * First-60-second moment: COYL\u2019s opening guess.
+ *
+ * Spec requirement: the very first thing a user sees is a pattern guess
+ * they can confirm. The accuracy of the guess matters less than the FEEL
+ * \u2014 "this thing gets it" lands even if the guess is half-right, because
+ * the pattern it names ("good for a few days, then blow it at night")
+ * is almost universally true for the target audience.
+ *
+ * The three beats reveal in sequence:
+ *   1. COYL\u2019s guess (as a question the user can tap yes/no on)
+ *   2. Confirmation with the label: "That\u2019s your pattern."
+ *   3. The promise: "We\u2019re going to catch it this week."
+ *
+ * If user taps "Not exactly," COYL pivots without apology \u2014 "OK. Then
+ * you tell me." \u2014 and the rest of onboarding collects their actual shape.
+ * Either way it lands as intent, not friction.
+ */
 function OpeningFrameStep() {
+  const [guessed, setGuessed] = useState<'yes' | 'no' | null>(null)
+
   return (
-    <div className="text-center">
-      <motion.h1
+    <div>
+      {/* Beat 1 \u2014 the guess, posed as a question */}
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="heading-2 mb-4"
+        className="mb-6"
       >
-        You don&apos;t need more motivation.
-        <br />
-        You need a{' '}
-        <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-          wake-up system
-        </span>.
-      </motion.h1>
-      <motion.p
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="mt-4 text-sm leading-relaxed text-muted-foreground"
-      >
-        Most people don&apos;t fail because they don&apos;t know what to do.
-        <br />
-        They fail in the same moments, over and over.
-      </motion.p>
-      <motion.p
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="mt-4 text-sm text-muted-foreground"
-      >
-        COYL helps you catch those moments before they turn into a spiral.
-      </motion.p>
+        <p className="label-xs mb-3 text-orange-500">Before we start</p>
+        <h1 className="text-2xl font-black leading-tight text-foreground sm:text-3xl">
+          Let me guess \u2014 you\u2019re good for a few days, then you blow it at night?
+        </h1>
+      </motion.div>
+
+      {guessed === null && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="grid grid-cols-2 gap-3"
+        >
+          <button
+            onClick={() => setGuessed('yes')}
+            className="rounded-xl bg-gradient-to-r from-orange-500 to-red-500 px-4 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.25)]"
+          >
+            Yeah, that\u2019s me
+          </button>
+          <button
+            onClick={() => setGuessed('no')}
+            className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted"
+          >
+            Not exactly
+          </button>
+        </motion.div>
+      )}
+
+      {/* Beat 2 + 3 \u2014 confirmation + promise */}
+      {guessed === 'yes' && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-3"
+        >
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-4 py-3 text-base font-semibold text-orange-200"
+          >
+            Yeah. That\u2019s your pattern.
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.55 }}
+            className="text-sm leading-relaxed text-foreground/90"
+          >
+            You don\u2019t fail randomly. You fail at the same time. Same week. Same script.
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.0 }}
+            className="pt-1 text-base font-bold text-foreground"
+          >
+            We\u2019re going to catch it this week.
+          </motion.p>
+        </motion.div>
+      )}
+
+      {guessed === 'no' && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-3"
+        >
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-4 py-3 text-base font-semibold text-orange-200"
+          >
+            OK. Then you tell me.
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.55 }}
+            className="text-sm leading-relaxed text-foreground/90"
+          >
+            The pattern is still there. You just named a different one. Next screens: we map yours exactly.
+          </motion.p>
+        </motion.div>
+      )}
     </div>
   )
 }

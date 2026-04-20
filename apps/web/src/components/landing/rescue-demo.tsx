@@ -44,20 +44,23 @@ const DEMO_TRIGGERS: Trigger[] = [
     sub: 'Not hungry. Just restless.',
     wedge: 'Food / weight',
     icon: Refrigerator,
-    script: `**Pause**
-Close the door. Walk out of the kitchen. That\u2019s the whole first move.
+    script: `**Pattern**
+This is your night loop. You\u2019ve been here dozens of times. The cue was crossing into the kitchen, not any thought you had.
 
-**What\u2019s actually happening**
-You\u2019re doing that thing where restlessness becomes eating. Food is the habit. The feeling under it is the real thing, and you haven\u2019t named it.
+**Truth**
+You\u2019re not hungry. You\u2019re looking for a state change. Food is the habit, not the need.
 
-**What happens if you don\u2019t interrupt**
-You eat something in the next 90 seconds. You feel fine for 8 minutes. Then you feel worse. You open the fridge again at 10:14. You already know this ending.
+**Prediction**
+If you eat now, you already know. This turns into a full night of eating. Fine for 8 minutes. Then worse.
 
-**Least-damaging move right now**
-One glass of water. Ten minutes away from the kitchen. If you still want food after ten, you can have it \u2014 and we log it honestly.
+**Interrupt**
+Close the fridge. Step away from the kitchen.
 
-**Pattern**
-The cue was crossing into the kitchen, not any thought you had. That\u2019s why it feels automatic. It is.`,
+**Action**
+One glass of water. Walk out of the kitchen for ten minutes.
+
+**Follow-up**
+If you still want food after ten, you can have it \u2014 and we log it honestly.`,
   },
   {
     key: 'ANGRY_TEXT',
@@ -65,20 +68,23 @@ The cue was crossing into the kitchen, not any thought you had. That\u2019s why 
     sub: 'The one I\u2019ll regret by morning.',
     wedge: 'Emotional reactivity',
     icon: MessageSquareWarning,
-    script: `**Pause**
+    script: `**Pattern**
+This is reactive closure. You\u2019ve done it before. The script is: end the feeling fast, no matter what it costs.
+
+**Truth**
+You\u2019re picking the sharpest words because they feel like control. They\u2019re not.
+
+**Prediction**
+If you hit send, you feel powerful for 40 seconds. Then sick. Tomorrow you have to fix this plus that.
+
+**Interrupt**
 Don\u2019t send it. Put the phone face-down in another room.
 
-**What\u2019s actually happening**
-You\u2019re picking the sharpest words because they feel like control. They\u2019re not. The script is: end this feeling fast, no matter what it costs. You already know what it costs.
+**Action**
+Write the whole thing in Notes. Don\u2019t send. Read it tomorrow at 8 AM.
 
-**What happens if you don\u2019t interrupt**
-You hit send. You feel powerful for 40 seconds. Then you feel sick. They respond or they don\u2019t \u2014 both outcomes make tomorrow worse. You were going to have to fix this anyway. Now you have to fix this plus that.
-
-**Least-damaging move right now**
-Write the whole thing in Notes. Don\u2019t send. Read it tomorrow at 8 AM. You won\u2019t send it then.
-
-**Pattern**
-This is reactive closure. You\u2019ve done it before. You\u2019ll do it again \u2014 just not tonight.`,
+**Follow-up**
+You won\u2019t send it then. That\u2019s the point.`,
   },
   {
     key: 'DOOMSCROLL',
@@ -86,20 +92,23 @@ This is reactive closure. You\u2019ve done it before. You\u2019ll do it again \u
     sub: 'I told myself "one minute." It was sixty.',
     wedge: 'Focus / avoidance',
     icon: Smartphone,
-    script: `**Pause**
-Put the phone in another room. Not on the desk. Not in your pocket. Another room.
+    script: `**Pattern**
+This is the displacement loop. Every hour avoided is an hour not processed. The bill comes due at night.
 
-**What\u2019s actually happening**
-You weren\u2019t checking anything. You were avoiding. The scroll is a low-grade anesthetic for a feeling you haven\u2019t named \u2014 bored, anxious, resentful, small.
+**Truth**
+You weren\u2019t checking anything. You were avoiding. The scroll is a low-grade anesthetic for a feeling you haven\u2019t named.
 
-**What happens if you don\u2019t interrupt**
-Another hour goes. You still haven\u2019t done the thing. At 11 PM you\u2019ll tell yourself you\u2019ll \u201cstart fresh tomorrow.\u201d Tomorrow you\u2019ll scroll at 9 AM to \u201cease into the day.\u201d That\u2019s the loop.
+**Prediction**
+If you keep going, another hour vanishes. At 11 PM you\u2019ll tell yourself you\u2019ll \u201cstart fresh tomorrow.\u201d Tomorrow starts with scrolling.
 
-**Least-damaging move right now**
-Name the feeling out loud. One word. Then do the first boring thing on your actual list. Five minutes.
+**Interrupt**
+Put the phone in another room. Not the desk. Not your pocket. Another room.
 
-**Pattern**
-Every hour avoided is an hour not processed. The bill is interest-bearing. It comes due at night.`,
+**Action**
+Name the feeling out loud \u2014 bored, anxious, lonely. Do the first boring thing on your list for five minutes.
+
+**Follow-up**
+Come back to the phone in twenty. Check in with how you feel.`,
   },
   {
     key: 'URGE_RISING',
@@ -107,20 +116,23 @@ Every hour avoided is an hour not processed. The bill is interest-bearing. It co
     sub: 'The one I said I was done with.',
     wedge: 'Destructive pattern',
     icon: Flame,
-    script: `**Pause**
-The urge is a signal, not a command. You can feel it and not obey it. The next 20 minutes are the whole job.
+    script: `**Pattern**
+This is the craving loop. It peaks in about 20 minutes \u2014 always has.
 
-**What\u2019s actually happening**
-A cue fired. Your brain predicted relief. That prediction is chemistry, not truth. It peaks and passes \u2014 always has.
+**Truth**
+A cue fired. Your brain predicted relief. That prediction is chemistry, not fact.
 
-**What happens if you don\u2019t interrupt**
-You feed it. You feel relief for 12 minutes. Then you feel smaller. Then you feel it rising again tomorrow, louder. Every feeding makes the next one louder. You already know this.
+**Prediction**
+If you feed it, you feel relief for 12 minutes. Then smaller. Tomorrow the urge is louder. Every feeding makes the next one louder.
 
-**Least-damaging move right now**
-Ride the wave. Water. Cold air. Move your body. Call someone who knows. Do not be alone with this.
+**Interrupt**
+Step away from whatever triggered this. Move your body.
 
-**Pattern**
-Urges get quieter the more times you don\u2019t obey them. That\u2019s not a belief. That\u2019s the mechanism.`,
+**Action**
+Water. Cold air. Call someone who knows. Do not be alone with this.
+
+**Follow-up**
+I\u2019m checking on you in 20 minutes. That\u2019s the peak. You ride it out, the wave breaks.`,
   },
   {
     key: 'SPIRALING',
@@ -128,20 +140,23 @@ Urges get quieter the more times you don\u2019t obey them. That\u2019s not a bel
     sub: 'One slip turning into a night.',
     wedge: 'Mid-action',
     icon: Wind,
-    script: `**Stop the spiral**
-One slip is one slip. A spiral is a second choice. You\u2019re about to make it.
+    script: `**Pattern**
+This is the spiral loop. One slip, then the sentence that writes the rest of the night.
 
-**The story you\u2019re telling yourself**
-"I already blew it." That one sentence is the entire machinery. It converts one data point into a license for five more.
+**Truth**
+You\u2019re telling yourself "I already blew it." That sentence is the machinery. It converts one data point into a license for five more.
 
-**What happens if you don\u2019t interrupt**
-You keep going for another two hours. Tomorrow you skip the thing. Monday you start a grand new plan. By Thursday you\u2019re here again. This is that movie.
+**Prediction**
+If you keep going: another two hours tonight. Tomorrow you skip the thing. Monday you start a grand new plan. By Thursday you\u2019re here again.
 
-**Least-damaging move right now**
-Water. Brush your teeth. Bed thirty minutes early. That\u2019s the entire plan. Do not make a new one tonight.
+**Interrupt**
+Stop. No more tonight. One slip. One.
 
-**Tomorrow re-entry**
-Tomorrow isn\u2019t "starting over." It\u2019s the next rep. Do exactly what you\u2019d have done if tonight hadn\u2019t happened.`,
+**Action**
+Water. Brush your teeth. Bed thirty minutes early. That\u2019s the entire plan.
+
+**Follow-up**
+Tomorrow isn\u2019t starting over. It\u2019s the next rep. We continue.`,
   },
   {
     key: 'ALREADY_SLIPPED',
@@ -149,23 +164,23 @@ Tomorrow isn\u2019t "starting over." It\u2019s the next rep. Do exactly what you
     sub: 'Woke up thinking: not again.',
     wedge: 'Retroactive',
     icon: HeartCrack,
-    script: `**No shame, no spiral**
-You slipped. One data point. Not who you are.
+    script: `You slipped.
+Good \u2014 now we stop the damage.
 
-**The story you\u2019re telling yourself right now**
-"This always happens." Or "I\u2019ll make it up." Or "I need a new plan." All three are the same escape. Pick the one you heard in your head this morning. That\u2019s the one we\u2019re interrupting.
+**Truth**
+The mistake isn\u2019t the problem. The spiral is. The story you\u2019re telling yourself \u2014 "this always happens" or "I need a new plan" \u2014 that\u2019s the actual thing we\u2019re interrupting.
 
-**What NOT to do**
-Don\u2019t skip today. Don\u2019t punish with a compensation workout. Don\u2019t build a grand restart. Those are all ways of running from what happened.
+**Prediction**
+If you keep going, this becomes a full bad day. Skip today, tomorrow gets easier to skip. By Wednesday you\u2019re in a week.
 
-**Next 2 hours**
-Normal breakfast. Water. Ten minutes of movement. Small. Boring. Non-negotiable.
+**Recovery**
+Normal breakfast. Water. Ten minutes of movement. No compensation, no punishment, no grand new plan.
 
-**What happens next if you don\u2019t interrupt**
-You skip today. Tomorrow you skip again because "I\u2019ll start fresh Monday." Monday is Wednesday. We\u2019ve both seen this film.
+**Next move**
+Next meal = clean reset. Exact time on your calendar. Do it whether you feel like it or not.
 
-**Pattern note**
-The slip is data. What happened in the hour before it? That\u2019s where the real interruption lives for next time.`,
+**Tomorrow**
+We\u2019re not restarting. We\u2019re continuing. The streak, the rule, the identity \u2014 all continue. The slip is a blip.`,
   },
 ]
 
