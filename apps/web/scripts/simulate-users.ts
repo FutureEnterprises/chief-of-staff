@@ -200,7 +200,7 @@ async function simulate(count: number) {
     // Rescue sessions — mostly interrupted if user has a good streak
     const rescueRows: Prisma.RescueSessionCreateManyInput[] = []
     for (let j = 0; j < rescueCount; j++) {
-      const outcome = Math.random() < 0.72 ? 'INTERRUPTED' : Math.random() < 0.5 ? 'SLIPPED' : 'ABANDONED'
+      const outcome = Math.random() < 0.72 ? 'INTERRUPTED' : Math.random() < 0.5 ? 'SLIPPED' : 'UNRESOLVED'
       // Only RescueTrigger enum values — URGE_RISING isn't a DB-level
       // trigger (it's a demo-only label); use its closest real counterpart.
       // Only RescueTrigger enum values — URGE_RISING isn't a DB-level

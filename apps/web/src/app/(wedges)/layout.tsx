@@ -32,6 +32,7 @@ export default function WedgeLayout({ children }: { children: React.ReactNode })
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 text-xs text-gray-600">
           <span>&copy; {new Date().getFullYear()} COYL &middot; Stop the script before it runs your life.</span>
           <div className="flex gap-4">
+            <Link href="/content" className="hover:text-orange-400">Content playbook</Link>
             <Link href="/terms" className="hover:text-orange-400">Terms</Link>
             <Link href="/privacy" className="hover:text-orange-400">Privacy</Link>
             <Link href="/cookies" className="hover:text-orange-400">Cookies</Link>

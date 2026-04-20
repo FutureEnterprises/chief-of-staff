@@ -19,6 +19,7 @@ export default function robots(): MetadataRoute.Robots {
           '/decision-support',
           '/recovery',
           '/autopilot-map',
+          '/content',
           '/science',
         ],
         disallow: [

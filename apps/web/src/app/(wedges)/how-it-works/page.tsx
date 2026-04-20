@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { CoreLoop } from '@/components/landing/core-loop'
 
 export const metadata: Metadata = {
   title: 'How COYL works',
@@ -49,28 +50,13 @@ export default function HowItWorksPage() {
       </section>
 
       <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-3 text-2xl font-bold text-white">The 7-stage loop</h2>
-        <p className="mb-6 text-sm text-gray-400">
-          This is the proprietary orchestration. It&apos;s what separates COYL from chatbots and reminders.
+        <h2 className="mb-2 text-2xl font-bold text-white">The 7-step loop</h2>
+        <p className="mb-8 text-sm text-gray-400">
+          Signal \u2192 Detect \u2192 Interrupt \u2192 Truth \u2192 Action \u2192 Recovery \u2192 Learn.
+          Every real slip runs this cycle. So does every successful interrupt. The
+          loop is what separates COYL from a chatbot or a reminder app.
         </p>
-        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-300">
-          {[
-            'Signal',
-            'State inference',
-            'Script detection',
-            'Precision interrupt',
-            'Honest response',
-            'Recovery branch',
-            'Pattern update',
-          ].map((node, i) => (
-            <span key={node} className="flex items-center gap-3">
-              <span className="rounded-full border border-orange-500/30 bg-black/40 px-3 py-1.5 font-mono">
-                {node}
-              </span>
-              {i < 6 && <span className="text-orange-500">→</span>}
-            </span>
-          ))}
-        </div>
+        <CoreLoop />
       </section>
 
       <div className="flex gap-3">

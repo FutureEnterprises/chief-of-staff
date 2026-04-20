@@ -14,6 +14,7 @@ const isPublicRoute = createRouteMatcher([
   '/decision-support',
   '/recovery',
   '/autopilot-map',
+  '/content',
   '/science',
   '/api/webhooks/(.*)',
   '/api/cron/(.*)',
