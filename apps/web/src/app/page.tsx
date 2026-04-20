@@ -136,11 +136,8 @@ export default async function HomePage({
  */
 /**
  * LOCKED signature line \u2014 used verbatim on landing, ads, OG cards,
- * product header, social. Reversed from "This stops the moment you
- * usually screw yourself" per latest reviewer instruction.
- *
- * One line, seen enough times to stick. No subcopy \u2014 spec says
- * less, not more.
+ * product header, social. One line, seen enough times to stick.
+ * No subcopy \u2014 spec says less, not more.
  */
 function IconicLine() {
   return (

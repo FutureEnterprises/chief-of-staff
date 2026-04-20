@@ -54,11 +54,11 @@ const COPY: Record<Variant, {
         </span>
       </>
     ),
-    // Reviewer push: "catches the moment you usually blow it" \u2192
-    // "catches you right before you screw yourself." Uncomfortable,
-    // shareable, ties to the locked signature line.
+    // Hero line kept short + sharp. Ties to the product\u2019s "I folded"
+    // vocabulary (slip log, rescue demo triggers), so the hero and the
+    // in-product language reinforce each other.
     subhead:
-      "Because you\u2019re on autopilot. COYL catches you right before you screw yourself.",
+      "Because you\u2019re on autopilot. COYL catches you right before you fold.",
     primaryCta: 'Start catching your patterns',
   },
   c: {
