@@ -45,30 +45,25 @@ if (!pk || !sk) {
     'CLERK keys missing. Set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY in Vercel → Settings → Environment Variables → Production.',
   )
 } else {
+  // pk_test_ in production is a soft warning, not a hard fail.
+  // The middleware bypass (see middleware.ts + docs/ENGINEERING.md \u00a711)
+  // keeps public pages reachable even with dev keys. Once Clerk Production
+  // is set up, this warning goes away. Blocking the build here would
+  // prevent the user from shipping the bypass itself.
   if (pk.startsWith('pk_test_')) {
-    errors.push(
+    warnings.push(
       [
-        'CLERK publishable key is a DEV-INSTANCE key (pk_test_).',
-        '',
-        'Consequence: every public request (/ /weight-loss etc) gets 302\'d through',
-        'the Clerk accounts.dev handshake — public pages are unreachable to logged-',
-        'out visitors, bots, and crawlers.',
-        '',
-        'Fix:',
-        '  1. Clerk Dashboard → Production instance (create one if needed)',
-        '  2. API Keys → copy the pk_live_... + sk_live_... pair',
-        '  3. Vercel → Settings → Environment Variables → Production:',
-        '     - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...',
-        '     - CLERK_SECRET_KEY=sk_live_...',
-        '  4. Redeploy.',
-      ].join('\n'),
+        'CLERK publishable key is dev-instance (pk_test_). Middleware bypass',
+        'keeps public pages reachable, but /today, /rescue, etc still go through',
+        'the accounts.dev handshake for signed-in users. Set up Clerk Production',
+        '(docs/ENGINEERING.md \u00a711) for a full prod experience.',
+      ].join(' '),
     )
   }
   if (sk.startsWith('sk_test_')) {
-    errors.push(
-      'CLERK_SECRET_KEY is a dev-instance key (sk_test_). See the publishable-key remediation above.',
-    )
+    warnings.push('CLERK_SECRET_KEY is dev-instance (sk_test_). Same context as the publishable-key warning.')
   }
+  // True placeholders ARE fatal — they'd break auth entirely.
   if (pk.startsWith('pk_...') || sk.startsWith('sk_...')) {
     errors.push('CLERK keys are placeholder values (pk_... / sk_...). Replace with real keys.')
   }
