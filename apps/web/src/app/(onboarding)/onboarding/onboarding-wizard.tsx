@@ -536,41 +536,112 @@ function RescuePreferenceStep({ data, onChange }: { data: FormData; onChange: (v
   )
 }
 
+// Converts the picked danger-window keys into the phrase COYL speaks in first person.
+// "late-night" → "at night", "weekends" → "on weekends", etc.
+// Returns something that slots into the sentence "So your autopilot runs {PHRASE}."
+function windowPhrase(picked: string[]): string {
+  const phrases: Record<string, string> = {
+    'late-night': 'at night',
+    'weekends': 'on weekends',
+    'post-work': 'right after work',
+    'stress': 'when you\u2019re under pressure',
+    'after-slip': 'the moment you think you already blew it',
+    'social': 'around other people',
+    'alone': 'when no one\u2019s watching',
+  }
+  const first = picked[0]
+  if (!first) return 'at some point'
+  return phrases[first] ?? 'at the moments you picked'
+}
+
+// The exact excuse sentence we\u2019re going to catch. Quote-worthy.
+const EXCUSE_QUOTES: Record<string, string> = {
+  DELAY: "I\u2019ll start tomorrow.",
+  REWARD: "I deserve this.",
+  MINIMIZATION: "One time won\u2019t matter.",
+  COLLAPSE: "I already blew it.",
+  EXHAUSTION: "I\u2019m too tired tonight.",
+  EXCEPTION: "This week is weird.",
+  COMPENSATION: "I\u2019ll make up for it.",
+  SOCIAL_PRESSURE: "I couldn\u2019t say no.",
+}
+
+/**
+ * The summary step is the first-use holy-shit moment. Instead of a dry
+ * list of picks, COYL speaks directly \u2014 using what the user just told us \u2014
+ * in a three-beat pattern: the pattern, the excuse that\u2019s coming, the deal.
+ * Deterministic on the client, no AI call, no latency. The point is to land,
+ * not to be clever.
+ */
 function SummaryStep({ data }: { data: FormData }) {
-  const wedgeLabel = WEDGE_LABELS[data.primaryWedge] ?? 'Your battlefield'
-  const excuseLabel = EXCUSE_LABELS[data.excuseStyle] ?? '—'
-  const pickedWindows = data.dangerWindowsPicked.slice(0, 2).join(', ') || 'your chosen windows'
+  const wedgeLabel = WEDGE_LABELS[data.primaryWedge] ?? 'your autopilot'
+  const windowText = windowPhrase(data.dangerWindowsPicked)
+  const excuseQuote = EXCUSE_QUOTES[data.excuseStyle] ?? 'the excuse you already know.'
+  const firstName = data.name.trim().split(' ')[0] || 'there'
+
+  // Three beats. Each appears in sequence with a short delay so the lines
+  // land one at a time, not all at once. Reads as COYL speaking, not a summary.
+  const beats = [
+    `${firstName}. I heard you.`,
+    `Your autopilot runs ${windowText}. That\u2019s ${wedgeLabel.toLowerCase()} territory. You already knew that \u2014 you just hadn\u2019t said it out loud in a while.`,
+    `When it hits this week, the sentence showing up in your head is:`,
+    `"${excuseQuote}"`,
+    `That\u2019s the one we\u2019re going to catch. I\u2019m not here to motivate you. I\u2019m here the moment that sentence shows up. Your rule: "${data.firstCommitment}". Simple. Non-negotiable. One week.`,
+    `Deal?`,
+  ]
 
   return (
     <div>
       <div className="mb-5">
-        <p className="label-xs mb-2 text-orange-500">Here&apos;s your first anti-spiral plan</p>
-        <h2 className="heading-2">Ready to go.</h2>
+        <p className="label-xs mb-2 text-orange-500">First read</p>
+        <h2 className="heading-2">Here\u2019s what I see.</h2>
       </div>
+
+      {/* Beats stream in one at a time. Feels like COYL speaking, not filling out a form. */}
       <div className="space-y-3">
-        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">Your pattern</p>
-          <p className="mt-1 text-sm font-semibold text-foreground">{wedgeLabel}</p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">Your usual excuse</p>
-          <p className="mt-1 text-sm font-semibold text-foreground">{excuseLabel}</p>
-        </div>
-        <div className="rounded-xl border border-orange-500/30 bg-orange-500/5 p-3">
-          <p className="text-[11px] font-mono uppercase tracking-widest text-orange-500">Your rule</p>
-          <p className="mt-1 text-sm font-semibold text-foreground">{data.firstCommitment}</p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">Danger windows</p>
-          <p className="mt-1 text-sm font-semibold text-foreground capitalize">{pickedWindows}</p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">What COYL will do</p>
-          <p className="mt-1 text-sm text-foreground">
-            Interrupt you before the script takes over and help you recover fast if you slip.
+        {beats.map((line, i) => {
+          const isExcuseQuote = line.startsWith('"') && line.endsWith('"')
+          const isFinal = line === 'Deal?'
+          return (
+            <motion.p
+              key={i}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 + i * 0.55, duration: 0.4 }}
+              className={cn(
+                'text-sm leading-relaxed',
+                isExcuseQuote &&
+                  'rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-4 py-2 text-base font-semibold italic text-orange-200',
+                isFinal && 'pt-2 text-base font-bold text-white',
+                !isExcuseQuote && !isFinal && 'text-foreground/90',
+              )}
+            >
+              {line}
+            </motion.p>
+          )
+        })}
+      </div>
+
+      {/* The quiet footer — commitments already made, no extra fluff */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.35 + beats.length * 0.55 + 0.2, duration: 0.6 }}
+        className="mt-6 grid grid-cols-2 gap-2"
+      >
+        <div className="rounded-xl border border-white/10 bg-white/5 p-2.5">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Tone</p>
+          <p className="mt-0.5 text-xs font-semibold text-foreground">
+            {TONE_MODES.find((t) => t.value === data.toneMode)?.label ?? data.toneMode}
           </p>
         </div>
-      </div>
+        <div className="rounded-xl border border-white/10 bg-white/5 p-2.5">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Rescue style</p>
+          <p className="mt-0.5 text-xs font-semibold text-foreground">
+            {RESCUE_PREFERENCES.find((r) => r.value === data.rescuePreference)?.label ?? 'Called out'}
+          </p>
+        </div>
+      </motion.div>
     </div>
   )
 }

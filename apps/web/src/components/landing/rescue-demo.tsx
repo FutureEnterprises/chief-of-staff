@@ -45,16 +45,19 @@ const DEMO_TRIGGERS: Trigger[] = [
     wedge: 'Food / weight',
     icon: Refrigerator,
     script: `**Pause**
-Close the door. Ten seconds before you decide anything.
+Close the door. Walk out of the kitchen. That\u2019s the whole first move.
 
 **What\u2019s actually happening**
-You\u2019re not hungry. You\u2019re looking for a state change. Food is the habit, not the need.
+You\u2019re doing that thing where restlessness becomes eating. Food is the habit. The feeling under it is the real thing, and you haven\u2019t named it.
+
+**What happens if you don\u2019t interrupt**
+You eat something in the next 90 seconds. You feel fine for 8 minutes. Then you feel worse. You open the fridge again at 10:14. You already know this ending.
 
 **Least-damaging move right now**
-Water. Walk out of the kitchen. Come back in ten minutes if you still want something.
+One glass of water. Ten minutes away from the kitchen. If you still want food after ten, you can have it \u2014 and we log it honestly.
 
 **Pattern**
-This is the 9 PM loop. The cue was crossing into the kitchen, not any thought you had. That\u2019s why it feels automatic.`,
+The cue was crossing into the kitchen, not any thought you had. That\u2019s why it feels automatic. It is.`,
   },
   {
     key: 'ANGRY_TEXT',
@@ -63,16 +66,19 @@ This is the 9 PM loop. The cue was crossing into the kitchen, not any thought yo
     wedge: 'Emotional reactivity',
     icon: MessageSquareWarning,
     script: `**Pause**
-Don\u2019t send it. Put the phone down and walk somewhere you can\u2019t see it.
+Don\u2019t send it. Put the phone face-down in another room.
 
 **What\u2019s actually happening**
-You\u2019re about to choose the sharpest words because they feel like control. They\u2019re not. They\u2019re the autopilot ending the discomfort by creating a bigger one.
+You\u2019re picking the sharpest words because they feel like control. They\u2019re not. The script is: end this feeling fast, no matter what it costs. You already know what it costs.
+
+**What happens if you don\u2019t interrupt**
+You hit send. You feel powerful for 40 seconds. Then you feel sick. They respond or they don\u2019t \u2014 both outcomes make tomorrow worse. You were going to have to fix this anyway. Now you have to fix this plus that.
 
 **Least-damaging move right now**
-Wait until tomorrow morning. Re-read it then. Rewrite it if you still want to send anything.
+Write the whole thing in Notes. Don\u2019t send. Read it tomorrow at 8 AM. You won\u2019t send it then.
 
 **Pattern**
-This is reactive closure. Common. Not wisdom. A loop.`,
+This is reactive closure. You\u2019ve done it before. You\u2019ll do it again \u2014 just not tonight.`,
   },
   {
     key: 'DOOMSCROLL',
@@ -84,13 +90,16 @@ This is reactive closure. Common. Not wisdom. A loop.`,
 Put the phone in another room. Not on the desk. Not in your pocket. Another room.
 
 **What\u2019s actually happening**
-You weren\u2019t checking anything. You were avoiding something. The scroll is a low-grade anesthetic for a feeling you haven\u2019t named.
+You weren\u2019t checking anything. You were avoiding. The scroll is a low-grade anesthetic for a feeling you haven\u2019t named \u2014 bored, anxious, resentful, small.
+
+**What happens if you don\u2019t interrupt**
+Another hour goes. You still haven\u2019t done the thing. At 11 PM you\u2019ll tell yourself you\u2019ll \u201cstart fresh tomorrow.\u201d Tomorrow you\u2019ll scroll at 9 AM to \u201cease into the day.\u201d That\u2019s the loop.
 
 **Least-damaging move right now**
-Name the feeling out loud \u2014 bored, anxious, avoidant, lonely. Then do one boring thing on your actual list. Just one.
+Name the feeling out loud. One word. Then do the first boring thing on your actual list. Five minutes.
 
 **Pattern**
-This is the displacement loop. Every hour avoided is an hour not processed. The bill comes at night.`,
+Every hour avoided is an hour not processed. The bill is interest-bearing. It comes due at night.`,
   },
   {
     key: 'URGE_RISING',
@@ -99,16 +108,19 @@ This is the displacement loop. Every hour avoided is an hour not processed. The 
     wedge: 'Destructive pattern',
     icon: Flame,
     script: `**Pause**
-The urge is a signal, not a command. You can feel it without obeying it.
+The urge is a signal, not a command. You can feel it and not obey it. The next 20 minutes are the whole job.
 
 **What\u2019s actually happening**
-A cue fired. Your brain predicted relief. That prediction is chemistry, not truth \u2014 and it peaks in about 20 minutes.
+A cue fired. Your brain predicted relief. That prediction is chemistry, not truth. It peaks and passes \u2014 always has.
+
+**What happens if you don\u2019t interrupt**
+You feed it. You feel relief for 12 minutes. Then you feel smaller. Then you feel it rising again tomorrow, louder. Every feeding makes the next one louder. You already know this.
 
 **Least-damaging move right now**
-Ride the wave. Drink water. Move your body. Call someone who knows. Don\u2019t be alone with it.
+Ride the wave. Water. Cold air. Move your body. Call someone who knows. Do not be alone with this.
 
 **Pattern**
-Urges get quieter the more times you don\u2019t feed them. Feeding them makes the next one louder.`,
+Urges get quieter the more times you don\u2019t obey them. That\u2019s not a belief. That\u2019s the mechanism.`,
   },
   {
     key: 'SPIRALING',
@@ -117,16 +129,19 @@ Urges get quieter the more times you don\u2019t feed them. Feeding them makes th
     wedge: 'Mid-action',
     icon: Wind,
     script: `**Stop the spiral**
-One slip is one slip. A spiral is a second choice.
+One slip is one slip. A spiral is a second choice. You\u2019re about to make it.
 
-**What\u2019s actually happening**
-You\u2019re telling yourself "I already blew it." That sentence is the machinery of the spiral \u2014 it converts one data point into a license.
+**The story you\u2019re telling yourself**
+"I already blew it." That one sentence is the entire machinery. It converts one data point into a license for five more.
+
+**What happens if you don\u2019t interrupt**
+You keep going for another two hours. Tomorrow you skip the thing. Monday you start a grand new plan. By Thursday you\u2019re here again. This is that movie.
 
 **Least-damaging move right now**
-Water. Brush your teeth. Bed thirty minutes early. That\u2019s the whole plan.
+Water. Brush your teeth. Bed thirty minutes early. That\u2019s the entire plan. Do not make a new one tonight.
 
 **Tomorrow re-entry**
-Tomorrow isn\u2019t "starting over." It\u2019s the next rep. Do the same thing you\u2019d do if tonight hadn\u2019t happened.`,
+Tomorrow isn\u2019t "starting over." It\u2019s the next rep. Do exactly what you\u2019d have done if tonight hadn\u2019t happened.`,
   },
   {
     key: 'ALREADY_SLIPPED',
@@ -137,14 +152,20 @@ Tomorrow isn\u2019t "starting over." It\u2019s the next rep. Do the same thing y
     script: `**No shame, no spiral**
 You slipped. One data point. Not who you are.
 
+**The story you\u2019re telling yourself right now**
+"This always happens." Or "I\u2019ll make it up." Or "I need a new plan." All three are the same escape. Pick the one you heard in your head this morning. That\u2019s the one we\u2019re interrupting.
+
 **What NOT to do**
-Don\u2019t skip today. Don\u2019t compensate with a punishment. Don\u2019t build a grand new plan. All three are the same escape.
+Don\u2019t skip today. Don\u2019t punish with a compensation workout. Don\u2019t build a grand restart. Those are all ways of running from what happened.
 
 **Next 2 hours**
-Eat your normal breakfast. Drink water. Ten minutes of movement. Small, normal, boring.
+Normal breakfast. Water. Ten minutes of movement. Small. Boring. Non-negotiable.
+
+**What happens next if you don\u2019t interrupt**
+You skip today. Tomorrow you skip again because "I\u2019ll start fresh Monday." Monday is Wednesday. We\u2019ve both seen this film.
 
 **Pattern note**
-The slip is useful information. What happened in the hour before? That\u2019s where the real interruption lives for next time.`,
+The slip is data. What happened in the hour before it? That\u2019s where the real interruption lives for next time.`,
   },
 ]
 

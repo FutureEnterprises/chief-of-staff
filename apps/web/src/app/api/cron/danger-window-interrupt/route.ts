@@ -114,7 +114,9 @@ export async function GET(req: Request) {
         },
       })
 
-      // Expo push notification
+      // Expo push notification — pattern-calling tone.
+      // The push IS the interruption. Copy has to land in the 3 seconds
+      // it takes a person to read a lock-screen notification.
       if (user.expoPushToken) {
         try {
           await fetch('https://exp.host/--/api/v2/push/send', {
@@ -123,8 +125,8 @@ export async function GET(req: Request) {
             body: JSON.stringify({
               to: user.expoPushToken,
               sound: 'default',
-              title: 'Danger window',
-              body: `${window.label}. Tap to rescue yourself.`,
+              title: `${firstName}. This is the moment.`,
+              body: `${window.label}. You already know how this ends. Open before it does.`,
               data: { type: 'danger_window', windowId: window.id },
               priority: 'high',
             }),
@@ -134,14 +136,29 @@ export async function GET(req: Request) {
         }
       }
 
-      // Email fallback
+      // Email fallback — same voice, slightly longer form
       if (resend) {
         try {
           await resend.emails.send({
             from: fromEmail,
             to: user.email,
-            subject: `${firstName}, you're in your ${window.label.toLowerCase()}`,
-            text: `${firstName},\n\nYou're in one of your known danger windows right now: ${window.label}.\n\nThis is the moment your autopilot usually takes over. Don't let it.\n\nOpen rescue: https://coyl.ai/rescue\n\n— COYL`,
+            subject: `${firstName}. You're in your ${window.label.toLowerCase()}.`,
+            text: [
+              `${firstName},`,
+              '',
+              `You're inside ${window.label} right now.`,
+              '',
+              `This is the window your autopilot runs. You already know how this ends if nothing interrupts it. Tonight\u2019s script:`,
+              `  \u2022 The cue: ${window.triggerType ?? 'the usual trigger'}`,
+              `  \u2022 The routine: whatever you told yourself you\u2019d stop doing`,
+              `  \u2022 The aftermath: tomorrow morning`,
+              '',
+              `Open rescue before it runs: https://coyl.ai/rescue`,
+              '',
+              `I'm here. Don\u2019t hide from me.`,
+              '',
+              `\u2014 COYL`,
+            ].join('\n'),
           })
         } catch {
           // silent

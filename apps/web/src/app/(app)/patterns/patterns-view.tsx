@@ -4,7 +4,7 @@ import { motion } from 'motion/react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { PageTransition, StaggerList, StaggerItem, AnimatedCounter } from '@/components/motion/animations'
 import { ShareButton } from '@/components/share/share-card'
-import { Flame, Clock, AlertTriangle, Activity, Eye, Shield, Zap, TrendingUp } from 'lucide-react'
+import { Flame, Clock, AlertTriangle, Activity, Eye, Shield, Zap, TrendingUp, Radar } from 'lucide-react'
 
 const EXCUSE_LABELS: Record<string, { label: string; emoji: string }> = {
   DELAY: { label: 'Delay', emoji: '🐌' },
@@ -72,6 +72,12 @@ interface PatternsViewProps {
   totalPreSlipSignals: number
   recoveryStrengthPct: number | null
   totalSlips30d: number
+  predictions: Array<{
+    severity: 'HIGH' | 'MEDIUM' | 'LOW'
+    prediction: string
+    basis: string
+    hookAction: string
+  }>
 }
 
 export function PatternsView({
@@ -82,6 +88,7 @@ export function PatternsView({
   completedLast7Days, completedLast30Days, openTasks, overdueTasks,
   topFailureTrigger, totalPreSlipSignals,
   recoveryStrengthPct, totalSlips30d,
+  predictions,
 }: PatternsViewProps) {
   const maxExcuse = Math.max(...excusesByCategory.map((e) => e.count), 1)
   const identity = IDENTITY_STATES[identityState] ?? IDENTITY_STATES.SLEEPWALKING!
@@ -107,6 +114,59 @@ export function PatternsView({
         </div>
         <ShareButton userId={userId} executionScore={selfTrustScore} currentStreak={currentStreak} userName={userName} />
       </div>
+
+      {/* ────────── PREDICTIVE WARNINGS — the accusing, predictive top card ──────────
+          This is the "if nothing changes, you will fail again tonight" moment.
+          Shows up only when we have data-backed predictions. Silent otherwise
+          so empty states don't scream about nothing. */}
+      {predictions.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-8 rounded-2xl border border-red-500/30 bg-gradient-to-br from-red-500/10 via-orange-500/5 to-transparent p-5 shadow-[0_0_40px_rgba(239,68,68,0.12)]"
+        >
+          <div className="mb-4 flex items-center gap-2">
+            <Radar className="h-4 w-4 text-red-400" />
+            <p className="text-xs font-mono uppercase tracking-widest text-red-400">
+              If nothing changes
+            </p>
+          </div>
+          <div className="space-y-3">
+            {predictions.map((p, i) => {
+              const severityBorder =
+                p.severity === 'HIGH' ? 'border-red-500/40 bg-red-500/10'
+                : p.severity === 'MEDIUM' ? 'border-orange-500/40 bg-orange-500/10'
+                : 'border-yellow-500/30 bg-yellow-500/5'
+              const severityText =
+                p.severity === 'HIGH' ? 'text-red-300'
+                : p.severity === 'MEDIUM' ? 'text-orange-300'
+                : 'text-yellow-300'
+              return (
+                <div key={i} className={`rounded-xl border p-4 ${severityBorder}`}>
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className={`text-[10px] font-mono uppercase tracking-widest ${severityText}`}>
+                      {p.severity} likelihood
+                    </span>
+                  </div>
+                  <p className="text-base font-bold leading-snug text-foreground">
+                    {p.prediction}
+                  </p>
+                  <p className="mt-2 text-xs text-muted-foreground">{p.basis}</p>
+                  <div className="mt-3 flex items-start gap-2 rounded-lg bg-black/30 p-2.5">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-orange-500">
+                      Hook
+                    </span>
+                    <p className="text-xs leading-relaxed text-foreground/90">
+                      {p.hookAction}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </motion.div>
+      )}
 
       {/* Self-trust + Identity hero row */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
