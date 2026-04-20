@@ -13,6 +13,7 @@ import { AiDemo } from '@/components/landing/ai-demo'
 import { PatternIntelligence } from '@/components/landing/pattern-intelligence'
 import { RecoverySection } from '@/components/landing/recovery-section'
 import { RescueDemo } from '@/components/landing/rescue-demo'
+import { UniversalWedges } from '@/components/landing/universal-wedges'
 import { PricingSection } from '@/components/landing/pricing-section'
 import { FinalCta } from '@/components/landing/final-cta'
 import { LandingFooter } from '@/components/landing/footer'
@@ -63,6 +64,9 @@ export default async function HomePage({
           <div id="try-it">
             <RescueDemo />
           </div>
+
+          {/* Universality — the "not a weight-loss app" pillar */}
+          <UniversalWedges />
 
           {/* Truth */}
           <BrandStatement />

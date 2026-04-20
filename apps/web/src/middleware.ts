@@ -16,7 +16,6 @@ const isPublicRoute = createRouteMatcher([
   '/autopilot-map',
   '/science',
   '/api/webhooks/(.*)',
-  '/api/demo/(.*)',
   '/api/cron/(.*)',
 ])
 
