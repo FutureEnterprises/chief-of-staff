@@ -70,6 +70,36 @@ type FormData = {
   excuseStyle: string
   toneMode: string
   firstCommitment: string
+  rescuePreference: string
+}
+
+const RESCUE_PREFERENCES = [
+  { value: 'call_me_out', label: 'Call me out directly', emoji: '🎯' },
+  { value: 'slow_me_down', label: 'Slow me down', emoji: '⏸️' },
+  { value: 'least_damaging', label: 'Least-damaging option', emoji: '🩹' },
+  { value: 'tiny_better_move', label: 'One tiny better move', emoji: '👣' },
+  { value: 'name_the_pattern', label: 'Tell me what pattern I\'m running', emoji: '🔍' },
+]
+
+const WEDGE_LABELS: Record<string, string> = {
+  WEIGHT_LOSS: 'Late-night autopilot',
+  CRAVINGS: 'Craving loops',
+  DESTRUCTIVE_BEHAVIORS: 'Destructive patterns',
+  CONSISTENCY: 'Consistency drift',
+  SPENDING: 'Impulse spending',
+  FOCUS: 'Focus collapse',
+  PRODUCTIVITY: 'Follow-through gaps',
+}
+
+const EXCUSE_LABELS: Record<string, string> = {
+  DELAY: '"I\'ll start tomorrow"',
+  REWARD: '"I deserve this"',
+  MINIMIZATION: '"One time won\'t matter"',
+  COLLAPSE: '"I already blew it"',
+  EXHAUSTION: '"I\'m too tired"',
+  EXCEPTION: '"This week is weird"',
+  COMPENSATION: '"I\'ll make up for it"',
+  SOCIAL_PRESSURE: '"I couldn\'t say no"',
 }
 
 export function OnboardingWizard({ user }: OnboardingWizardProps) {
@@ -90,15 +120,19 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
     excuseStyle: '',
     toneMode: 'MENTOR',
     firstCommitment: '',
+    rescuePreference: 'call_me_out',
   })
 
   const steps = [
-    { id: 'welcome', label: 'Welcome' },
+    { id: 'opening', label: 'Start' },
+    { id: 'welcome', label: 'You' },
     { id: 'battlefield', label: 'Battlefield' },
     { id: 'windows', label: 'Windows' },
     { id: 'excuse', label: 'Excuse' },
     { id: 'tone', label: 'Tone' },
-    { id: 'commitment', label: 'Commitment' },
+    { id: 'commitment', label: 'Rule' },
+    { id: 'rescue', label: 'Rescue' },
+    { id: 'summary', label: 'Plan' },
   ]
 
   function goNext() { setDirection(1); setStep((s) => s + 1) }
@@ -138,12 +172,15 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
 
   const canProceed = (() => {
     switch (step) {
-      case 0: return data.name.trim().length > 0
-      case 1: return !!data.primaryWedge
-      case 2: return data.dangerWindowsPicked.length > 0
-      case 3: return !!data.excuseStyle
-      case 4: return !!data.toneMode
-      case 5: return data.firstCommitment.trim().length > 2
+      case 0: return true
+      case 1: return data.name.trim().length > 0
+      case 2: return !!data.primaryWedge
+      case 3: return data.dangerWindowsPicked.length > 0
+      case 4: return !!data.excuseStyle
+      case 5: return !!data.toneMode
+      case 6: return data.firstCommitment.trim().length > 2
+      case 7: return !!data.rescuePreference
+      case 8: return true
       default: return true
     }
   })()
@@ -192,12 +229,15 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
               exit="exit"
               transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
             >
-              {step === 0 && <WelcomeStep data={data} onChange={updateData} />}
-              {step === 1 && <BattlefieldStep data={data} onChange={updateData} />}
-              {step === 2 && <DangerWindowsStep data={data} onChange={updateData} />}
-              {step === 3 && <ExcuseStyleStep data={data} onChange={updateData} />}
-              {step === 4 && <ToneStep data={data} onChange={updateData} />}
-              {step === 5 && <CommitmentStep data={data} onChange={updateData} />}
+              {step === 0 && <OpeningFrameStep />}
+              {step === 1 && <WelcomeStep data={data} onChange={updateData} />}
+              {step === 2 && <BattlefieldStep data={data} onChange={updateData} />}
+              {step === 3 && <DangerWindowsStep data={data} onChange={updateData} />}
+              {step === 4 && <ExcuseStyleStep data={data} onChange={updateData} />}
+              {step === 5 && <ToneStep data={data} onChange={updateData} />}
+              {step === 6 && <CommitmentStep data={data} onChange={updateData} />}
+              {step === 7 && <RescuePreferenceStep data={data} onChange={updateData} />}
+              {step === 8 && <SummaryStep data={data} />}
             </motion.div>
           </AnimatePresence>
         </GlassCard>
@@ -424,6 +464,112 @@ function CommitmentStep({ data, onChange }: { data: FormData; onChange: (v: Part
         <p className="text-xs font-medium text-muted-foreground">
           COYL will build your first rescue protocol and danger windows from your picks. You&apos;ll see it on your home screen.
         </p>
+      </div>
+    </div>
+  )
+}
+
+function OpeningFrameStep() {
+  return (
+    <div className="text-center">
+      <motion.h1
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="heading-2 mb-4"
+      >
+        You don&apos;t need more motivation.
+        <br />
+        You need a{' '}
+        <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+          wake-up system
+        </span>.
+      </motion.h1>
+      <motion.p
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="mt-4 text-sm leading-relaxed text-muted-foreground"
+      >
+        Most people don&apos;t fail because they don&apos;t know what to do.
+        <br />
+        They fail in the same moments, over and over.
+      </motion.p>
+      <motion.p
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="mt-4 text-sm text-muted-foreground"
+      >
+        COYL helps you catch those moments before they turn into a spiral.
+      </motion.p>
+    </div>
+  )
+}
+
+function RescuePreferenceStep({ data, onChange }: { data: FormData; onChange: (v: Partial<FormData>) => void }) {
+  return (
+    <div>
+      <div className="mb-6">
+        <h2 className="heading-2">When you&apos;re about to slip, what should COYL do?</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          This becomes your default rescue style. You can change it anytime.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 gap-2">
+        {RESCUE_PREFERENCES.map((r) => (
+          <button
+            key={r.value}
+            onClick={() => onChange({ rescuePreference: r.value })}
+            className={cn(
+              'flex items-center gap-3 rounded-xl border p-3 text-left transition-all',
+              data.rescuePreference === r.value
+                ? 'border-orange-500 bg-orange-500/10 shadow-glow-orange'
+                : 'border-border hover:bg-muted/50'
+            )}
+          >
+            <span className="text-xl">{r.emoji}</span>
+            <span className="text-sm font-semibold">{r.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function SummaryStep({ data }: { data: FormData }) {
+  const wedgeLabel = WEDGE_LABELS[data.primaryWedge] ?? 'Your battlefield'
+  const excuseLabel = EXCUSE_LABELS[data.excuseStyle] ?? '—'
+  const pickedWindows = data.dangerWindowsPicked.slice(0, 2).join(', ') || 'your chosen windows'
+
+  return (
+    <div>
+      <div className="mb-5">
+        <p className="label-xs mb-2 text-orange-500">Here&apos;s your first anti-spiral plan</p>
+        <h2 className="heading-2">Ready to go.</h2>
+      </div>
+      <div className="space-y-3">
+        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+          <p className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">Your pattern</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">{wedgeLabel}</p>
+        </div>
+        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+          <p className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">Your usual excuse</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">{excuseLabel}</p>
+        </div>
+        <div className="rounded-xl border border-orange-500/30 bg-orange-500/5 p-3">
+          <p className="text-[11px] font-mono uppercase tracking-widest text-orange-500">Your rule</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">{data.firstCommitment}</p>
+        </div>
+        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+          <p className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">Danger windows</p>
+          <p className="mt-1 text-sm font-semibold text-foreground capitalize">{pickedWindows}</p>
+        </div>
+        <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+          <p className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">What COYL will do</p>
+          <p className="mt-1 text-sm text-foreground">
+            Interrupt you before the script takes over and help you recover fast if you slip.
+          </p>
+        </div>
       </div>
     </div>
   )

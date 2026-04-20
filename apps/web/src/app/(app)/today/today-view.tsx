@@ -22,12 +22,31 @@ type TaskWithRelations = Task & {
   project?: { id: string; name: string } | null
 }
 
+type ActiveCommitment = { id: string; rule: string; keepCount: number; breakCount: number } | null
+type NextDangerWindow = { label: string; whenText: string; hoursUntil: number } | null
+
 interface TodayViewProps {
   dueTodayTasks: TaskWithRelations[]
   followUpsDueToday: Array<Task & { tags: Array<{ tag: Tag }> }>
   overdueTasks: Array<Task & { tags: Array<{ tag: Tag }> }>
   recentlyCompleted: Task[]
   user: User
+  activeCommitment?: ActiveCommitment
+  nextDangerWindow?: NextDangerWindow
+  topExcuseCategory?: string | null
+  topExcuseCount?: number
+  selfTrustDelta?: number | null
+}
+
+const EXCUSE_EMOJI: Record<string, string> = {
+  DELAY: '🐌',
+  REWARD: '🎁',
+  MINIMIZATION: '🤏',
+  COLLAPSE: '💥',
+  EXHAUSTION: '😴',
+  EXCEPTION: '📌',
+  COMPENSATION: '⚖️',
+  SOCIAL_PRESSURE: '👥',
 }
 
 export function TodayView({
@@ -36,6 +55,11 @@ export function TodayView({
   overdueTasks,
   recentlyCompleted,
   user,
+  activeCommitment,
+  nextDangerWindow,
+  topExcuseCategory,
+  topExcuseCount,
+  selfTrustDelta,
 }: TodayViewProps) {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const hour = new Date().getHours()
@@ -72,16 +96,84 @@ export function TodayView({
           </Button>
           <Button variant="glass" size="sm" asChild>
             <Link href="/chat?mode=morning">
-              <Sun className="h-3.5 w-3.5 text-amber-500" /> Morning
+              <Sun className="h-3.5 w-3.5 text-amber-500" /> Set today&apos;s rule
             </Link>
           </Button>
           <Button variant="glass" size="sm" asChild>
             <Link href="/chat?mode=night">
-              <Moon className="h-3.5 w-3.5 text-indigo-400" /> Night review
+              <Moon className="h-3.5 w-3.5 text-indigo-400" /> Did you keep your word?
             </Link>
           </Button>
         </div>
       </div>
+
+      {/* Control center hero — Tonight's rule + Next danger window + Self-Trust + Pattern insight */}
+      {(activeCommitment || nextDangerWindow || user.selfTrustScore > 0 || topExcuseCategory) && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 grid grid-cols-1 gap-3 md:grid-cols-4"
+        >
+          {/* Tonight's rule */}
+          {activeCommitment && (
+            <GlassCard variant="orange-glow" className="md:col-span-2">
+              <p className="label-xs mb-2 text-orange-500">Tonight&apos;s rule</p>
+              <p className="text-base font-bold text-foreground">{activeCommitment.rule}</p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                <span className="text-emerald-500">{activeCommitment.keepCount} kept</span>
+                {activeCommitment.breakCount > 0 && (
+                  <> · <span className="text-red-500">{activeCommitment.breakCount} broken</span></>
+                )}
+              </p>
+            </GlassCard>
+          )}
+
+          {/* Next danger window */}
+          {nextDangerWindow && (
+            <GlassCard>
+              <p className="label-xs mb-2 text-orange-500">Next danger window</p>
+              <p className="text-sm font-bold text-foreground">{nextDangerWindow.label}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{nextDangerWindow.whenText}</p>
+            </GlassCard>
+          )}
+
+          {/* Self-trust score + delta */}
+          {user.selfTrustScore > 0 && (
+            <GlassCard>
+              <p className="label-xs mb-2 text-orange-500">Self-Trust</p>
+              <p className="text-2xl font-black tabular-nums text-foreground">
+                <AnimatedCounter value={user.selfTrustScore} />
+              </p>
+              {selfTrustDelta != null && selfTrustDelta !== 0 && (
+                <p className={`mt-1 text-xs ${selfTrustDelta > 0 ? 'text-emerald-500' : 'text-red-400'}`}>
+                  {selfTrustDelta > 0 ? '↑' : '↓'} {Math.abs(selfTrustDelta)} this week
+                </p>
+              )}
+            </GlassCard>
+          )}
+
+          {/* Pattern insight */}
+          {topExcuseCategory && topExcuseCount && topExcuseCount > 1 && (
+            <GlassCard className="md:col-span-4">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{EXCUSE_EMOJI[topExcuseCategory] ?? '🧠'}</span>
+                <div>
+                  <p className="label-xs text-orange-500">Pattern spotted</p>
+                  <p className="text-sm font-semibold text-foreground">
+                    You used &ldquo;{topExcuseCategory.toLowerCase().replace('_', ' ')}&rdquo; {topExcuseCount}× this week.
+                  </p>
+                </div>
+                <Link
+                  href="/patterns"
+                  className="ml-auto text-xs font-semibold text-orange-400 hover:text-orange-300"
+                >
+                  See all →
+                </Link>
+              </div>
+            </GlassCard>
+          )}
+        </motion.div>
+      )}
 
       {/* Stats */}
       <StaggerList className="mb-8 grid grid-cols-4 gap-3">

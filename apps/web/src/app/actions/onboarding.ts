@@ -35,6 +35,7 @@ export async function completeOnboarding(data: {
   primaryWedge?: string
   dangerWindowsPicked?: string[]
   toneMode?: string
+  rescuePreference?: string
 }) {
   const user = await requireDbUser()
 
@@ -60,6 +61,10 @@ export async function completeOnboarding(data: {
         ...(parsed.data.failurePattern && { failurePattern: parsed.data.failurePattern, excuseStyle: parsed.data.failurePattern as ExcuseCategory }),
         ...(parsed.data.primaryWedge && { primaryWedge: parsed.data.primaryWedge as PrimaryWedge }),
         ...(parsed.data.toneMode && { toneMode: parsed.data.toneMode as ToneMode }),
+        // Stash rescue preference in healthIntegrations JSON to avoid a migration
+        ...(parsed.data.rescuePreference && {
+          healthIntegrations: { rescuePreference: parsed.data.rescuePreference } as unknown as object,
+        }),
       },
     })
 

@@ -11,29 +11,29 @@ type Interval = 'monthly' | 'annual'
 const TIERS: Record<Tier, { name: string; tagline: string; monthly: number; annual: number; features: string[]; highlight?: boolean }> = {
   core: {
     name: 'Core',
-    tagline: 'Interrupt the script, recover fast.',
+    tagline: 'Catch yourself before the spiral.',
     monthly: 19,
     annual: 179,
     features: [
-      'Unlimited commitments',
-      '500 Charges / month',
-      'Full rescue + recovery flows',
-      'Autopilot map + excuse detection',
-      'AI assessments',
+      'Unlimited rescue when you\'re about to slip',
+      'AI decision support in the moment',
+      'Recovery plans that stop the spiral',
+      'Pattern memory that calls out your real excuses',
+      'Self-Trust tracking that shows real progress',
     ],
     highlight: true,
   },
   plus: {
     name: 'Plus',
-    tagline: 'Accountability + precision.',
+    tagline: 'Smarter timing + accountability.',
     monthly: 29,
     annual: 279,
     features: [
       'Everything in Core',
-      '1,500 Charges / month',
+      'Smarter interruption timing (JITAI)',
       'Accountability partner',
-      'Challenge pods',
-      'Precision interrupts (JITAI)',
+      'Challenge pods (2–5 people)',
+      'Advanced pattern insights',
     ],
   },
   premium: {
@@ -44,8 +44,8 @@ const TIERS: Record<Tier, { name: string; tagline: string; monthly: number; annu
     features: [
       'Everything in Plus',
       'Unlimited Charges',
-      'Scenario simulator',
-      'Financial stakes',
+      'Scenario simulator — see where it leads',
+      'Financial stakes — real money on the line',
       'Health + calendar integrations',
     ],
   },
@@ -111,6 +111,10 @@ export function PaywallDialog({ open, onClose, trigger, defaultTier = 'core' }: 
           </div>
           <DialogTitle className="text-xl leading-snug">{headline}</DialogTitle>
         </DialogHeader>
+
+        <p className="text-sm leading-relaxed text-zinc-500">
+          COYL is for the moments that usually ruin the day — late-night eating, &ldquo;I already blew it&rdquo; thinking, weekend collapse, and the shame that comes after.
+        </p>
 
         {/* Tier picker */}
         <div className="grid grid-cols-3 gap-2">
@@ -201,27 +205,21 @@ function getTriggerHeadline(trigger?: string): string {
       return "You've hit the free limit"
     case 'ai_quota':
       return "You've burned through your Charges"
-    case 'follow_up_automation':
-      return 'Never miss a follow-up again'
-    case 'insights':
-      return 'Unlock deep pattern insights'
-    case 'escalation':
-      return 'Enable relentless accountability'
-    case 'assessments':
-      return 'Get your autopilot autopsy'
     case 'rescue':
-      return 'Stop the spiral in the moment'
+      return 'Stop the spiral before it starts'
     case 'recovery':
       return 'Built for bad days, not perfect users'
     case 'decision':
-      return 'Upgrade the decision engine'
+      return 'Catch the moment you usually lose'
     case 'partner':
       return 'Get an accountability partner'
     case 'stakes':
       return 'Put real money on the line'
     case 'simulate':
       return 'See where the script leads'
+    case 'assessments':
+      return 'Get your autopilot autopsy'
     default:
-      return 'Stop the script before it runs your life.'
+      return 'Catch the moment you usually lose.'
   }
 }

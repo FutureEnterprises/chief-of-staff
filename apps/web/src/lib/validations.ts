@@ -67,4 +67,5 @@ export const onboardingSchema = z.object({
   primaryWedge: z.enum(['PRODUCTIVITY', 'WEIGHT_LOSS', 'CRAVINGS', 'DESTRUCTIVE_BEHAVIORS', 'CONSISTENCY', 'SPENDING', 'FOCUS']).optional(),
   dangerWindowsPicked: z.array(z.string()).max(10).optional(),
   toneMode: z.enum(['MENTOR', 'STRATEGIST', 'NO_BS', 'BEAST']).optional(),
+  rescuePreference: z.string().max(40).optional(),
 })

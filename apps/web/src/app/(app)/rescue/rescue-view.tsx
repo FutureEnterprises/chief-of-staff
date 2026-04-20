@@ -33,6 +33,8 @@ export function RescueView() {
   const [paywallOpen, setPaywallOpen] = useState(false)
   const [delayActive, setDelayActive] = useState(false)
   const [delayRemaining, setDelayRemaining] = useState(0)
+  const [showFollowUp, setShowFollowUp] = useState(false)
+  const [followUpLogged, setFollowUpLogged] = useState<'pulled' | 'slipped' | null>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   async function handleTrigger(trigger: Trigger) {
@@ -90,6 +92,8 @@ export function RescueView() {
   function startDelay() {
     setDelayActive(true)
     setDelayRemaining(600) // 10 minutes
+    setShowFollowUp(false)
+    setFollowUpLogged(null)
 
     if (intervalRef.current) clearInterval(intervalRef.current)
     intervalRef.current = setInterval(() => {
@@ -97,11 +101,28 @@ export function RescueView() {
         if (prev <= 1) {
           if (intervalRef.current) clearInterval(intervalRef.current)
           setDelayActive(false)
+          setShowFollowUp(true)
           return 0
         }
         return prev - 1
       })
     }, 1000)
+  }
+
+  async function logFollowUp(pulled: boolean) {
+    setFollowUpLogged(pulled ? 'pulled' : 'slipped')
+    try {
+      await fetch('/api/v1/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventType: pulled ? 'RESCUE_RESOLVED' : 'SLIP_LOGGED',
+          metadata: { source: 'rescue_followup', trigger: selectedTrigger?.key },
+        }),
+      })
+    } catch {
+      // silent — client state already reflects the choice
+    }
   }
 
   useEffect(() => {
@@ -235,6 +256,69 @@ export function RescueView() {
               <p className="mt-2 font-mono text-2xl font-bold text-orange-500">
                 {formatTime(delayRemaining)}
               </p>
+            </motion.div>
+          )}
+
+          {/* Follow-up check after 10-min delay completes */}
+          {showFollowUp && !followUpLogged && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass rounded-2xl p-5 text-center"
+            >
+              <p className="mb-1 label-xs text-orange-500">10 minutes in</p>
+              <p className="mb-5 text-lg font-bold text-foreground">Did you pull back?</p>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => logFollowUp(true)}
+                  className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-warm px-4 py-3 text-sm font-bold text-white shadow-glow-orange"
+                >
+                  ✅ Yes, I pulled back
+                </button>
+                <button
+                  onClick={() => logFollowUp(false)}
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-red-500/30 bg-red-500/5 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-500/10"
+                >
+                  💥 I slipped
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {followUpLogged === 'pulled' && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5 text-center"
+            >
+              <p className="mb-1 text-2xl">🔥</p>
+              <p className="text-base font-bold text-emerald-300">You interrupted the script.</p>
+              <p className="mt-1 text-xs text-muted-foreground">That&apos;s the rep. Do it again next time.</p>
+            </motion.div>
+          )}
+
+          {followUpLogged === 'slipped' && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-2xl border border-orange-500/30 bg-orange-500/5 p-5 text-center"
+            >
+              <p className="mb-2 text-base font-bold text-foreground">Okay. That happened.</p>
+              <p className="mb-4 text-sm text-muted-foreground">No Monday reset. No spiral. Next move matters more.</p>
+              <a
+                href="/api/v1/slip"
+                onClick={(e) => {
+                  e.preventDefault()
+                  fetch('/api/v1/slip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ trigger: selectedTrigger?.key, notes: 'Slipped after rescue delay' }),
+                  }).finally(() => reset())
+                }}
+                className="inline-block rounded-xl bg-gradient-warm px-5 py-2.5 text-sm font-bold text-white"
+              >
+                Get recovery plan →
+              </a>
             </motion.div>
           )}
         </div>

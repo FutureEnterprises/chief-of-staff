@@ -6,7 +6,9 @@ import { DefaultChatTransport } from 'ai'
 import { motion, AnimatePresence } from 'motion/react'
 import { PageTransition } from '@/components/motion/animations'
 import { PaywallDialog } from '@/components/paywall/paywall-dialog'
-import { Brain, SendHorizontal, RotateCcw, Mic } from 'lucide-react'
+import { Brain, SendHorizontal, RotateCcw, Mic, Shield, Flame, Repeat } from 'lucide-react'
+import Link from 'next/link'
+import { toast } from '@/hooks/use-toast'
 
 const EXAMPLES = [
   'Should I eat this?',
@@ -20,6 +22,7 @@ const EXAMPLES = [
 export function DecideView() {
   const [input, setInput] = useState('')
   const [paywallOpen, setPaywallOpen] = useState(false)
+  const [saving, setSaving] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const { messages, sendMessage, status, error, setMessages } = useChat({
@@ -28,6 +31,36 @@ export function DecideView() {
 
   const isLoading = status === 'streaming' || status === 'submitted'
   const hasMessages = messages.length > 0
+  const showActions = !isLoading && messages.some((m) => m.role === 'assistant')
+
+  async function saveAsCommitment() {
+    // Pull the last assistant response + parse out "Best move" line if present
+    const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant')
+    const text = lastAssistant?.parts
+      ?.map((p) => (p.type === 'text' ? (p as { text: string }).text : ''))
+      .join('\n') ?? ''
+    // Try to extract the "Best move" section
+    const match = text.match(/\*\*Best move\*\*\s*\n+([\s\S]+?)(?=\n\n|\*\*|$)/i)
+    const rule = match?.[1]?.trim().slice(0, 200)
+      ?? text.split('\n').find((l) => l.trim().length > 10)?.trim().slice(0, 200)
+      ?? 'My next move'
+
+    setSaving(true)
+    try {
+      const res = await fetch('/api/v1/commitments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rule, frequency: 'ONE_TIME' }),
+      })
+      if (res.ok) {
+        toast({ title: 'Saved as commitment', description: rule })
+      } else {
+        toast({ title: 'Could not save', variant: 'destructive' })
+      }
+    } finally {
+      setSaving(false)
+    }
+  }
 
   useEffect(() => {
     if (error?.message) {
@@ -149,6 +182,38 @@ export function DecideView() {
                     className="h-1.5 w-1.5 rounded-full bg-orange-500"
                   />
                 ))}
+              </motion.div>
+            )}
+
+            {/* Post-response CTAs */}
+            {showActions && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3"
+              >
+                <button
+                  onClick={saveAsCommitment}
+                  disabled={saving}
+                  className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-warm px-4 py-2.5 text-xs font-bold text-white shadow-glow-orange disabled:opacity-50"
+                >
+                  <Shield className="h-3.5 w-3.5" />
+                  {saving ? 'Saving…' : 'Save as commitment'}
+                </button>
+                <Link
+                  href="/rescue"
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-2.5 text-xs font-bold text-red-400 hover:bg-red-500/20"
+                >
+                  <Flame className="h-3.5 w-3.5" />
+                  Start rescue flow
+                </Link>
+                <button
+                  onClick={handleReset}
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-border bg-muted/30 px-4 py-2.5 text-xs font-bold text-muted-foreground hover:bg-muted"
+                >
+                  <Repeat className="h-3.5 w-3.5" />
+                  Ask again
+                </button>
               </motion.div>
             )}
           </div>

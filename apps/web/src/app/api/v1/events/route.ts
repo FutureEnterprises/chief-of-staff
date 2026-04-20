@@ -19,6 +19,7 @@ export async function POST(req: Request) {
     const allowed: EventType[] = [
       'PAYWALL_SEEN', 'UPGRADE_STARTED', 'FEATURE_USED',
       'ASSESSMENT_RUN', 'CHAT_SESSION', 'MORNING_REVIEW', 'NIGHT_REVIEW',
+      'RESCUE_RESOLVED', 'SLIP_LOGGED', 'DECISION_MADE',
     ]
     if (!allowed.includes(eventType as EventType)) {
       return Response.json({ error: 'Invalid event type' }, { status: 400 })
