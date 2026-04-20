@@ -42,8 +42,8 @@ type Channel = {
 }
 
 const HOOKS = [
-  // Universal
-  'This stops the moment you usually screw yourself.',
+  // Universal \u2014 first entry is the LOCKED signature line.
+  'It\u2019s not the mistake. It\u2019s what you do after.',
   'You don\u2019t need more motivation. You need something that catches you.',
   // Weight-loss wedge
   "You\u2019re not hungry. You\u2019re running a script.",

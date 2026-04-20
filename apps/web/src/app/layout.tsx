@@ -11,7 +11,7 @@ import './globals.css'
 // avoid SERP truncation; description sits in the 150-160 band.
 export const metadata: Metadata = {
   title: {
-    default: 'COYL \u2014 The commitment engine. Stop the moment you usually screw yourself.',
+    default: "COYL \u2014 It's not the mistake. It's what you do after.",
     template: '%s | COYL',
   },
   description:
@@ -44,13 +44,13 @@ export const metadata: Metadata = {
     siteName: 'COYL',
     locale: 'en_US',
     url: 'https://coyl.ai',
-    title: 'COYL \u2014 Stop the moment you usually screw yourself',
+    title: "COYL \u2014 It's not the mistake. It's what you do after.",
     description:
       "The commitment engine. Catches autopilot loops before they turn into failure loops. Built first for weight loss \u2014 works for work follow-up, cravings, procrastination.",
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'COYL \u2014 Stop the moment you usually screw yourself',
+    title: "COYL \u2014 It's not the mistake. It's what you do after.",
     description:
       "Catches broken commitments before they become failure loops. Works on the exact moment you usually fold.",
   },

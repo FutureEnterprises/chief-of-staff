@@ -28,12 +28,15 @@ const COPY: Record<Variant, {
 }> = {
   a: {
     label: 'Autopilot Interruption',
+    // Synced to the locked main line: "It's not the mistake. It's what
+    // you do after." Variant A is retired (we force B) but keep it in
+    // sync for the ?v=a override path.
     headline: (
       <>
-        This stops the moment<br />
-        you usually{' '}
+        It&apos;s not the mistake.<br />
+        It&apos;s{' '}
         <span className="border-b-2 border-orange-500 text-orange-400" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
-          screw yourself
+          what you do after
         </span>.
       </>
     ),

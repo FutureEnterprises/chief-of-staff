@@ -135,23 +135,21 @@ export default async function HomePage({
  * statement between sections \u2014 not a CTA, just a recurring motif.
  */
 /**
- * LOCKED signature line. Repeats here, in the hero subhead, in ads,
- * and in the OG cards \u2014 one line, seen enough times to stick. The
- * reviewer note was that two candidate lines were fragmenting memory;
- * this is the one we lock.
+ * LOCKED signature line \u2014 used verbatim on landing, ads, OG cards,
+ * product header, social. Reversed from "This stops the moment you
+ * usually screw yourself" per latest reviewer instruction.
  *
- * "It's not the mistake. It's what you do after." retired from
- * landing (still useful as a secondary line in the /recovery page
- * if we want it).
+ * One line, seen enough times to stick. No subcopy \u2014 spec says
+ * less, not more.
  */
 function IconicLine() {
   return (
     <section className="relative mx-auto max-w-5xl px-6 py-16 text-center md:px-12">
       <p className="text-3xl font-black leading-tight tracking-tight text-white md:text-5xl">
-        This stops the moment<br />
-        you usually{' '}
+        It&apos;s not the mistake.<br />
+        It&apos;s{' '}
         <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-          screw yourself
+          what you do after
         </span>.
       </p>
     </section>
