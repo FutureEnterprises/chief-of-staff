@@ -53,20 +53,26 @@ export async function GET() {
 
   const warnings: string[] = []
   if (deployment.vercelEnv === 'production' && clerkMode === 'test') {
+    // Middleware bypasses Clerk for public routes (see middleware.ts +
+    // docs/ENGINEERING.md §11), so the site is reachable. Signed-in
+    // surfaces still handshake through accounts.dev — inconvenient but
+    // functional. Not a status-level degradation.
     warnings.push(
-      'CRITICAL: Production deployment is running dev-instance Clerk keys (pk_test_). Public pages are redirected through accounts.dev handshake. Set pk_live_/sk_live_ in Vercel env.',
+      'WARN: dev-instance Clerk keys in production (pk_test_). Public pages work via middleware bypass; authed surfaces still handshake through accounts.dev. Set up Clerk Production (pk_live_/sk_live_) for full prod experience.',
     )
   }
   if (clerkMode === 'unset' || clerkMode === 'placeholder') {
-    warnings.push('Clerk keys missing or placeholder — auth is off.')
+    warnings.push('CRITICAL: Clerk keys missing or placeholder — auth is off.')
   }
   if (!db.reachable) {
-    warnings.push(`DB unreachable: ${db.error ?? 'unknown'}`)
+    warnings.push(`CRITICAL: DB unreachable: ${db.error ?? 'unknown'}`)
   }
 
+  // Only truly-broken states count as degraded. pk_test_ is a WARN —
+  // the site works, just with a non-ideal Clerk posture.
   const status =
-    warnings.some((w) => w.startsWith('CRITICAL') || w.startsWith('DB')) ||
     clerkMode === 'unset' ||
+    clerkMode === 'placeholder' ||
     !db.reachable
       ? 'degraded'
       : 'ok'
