@@ -4,16 +4,17 @@ import { motion, useInView } from 'motion/react'
 import { useRef } from 'react'
 
 const features = [
+  // v3 spec: three blocks, titles + arrow-body pairs verbatim from
+  // COYL_homepage_v3_FINAL.md §"WHAT COYL DOES".
   {
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
       </svg>
     ),
-    title: 'Detects your patterns',
-    body: 'Learns when you usually slip. The exact hours, days, and contexts where your autopilot kicks in.',
-    // Removed "Learns in days" footer metric \u2014 not backed by data yet.
-    footer: { left: 'Autopilot map', right: 'Your patterns, named' },
+    title: 'Detects your pattern',
+    body: 'Learns when you usually slip.',
+    footer: { left: 'Your patterns', right: 'Named' },
     glowColor: 'orange',
     offset: false,
   },
@@ -24,9 +25,7 @@ const features = [
       </svg>
     ),
     title: 'Interrupts the moment',
-    body: 'Fires right before you act. Names the excuse. Gives you a 10-minute delay and a better move.',
-    // Removed fabricated "82% of interrupts pull users back" progress bar.
-    // Real metrics land once we have real cohort data.
+    body: 'Stops you before you act.',
     footer: { left: 'Rescue flow', right: 'Break the script' },
     glowColor: 'red',
     offset: false,
@@ -37,8 +36,9 @@ const features = [
         <path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/>
       </svg>
     ),
-    title: 'Gets you back on track',
-    body: 'So one mistake doesn\'t spiral. No Monday reset. No shame loop. Resume, don\'t restart.',
+    title: 'Stops the spiral',
+    body: 'So one mistake doesn\'t become a full collapse.',
+    footer: { left: 'Recovery', right: 'Resume, don\u2019t restart' },
     glowColor: 'orange',
     offset: true,
   },

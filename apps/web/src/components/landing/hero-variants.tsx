@@ -51,8 +51,10 @@ const COPY: Record<Variant, {
         </span>
       </>
     ),
-    subhead: "Because you're on autopilot. COYL interrupts it — in real time, before a bad choice turns into a bad day.",
-    primaryCta: 'Wake me up',
+    // v3 spec locked copy — matches COYL_homepage_v3_FINAL.md §HERO exactly.
+    subhead:
+      "Because you\u2019re on autopilot. COYL catches the moment you usually blow it \u2014 before it turns into a bad day.",
+    primaryCta: 'Start catching your patterns',
   },
   c: {
     label: 'Weight-Loss Interrupt',

@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence, useInView } from 'motion/react'
 import {
-  Refrigerator, MessageSquareWarning, Smartphone, Flame,
-  Wind, HeartCrack, ArrowRight, type LucideIcon,
+  Refrigerator, MoonStar, Wind, HeartCrack, ArrowRight,
+  type LucideIcon,
 } from 'lucide-react'
 import { StructuredResponse } from '@/components/structured-response'
 
@@ -37,10 +37,13 @@ type Trigger = {
   script: string
 }
 
+// v3 spec: four triggers, titles verbatim from COYL_homepage_v3_FINAL.md
+// §"TRY IT NOW". Cut the 6-trigger version down to the ones the spec
+// blesses. Scripts stay \u2014 they already use the spec's Rescue structure.
 const DEMO_TRIGGERS: Trigger[] = [
   {
     key: 'FRIDGE_STARE',
-    title: 'I\u2019m staring into the fridge',
+    title: 'I\u2019m about to eat when I shouldn\u2019t',
     sub: 'Not hungry. Just restless.',
     wedge: 'Food / weight',
     icon: Refrigerator,
@@ -60,67 +63,46 @@ Drink a full glass of water. Walk out of the kitchen for ten minutes.
 If you still want it after ten, you can have it \u2014 and we log it honestly.`,
   },
   {
-    key: 'ANGRY_TEXT',
-    title: 'About to send the angry text',
-    sub: 'The one I\u2019ll regret by morning.',
-    wedge: 'Emotional reactivity',
-    icon: MessageSquareWarning,
+    key: 'SKIP',
+    title: 'I\u2019m about to skip',
+    sub: 'The thing I said I\u2019d do.',
+    wedge: 'Consistency',
+    icon: MoonStar,
     script: `**Pattern name**
-Reactive closure. Ending the discomfort with the sharpest words available.
+The skip loop. One bailed workout, one missed check-in, one deferred call \u2014 and the story is already writing itself.
 
 **Callout**
-You\u2019re picking the words that feel like control. They\u2019re not. If you hit send: powerful for 40 seconds, sick for the next 12 hours, bigger mess tomorrow.
+You\u2019re telling yourself "tomorrow." You\u2019ve said that before. If you skip now, tomorrow you skip easier. By Thursday the streak is gone and Monday becomes the new start date.
 
 **Interrupt**
-Don\u2019t send. Put the phone face-down in another room.
+Put shoes on. Or open the doc. Five minutes. That\u2019s the whole ask.
 
 **Action**
-Write the whole thing in Notes instead. Re-read it at 8 AM tomorrow.
+Set a five-minute timer. Do the thing for five. Stop if you want. Most of the time you won\u2019t stop.
 
 **Follow-up**
-You won\u2019t send it then. That\u2019s the point.`,
+Log it either way. Five minutes counts. Zero doesn\u2019t.`,
   },
   {
-    key: 'DOOMSCROLL',
-    title: 'I just lost an hour to my phone',
-    sub: 'I told myself "one minute." It was sixty.',
-    wedge: 'Focus / avoidance',
-    icon: Smartphone,
-    script: `**Pattern name**
-The displacement loop. You weren\u2019t checking anything. You were avoiding.
+    key: 'ALREADY_SLIPPED',
+    title: 'I already messed up',
+    sub: 'The story in my head is writing itself.',
+    wedge: 'Retroactive',
+    icon: HeartCrack,
+    script: `**Acknowledge slip**
+You slipped. One data point, not who you are.
 
-**Callout**
-The scroll is a low-grade anesthetic for a feeling you haven\u2019t named. If you keep going, another hour vanishes and 11 PM becomes "I\u2019ll start fresh tomorrow."
+**Stop spiral**
+The story writing itself in your head \u2014 "this always happens," "I need a new plan," "I\u2019ll make it up" \u2014 that\u2019s the spiral, not the slip. If you keep going: skip today, skip tomorrow, by Wednesday you\u2019re in a week.
 
-**Interrupt**
-Put the phone in another room. Not the desk. Not your pocket.
+**Stabilize**
+Normal breakfast. Water. Ten minutes of movement. No punishment, no compensation, no grand new plan.
 
-**Action**
-Name the feeling out loud \u2014 bored, anxious, avoidant. Then do the first boring thing on your list for five minutes.
+**Next move**
+Next meal = clean reset at 1 PM. Do it whether you feel like it or not.
 
-**Follow-up**
-Come back to the phone in twenty. Check in with how you feel.`,
-  },
-  {
-    key: 'URGE_RISING',
-    title: 'An urge is rising',
-    sub: 'The one I said I was done with.',
-    wedge: 'Destructive pattern',
-    icon: Flame,
-    script: `**Pattern name**
-The craving loop. Peaks in about twenty minutes. Always has.
-
-**Callout**
-A cue fired, your brain predicted relief, the prediction is chemistry not fact. If you feed it: relief for 12 minutes, then smaller, then louder tomorrow.
-
-**Interrupt**
-Step away from whatever triggered it. Move your body.
-
-**Action**
-Water. Cold air. Call someone who knows. Don\u2019t be alone with this.
-
-**Follow-up**
-I\u2019m checking on you in 20 minutes. Ride it out \u2014 the wave breaks.`,
+**Tomorrow plan**
+We\u2019re not restarting. We\u2019re continuing.`,
   },
   {
     key: 'SPIRALING',
@@ -142,27 +124,6 @@ Water. Brush teeth. Bed thirty minutes early. That\u2019s the plan.
 
 **Follow-up**
 Tomorrow isn\u2019t starting over. It\u2019s the next rep. We continue.`,
-  },
-  {
-    key: 'ALREADY_SLIPPED',
-    title: 'I already folded last night',
-    sub: 'Woke up thinking: not again.',
-    wedge: 'Retroactive',
-    icon: HeartCrack,
-    script: `**Acknowledge slip**
-You slipped. One data point, not who you are.
-
-**Stop spiral**
-The story writing itself in your head \u2014 "this always happens," "I need a new plan," "I\u2019ll make it up" \u2014 that\u2019s the spiral, not the slip. If you keep going: skip today, skip tomorrow, by Wednesday you\u2019re in a week.
-
-**Stabilize**
-Normal breakfast. Water. Ten minutes of movement. No punishment, no compensation, no grand new plan.
-
-**Next move**
-Next meal = clean reset at 1 PM. Do it whether you feel like it or not.
-
-**Tomorrow plan**
-We\u2019re not restarting. We\u2019re continuing.`,
   },
 ]
 
@@ -236,14 +197,13 @@ export function RescueDemo() {
       >
         <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          Try it right now
+          Try it now
         </h2>
         <h3 className="text-3xl font-bold tracking-tight text-white md:text-5xl">
-          Pick a moment<br />you already know.
+          Try your moment.
         </h3>
         <p className="mt-4 max-w-xl text-sm text-gray-400">
-          One of these has happened to you this month. Tap it. Watch what COYL says.
-          Not a hypothetical.
+          Tap the one that&apos;s you. Watch what COYL says.
         </p>
       </motion.div>
 

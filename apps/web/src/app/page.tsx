@@ -11,12 +11,13 @@ import { LiveExample } from '@/components/landing/live-example'
 import { RecoverySection } from '@/components/landing/recovery-section'
 import { RescueDemo } from '@/components/landing/rescue-demo'
 import { UniversalWedges } from '@/components/landing/universal-wedges'
-import { PricingSection } from '@/components/landing/pricing-section'
 import { FinalCta } from '@/components/landing/final-cta'
-// Cut from the homepage 2026-04-20 per reviewer feedback (bloated page,
-// too many sections). Still used on other surfaces or available for
-// re-introduction if the narrower page underperforms:
-//   - WedgeClarity, AiDemo, PatternIntelligence, YouIf
+// Cut from the homepage per COYL_homepage_v3_FINAL.md spec:
+//   - PricingSection (spec's homepage ends at Final CTA \u2014 pricing
+//     lives at /#pricing via nav or post-signup)
+//   - WedgeClarity, AiDemo, PatternIntelligence, YouIf (already cut
+//     in the previous bloat-reduction pass, kept available as exports
+//     in case narrower-page data says to re-introduce)
 import { LandingFooter } from '@/components/landing/footer'
 
 type Variant = 'a' | 'b' | 'c'
@@ -29,16 +30,10 @@ async function pickVariant(searchVariant: string | undefined): Promise<Variant> 
   if (explicit) return explicit
   if (sticky === 'a' || sticky === 'b' || sticky === 'c') return sticky
 
-  // Weight-loss-primary bias for the next 90 days. The product is broader
-  // than weight loss (and the app surface reflects that), but the
-  // go-to-market wedge is weight loss \u2014 the landing leans into it by
-  // serving variant C ("Weight loss doesn't fail at lunch. It fails at
-  // 9 PM.") to ~60% of cold traffic, with the universal variants A and B
-  // splitting the remainder. If this bias hurts D7/D30 in /admin, dial
-  // it back here.
-  const roll = Math.random()
-  if (roll < 0.6) return 'c'
-  if (roll < 0.8) return 'a'
+  // v3 spec: lock the hero to variant B ("Why do you keep doing this?").
+  // The A/B/C system stays \u2014 ?v=a|b|c still overrides \u2014 but fresh
+  // traffic without a cookie or param gets the spec-approved hero.
+  // Flip this back to weighted rolls when we want to re-test variants.
   return 'b'
 }
 
@@ -78,47 +73,74 @@ export default async function HomePage({
         <GlassNav />
 
         <main className="relative z-10">
-          {/* Reviewer-driven order (2026-04-20):
-              Hero \u2192 Try it \u2192 Why you keep failing \u2192 What COYL does
-              \u2192 Live example \u2192 Built first for weight loss
-              \u2192 Recovery \u2192 Pricing \u2192 Final CTA.
-              Cut from above-the-fold: YouIf (duplicated recognition), AiDemo
-              (personality modes), PatternIntelligence (pattern screen marketing).
-              WedgeClarity compressed into UniversalWedges. */}
+          {/* v3 spec order (COYL_homepage_v3_FINAL.md):
+              1. Hero
+              2. This is your loop          \u2190 BrandStatement
+              3. What COYL does              \u2190 FeaturesGrid
+              4. Real moment demo            \u2190 LiveExample
+              5. Try it now                  \u2190 RescueDemo
+              6. Built first for weight loss \u2190 UniversalWedges
+              7. Recovery                    \u2190 RecoverySection
+              8. Final CTA                   \u2190 FinalCta
+              Cut: PricingSection (moved off the homepage). */}
 
-          {/* 1. Hero \u2014 variant-specific */}
+          {/* 1. Hero */}
           <HeroVariants variant={variant} />
 
-          {/* 2. Try it right now \u2014 interactive, anchor target for hero CTAs */}
+          {/* 2. This is your loop */}
+          <BrandStatement />
+
+          {/* 3. What COYL does */}
+          <FeaturesGrid />
+
+          {/* Iconic-line motif \u2014 lands between Features and the Real-moment
+              demo so it hits right before the emotional Friday-night scene.
+              Per spec \u00a73: "This stops the moment you usually screw yourself." */}
+          <IconicLine />
+
+          {/* 4. Real moment \u2014 Friday night "I'll restart Monday" scene */}
+          <LiveExample />
+
+          {/* 5. Try it now \u2014 interactive, still the #try-it anchor target */}
           <div id="try-it">
             <RescueDemo />
           </div>
 
-          {/* 3. Why you keep failing \u2014 the autopilot beat + the knife-line */}
-          <BrandStatement />
-
-          {/* 4. What COYL does \u2014 3-step explanation */}
-          <FeaturesGrid />
-
-          {/* 5. Live example \u2014 Friday night "I'll restart Monday" scene */}
-          <LiveExample />
-
-          {/* 6. Built first for weight loss \u2014 wedge reassurance + "same loop" */}
+          {/* 6. Wedge \u2014 Built first for weight loss */}
           <UniversalWedges />
 
-          {/* 7. Recovery \u2014 moat section */}
+          {/* 7. Recovery */}
           <RecoverySection />
 
-          {/* 8. Pricing */}
-          <PricingSection />
-
-          {/* 9. Final CTA */}
+          {/* 8. Final CTA */}
           <FinalCta />
         </main>
 
         <LandingFooter />
       </div>
     </CrystalBackground>
+  )
+}
+
+/**
+ * The iconic line, per v3 spec \u00a73. Used verbatim everywhere it appears
+ * so readers see it enough to stick. Styled as a quiet full-width
+ * statement between sections \u2014 not a CTA, just a recurring motif.
+ */
+function IconicLine() {
+  return (
+    <section className="relative mx-auto max-w-5xl px-6 py-20 text-center md:px-12">
+      <p className="text-2xl font-black leading-tight tracking-tight text-white md:text-4xl">
+        This stops the moment<br />
+        you usually{' '}
+        <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+          screw yourself
+        </span>.
+      </p>
+      <p className="mt-4 text-sm font-semibold uppercase tracking-[0.3em] text-gray-500">
+        You don&apos;t need discipline. You need interruption.
+      </p>
+    </section>
   )
 }
 

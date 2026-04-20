@@ -16,7 +16,7 @@ export function FinalCta() {
         transition={{ duration: 0.6 }}
         className="text-4xl font-black leading-tight tracking-tight text-white md:text-6xl"
       >
-        If one bad moment keeps{' '}
+        If one moment keeps{' '}
         <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
           ruining your week
         </span>,

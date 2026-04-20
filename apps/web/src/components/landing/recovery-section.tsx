@@ -2,6 +2,7 @@
 
 import { motion, useInView } from 'motion/react'
 import { useRef } from 'react'
+import { Target, OctagonX, Repeat, type LucideIcon } from 'lucide-react'
 
 export function RecoverySection() {
   const ref = useRef(null)
@@ -24,32 +25,36 @@ export function RecoverySection() {
         </h3>
       </motion.div>
 
+      {/* v3 spec copy \u2014 COYL_homepage_v3_FINAL.md §RECOVERY */}
       <motion.p
         initial={{ opacity: 0, y: 10 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ delay: 0.2, duration: 0.5 }}
         className="mb-8 max-w-2xl text-lg text-gray-400"
       >
-        Most apps punish you.
+        Most apps punish you when you slip. COYL doesn&apos;t.
       </motion.p>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         {[
-          { emoji: '🎯', label: 'Catches the slip' },
-          { emoji: '🛑', label: 'Stops the spiral' },
-          { emoji: '↻', label: 'Resets instantly' },
-        ].map((item, i) => (
-          <motion.div
-            key={item.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
-            className="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-5"
-          >
-            <span className="text-2xl">{item.emoji}</span>
-            <span className="text-sm font-semibold text-white">COYL {item.label.toLowerCase()}.</span>
-          </motion.div>
-        ))}
+          { icon: Target, label: 'Catches it' },
+          { icon: OctagonX, label: 'Stops the damage' },
+          { icon: Repeat, label: 'Gets you back immediately' },
+        ].map((item, i) => {
+          const Icon: LucideIcon = item.icon
+          return (
+            <motion.div
+              key={item.label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
+              className="flex items-center gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-5"
+            >
+              <Icon className="h-5 w-5 shrink-0 text-orange-400" strokeWidth={1.75} />
+              <span className="text-sm font-semibold text-white">{item.label}.</span>
+            </motion.div>
+          )
+        })}
       </div>
 
       <motion.p
@@ -60,7 +65,7 @@ export function RecoverySection() {
       >
         No restart.{' '}
         <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-          Just continue.
+          Continue.
         </span>
       </motion.p>
     </section>

@@ -45,48 +45,56 @@ export function BrandStatement() {
           <div className="absolute inset-0 rounded-full bg-orange-500 opacity-20 blur-[40px] mix-blend-screen transition-opacity group-hover:opacity-40" />
         </motion.div>
 
+        {/* v3 spec: "This is your loop" \u2014 concrete beats that a reader
+            can check themselves against. No academic framing. */}
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.2, duration: 0.8 }}
           className="text-4xl font-black tracking-tighter text-white md:text-6xl"
         >
-          Why you keep failing
-          <br />
-          (and it&apos;s{' '}
+          This is{' '}
           <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-            not what you think
-          </span>).
+            your pattern
+          </span>.
         </motion.h2>
 
-        <motion.ul
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.4, duration: 0.8 }}
-          className="mx-auto mt-10 flex max-w-2xl flex-col gap-2 text-lg text-gray-400 md:text-xl"
+          className="mx-auto mt-10 max-w-2xl space-y-3 text-left text-lg leading-relaxed text-gray-300 md:text-xl"
         >
-          <li>You don&apos;t forget what to do.</li>
-          <li>You don&apos;t lack discipline.</li>
-          <li>You don&apos;t need more motivation.</li>
-        </motion.ul>
+          <p>You do well for a few days.</p>
+          <p>Then one moment hits.</p>
+          <p>
+            You think:{' '}
+            <span className="font-semibold italic text-orange-300">&ldquo;I already messed up.&rdquo;</span>
+          </p>
+          <p className="pt-2 text-gray-400">Then:</p>
+          <ul className="space-y-1.5 pl-5 text-gray-400">
+            <li>\u2014 you keep going</li>
+            <li>\u2014 you avoid everything</li>
+            <li>\u2014 you disappear</li>
+            <li>\u2014 you restart later</li>
+          </ul>
+        </motion.div>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.6, duration: 0.8 }}
+          transition={{ delay: 0.7, duration: 0.8 }}
           className="mx-auto mt-10 max-w-2xl text-2xl font-bold leading-tight text-white md:text-3xl"
         >
-          You go on{' '}
+          That&apos;s{' '}
           <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-            autopilot
+            the loop
           </span>.
           <br />
-          <span className="mt-2 inline-block text-xl font-medium text-gray-500">Autopilot wins.</span>
+          <span className="mt-2 inline-block text-xl font-medium text-gray-500">COYL stops it.</span>
         </motion.p>
 
-        {/* The knife-line. Lands after the "autopilot wins" beat so the
-            emotional payoff stacks: identify the problem \u2192 name the
-            mechanism \u2192 name the thing that actually does the damage. */}
+        {/* The knife-line. Closes the section with the emotional kill-shot. */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
