@@ -296,6 +296,46 @@ redirect. Clerk **production instances** skip it.
 **Dev-mode is still fine**: local `.env.local` can keep `pk_test_` keys;
 the guard only screams when `VERCEL_ENV === 'production'`.
 
+### Interim: middleware bypasses Clerk on public routes
+
+While the Clerk Production instance is being provisioned (requires DNS +
+verification, ~5–15 min), `apps/web/src/middleware.ts` short-circuits
+clerkMiddleware entirely for marketing + health routes. See the
+`SHOULD_BYPASS_CLERK` matcher. Effect:
+
+- Public pages (`/`, `/weight-loss`, `/how-it-works`, `/content`, etc)
+  render without the accounts.dev handshake. SEO / crawlers / link
+  previews work.
+- `/` wraps its `auth()` call in try/catch so logged-in-user redirect
+  still fires when middleware IS active, but doesn't crash when the
+  bypass skipped Clerk.
+- Once `pk_live_` is set, the bypass becomes a no-op — Clerk in prod
+  mode skips the handshake anyway. Safe to leave in place; safe to
+  remove later.
+
+### Setting up the Clerk Production instance
+
+To get `pk_live_` + `sk_live_`:
+
+1. Clerk Dashboard → top-left dropdown → **"Create production instance"**.
+2. Pick a **frontend API URL** — use `clerk.coyl.ai` (or any subdomain
+   you control).
+3. Clerk shows DNS records:
+   - `CNAME clerk → frontend-api.clerk.services`
+   - `CNAME accounts → accounts.clerk.services`
+   - `CNAME clk._domainkey → ...` (email)
+   - `CNAME clk2._domainkey → ...` (email)
+   - `CNAME clkmail → mail.{yourfapi}` (email)
+4. Add these records to the `coyl.ai` DNS zone (Vercel DNS, Cloudflare,
+   whoever owns it). TTL 300 is fine.
+5. Back in Clerk → **"Verify"**. Takes 5–15 min after DNS propagation.
+6. API Keys tab shows `pk_live_...` + `sk_live_...` once verified.
+7. Paste into Vercel → Settings → Environment Variables → Production.
+8. Redeploy. `/api/health` returns `"clerkMode": "live"`.
+
+The old dev instance (`complete-baboon-88.clerk.accounts.dev`) stays
+active and keeps working for local development — no need to delete it.
+
 ---
 
 ## 10. 90-day no-touch list

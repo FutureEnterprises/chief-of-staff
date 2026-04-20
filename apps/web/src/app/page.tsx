@@ -47,11 +47,23 @@ export default async function HomePage({
 }: {
   searchParams: Promise<{ v?: string }>
 }) {
-  const clerkReady = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+  // Try to detect a logged-in user and bounce to /today. Wrapped in
+  // try/catch because the middleware BYPASSES Clerk on `/` to keep the
+  // marketing page reachable while Clerk still uses dev-instance keys
+  // (see middleware.ts + docs/ENGINEERING.md \u00a711). When middleware
+  // hasn't run, @clerk/nextjs/server's auth() throws \u2014 treating that
+  // as "not signed in" is the right fallback on the landing.
+  const clerkReady =
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
     !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_...')
   if (clerkReady) {
-    const { userId } = await auth()
-    if (userId) redirect('/today')
+    try {
+      const { userId } = await auth()
+      if (userId) redirect('/today')
+    } catch {
+      // Clerk middleware didn't run on this route (by design). Render
+      // the landing regardless; logged-in users can navigate via CTAs.
+    }
   }
 
   const params = await searchParams

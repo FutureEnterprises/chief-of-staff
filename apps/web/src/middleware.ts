@@ -1,4 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse, type NextRequest } from 'next/server'
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -19,6 +20,39 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks/(.*)',
   '/api/cron/(.*)',
   '/api/health',
+])
+
+/**
+ * Routes we must keep out of Clerk's hands while a dev-instance Clerk
+ * deployment is live. Dev instances force a handshake to accounts.dev on
+ * every request, which 302s public visitors. By bypassing clerkMiddleware
+ * entirely for these URLs, public pages stay reachable.
+ *
+ * Trade-off: auth() is unavailable for these routes, which means the
+ * logged-in redirect on `/` (auth → /today) won't fire. Acceptable \u2014
+ * logged-in users can still tap "Today" manually. Logged-out visibility
+ * matters more for SEO / first-touch / crawlers / link previews.
+ *
+ * Once Clerk Production is set up (pk_live_/sk_live_), this bypass
+ * becomes redundant but harmless.
+ */
+const SHOULD_BYPASS_CLERK = createRouteMatcher([
+  '/',
+  '/terms',
+  '/privacy',
+  '/cookies',
+  '/how-it-works',
+  '/weight-loss',
+  '/destructive-behaviors',
+  '/decision-support',
+  '/recovery',
+  '/autopilot-map',
+  '/content',
+  '/science',
+  '/api/webhooks/(.*)',
+  '/api/cron/(.*)',
+  '/api/health',
+  '/profile/(.*)',
 ])
 
 const secretKey = process.env.CLERK_SECRET_KEY
@@ -52,13 +86,29 @@ if (isProdDeployment && isDevClerkKey) {
   )
 }
 
-export default clerkConfigured
-  ? clerkMiddleware(async (auth, req) => {
-      if (!isPublicRoute(req)) {
-        await auth.protect()
-      }
-    })
-  : () => undefined // dev passthrough — no-op
+/**
+ * Reusable Clerk handler \u2014 used only for routes that aren't in the
+ * SHOULD_BYPASS_CLERK list. Calls auth.protect() on non-public routes.
+ */
+const clerkHandler = clerkMiddleware(async (auth, req) => {
+  if (!isPublicRoute(req)) {
+    await auth.protect()
+  }
+})
+
+/**
+ * Top-level middleware. If the incoming request is for a public marketing
+ * or health route, skip Clerk entirely so the dev-browser handshake never
+ * fires. Everything else goes through Clerk as before.
+ */
+function handler(req: NextRequest, event: Parameters<typeof clerkHandler>[1]) {
+  if (SHOULD_BYPASS_CLERK(req)) {
+    return NextResponse.next()
+  }
+  return clerkHandler(req, event)
+}
+
+export default clerkConfigured ? handler : () => undefined // dev passthrough
 
 export const config = {
   matcher: [
