@@ -83,6 +83,16 @@ export function CalloutPanel({ trigger, userId }: Props) {
 
   function openAndFire() {
     setOpen(true)
+    // Analytics: record that the user opened Callout Mode. This is a
+    // high-intent signal — someone asked to be called out. Fire-and-forget.
+    fetch('/api/v1/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventType: 'CALLOUT_VIEWED',
+        metadata: { surface: 'callout-panel' },
+      }),
+    }).catch(() => { /* silent */ })
     // Kick off the request on next tick so the modal is mounted first
     setTimeout(() => fetchCallout(), 50)
   }
@@ -99,6 +109,17 @@ export function CalloutPanel({ trigger, userId }: Props) {
 
   async function share() {
     const shareText = `${stripMarkdown(text)}\n\n\u2014 COYL just read me. coyl.ai`
+
+    // Log intent before the share sheet opens
+    fetch('/api/v1/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventType: 'SHARE_CLICKED',
+        metadata: { moment: 'pattern', surface: 'callout-panel' },
+      }),
+    }).catch(() => { /* silent */ })
+
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
         await navigator.share({ text: shareText, title: 'COYL just read me.' })

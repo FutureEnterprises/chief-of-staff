@@ -39,6 +39,21 @@ export function ShareMoment({ userId, moment, shareText, label = 'Share this', v
     const shareUrl = `https://coyl.ai/api/share/${userId}?type=${moment}`
     const fullText = `${shareText}\n\ncoyl.ai`
 
+    // Fire analytics event BEFORE the share dialog opens — the user's
+    // intent ("I wanted to share this") is what we care about. Whether
+    // the Web Share sheet is actually completed is OS-dependent and
+    // doesn't change the product signal. Fire-and-forget, no await.
+    fetch('/api/v1/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventType: 'SHARE_CLICKED',
+        metadata: { moment, surface: 'share-moment' },
+      }),
+    }).catch(() => {
+      // Silent — analytics shouldn't break UX
+    })
+
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
         await navigator.share({ text: fullText, url: 'https://coyl.ai' })

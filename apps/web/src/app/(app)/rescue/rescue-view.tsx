@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { PageTransition } from '@/components/motion/animations'
 import { PaywallDialog } from '@/components/paywall/paywall-dialog'
 import { StructuredResponse } from '@/components/structured-response'
+import { CalloutPanel } from '@/components/callout/callout-panel'
 import { Flame, ArrowLeft, AlertCircle } from 'lucide-react'
 
 type Trigger = {
@@ -27,7 +28,11 @@ const TRIGGERS: Trigger[] = [
   { key: 'SPIRALING', label: "I'm spiraling", emoji: '🌀', color: 'red' },
 ]
 
-export function RescueView() {
+interface RescueViewProps {
+  userId: string
+}
+
+export function RescueView({ userId }: RescueViewProps) {
   const [selectedTrigger, setSelectedTrigger] = useState<Trigger | null>(null)
   const [response, setResponse] = useState('')
   const [loading, setLoading] = useState(false)
@@ -235,6 +240,39 @@ export function RescueView() {
                 I got it from here
               </button>
             </div>
+          )}
+
+          {/* Callout trigger — appears after the rescue response streams.
+              Someone mid-rescue is already self-aware; a deeper pattern read
+              here lands differently than the same button on /today. Framed
+              as an optional deeper cut, not a required step. */}
+          {!loading && response && !delayActive && !showFollowUp && !followUpLogged && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+              className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold text-orange-300">
+                    Want the deeper read?
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-muted-foreground">
+                    COYL\u2019s pattern call on what\u2019s actually running you right now.
+                  </p>
+                </div>
+                <CalloutPanel
+                  userId={userId}
+                  trigger={
+                    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-orange-500/40 bg-orange-500/10 px-2.5 py-1.5 text-xs font-bold text-orange-300 transition-all hover:border-orange-500/60 hover:bg-orange-500/20">
+                      <Flame className="h-3 w-3" />
+                      Call it out
+                    </span>
+                  }
+                />
+              </div>
+            </motion.div>
           )}
 
           {delayActive && (

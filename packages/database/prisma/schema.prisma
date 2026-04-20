@@ -823,6 +823,8 @@ enum EventType {
   REFERRAL_SENT
   REFERRAL_CONVERTED
   IDENTITY_CHANGED
+  SHARE_CLICKED
+  CALLOUT_VIEWED
 }
 
 // ============================================================
