@@ -76,104 +76,131 @@ export function TodayView({
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-mesh opacity-60" />
 
       {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="heading-1">
-            {greeting}, <span className="text-gradient-warm">{firstName}</span>.
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">{formatDate(new Date())}</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="brand" size="sm" asChild>
-            <Link href="/rescue">
-              <Flame className="h-3.5 w-3.5" /> Rescue
-            </Link>
-          </Button>
-          <Button variant="glass" size="sm" asChild>
-            <Link href="/decide">
-              <Brain className="h-3.5 w-3.5 text-orange-500" /> Decide
-            </Link>
-          </Button>
-          <Button variant="glass" size="sm" asChild>
-            <Link href="/chat?mode=morning">
-              <Sun className="h-3.5 w-3.5 text-amber-500" /> Set today&apos;s rule
-            </Link>
-          </Button>
-          <Button variant="glass" size="sm" asChild>
-            <Link href="/chat?mode=night">
-              <Moon className="h-3.5 w-3.5 text-indigo-400" /> Did you keep your word?
-            </Link>
-          </Button>
-        </div>
+      <div className="mb-6">
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          {greeting}, {firstName}
+        </p>
+        <p className="text-xs text-muted-foreground">{formatDate(new Date())}</p>
       </div>
 
-      {/* Control center hero — Tonight's rule + Next danger window + Self-Trust + Pattern insight */}
-      {(activeCommitment || nextDangerWindow || user.selfTrustScore > 0 || topExcuseCategory) && (
+      {/* TONIGHT'S RULE — dominant hero */}
+      {activeCommitment ? (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 grid grid-cols-1 gap-3 md:grid-cols-4"
+          className="mb-4 overflow-hidden rounded-3xl border-2 border-orange-500/40 bg-gradient-to-br from-orange-500/15 via-orange-500/5 to-transparent p-6 shadow-[0_0_40px_-10px_rgba(255,102,0,0.4)]"
         >
-          {/* Tonight's rule */}
-          {activeCommitment && (
-            <GlassCard variant="orange-glow" className="md:col-span-2">
-              <p className="label-xs mb-2 text-orange-500">Tonight&apos;s rule</p>
-              <p className="text-base font-bold text-foreground">{activeCommitment.rule}</p>
-              <p className="mt-2 text-xs text-muted-foreground">
-                <span className="text-emerald-500">{activeCommitment.keepCount} kept</span>
-                {activeCommitment.breakCount > 0 && (
-                  <> · <span className="text-red-500">{activeCommitment.breakCount} broken</span></>
-                )}
-              </p>
-            </GlassCard>
-          )}
-
-          {/* Next danger window */}
-          {nextDangerWindow && (
-            <GlassCard>
-              <p className="label-xs mb-2 text-orange-500">Next danger window</p>
-              <p className="text-sm font-bold text-foreground">{nextDangerWindow.label}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{nextDangerWindow.whenText}</p>
-            </GlassCard>
-          )}
-
-          {/* Self-trust score + delta */}
-          {user.selfTrustScore > 0 && (
-            <GlassCard>
-              <p className="label-xs mb-2 text-orange-500">Self-Trust</p>
-              <p className="text-2xl font-black tabular-nums text-foreground">
-                <AnimatedCounter value={user.selfTrustScore} />
-              </p>
-              {selfTrustDelta != null && selfTrustDelta !== 0 && (
-                <p className={`mt-1 text-xs ${selfTrustDelta > 0 ? 'text-emerald-500' : 'text-red-400'}`}>
-                  {selfTrustDelta > 0 ? '↑' : '↓'} {Math.abs(selfTrustDelta)} this week
-                </p>
-              )}
-            </GlassCard>
-          )}
-
-          {/* Pattern insight */}
-          {topExcuseCategory && topExcuseCount && topExcuseCount > 1 && (
-            <GlassCard className="md:col-span-4">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{EXCUSE_EMOJI[topExcuseCategory] ?? '🧠'}</span>
-                <div>
-                  <p className="label-xs text-orange-500">Pattern spotted</p>
-                  <p className="text-sm font-semibold text-foreground">
-                    You used &ldquo;{topExcuseCategory.toLowerCase().replace('_', ' ')}&rdquo; {topExcuseCount}× this week.
-                  </p>
-                </div>
-                <Link
-                  href="/patterns"
-                  className="ml-auto text-xs font-semibold text-orange-400 hover:text-orange-300"
-                >
-                  See all →
-                </Link>
-              </div>
-            </GlassCard>
-          )}
+          <p className="label-xs mb-3 text-orange-500">Today&apos;s rule</p>
+          <p className="text-2xl font-black leading-tight text-foreground sm:text-3xl md:text-4xl">
+            {activeCommitment.rule}
+          </p>
+          <p className="mt-4 text-xs text-muted-foreground">
+            <span className="text-emerald-400">{activeCommitment.keepCount} kept</span>
+            {activeCommitment.breakCount > 0 && (
+              <> · <span className="text-red-400">{activeCommitment.breakCount} broken</span></>
+            )}
+            <Link href="/commitments" className="ml-3 text-orange-400 hover:text-orange-300">Manage →</Link>
+          </p>
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 rounded-3xl border-2 border-dashed border-orange-500/30 p-6 text-center"
+        >
+          <p className="text-sm text-muted-foreground">No rule set yet.</p>
+          <Link href="/commitments" className="mt-2 inline-block text-sm font-bold text-orange-400">
+            Set today&apos;s rule →
+          </Link>
         </motion.div>
       )}
+
+      {/* MASSIVE 2-CTA ROW — the core "what do I do right now" answer */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2"
+      >
+        <Link
+          href="/rescue"
+          className="group flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-br from-red-500 to-orange-600 px-6 py-5 text-base font-black uppercase tracking-wider text-white shadow-[0_0_30px_-5px_rgba(239,68,68,0.5)] transition-all hover:scale-[1.02] hover:shadow-[0_0_50px_-5px_rgba(239,68,68,0.7)]"
+        >
+          <Flame className="h-5 w-5 transition-transform group-hover:rotate-12" />
+          I&apos;m about to mess up
+        </Link>
+        <Link
+          href="/decide"
+          className="group flex items-center justify-center gap-3 rounded-2xl border-2 border-orange-500/40 bg-gradient-to-br from-orange-500/10 to-transparent px-6 py-5 text-base font-black uppercase tracking-wider text-foreground transition-all hover:scale-[1.02] hover:border-orange-500/60 hover:bg-orange-500/15"
+        >
+          <Brain className="h-5 w-5 text-orange-500 transition-transform group-hover:scale-110" />
+          What should I do?
+        </Link>
+      </motion.div>
+
+      {/* Quick stats row — Next Danger Window + Self-Trust + Pattern */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="mb-8 grid grid-cols-1 gap-3 md:grid-cols-3"
+      >
+        <GlassCard className="!p-4">
+          <p className="label-xs mb-2 text-orange-500">Next danger window</p>
+          {nextDangerWindow ? (
+            <>
+              <p className="text-sm font-bold text-foreground">{nextDangerWindow.label}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{nextDangerWindow.whenText}</p>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">None mapped yet</p>
+          )}
+        </GlassCard>
+
+        <GlassCard className="!p-4">
+          <p className="label-xs mb-2 text-orange-500">Self-Trust</p>
+          <div className="flex items-baseline gap-2">
+            <AnimatedCounter value={user.selfTrustScore ?? 0} className="text-2xl font-black tabular-nums text-foreground" />
+            <span className="text-xs text-muted-foreground">/ 100</span>
+          </div>
+          {selfTrustDelta != null && selfTrustDelta !== 0 && (
+            <p className={`mt-0.5 text-xs font-semibold ${selfTrustDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              {selfTrustDelta > 0 ? '↑' : '↓'} {Math.abs(selfTrustDelta)} this week
+            </p>
+          )}
+        </GlassCard>
+
+        <GlassCard className="!p-4">
+          <p className="label-xs mb-2 text-orange-500">Pattern insight</p>
+          {topExcuseCategory && topExcuseCount && topExcuseCount > 1 ? (
+            <p className="text-sm font-semibold text-foreground">
+              <span className="mr-1">{EXCUSE_EMOJI[topExcuseCategory] ?? '🧠'}</span>
+              &ldquo;{topExcuseCategory.toLowerCase().replace('_', ' ')}&rdquo; · {topExcuseCount}× this week
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">Not enough data yet</p>
+          )}
+        </GlassCard>
+      </motion.div>
+
+      {/* Secondary CTAs — check-ins */}
+      <div className="mb-8 flex flex-wrap gap-2">
+        <Button variant="glass" size="sm" asChild>
+          <Link href="/chat?mode=morning">
+            <Sun className="h-3.5 w-3.5 text-amber-500" /> Set today&apos;s rule
+          </Link>
+        </Button>
+        <Button variant="glass" size="sm" asChild>
+          <Link href="/chat?mode=night">
+            <Moon className="h-3.5 w-3.5 text-indigo-400" /> Did you keep your word?
+          </Link>
+        </Button>
+        <Button variant="glass" size="sm" asChild>
+          <Link href="/slip">
+            <AlertTriangle className="h-3.5 w-3.5 text-red-400" /> I slipped
+          </Link>
+        </Button>
+      </div>
 
       {/* Stats */}
       <StaggerList className="mb-8 grid grid-cols-4 gap-3">

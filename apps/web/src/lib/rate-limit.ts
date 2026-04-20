@@ -36,6 +36,11 @@ export const rateLimiters = {
   auth: redis
     ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(20, '1 m'), prefix: 'rl:auth' })
     : null,
+
+  /** Unauthenticated landing demos: 5 req/min per IP (keeps costs bounded) */
+  demo: redis
+    ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, '1 m'), prefix: 'rl:demo' })
+    : null,
 }
 
 /**

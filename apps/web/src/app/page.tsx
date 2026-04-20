@@ -1,9 +1,10 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { SoftwareApplicationSchema, FAQSchema } from './structured-data'
 import { CrystalBackground } from '@/components/landing/crystal-bg'
 import { GlassNav } from '@/components/landing/glass-nav'
-import { HeroSection } from '@/components/landing/hero-section'
+import { HeroVariants } from '@/components/landing/hero-variants'
 import { BrandStatement } from '@/components/landing/brand-statement'
 import { FeaturesGrid } from '@/components/landing/features-grid'
 import { LiveExample } from '@/components/landing/live-example'
@@ -11,11 +12,31 @@ import { WedgeClarity } from '@/components/landing/wedge-clarity'
 import { AiDemo } from '@/components/landing/ai-demo'
 import { PatternIntelligence } from '@/components/landing/pattern-intelligence'
 import { RecoverySection } from '@/components/landing/recovery-section'
+import { RescueDemo } from '@/components/landing/rescue-demo'
 import { PricingSection } from '@/components/landing/pricing-section'
 import { FinalCta } from '@/components/landing/final-cta'
 import { LandingFooter } from '@/components/landing/footer'
 
-export default async function HomePage() {
+type Variant = 'a' | 'b' | 'c'
+
+async function pickVariant(searchVariant: string | undefined): Promise<Variant> {
+  const jar = await cookies()
+  const sticky = jar.get('coyl_lv')?.value as Variant | undefined
+  const explicit = (searchVariant === 'a' || searchVariant === 'b' || searchVariant === 'c') ? searchVariant : null
+
+  if (explicit) return explicit
+  if (sticky === 'a' || sticky === 'b' || sticky === 'c') return sticky
+
+  // 33/33/33 random assignment — cookie set client-side on first render
+  const variants: Variant[] = ['a', 'b', 'c']
+  return variants[Math.floor(Math.random() * 3)]!
+}
+
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ v?: string }>
+}) {
   const clerkReady = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
     !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_...')
   if (clerkReady) {
@@ -23,38 +44,62 @@ export default async function HomePage() {
     if (userId) redirect('/today')
   }
 
+  const params = await searchParams
+  const variant = await pickVariant(params?.v)
+
   return (
     <CrystalBackground>
       <SoftwareApplicationSchema />
       <FAQSchema />
+      <VariantCookieSetter variant={variant} />
       <div className="relative min-h-screen text-white selection:bg-orange-500 selection:text-white">
         <GlassNav />
 
         <main className="relative z-10">
-          {/* 1. Hero */}
-          <HeroSection />
-          {/* 2. Truth */}
+          {/* Hero — variant-specific */}
+          <HeroVariants variant={variant} />
+
+          {/* Playable demo — anchor target for hero CTAs */}
+          <div id="try-it">
+            <RescueDemo />
+          </div>
+
+          {/* Truth */}
           <BrandStatement />
-          {/* 3. What COYL does */}
+          {/* What COYL does */}
           <FeaturesGrid />
-          {/* 4. Live Example */}
+          {/* Live Example */}
           <LiveExample />
-          {/* 5. Wedge Clarity */}
+          {/* Wedge Clarity */}
           <WedgeClarity />
-          {/* 6. Personality Modes */}
+          {/* Personality Modes */}
           <AiDemo />
-          {/* 7. Pattern Intelligence */}
+          {/* Pattern Intelligence */}
           <PatternIntelligence />
-          {/* 8. Recovery */}
+          {/* Recovery */}
           <RecoverySection />
-          {/* 9. Pricing */}
+          {/* Pricing */}
           <PricingSection />
-          {/* 10. Final CTA */}
+          {/* Final CTA */}
           <FinalCta />
         </main>
 
         <LandingFooter />
       </div>
     </CrystalBackground>
+  )
+}
+
+/**
+ * Client-side cookie setter — stamps the user's assigned variant so they see
+ * the same hero on return visits + tags sign-up analytics.
+ */
+function VariantCookieSetter({ variant }: { variant: Variant }) {
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `try { if (!document.cookie.match(/coyl_lv=/)) { document.cookie = 'coyl_lv=${variant}; max-age=' + (60*60*24*30) + '; path=/; SameSite=Lax'; } } catch (e) {}`,
+      }}
+    />
   )
 }

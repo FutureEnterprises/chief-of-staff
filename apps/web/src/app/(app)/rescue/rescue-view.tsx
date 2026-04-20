@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { PageTransition } from '@/components/motion/animations'
 import { PaywallDialog } from '@/components/paywall/paywall-dialog'
+import { StructuredResponse } from '@/components/structured-response'
 import { Flame, ArrowLeft, AlertCircle } from 'lucide-react'
 
 type Trigger = {
@@ -216,17 +217,7 @@ export function RescueView() {
             </div>
           )}
 
-          {response && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="glass rounded-2xl p-6"
-            >
-              <div className="prose prose-sm prose-invert max-w-none whitespace-pre-wrap text-sm leading-relaxed">
-                {response}
-              </div>
-            </motion.div>
-          )}
+          {response && <StructuredResponse text={response} accentColor="red" />}
 
           {!loading && response && (
             <div className="grid grid-cols-2 gap-3">
@@ -294,6 +285,9 @@ export function RescueView() {
               <p className="mb-1 text-2xl">🔥</p>
               <p className="text-base font-bold text-emerald-300">You interrupted the script.</p>
               <p className="mt-1 text-xs text-muted-foreground">That&apos;s the rep. Do it again next time.</p>
+
+              {/* Did it catch you? — §6 non-negotiable feedback */}
+              <CatchFeedback trigger={selectedTrigger?.key} />
             </motion.div>
           )}
 
@@ -331,4 +325,59 @@ function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60)
   const s = seconds % 60
   return `${m}:${String(s).padStart(2, '0')}`
+}
+
+const FEEDBACK_OPTIONS = [
+  { key: 'caught', label: 'It caught me' },
+  { key: 'excuse', label: 'It knew my excuse' },
+  { key: 'stopped', label: 'It stopped me' },
+]
+
+function CatchFeedback({ trigger }: { trigger: string | undefined }) {
+  const [submitted, setSubmitted] = useState<string | null>(null)
+
+  async function send(key: string) {
+    setSubmitted(key)
+    try {
+      await fetch('/api/v1/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventType: 'FEATURE_USED',
+          metadata: { kind: 'rescue_feedback', phrase: key, trigger },
+        }),
+      })
+    } catch {
+      // silent
+    }
+  }
+
+  if (submitted) {
+    return (
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="mt-4 text-xs text-emerald-400"
+      >
+        Got it. This is the metric that matters.
+      </motion.p>
+    )
+  }
+
+  return (
+    <div className="mt-5">
+      <p className="mb-2 label-xs text-muted-foreground">Which one fits?</p>
+      <div className="flex flex-wrap justify-center gap-2">
+        {FEEDBACK_OPTIONS.map((o) => (
+          <button
+            key={o.key}
+            onClick={() => send(o.key)}
+            className="rounded-full border border-emerald-500/30 bg-emerald-500/5 px-3 py-1 text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/15"
+          >
+            &ldquo;{o.label}&rdquo;
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 }

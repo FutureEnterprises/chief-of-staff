@@ -4,7 +4,7 @@ import { motion } from 'motion/react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { PageTransition, StaggerList, StaggerItem, AnimatedCounter } from '@/components/motion/animations'
 import { ShareButton } from '@/components/share/share-card'
-import { Flame, Clock, AlertTriangle, Activity, Eye, Shield } from 'lucide-react'
+import { Flame, Clock, AlertTriangle, Activity, Eye, Shield, Zap, TrendingUp } from 'lucide-react'
 
 const EXCUSE_LABELS: Record<string, { label: string; emoji: string }> = {
   DELAY: { label: 'Delay', emoji: '🐌' },
@@ -30,6 +30,26 @@ const IDENTITY_STATES: Record<string, { label: string; color: string }> = {
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
+// Human labels for the most-common pre-slip event types. Falls back to the raw
+// enum key if unknown — keeps the UI useful even for new event types.
+const EVENT_TYPE_LABELS: Record<string, string> = {
+  EXCUSE_DETECTED: 'Excuse detected',
+  DANGER_WINDOW_CROSSED: 'Entered a danger window',
+  RESCUE_TRIGGERED: 'Tried a rescue',
+  RESCUE_RESOLVED: 'Ended a rescue',
+  AUTOPILOT_INTERRUPTED: 'Autopilot interrupted',
+  CHAT_SESSION: 'Chat session',
+  DECISION_MADE: 'Used Decide',
+  ASSESSMENT_RUN: 'Ran assessment',
+  FEATURE_USED: 'Opened a feature',
+  TASK_OVERDUE: 'Task went overdue',
+  TASK_SNOOZED: 'Snoozed a task',
+  COMMITMENT_BROKEN: 'Broke a commitment',
+  MORNING_REVIEW: 'Morning review',
+  NIGHT_REVIEW: 'Night review',
+  NOTIFICATION_OPENED: 'Opened a notification',
+}
+
 interface PatternsViewProps {
   userId: string
   userName: string
@@ -48,6 +68,10 @@ interface PatternsViewProps {
   openTasks: number
   overdueTasks: number
   tasksByPriority: Array<{ priority: string; count: number }>
+  topFailureTrigger: Array<{ eventType: string; count: number }>
+  totalPreSlipSignals: number
+  recoveryStrengthPct: number | null
+  totalSlips30d: number
 }
 
 export function PatternsView({
@@ -56,6 +80,8 @@ export function PatternsView({
   identityState, recoveryState,
   excusesByCategory, dangerWindows, recentSlips, rescueSessions,
   completedLast7Days, completedLast30Days, openTasks, overdueTasks,
+  topFailureTrigger, totalPreSlipSignals,
+  recoveryStrengthPct, totalSlips30d,
 }: PatternsViewProps) {
   const maxExcuse = Math.max(...excusesByCategory.map((e) => e.count), 1)
   const identity = IDENTITY_STATES[identityState] ?? IDENTITY_STATES.SLEEPWALKING!
@@ -186,6 +212,84 @@ export function PatternsView({
                 </div>
               ))}
             </div>
+          )}
+        </GlassCard>
+
+        {/* Failure Trigger — what usually happens in the hour before a slip */}
+        <GlassCard>
+          <div className="mb-4 flex items-center gap-2">
+            <Zap className="h-4 w-4 text-orange-500" />
+            <h3 className="heading-4">Failure trigger</h3>
+          </div>
+          {totalSlips30d === 0 ? (
+            <p className="text-sm text-emerald-500">No slips to analyze. Keep going.</p>
+          ) : topFailureTrigger.length === 0 ? (
+            <p className="text-sm text-muted-foreground/60">
+              Not enough signal yet. COYL needs more slip data to spot the trigger.
+            </p>
+          ) : (
+            <>
+              <p className="mb-3 text-xs text-muted-foreground">
+                What usually happens in the hour before you slip.
+              </p>
+              <div className="space-y-2">
+                {topFailureTrigger.map((t, i) => {
+                  const label = EVENT_TYPE_LABELS[t.eventType] ?? t.eventType.replace(/_/g, ' ').toLowerCase()
+                  const pct = totalPreSlipSignals > 0 ? Math.round((t.count / totalPreSlipSignals) * 100) : 0
+                  const isPrimary = i === 0
+                  return (
+                    <div
+                      key={t.eventType}
+                      className={`rounded-xl border p-3 ${
+                        isPrimary ? 'border-orange-500/40 bg-orange-500/10' : 'border-border bg-muted/20'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className={`text-sm font-semibold ${isPrimary ? 'text-orange-300' : 'text-foreground'}`}>
+                          {label}
+                        </span>
+                        <span className="text-xs tabular-nums text-muted-foreground">
+                          {t.count}× · {pct}%
+                        </span>
+                      </div>
+                      {isPrimary && (
+                        <p className="mt-1 text-[11px] text-orange-400/80">
+                          Top precursor. Interrupt here to prevent the slip.
+                        </p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </>
+          )}
+        </GlassCard>
+
+        {/* Recovery Strength — % of slips recovered within 24h */}
+        <GlassCard variant={recoveryStrengthPct !== null && recoveryStrengthPct >= 70 ? 'orange-glow' : undefined}>
+          <div className="mb-4 flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-emerald-500" />
+            <h3 className="heading-4">Recovery strength</h3>
+          </div>
+          {recoveryStrengthPct === null ? (
+            <p className="text-sm text-emerald-500">No slips this month. Nothing to recover from.</p>
+          ) : (
+            <>
+              <div className="flex items-baseline gap-2">
+                <span className="text-6xl font-black tabular-nums text-emerald-500">{recoveryStrengthPct}%</span>
+                <span className="text-sm text-muted-foreground">within 24h</span>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {totalSlips30d} slip{totalSlips30d === 1 ? '' : 's'} in the last 30 days
+              </p>
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                {recoveryStrengthPct >= 80
+                  ? 'Resilient. You don\u2019t let a slip become a spiral.'
+                  : recoveryStrengthPct >= 50
+                    ? 'Decent rebound. Tighten the first hour after a slip.'
+                    : 'Slips are lingering. Use /slip the moment it happens \u2014 the hour after matters most.'}
+              </p>
+            </>
           )}
         </GlassCard>
 

@@ -9,6 +9,7 @@ import { PaywallDialog } from '@/components/paywall/paywall-dialog'
 import { Brain, SendHorizontal, RotateCcw, Mic, Shield, Flame, Repeat } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from '@/hooks/use-toast'
+import { StructuredResponse } from '@/components/structured-response'
 
 const EXAMPLES = [
   'Should I eat this?',
@@ -148,29 +149,36 @@ export function DecideView() {
         ) : (
           <div className="mx-auto max-w-2xl space-y-4">
             <AnimatePresence initial={false}>
-              {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.2 }}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                      message.role === 'user'
-                        ? 'bg-gradient-warm text-white'
-                        : 'glass'
-                    }`}
+              {messages.map((message) => {
+                const text = message.parts
+                  ?.map((p) => (p.type === 'text' ? (p as { text: string }).text : ''))
+                  .join('') ?? ''
+                if (message.role === 'user') {
+                  return (
+                    <motion.div
+                      key={message.id}
+                      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.2 }}
+                      className="flex justify-end"
+                    >
+                      <div className="max-w-[85%] rounded-2xl bg-gradient-warm px-4 py-3 text-sm leading-relaxed text-white">
+                        <span className="whitespace-pre-wrap">{text}</span>
+                      </div>
+                    </motion.div>
+                  )
+                }
+                return (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    {message.parts?.map((p, i) =>
-                      p.type === 'text' ? (
-                        <span key={i} className="whitespace-pre-wrap">{p.text}</span>
-                      ) : null
-                    )}
-                  </div>
-                </motion.div>
-              ))}
+                    <StructuredResponse text={text} accentColor="orange" />
+                  </motion.div>
+                )
+              })}
             </AnimatePresence>
             {isLoading && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-1.5 px-4">

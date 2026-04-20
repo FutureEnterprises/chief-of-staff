@@ -13,6 +13,8 @@ export default async function PatternsPage() {
     excusesByCategory,
     dangerWindows,
     recentSlips,
+    allSlips30d,
+    preSlipEvents,
     rescueSessions,
     completedWeek,
     completedMonth,
@@ -33,6 +35,17 @@ export default async function PatternsPage() {
       where: { userId: user.id, createdAt: { gte: thirtyDaysAgo } },
       orderBy: { createdAt: 'desc' },
       take: 10,
+    }),
+    // Full 30-day slip set for Recovery Strength metric
+    prisma.slipRecord.findMany({
+      where: { userId: user.id, createdAt: { gte: thirtyDaysAgo } },
+      select: { createdAt: true, recoveredAt: true },
+    }),
+    // All events in last 30 days — we'll correlate in memory to find pre-slip triggers
+    prisma.productivityEvent.findMany({
+      where: { userId: user.id, createdAt: { gte: thirtyDaysAgo } },
+      select: { eventType: true, createdAt: true },
+      orderBy: { createdAt: 'asc' },
     }),
     prisma.rescueSession.findMany({
       where: { userId: user.id, startedAt: { gte: thirtyDaysAgo } },
@@ -61,6 +74,37 @@ export default async function PatternsPage() {
       _count: { id: true },
     }),
   ])
+
+  // ──── Failure Trigger: most common event type in the hour preceding slips ────
+  const HOUR_MS = 60 * 60 * 1000
+  const triggerCounts: Record<string, number> = {}
+  let totalPreSlipSignals = 0
+  for (const slip of allSlips30d) {
+    const windowStart = slip.createdAt.getTime() - HOUR_MS
+    const windowEnd = slip.createdAt.getTime()
+    for (const ev of preSlipEvents) {
+      const t = ev.createdAt.getTime()
+      if (t >= windowStart && t < windowEnd) {
+        // Skip the slip-logging event itself to avoid tautology
+        if (ev.eventType === 'SLIP_LOGGED' || ev.eventType === 'SLIP_RECOVERED') continue
+        triggerCounts[ev.eventType] = (triggerCounts[ev.eventType] ?? 0) + 1
+        totalPreSlipSignals++
+      }
+    }
+  }
+  const topFailureTrigger = Object.entries(triggerCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([eventType, count]) => ({ eventType, count }))
+
+  // ──── Recovery Strength: % of slips recovered within 24h over last 30d ────
+  const TWENTY_FOUR_HOURS_MS = 24 * HOUR_MS
+  const recoveredFast = allSlips30d.filter(
+    (s) => s.recoveredAt && s.recoveredAt.getTime() - s.createdAt.getTime() <= TWENTY_FOUR_HOURS_MS,
+  ).length
+  const recoveryStrengthPct =
+    allSlips30d.length > 0 ? Math.round((recoveredFast / allSlips30d.length) * 100) : null
+  const totalSlips30d = allSlips30d.length
 
   return (
     <PatternsView
@@ -101,6 +145,10 @@ export default async function PatternsPage() {
         priority: r.priority,
         count: r._count.id,
       }))}
+      topFailureTrigger={topFailureTrigger}
+      totalPreSlipSignals={totalPreSlipSignals}
+      recoveryStrengthPct={recoveryStrengthPct}
+      totalSlips30d={totalSlips30d}
     />
   )
 }

@@ -15,6 +15,7 @@ const navItems = [
   { label: 'Today', href: '/today', icon: Home },
   { label: 'Decide', href: '/decide', icon: Brain },
   { label: 'Rescue', href: '/rescue', icon: Flame },
+  { label: 'Slip recovery', href: '/slip', icon: Shield },
   { label: 'Commitments', href: '/commitments', icon: Shield },
   { label: 'Patterns', href: '/patterns', icon: Eye },
   { label: 'Simulate', href: '/simulate', icon: Zap },
