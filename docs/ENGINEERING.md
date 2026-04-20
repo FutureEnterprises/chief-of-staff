@@ -277,3 +277,59 @@ Every new cron or AI surface must land in this doc first.
 - **2026-04-19** — Initial engineering spec. State machine + guard +
   prompt contract + adaptive tone + admin + narrow-market. Crons
   refactored to use guard. 4 AI routes refactored to use `composeSystem`.
+
+- **2026-04-19 (later)** — Aligned to
+  `COYL_system_behavior_rules.md`. Summary of changes:
+  - **Rate cap** lowered 4→3 per user per 24h (spec §2.2).
+  - **Aggressive-tier cap** added: 1 `SILENT_FINAL`-tier ping per 24h.
+  - **Global 90-min gap** between any two interrupts regardless of kind
+    (spec §2.2).
+  - **Dismissal tracking**: new `PROMPT_DISMISSED` event; guard
+    suppresses for 6h if user dismissed last 2 prompts in <10s each
+    (spec §2.3).
+  - **Recent-action events extended** to include `COMMITMENT_KEPT`,
+    `FOLLOW_UP_COMPLETED`, `SLIP_RECOVERED`.
+  - **State-driven tone overrides** (spec §5):
+    - `FLARING` → No-BS floor (Mentor/Strategist upgraded to No-BS).
+    - `SLIPPED` / `RECOVERING` / `DISAPPEARED` → Mentor ceiling.
+    - `consecutiveIgnoredInterrupts ≥ 3` → Beast escalation.
+  - **Prompt section headers** aligned to spec §6:
+    - Decide: `What's happening / Prediction / Your excuse / Best move / Next action`
+    - Rescue: `Pattern name / Callout / Interrupt / Action / Follow-up`
+    - Slip: `Acknowledge slip / Stop spiral / Stabilize / Next move / Tomorrow plan`
+  - **MAX_TOKENS tightened**: DECIDE/RESCUE 220 tokens (~140 words),
+    SLIP 240 (~150 words) per spec §6 120-word target.
+  - **Excuse detection enriched**: now returns `confidence` (0-1) and
+    `suggestedCounter` (one-line callout). Below-0.5 confidence treated
+    as no detection so we never fire interrupts on fuzzy signal.
+  - **Identity update cron** at `/api/cron/identity-update`, runs 04:30
+    UTC daily. Applies spec §7 rules: fast repeated recovery →
+    `RESILIENT`, disappeared-after-slip → `AVOIDANT`, etc. Pure
+    transition function in the route file; easy to test.
+
+### Identity state transitions (spec §7)
+
+| Trigger                                            | Resulting state         |
+| -------------------------------------------------- | ----------------------- |
+| Disappeared after slip (not recovered, silent 2d+) | `AVOIDANT`              |
+| 3+ slips, all recovered <24h                       | `RESILIENT`             |
+| ≥1 recovered slip + active in last 7d              | `RECOVERING`            |
+| Multiple slips + long silence                      | `AVOIDANT`              |
+| Streak ≥21d + slips ≤1/month                       | `DISCIPLINED`           |
+| Streak ≥7d + slips ≤2/month                        | `INCREASINGLY_CONSCIOUS` |
+| Otherwise with activity                             | `UNSTABLE_BUT_TRYING`   |
+| No activity                                         | `SLEEPWALKING`          |
+
+### Interrupt intensity tiers (spec §3.1)
+
+| Kind             | Intensity     |
+| ---------------- | ------------- |
+| `DANGER_WINDOW`  | `direct`      |
+| `POST_SLIP_2H`   | `direct`      |
+| `POST_SLIP_24H`  | `soft`        |
+| `SILENT_SOFT`    | `soft`        |
+| `SILENT_DIRECT`  | `direct`      |
+| `SILENT_FINAL`   | `aggressive`  |
+
+Aggressive-tier kinds are capped at 1 per user per 24h even if the
+overall 3/24h rate cap hasn't been hit.

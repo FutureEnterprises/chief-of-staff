@@ -17,13 +17,19 @@
 
 // ─────────────────────── Hard rules ───────────────────────
 
-/** Max tokens per response type. Budget-tight formats keep voice punchy. */
+/**
+ * Max tokens per response type. Spec \u00a76 caps structured responses at
+ * 120 words (~160 tokens). We allow a small buffer above 160 for section
+ * headers + formatting without letting the AI bloat the response. Callout
+ * and Autopsy are explicitly longer formats (screenshot / weekly report)
+ * and have their own targets.
+ */
 export const MAX_TOKENS: Record<ResponseKind, number> = {
-  DECIDE: 380,
-  RESCUE: 380,
-  SLIP: 420,
-  CALLOUT: 320,
-  AUTOPSY: 620,
+  DECIDE: 220,  // ~140 words \u2014 tight per spec
+  RESCUE: 220,  // ~140 words \u2014 tight per spec
+  SLIP: 240,    // ~150 words \u2014 slight buffer for the acknowledgment
+  CALLOUT: 320, // screenshot moment \u2014 deliberately longer
+  AUTOPSY: 620, // weekly report \u2014 deliberately longer
 }
 
 export type ResponseKind = 'DECIDE' | 'RESCUE' | 'SLIP' | 'CALLOUT' | 'AUTOPSY'

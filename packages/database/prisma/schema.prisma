@@ -825,6 +825,7 @@ enum EventType {
   IDENTITY_CHANGED
   SHARE_CLICKED
   CALLOUT_VIEWED
+  PROMPT_DISMISSED
 }
 
 // ============================================================

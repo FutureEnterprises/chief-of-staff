@@ -40,6 +40,10 @@
     {
       "path": "/api/cron/post-slip-interrupt",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/identity-update",
+      "schedule": "30 4 * * *"
     }
   ]
 }

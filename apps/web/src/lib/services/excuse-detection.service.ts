@@ -12,6 +12,11 @@ export type ExcuseDetectionResult = {
   detected: boolean
   category: ExcuseCategory | null
   evidence: string | null
+  /** 0.0-1.0 confidence from the classifier. Null if the model didn't
+   *  return one (legacy responses). */
+  confidence: number | null
+  /** One-sentence callout the UI can render verbatim. */
+  suggestedCounter: string | null
 } | null
 
 /**
@@ -45,13 +50,29 @@ export async function classifyAndStoreExcuse(
       detected: boolean
       category: string | null
       evidence?: string
+      confidence?: number
+      suggestedCounter?: string
     }
 
-    if (!parsed.detected || !parsed.category) {
-      return { detected: false, category: null, evidence: null }
+    const confidence = typeof parsed.confidence === 'number' ? parsed.confidence : null
+    const suggestedCounter =
+      typeof parsed.suggestedCounter === 'string' ? parsed.suggestedCounter.trim() : null
+
+    // Spec \u00a76: excuse detection returns confidence; if <0.5 treat as no
+    // detection rather than persist a fuzzy signal that triggers interrupts.
+    const aboveThreshold = confidence === null || confidence >= 0.5
+
+    if (!parsed.detected || !parsed.category || !aboveThreshold) {
+      return {
+        detected: false, category: null, evidence: null,
+        confidence, suggestedCounter: null,
+      }
     }
     if (!CATEGORIES.includes(parsed.category as ExcuseCategory)) {
-      return { detected: false, category: null, evidence: null }
+      return {
+        detected: false, category: null, evidence: null,
+        confidence, suggestedCounter: null,
+      }
     }
 
     const category = parsed.category as ExcuseCategory
@@ -67,12 +88,17 @@ export async function classifyAndStoreExcuse(
           userId,
           eventType: 'EXCUSE_DETECTED',
           eventValue: category,
-          metadataJson: { evidence: evidence.slice(0, 200), source },
+          metadataJson: {
+            evidence: evidence.slice(0, 200),
+            source,
+            confidence,
+            suggestedCounter,
+          },
         },
       })
       .catch(() => {})
 
-    return { detected: true, category, evidence }
+    return { detected: true, category, evidence, confidence, suggestedCounter }
   } catch {
     return null
   }

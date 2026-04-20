@@ -46,6 +46,27 @@ export type InterruptGuardInput = {
 // ─────────────────────── Cooldown / suppression config ───────────────────────
 
 /**
+ * Intensity tier per kind. Per COYL_system_behavior_rules.md \u00a72.2,
+ * aggressive interrupts have a tighter 1/day cap even if the overall
+ * daily cap hasn't been hit. A user should not get more than one
+ * "Your autopilot won" kind of ping per day.
+ *
+ * \u2022 soft       \u2014 awareness only (entering window, first silent ping)
+ * \u2022 direct     \u2014 sharper callout (known pattern, mid-tier silence)
+ * \u2022 aggressive \u2014 confrontation (final silence, late-night + known slip)
+ */
+export type InterruptIntensity = 'soft' | 'direct' | 'aggressive'
+
+export const INTERRUPT_INTENSITY: Record<InterruptKind, InterruptIntensity> = {
+  DANGER_WINDOW: 'direct',
+  POST_SLIP_2H: 'direct',
+  POST_SLIP_24H: 'soft',
+  SILENT_SOFT: 'soft',
+  SILENT_DIRECT: 'direct',
+  SILENT_FINAL: 'aggressive',
+}
+
+/**
  * How long we wait between firings of the same interrupt kind for one user.
  * Tuned per kind: a danger-window ping is cheap to re-fire (different window
  * each time); a silence ping is emotionally loud and should NEVER spam.
@@ -60,8 +81,17 @@ const COOLDOWN_MS: Record<InterruptKind, number> = {
 }
 
 /**
+ * Spec (\u00a72.2): minimum 90 minutes between ANY two interrupts for the same
+ * user. This is enforced regardless of kind \u2014 no matter what, a user
+ * never gets two pings inside 90 minutes of each other.
+ */
+const GLOBAL_INTER_INTERRUPT_MS = 90 * 60 * 1000
+
+/**
  * "Recent action" suppressors \u2014 if the user did ANY of these in the last
  * N minutes, don't fire an interrupt. Signal is: they're already engaged.
+ * Spec (\u00a72.3): 60 minutes. We use 90 to be slightly more conservative
+ * than the spec (same as the inter-interrupt gap) for code simplicity.
  */
 const RECENT_ACTION_WINDOW_MS = 90 * 60 * 1000 // 90 minutes
 const RECENT_ACTION_EVENTS: readonly string[] = [
@@ -73,13 +103,23 @@ const RECENT_ACTION_EVENTS: readonly string[] = [
   'TASK_COMPLETED',
   'MORNING_REVIEW',
   'NIGHT_REVIEW',
+  'COMMITMENT_KEPT',       // added per spec \u00a72.3
+  'FOLLOW_UP_COMPLETED',   // added per spec \u00a72.3
+  'SLIP_RECOVERED',        // they just closed recovery \u2014 leave them alone
 ] as const
 
 /**
- * Hard cap on total interrupt pings per user per 24-hour window.
- * Past this, we stay quiet regardless \u2014 trust preservation.
+ * Hard cap on total interrupt pings per user per 24h. Spec (\u00a72.2): 3.
+ * Dropped from 4 to match.
  */
-const DAILY_RATE_CAP = 4
+const DAILY_RATE_CAP = 3
+
+/**
+ * Aggressive-only cap: max 1 aggressive-tier interrupt per 24h even if
+ * the overall daily cap hasn't been hit. Prevents stacking final-tier
+ * pings on a single bad day.
+ */
+const DAILY_AGGRESSIVE_CAP = 1
 
 /**
  * Quiet hours: 23:00 \u2192 07:00 local time. No pings during sleep.
@@ -152,16 +192,78 @@ export async function guardInterrupt(
     }
   }
 
-  // 6. Daily rate cap across ALL interrupt kinds
+  // 5.5 Dismissal suppression (spec \u00a72.3): if the user dismissed the
+  // last 2 prompts quickly (within 10s of viewing), assume they're
+  // annoyed by the pings and stay quiet for 12h. Clients emit
+  // PROMPT_DISMISSED with metadataJson.dwellMs.
+  const dismissalLookback = new Date(now.getTime() - 6 * 60 * 60 * 1000) // 6h
+  const recentDismissals = await prisma.productivityEvent.findMany({
+    where: {
+      userId: input.userId,
+      eventType: 'PROMPT_DISMISSED',
+      createdAt: { gte: dismissalLookback },
+    },
+    orderBy: { createdAt: 'desc' },
+    select: { metadataJson: true },
+    take: 2,
+  })
+  if (recentDismissals.length >= 2) {
+    const bothQuick = recentDismissals.every((d) => {
+      const meta = d.metadataJson as { dwellMs?: number } | null
+      return typeof meta?.dwellMs === 'number' && meta.dwellMs < 10_000
+    })
+    if (bothQuick) {
+      return { allow: false, reason: 'recent_action', detail: 'dismissed-2-quickly' }
+    }
+  }
+
+  // 6. Global 90-minute gap \u2014 no two interrupts (any kind) within 90 min
+  const recentAny = await prisma.productivityEvent.findFirst({
+    where: {
+      userId: input.userId,
+      eventType: 'AUTOPILOT_INTERRUPTED',
+      createdAt: { gte: new Date(now.getTime() - GLOBAL_INTER_INTERRUPT_MS) },
+    },
+    select: { id: true },
+  })
+  if (recentAny) {
+    return {
+      allow: false,
+      reason: 'cooldown',
+      detail: 'global 90-min gap',
+    }
+  }
+
+  // 7. Daily rate cap across ALL interrupt kinds (spec: 3/day)
+  const dayCutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000)
   const last24h = await prisma.productivityEvent.count({
     where: {
       userId: input.userId,
       eventType: 'AUTOPILOT_INTERRUPTED',
-      createdAt: { gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) },
+      createdAt: { gte: dayCutoff },
     },
   })
   if (last24h >= DAILY_RATE_CAP) {
     return { allow: false, reason: 'rate_cap', detail: `${last24h} in 24h` }
+  }
+
+  // 8. Aggressive-tier cap (spec: 1/day even if overall cap not hit)
+  if (INTERRUPT_INTENSITY[input.kind] === 'aggressive') {
+    const aggressiveLast24h = await prisma.productivityEvent.count({
+      where: {
+        userId: input.userId,
+        eventType: 'AUTOPILOT_INTERRUPTED',
+        createdAt: { gte: dayCutoff },
+        metadataJson: { path: ['intensity'], equals: 'aggressive' },
+      },
+    })
+    if (aggressiveLast24h >= DAILY_AGGRESSIVE_CAP) {
+      return {
+        allow: false,
+        reason: 'rate_cap',
+        detail: `aggressive-tier ${aggressiveLast24h} in 24h`,
+      }
+    }
   }
 
   return { allow: true }
@@ -186,11 +288,64 @@ export async function recordInterrupt(args: {
       eventValue: args.idempotencyKey ?? args.kind,
       metadataJson: {
         kind: args.kind,
+        intensity: INTERRUPT_INTENSITY[args.kind],
         channel: args.channel,
         ...(args.metadata ?? {}),
       },
     },
   })
+}
+
+// ─────────────────────── Escalation tracking ───────────────────────
+
+/**
+ * Count consecutive interrupts that weren't followed by engagement
+ * within a short window. Per spec \u00a72.4, repeated ignores = signal to
+ * escalate tone (No-BS \u2192 Beast) on the next fire.
+ *
+ * Returns the number of "ignored" interrupts in a row, starting from
+ * the most recent and walking backward. Resets on any meaningful
+ * engagement (rescue triggered, checkin completed, decision made,
+ * callout viewed).
+ */
+export async function consecutiveIgnoredInterrupts(
+  userId: string,
+  now: Date = new Date(),
+): Promise<number> {
+  // Look at the last 7 days \u2014 anything older isn't signal for "right now"
+  const since = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const interrupts = await prisma.productivityEvent.findMany({
+    where: {
+      userId,
+      eventType: 'AUTOPILOT_INTERRUPTED',
+      createdAt: { gte: since },
+    },
+    select: { createdAt: true },
+    orderBy: { createdAt: 'desc' },
+    take: 10,
+  })
+  if (interrupts.length === 0) return 0
+
+  const engagementWindow = 60 * 60 * 1000 // 1h
+  let ignored = 0
+  for (const int of interrupts) {
+    const engagementAfter = await prisma.productivityEvent.findFirst({
+      where: {
+        userId,
+        eventType: {
+          in: ['RESCUE_TRIGGERED', 'CHECKIN_COMPLETED', 'DECISION_MADE', 'CALLOUT_VIEWED'] as never,
+        },
+        createdAt: {
+          gt: int.createdAt,
+          lte: new Date(int.createdAt.getTime() + engagementWindow),
+        },
+      },
+      select: { id: true },
+    })
+    if (engagementAfter) break
+    ignored++
+  }
+  return ignored
 }
 
 // ─────────────────────── Helpers ───────────────────────

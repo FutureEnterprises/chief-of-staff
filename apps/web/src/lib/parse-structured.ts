@@ -35,27 +35,27 @@ export type ParsedSection = {
 }
 
 const SECTION_ICON: Record<string, SectionIcon> = {
-  // Decide (spec voice)
-  'What\'s actually happening': 'target',
-  'What is actually happening': 'target',
-  'What happens next if you do this': 'alert',
-  'What you\'re telling yourself': 'brain',
-  'What you are telling yourself': 'brain',
-  'Best move': 'check',
-  'Do this now': 'footprints',
-
-  // Rescue (spec voice)
-  'Pattern': 'search',
-  'Truth': 'brain',
+  // Decide (spec COYL_system_behavior_rules \u00a76)
+  'What\'s happening': 'target',
+  'What is happening': 'target',
   'Prediction': 'alert',
+  'Your excuse': 'brain',
+  'Best move': 'check',
+  'Next action': 'footprints',
+
+  // Rescue (spec \u00a76)
+  'Pattern name': 'search',
+  'Callout': 'brain',
   'Interrupt': 'stop',
   'Action': 'footprints',
   'Follow-up': 'bell',
 
-  // Slip recovery (spec voice)
-  'Recovery': 'bandage',
+  // Slip recovery (spec \u00a76)
+  'Acknowledge slip': 'heart',
+  'Stop spiral': 'stop',
+  'Stabilize': 'bandage',
   'Next move': 'footprints',
-  'Tomorrow': 'calendar',
+  'Tomorrow plan': 'calendar',
 
   // Legacy aliases kept for backward compatibility with any in-flight
   // responses that still use the previous section names. Safe to keep
@@ -78,7 +78,6 @@ const SECTION_ICON: Record<string, SectionIcon> = {
   'Delay': 'timer',
   'If you still want it after 10 minutes': 'help',
   'Interruption': 'stop',
-  'Pattern name': 'search',
   'No shame, no spiral': 'heart',
   'What NOT to do': 'ban',
   'Next 2 hours': 'timer',

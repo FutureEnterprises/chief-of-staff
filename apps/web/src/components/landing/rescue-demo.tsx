@@ -44,23 +44,20 @@ const DEMO_TRIGGERS: Trigger[] = [
     sub: 'Not hungry. Just restless.',
     wedge: 'Food / weight',
     icon: Refrigerator,
-    script: `**Pattern**
-This is your night loop. You\u2019ve been here dozens of times. The cue was crossing into the kitchen, not any thought you had.
+    script: `**Pattern name**
+Your 9 PM kitchen loop. The cue was crossing in, not any thought.
 
-**Truth**
-You\u2019re not hungry. You\u2019re looking for a state change. Food is the habit, not the need.
-
-**Prediction**
-If you eat now, you already know. This turns into a full night of eating. Fine for 8 minutes. Then worse.
+**Callout**
+You\u2019re not hungry. You\u2019ve done this dozens of times. If you eat now, you already know: fine for 8 minutes, then worse, then back at the fridge at 10:14.
 
 **Interrupt**
-Close the fridge. Step away from the kitchen.
+Close the fridge. Step out of the kitchen.
 
 **Action**
-One glass of water. Walk out of the kitchen for ten minutes.
+Drink a full glass of water. Walk out of the kitchen for ten minutes.
 
 **Follow-up**
-If you still want food after ten, you can have it \u2014 and we log it honestly.`,
+If you still want it after ten, you can have it \u2014 and we log it honestly.`,
   },
   {
     key: 'ANGRY_TEXT',
@@ -68,20 +65,17 @@ If you still want food after ten, you can have it \u2014 and we log it honestly.
     sub: 'The one I\u2019ll regret by morning.',
     wedge: 'Emotional reactivity',
     icon: MessageSquareWarning,
-    script: `**Pattern**
-This is reactive closure. You\u2019ve done it before. The script is: end the feeling fast, no matter what it costs.
+    script: `**Pattern name**
+Reactive closure. Ending the discomfort with the sharpest words available.
 
-**Truth**
-You\u2019re picking the sharpest words because they feel like control. They\u2019re not.
-
-**Prediction**
-If you hit send, you feel powerful for 40 seconds. Then sick. Tomorrow you have to fix this plus that.
+**Callout**
+You\u2019re picking the words that feel like control. They\u2019re not. If you hit send: powerful for 40 seconds, sick for the next 12 hours, bigger mess tomorrow.
 
 **Interrupt**
-Don\u2019t send it. Put the phone face-down in another room.
+Don\u2019t send. Put the phone face-down in another room.
 
 **Action**
-Write the whole thing in Notes. Don\u2019t send. Read it tomorrow at 8 AM.
+Write the whole thing in Notes instead. Re-read it at 8 AM tomorrow.
 
 **Follow-up**
 You won\u2019t send it then. That\u2019s the point.`,
@@ -92,20 +86,17 @@ You won\u2019t send it then. That\u2019s the point.`,
     sub: 'I told myself "one minute." It was sixty.',
     wedge: 'Focus / avoidance',
     icon: Smartphone,
-    script: `**Pattern**
-This is the displacement loop. Every hour avoided is an hour not processed. The bill comes due at night.
+    script: `**Pattern name**
+The displacement loop. You weren\u2019t checking anything. You were avoiding.
 
-**Truth**
-You weren\u2019t checking anything. You were avoiding. The scroll is a low-grade anesthetic for a feeling you haven\u2019t named.
-
-**Prediction**
-If you keep going, another hour vanishes. At 11 PM you\u2019ll tell yourself you\u2019ll \u201cstart fresh tomorrow.\u201d Tomorrow starts with scrolling.
+**Callout**
+The scroll is a low-grade anesthetic for a feeling you haven\u2019t named. If you keep going, another hour vanishes and 11 PM becomes "I\u2019ll start fresh tomorrow."
 
 **Interrupt**
-Put the phone in another room. Not the desk. Not your pocket. Another room.
+Put the phone in another room. Not the desk. Not your pocket.
 
 **Action**
-Name the feeling out loud \u2014 bored, anxious, lonely. Do the first boring thing on your list for five minutes.
+Name the feeling out loud \u2014 bored, anxious, avoidant. Then do the first boring thing on your list for five minutes.
 
 **Follow-up**
 Come back to the phone in twenty. Check in with how you feel.`,
@@ -116,23 +107,20 @@ Come back to the phone in twenty. Check in with how you feel.`,
     sub: 'The one I said I was done with.',
     wedge: 'Destructive pattern',
     icon: Flame,
-    script: `**Pattern**
-This is the craving loop. It peaks in about 20 minutes \u2014 always has.
+    script: `**Pattern name**
+The craving loop. Peaks in about twenty minutes. Always has.
 
-**Truth**
-A cue fired. Your brain predicted relief. That prediction is chemistry, not fact.
-
-**Prediction**
-If you feed it, you feel relief for 12 minutes. Then smaller. Tomorrow the urge is louder. Every feeding makes the next one louder.
+**Callout**
+A cue fired, your brain predicted relief, the prediction is chemistry not fact. If you feed it: relief for 12 minutes, then smaller, then louder tomorrow.
 
 **Interrupt**
-Step away from whatever triggered this. Move your body.
+Step away from whatever triggered it. Move your body.
 
 **Action**
-Water. Cold air. Call someone who knows. Do not be alone with this.
+Water. Cold air. Call someone who knows. Don\u2019t be alone with this.
 
 **Follow-up**
-I\u2019m checking on you in 20 minutes. That\u2019s the peak. You ride it out, the wave breaks.`,
+I\u2019m checking on you in 20 minutes. Ride it out \u2014 the wave breaks.`,
   },
   {
     key: 'SPIRALING',
@@ -140,20 +128,17 @@ I\u2019m checking on you in 20 minutes. That\u2019s the peak. You ride it out, t
     sub: 'One slip turning into a night.',
     wedge: 'Mid-action',
     icon: Wind,
-    script: `**Pattern**
-This is the spiral loop. One slip, then the sentence that writes the rest of the night.
+    script: `**Pattern name**
+The spiral loop. One slip, then the sentence that writes the rest of the night.
 
-**Truth**
-You\u2019re telling yourself "I already blew it." That sentence is the machinery. It converts one data point into a license for five more.
-
-**Prediction**
-If you keep going: another two hours tonight. Tomorrow you skip the thing. Monday you start a grand new plan. By Thursday you\u2019re here again.
+**Callout**
+You\u2019re saying "I already blew it." That sentence converts one data point into a license for five more. If you keep going: two more hours tonight, skip tomorrow, grand new plan Monday, back here Thursday.
 
 **Interrupt**
-Stop. No more tonight. One slip. One.
+Stop. One slip. One.
 
 **Action**
-Water. Brush your teeth. Bed thirty minutes early. That\u2019s the entire plan.
+Water. Brush teeth. Bed thirty minutes early. That\u2019s the plan.
 
 **Follow-up**
 Tomorrow isn\u2019t starting over. It\u2019s the next rep. We continue.`,
@@ -164,23 +149,20 @@ Tomorrow isn\u2019t starting over. It\u2019s the next rep. We continue.`,
     sub: 'Woke up thinking: not again.',
     wedge: 'Retroactive',
     icon: HeartCrack,
-    script: `You slipped.
-Good \u2014 now we stop the damage.
+    script: `**Acknowledge slip**
+You slipped. One data point, not who you are.
 
-**Truth**
-The mistake isn\u2019t the problem. The spiral is. The story you\u2019re telling yourself \u2014 "this always happens" or "I need a new plan" \u2014 that\u2019s the actual thing we\u2019re interrupting.
+**Stop spiral**
+The story writing itself in your head \u2014 "this always happens," "I need a new plan," "I\u2019ll make it up" \u2014 that\u2019s the spiral, not the slip. If you keep going: skip today, skip tomorrow, by Wednesday you\u2019re in a week.
 
-**Prediction**
-If you keep going, this becomes a full bad day. Skip today, tomorrow gets easier to skip. By Wednesday you\u2019re in a week.
-
-**Recovery**
-Normal breakfast. Water. Ten minutes of movement. No compensation, no punishment, no grand new plan.
+**Stabilize**
+Normal breakfast. Water. Ten minutes of movement. No punishment, no compensation, no grand new plan.
 
 **Next move**
-Next meal = clean reset. Exact time on your calendar. Do it whether you feel like it or not.
+Next meal = clean reset at 1 PM. Do it whether you feel like it or not.
 
-**Tomorrow**
-We\u2019re not restarting. We\u2019re continuing. The streak, the rule, the identity \u2014 all continue. The slip is a blip.`,
+**Tomorrow plan**
+We\u2019re not restarting. We\u2019re continuing.`,
   },
 ]
 

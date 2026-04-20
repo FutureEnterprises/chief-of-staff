@@ -64,6 +64,8 @@ export async function POST(req: Request) {
     detected: true,
     category: result.category,
     evidence: result.evidence,
+    confidence: result.confidence,
+    suggestedCounter: result.suggestedCounter,
     times30d,
     quote: EXCUSE_QUOTES[result.category] ?? null,
   })

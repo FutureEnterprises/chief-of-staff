@@ -4,6 +4,7 @@ import { prisma } from '@repo/database'
 import { SYSTEM_PROMPTS, AI_MODEL, composeSystem } from '@repo/ai'
 import { consumeAiAssistAtomic, hasFeature } from '@/lib/services/entitlement.service'
 import { effectiveTone, type ToneMode } from '@/lib/user-state'
+import { consecutiveIgnoredInterrupts } from '@/lib/interrupt-guard'
 import type { UIMessage } from 'ai'
 
 export const maxDuration = 45
@@ -91,10 +92,12 @@ export async function POST(req: Request) {
   const daysSinceSignup = Math.floor(
     (Date.now() - user.createdAt.getTime()) / (24 * 60 * 60 * 1000),
   )
+  const ignoredInterrupts = await consecutiveIgnoredInterrupts(user.id)
   const tone = effectiveTone(
     (user.toneMode ?? 'MENTOR') as ToneMode,
     'SLIPPED',
     daysSinceSignup,
+    { ignoredInterrupts },
   )
 
   const taskPrompt = SYSTEM_PROMPTS.slipRecovery

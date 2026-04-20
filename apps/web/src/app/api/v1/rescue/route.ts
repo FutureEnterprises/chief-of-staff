@@ -6,6 +6,7 @@ import { SYSTEM_PROMPTS, AI_MODEL, composeSystem } from '@repo/ai'
 import { consumeAiAssistAtomic, hasFeature } from '@/lib/services/entitlement.service'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { effectiveTone, classifyState, type ToneMode } from '@/lib/user-state'
+import { consecutiveIgnoredInterrupts } from '@/lib/interrupt-guard'
 import type { UIMessage } from 'ai'
 
 export const maxDuration = 45
@@ -93,10 +94,12 @@ export async function POST(req: Request) {
     insideDangerWindow: false,
     currentStreak: user.currentStreak,
   })
+  const ignoredInterrupts = await consecutiveIgnoredInterrupts(user.id)
   const tone = effectiveTone(
     (user.toneMode ?? 'MENTOR') as ToneMode,
     state,
     daysSinceSignup,
+    { ignoredInterrupts },
   )
 
   const taskPrompt = SYSTEM_PROMPTS.rescueFlow

@@ -211,37 +211,66 @@ export function isInterruptAllowed(state: UserState, kind: InterruptKind): boole
 export type ToneMode = 'MENTOR' | 'STRATEGIST' | 'NO_BS' | 'BEAST'
 
 /**
- * Adaptive tone policy. Even if a user picked NO_BS, we soften to MENTOR
- * during emotionally raw states (right after a slip, during recovery,
- * or their first week with the product) so we don't land in "this thing
- * is mean and I just slipped" at exactly the wrong moment.
+ * Adaptive tone policy. Spec \u00a75 prescribes state-driven defaults that
+ * override user choice in specific moments:
  *
- * Returns the tone to USE for this response, which may differ from the
- * user's chosen toneMode.
+ *   ACTIVE       \u2192 user's chosen tone (default: Strategist)
+ *   FLARING/AT_RISK \u2192 No-BS floor (feel urgency)
+ *   SLIPPED      \u2192 Mentor ceiling (soften, don't pile on)
+ *   RECOVERING   \u2192 Mentor ceiling
+ *   RESILIENT    \u2192 user's chosen tone (reward state)
+ *   SILENT       \u2192 user's chosen tone
+ *   DISAPPEARED  \u2192 Mentor ceiling (don't be harsh to a returner)
+ *
+ * Plus layered overrides:
+ *   - First 7 days post-signup: always Mentor regardless of everything else.
+ *   - Repeated avoidance (ignoredInterrupts >= 3): escalate to Beast.
+ *
+ * The repeated-avoidance escalation is the only case where we go HARDER
+ * than the user chose. Spec \u00a72.4 authorizes it \u2014 when someone has
+ * ignored three consecutive prompts, Mentor isn't working.
  */
 export function effectiveTone(
   chosen: ToneMode,
   state: UserState,
   daysSinceSignup: number,
+  options?: { ignoredInterrupts?: number },
 ): ToneMode {
-  // First week: always Mentor regardless of pick. Early churn is
-  // catastrophic; a new user hit with BEAST on day 2 bounces.
+  // 1. First-week lock \u2014 highest priority. Early churn is catastrophic.
   if (daysSinceSignup < 7) return 'MENTOR'
 
-  // Emotionally raw moments \u2014 soften at most one step.
-  if (state === 'SLIPPED' || state === 'RECOVERING') {
-    if (chosen === 'BEAST') return 'NO_BS'
-    if (chosen === 'NO_BS') return 'STRATEGIST'
-    return chosen
+  // 2. Repeated-avoidance escalation (spec \u00a72.4). When the user has
+  //    ignored 3+ interrupts in a row, soft tones aren't landing.
+  //    Override anything softer than Beast.
+  if ((options?.ignoredInterrupts ?? 0) >= 3) {
+    return 'BEAST'
   }
 
-  // DISAPPEARED is a special case: they're not here to pay for anything
-  // harsh. Meet them with warmth, not drill-sergeant.
-  if (state === 'DISAPPEARED') {
-    if (chosen === 'BEAST' || chosen === 'NO_BS') return 'MENTOR'
-  }
+  // 3. State-driven ceilings/floors (spec \u00a75).
+  switch (state) {
+    case 'SLIPPED':
+    case 'RECOVERING':
+      // Mentor ceiling \u2014 soften anything harsher.
+      if (chosen === 'BEAST' || chosen === 'NO_BS') return 'MENTOR'
+      return chosen
 
-  return chosen
+    case 'FLARING':
+      // No-BS floor \u2014 the moment demands urgency.
+      if (chosen === 'MENTOR' || chosen === 'STRATEGIST') return 'NO_BS'
+      return chosen
+
+    case 'DISAPPEARED':
+      // Warmth only \u2014 returner energy, not drill sergeant.
+      if (chosen === 'BEAST' || chosen === 'NO_BS') return 'MENTOR'
+      return chosen
+
+    case 'NEW':
+    case 'ACTIVE':
+    case 'RESILIENT':
+    case 'SILENT':
+    default:
+      return chosen
+  }
 }
 
 // ─────────────────────── Exports for tests + UI ───────────────────────
