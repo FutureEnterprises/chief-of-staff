@@ -83,6 +83,19 @@ export function BrandStatement() {
           <br />
           <span className="mt-2 inline-block text-xl font-medium text-gray-500">Autopilot wins.</span>
         </motion.p>
+
+        {/* The knife-line. Lands after the "autopilot wins" beat so the
+            emotional payoff stacks: identify the problem \u2192 name the
+            mechanism \u2192 name the thing that actually does the damage. */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 1.0, duration: 0.8 }}
+          className="mx-auto mt-14 max-w-3xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-6 py-5 text-left text-xl font-bold leading-snug text-white md:text-2xl"
+        >
+          You don&apos;t ruin your progress in one moment.<br />
+          <span className="text-orange-400">You ruin it in the story you tell yourself after.</span>
+        </motion.p>
       </div>
     </section>
   )

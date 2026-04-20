@@ -8,15 +8,15 @@ import { HeroVariants } from '@/components/landing/hero-variants'
 import { BrandStatement } from '@/components/landing/brand-statement'
 import { FeaturesGrid } from '@/components/landing/features-grid'
 import { LiveExample } from '@/components/landing/live-example'
-import { WedgeClarity } from '@/components/landing/wedge-clarity'
-import { AiDemo } from '@/components/landing/ai-demo'
-import { PatternIntelligence } from '@/components/landing/pattern-intelligence'
 import { RecoverySection } from '@/components/landing/recovery-section'
 import { RescueDemo } from '@/components/landing/rescue-demo'
 import { UniversalWedges } from '@/components/landing/universal-wedges'
-import { YouIf } from '@/components/landing/you-if'
 import { PricingSection } from '@/components/landing/pricing-section'
 import { FinalCta } from '@/components/landing/final-cta'
+// Cut from the homepage 2026-04-20 per reviewer feedback (bloated page,
+// too many sections). Still used on other surfaces or available for
+// re-introduction if the narrower page underperforms:
+//   - WedgeClarity, AiDemo, PatternIntelligence, YouIf
 import { LandingFooter } from '@/components/landing/footer'
 
 type Variant = 'a' | 'b' | 'c'
@@ -78,37 +78,41 @@ export default async function HomePage({
         <GlassNav />
 
         <main className="relative z-10">
-          {/* Hero — variant-specific */}
+          {/* Reviewer-driven order (2026-04-20):
+              Hero \u2192 Try it \u2192 Why you keep failing \u2192 What COYL does
+              \u2192 Live example \u2192 Built first for weight loss
+              \u2192 Recovery \u2192 Pricing \u2192 Final CTA.
+              Cut from above-the-fold: YouIf (duplicated recognition), AiDemo
+              (personality modes), PatternIntelligence (pattern screen marketing).
+              WedgeClarity compressed into UniversalWedges. */}
+
+          {/* 1. Hero \u2014 variant-specific */}
           <HeroVariants variant={variant} />
 
-          {/* Playable demo — anchor target for hero CTAs */}
+          {/* 2. Try it right now \u2014 interactive, anchor target for hero CTAs */}
           <div id="try-it">
             <RescueDemo />
           </div>
 
-          {/* Universality — the "not a weight-loss app" pillar */}
+          {/* 3. Why you keep failing \u2014 the autopilot beat + the knife-line */}
+          <BrandStatement />
+
+          {/* 4. What COYL does \u2014 3-step explanation */}
+          <FeaturesGrid />
+
+          {/* 5. Live example \u2014 Friday night "I'll restart Monday" scene */}
+          <LiveExample />
+
+          {/* 6. Built first for weight loss \u2014 wedge reassurance + "same loop" */}
           <UniversalWedges />
 
-          {/* Recognition — "This is for you if..." content-hook section */}
-          <YouIf />
-
-          {/* Truth */}
-          <BrandStatement />
-          {/* What COYL does */}
-          <FeaturesGrid />
-          {/* Live Example */}
-          <LiveExample />
-          {/* Wedge Clarity */}
-          <WedgeClarity />
-          {/* Personality Modes */}
-          <AiDemo />
-          {/* Pattern Intelligence */}
-          <PatternIntelligence />
-          {/* Recovery */}
+          {/* 7. Recovery \u2014 moat section */}
           <RecoverySection />
-          {/* Pricing */}
+
+          {/* 8. Pricing */}
           <PricingSection />
-          {/* Final CTA */}
+
+          {/* 9. Final CTA */}
           <FinalCta />
         </main>
 

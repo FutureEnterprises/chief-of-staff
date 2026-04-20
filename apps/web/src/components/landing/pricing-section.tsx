@@ -58,7 +58,7 @@ const TIERS = [
       '1,500 Charges / month',
       'Accountability partner',
       'Challenge pods (2–5 people)',
-      'Precision interrupts (JITAI at learned danger windows)',
+      'Precision interrupts at your learned danger windows',
       'Advanced pattern reports',
       'Priority support',
     ],

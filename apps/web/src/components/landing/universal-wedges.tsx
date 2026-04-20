@@ -90,16 +90,17 @@ export function UniversalWedges() {
       >
         <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          Not a weight-loss app
+          Built first for weight loss
         </h2>
         <h3 className="text-3xl font-bold leading-tight tracking-tight text-white md:text-5xl">
-          Different behaviors.<br />
-          <span className="text-orange-400">Same loop.</span>
+          The same loop<br />
+          <span className="text-orange-400">runs the rest of your life.</span>
         </h3>
         <p className="mt-5 max-w-2xl text-base leading-relaxed text-gray-400">
-          A cue fires. Autopilot takes over. You realize after. That loop runs the parts of
-          your life you say you want to change. COYL learns where it hooks you \u2014 and
-          interrupts at the exact moment.
+          Late-night eating is the one we optimize for today. But if you recognize the pattern
+          \u2014 "good for a few days, then I fold" \u2014 it\u2019s the same machinery behind
+          the doom scroll, the angry text, the skipped workout, the cart you can\u2019t close.
+          Start with the wedge that fits. The product works on the others too.
         </p>
       </motion.div>
 
@@ -132,17 +133,14 @@ export function UniversalWedges() {
         })}
       </div>
 
-      {/* Science footnote — anchors the copy to the research without being academic */}
+      {/* Science credibility lives on /science. Homepage stays emotional. */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ delay: 0.8, duration: 0.6 }}
-        className="mt-10 max-w-3xl text-xs leading-relaxed text-gray-500"
+        className="mt-10 max-w-3xl text-xs text-gray-500"
       >
-        The loop COYL interrupts is called a <em className="text-gray-400">cue-routine-reward</em> cycle
-        (habit research, Wood; Duhigg). Slips cluster at end-of-day under cognitive load
-        (Baumeister). Precision timing beats volume of nudges (Nahum-Shani et al., JITAI). COYL
-        operationalizes all three. <Link href="/science" className="text-orange-400 hover:underline">The research \u2192</Link>
+        Built on real behavioral research. <Link href="/science" className="text-orange-400 hover:underline">The research \u2192</Link>
       </motion.p>
     </section>
   )

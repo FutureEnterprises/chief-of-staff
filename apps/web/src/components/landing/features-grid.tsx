@@ -12,7 +12,8 @@ const features = [
     ),
     title: 'Detects your patterns',
     body: 'Learns when you usually slip. The exact hours, days, and contexts where your autopilot kicks in.',
-    footer: { left: 'Autopilot map', right: 'Learns in days' },
+    // Removed "Learns in days" footer metric \u2014 not backed by data yet.
+    footer: { left: 'Autopilot map', right: 'Your patterns, named' },
     glowColor: 'orange',
     offset: false,
   },
@@ -24,7 +25,9 @@ const features = [
     ),
     title: 'Interrupts the moment',
     body: 'Fires right before you act. Names the excuse. Gives you a 10-minute delay and a better move.',
-    progress: 82,
+    // Removed fabricated "82% of interrupts pull users back" progress bar.
+    // Real metrics land once we have real cohort data.
+    footer: { left: 'Rescue flow', right: 'Break the script' },
     glowColor: 'red',
     offset: false,
   },
@@ -92,22 +95,10 @@ function FeatureCard({
             <span className="text-orange-500">{feature.footer.right}</span>
           </div>
         )}
-        {feature.progress !== undefined && (
-          <div className="flex flex-col gap-2">
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/5">
-              <motion.div
-                className="h-full bg-orange-500"
-                initial={{ width: 0 }}
-                animate={inView ? { width: `${feature.progress}%` } : {}}
-                transition={{ delay: 0.5 + index * 0.15, duration: 1, ease: [0.23, 1, 0.32, 1] }}
-              />
-            </div>
-            <span className="text-right font-mono text-xs text-gray-500">
-              {feature.progress}% of interrupts pull users back
-            </span>
-          </div>
-        )}
-        {!feature.footer && feature.progress === undefined && (
+        {/* Progress-bar metric branch removed with the fake "82%" number.
+            If real cohort data becomes available, re-add with data wired
+            from /admin metrics. */}
+        {!feature.footer && (
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#1a1a1a] bg-gradient-to-br from-orange-500 to-red-600 text-xs font-bold text-white">
