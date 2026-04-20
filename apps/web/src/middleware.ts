@@ -13,7 +13,7 @@ const isPublicRoute = createRouteMatcher([
   '/destructive-behaviors',
   '/decision-support',
   '/recovery',
-  '/patterns',
+  '/autopilot-map',
   '/science',
   '/api/webhooks/(.*)',
   '/api/demo/(.*)',

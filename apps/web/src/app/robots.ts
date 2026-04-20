@@ -18,7 +18,7 @@ export default function robots(): MetadataRoute.Robots {
           '/destructive-behaviors',
           '/decision-support',
           '/recovery',
-          '/patterns',
+          '/autopilot-map',
           '/science',
         ],
         disallow: [

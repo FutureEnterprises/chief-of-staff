@@ -62,7 +62,7 @@ COYL is a behavioral support tool. It is not medical treatment, not a substitute
 - Destructive behaviors wedge: https://coyl.ai/destructive-behaviors
 - Decision support: https://coyl.ai/decision-support
 - Recovery: https://coyl.ai/recovery
-- Patterns: https://coyl.ai/patterns
+- Autopilot map (patterns): https://coyl.ai/autopilot-map
 - Science: https://coyl.ai/science
 - Terms: https://coyl.ai/terms
 - Privacy: https://coyl.ai/privacy
