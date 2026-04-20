@@ -6,7 +6,10 @@ export const metadata: Metadata = {
   description: 'COYL users ranked by execution score and streak. Public profiles only.',
 }
 
-export const revalidate = 300 // 5 minutes
+// Render per-request. Leaderboard pulls from Prisma — prerendering at build
+// time requires DATABASE_URL to be reachable from the Vercel build runner,
+// which it isn't for our Supabase setup. Dynamic rendering sidesteps that.
+export const dynamic = 'force-dynamic'
 
 export default async function LeaderboardPage() {
   const top = await prisma.user.findMany({
