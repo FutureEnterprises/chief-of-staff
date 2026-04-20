@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Flame, X, Share2, RotateCw } from 'lucide-react'
+import { Flame, X, Share2, RotateCw, Image as ImageIcon } from 'lucide-react'
 import { StructuredResponse } from '@/components/structured-response'
 
 /**
@@ -20,14 +20,29 @@ import { StructuredResponse } from '@/components/structured-response'
 
 interface Props {
   trigger: React.ReactNode
+  /** Optional — when provided, enables the "Share as image" action which
+   *  points at the OG-image share route for this user. Without it, only
+   *  text-share works. */
+  userId?: string
 }
 
-export function CalloutPanel({ trigger }: Props) {
+export function CalloutPanel({ trigger, userId }: Props) {
   const [open, setOpen] = useState(false)
   const [text, setText] = useState('')
   const [streaming, setStreaming] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const cancelRef = useRef<boolean>(false)
+
+  // Close on Escape so keyboard users aren't trapped in the modal
+  useEffect(() => {
+    if (!open) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') close()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   async function fetchCallout() {
     cancelRef.current = false
@@ -179,7 +194,7 @@ export function CalloutPanel({ trigger }: Props) {
 
               {/* Actions */}
               {text && !streaming && (
-                <div className="mt-5 flex items-center gap-2">
+                <div className="mt-5 flex flex-wrap items-center gap-2">
                   <button
                     onClick={share}
                     className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 px-4 py-2.5 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-transform hover:scale-[1.02]"
@@ -187,6 +202,20 @@ export function CalloutPanel({ trigger }: Props) {
                     <Share2 className="h-4 w-4" />
                     Share the read
                   </button>
+                  {/* "Share as image" \u2014 opens the pattern-type OG image in a
+                      new tab so the user can save/screenshot a clean card.
+                      Only renders when we have a userId to point the OG URL at. */}
+                  {userId && (
+                    <a
+                      href={`/api/share/${userId}?type=pattern`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-gray-300 transition-colors hover:bg-white/10"
+                    >
+                      <ImageIcon className="h-3.5 w-3.5" />
+                      As image
+                    </a>
+                  )}
                   <button
                     onClick={fetchCallout}
                     className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-gray-300 transition-colors hover:bg-white/10"

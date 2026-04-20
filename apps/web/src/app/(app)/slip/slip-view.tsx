@@ -7,6 +7,7 @@ import { PaywallDialog } from '@/components/paywall/paywall-dialog'
 import { StructuredResponse } from '@/components/structured-response'
 import { Droplet, Footprints, Salad, ArrowRight, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
+import { ShareMoment } from '@/components/share/share-moment'
 
 const QUICK_TAGS = [
   { value: 'binged', label: 'I binged', emoji: '🍔' },
@@ -16,13 +17,22 @@ const QUICK_TAGS = [
   { value: 'spiraled', label: 'I spiraled', emoji: '🎢' },
 ]
 
-export function SlipView() {
+interface SlipViewProps {
+  userId: string
+  currentStreak: number
+}
+
+export function SlipView({ userId, currentStreak }: SlipViewProps) {
   const [trigger, setTrigger] = useState<string | null>(null)
   const [notes, setNotes] = useState('')
   const [response, setResponse] = useState('')
   const [loading, setLoading] = useState(false)
   const [paywallOpen, setPaywallOpen] = useState(false)
   const [stabilizeDone, setStabilizeDone] = useState<Record<string, boolean>>({})
+  // The "I'm back" share chip appears only once all three stabilize actions
+  // are done — that's the earliest the "I caught myself" claim is true.
+  const allStabilizeDone =
+    Object.values(stabilizeDone).filter(Boolean).length >= 3
 
   async function submit(tag: string, customNote?: string) {
     setTrigger(tag)
@@ -217,6 +227,33 @@ export function SlipView() {
                   Set tomorrow&apos;s rule
                 </Link>
               </div>
+
+              {/* "I'm back" share chip — only shows once all three stabilize
+                  actions are tapped. That gate matters: we don't want people
+                  broadcasting "I recovered" before they actually did the
+                  stabilizing work. The chip is the reward for follow-through. */}
+              {allStabilizeDone && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="mt-5 flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-emerald-400">You stabilized. You\u2019re back.</p>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground">
+                      Streak preserved: {currentStreak}d. Share if it helps someone else do the same.
+                    </p>
+                  </div>
+                  <ShareMoment
+                    userId={userId}
+                    moment="recovery"
+                    shareText="I slipped. COYL caught me. I'm back."
+                    label="Share"
+                    variant="solid"
+                  />
+                </motion.div>
+              )}
             </div>
           )}
         </div>

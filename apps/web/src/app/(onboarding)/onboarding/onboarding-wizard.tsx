@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { GlassCard } from '@/components/ui/glass-card'
 import { completeOnboarding } from '@/app/actions/onboarding'
 import { cn } from '@/lib/utils'
+import { ShareMoment } from '@/components/share/share-moment'
 
 const TIMEZONES = [
   'America/New_York', 'America/Chicago', 'America/Denver',
@@ -237,7 +238,7 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
               {step === 5 && <ToneStep data={data} onChange={updateData} />}
               {step === 6 && <CommitmentStep data={data} onChange={updateData} />}
               {step === 7 && <RescuePreferenceStep data={data} onChange={updateData} />}
-              {step === 8 && <SummaryStep data={data} />}
+              {step === 8 && <SummaryStep data={data} userId={user.id} />}
             </motion.div>
           </AnimatePresence>
         </GlassCard>
@@ -573,7 +574,7 @@ const EXCUSE_QUOTES: Record<string, string> = {
  * Deterministic on the client, no AI call, no latency. The point is to land,
  * not to be clever.
  */
-function SummaryStep({ data }: { data: FormData }) {
+function SummaryStep({ data, userId }: { data: FormData; userId: string }) {
   const wedgeLabel = WEDGE_LABELS[data.primaryWedge] ?? 'your autopilot'
   const windowText = windowPhrase(data.dangerWindowsPicked)
   const excuseQuote = EXCUSE_QUOTES[data.excuseStyle] ?? 'the excuse you already know.'
@@ -621,6 +622,24 @@ function SummaryStep({ data }: { data: FormData }) {
           )
         })}
       </div>
+
+      {/* Share chip — appears after all the beats have rendered so it doesn't
+          compete with the reveal. The first-use moment is worth sharing; most
+          users never get this kind of specific read from any app. */}
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 + beats.length * 0.55 + 0.1, duration: 0.5 }}
+        className="mt-5 flex items-center gap-2"
+      >
+        <ShareMoment
+          userId={userId}
+          moment="readme"
+          shareText={`COYL just read me. "Your autopilot runs ${windowText}. This week the sentence in my head will be: ${excuseQuote}"`}
+          label="Share this read"
+        />
+        <span className="text-[10px] text-gray-500">Optional. Not required to proceed.</span>
+      </motion.div>
 
       {/* The quiet footer — commitments already made, no extra fluff */}
       <motion.div

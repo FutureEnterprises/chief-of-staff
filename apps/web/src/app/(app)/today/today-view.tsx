@@ -204,6 +204,7 @@ export function TodayView({
         {/* Callout Mode — "Be brutally honest." Opens a modal that streams
             COYL's sharpest read of the user's current pattern, with share. */}
         <CalloutPanel
+          userId={user.id}
           trigger={
             <span className="inline-flex items-center gap-1.5 rounded-xl border border-orange-500/40 bg-gradient-to-r from-orange-500/10 to-red-500/10 px-3 py-1.5 text-xs font-bold text-orange-300 transition-all hover:border-orange-500/60 hover:from-orange-500/20 hover:to-red-500/20 hover:shadow-[0_0_16px_rgba(255,102,0,0.2)]">
               <Flame className="h-3.5 w-3.5 text-orange-400" />
