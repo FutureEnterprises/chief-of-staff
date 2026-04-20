@@ -11,6 +11,7 @@ import { RecoverySection } from '@/components/landing/recovery-section'
 import { RescueDemo } from '@/components/landing/rescue-demo'
 import { UniversalWedges } from '@/components/landing/universal-wedges'
 import { YouIf } from '@/components/landing/you-if'
+import { ThingsCoylSays } from '@/components/landing/things-coyl-says'
 import { FinalCta } from '@/components/landing/final-cta'
 // Cut from the homepage per COYL_homepage_v4.md (cut-convert-win pass):
 //   - FeaturesGrid (demoted as "deep feature breakdown"; still exists for
@@ -107,6 +108,11 @@ export default async function HomePage({
           {/* 5. Real moment \u2014 Friday night "I'll restart Monday" scene */}
           <LiveExample />
 
+          {/* Viral-screenshot section. Four punchy quotable lines designed
+              to be screenshotted and shared. Added per reviewer note:
+              "You need ONE viral screenshot moment." */}
+          <ThingsCoylSays />
+
           {/* 6. Wedge \u2014 Built first for weight loss + one-line broaden */}
           <UniversalWedges />
 
@@ -129,19 +135,23 @@ export default async function HomePage({
  * statement between sections \u2014 not a CTA, just a recurring motif.
  */
 /**
- * V4 \u00a76 LOCKED iconic line \u2014 Option 1. Single-line, no surrounding
- * subcopy. Homepage should feel obvious and immediate; stacking three
- * variations of the tagline dilutes the hit. Use this line verbatim in
- * ads, product headers, and social per spec.
+ * LOCKED signature line. Repeats here, in the hero subhead, in ads,
+ * and in the OG cards \u2014 one line, seen enough times to stick. The
+ * reviewer note was that two candidate lines were fragmenting memory;
+ * this is the one we lock.
+ *
+ * "It's not the mistake. It's what you do after." retired from
+ * landing (still useful as a secondary line in the /recovery page
+ * if we want it).
  */
 function IconicLine() {
   return (
     <section className="relative mx-auto max-w-5xl px-6 py-16 text-center md:px-12">
       <p className="text-3xl font-black leading-tight tracking-tight text-white md:text-5xl">
-        It&apos;s not the mistake.<br />
-        It&apos;s{' '}
+        This stops the moment<br />
+        you usually{' '}
         <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-          what you do after
+          screw yourself
         </span>.
       </p>
     </section>

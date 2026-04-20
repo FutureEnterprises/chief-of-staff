@@ -51,10 +51,11 @@ const COPY: Record<Variant, {
         </span>
       </>
     ),
-    // v4 spec (COYL_homepage_v4.md §HERO): "bad day" \u2192 "spiral".
-    // The spiral word carries more emotional weight + ties to the loop section.
+    // Reviewer push: "catches the moment you usually blow it" \u2192
+    // "catches you right before you screw yourself." Uncomfortable,
+    // shareable, ties to the locked signature line.
     subhead:
-      "Because you\u2019re on autopilot. COYL catches the moment you usually blow it \u2014 before it turns into a spiral.",
+      "Because you\u2019re on autopilot. COYL catches you right before you screw yourself.",
     primaryCta: 'Start catching your patterns',
   },
   c: {
@@ -212,9 +213,9 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               >
                 <p className="mb-1 text-[11px] font-mono uppercase tracking-wider text-orange-500">COYL</p>
                 <p className="text-sm leading-relaxed text-orange-100">
-                  You&apos;re not hungry. This is your usual night loop.
+                  You&apos;re not hungry. You&apos;re doing it again.
                   <br />
-                  Drink water. Walk 5 minutes. <span className="font-bold text-orange-400">Then</span> decide.
+                  Close the fridge. Walk 5 minutes. <span className="font-bold text-orange-400">Then</span> decide.
                 </p>
               </motion.div>
 

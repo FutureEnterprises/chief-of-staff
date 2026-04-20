@@ -51,10 +51,10 @@ const DEMO_TRIGGERS: Trigger[] = [
 Your 9 PM kitchen loop. The cue was crossing in, not any thought.
 
 **Truth**
-You\u2019re not hungry. You\u2019ve done this dozens of times.
+You\u2019re not hungry. You\u2019re doing it again. You\u2019ve had this exact moment dozens of times.
 
 **Prediction**
-If you eat now: fine for 8 minutes, then worse, then back at the fridge at 10:14. You already know.
+You already know how it ends. Fine for 8 minutes. Worse after. Back at the fridge at 10:14.
 
 **Interrupt**
 Close the fridge. Step out of the kitchen.
@@ -72,19 +72,19 @@ If you still want it after ten, you can have it \u2014 and we log it honestly.`,
     wedge: 'Consistency',
     icon: MoonStar,
     script: `**Pattern**
-The skip loop. One bailed workout, one missed check-in, one deferred call \u2014 the story is already writing itself.
+The skip loop. Same story every time: "I\u2019ll do it tomorrow."
 
 **Truth**
-You\u2019re telling yourself "tomorrow." You\u2019ve said that before.
+You\u2019ve said that before. Many times. You know exactly where this goes.
 
 **Prediction**
-If you skip now, tomorrow you skip easier. By Thursday the streak is gone and Monday becomes the new start date.
+If you skip now, tomorrow is easier to skip. By Thursday the streak is gone. Monday becomes the new start date.
 
 **Interrupt**
 Put shoes on. Or open the doc. Five minutes. That\u2019s the whole ask.
 
 **Action**
-Set a five-minute timer. Do the thing for five. Stop if you want. Most of the time you won\u2019t stop.
+Set a five-minute timer. Do the thing for five. Stop if you want. You already know you won\u2019t stop.
 
 **Follow-up**
 Log it either way. Five minutes counts. Zero doesn\u2019t.`,
@@ -96,16 +96,16 @@ Log it either way. Five minutes counts. Zero doesn\u2019t.`,
     wedge: 'Retroactive',
     icon: HeartCrack,
     script: `**What happened**
-You slipped. One data point, not who you are.
+You slipped. You\u2019re running the story again \u2014 the one where this always happens.
 
 **The real problem**
-The story writing itself \u2014 "this always happens," "I need a new plan," "I\u2019ll make it up" \u2014 that\u2019s the spiral. Not the slip.
+"This always happens." "I need a new plan." "I\u2019ll make it up." You know those sentences. They\u2019re the spiral, not the slip.
 
 **Stop the spiral**
-If you keep going: skip today, skip tomorrow, by Wednesday you\u2019re in a week. Stop now. Normal breakfast. Water. Ten minutes of movement.
+You already know how this ends if you keep going. Skip today, skip tomorrow, by Wednesday you\u2019re in a week. Stop now.
 
 **Next move**
-Next meal = clean reset at 1 PM. Do it whether you feel like it or not.
+Normal breakfast. Water. Ten minutes of movement. Next meal = clean reset at 1 PM.
 
 **Tomorrow**
 We\u2019re not restarting. We\u2019re continuing.`,
@@ -120,10 +120,10 @@ We\u2019re not restarting. We\u2019re continuing.`,
 The spiral loop. One slip, then the sentence that writes the rest of the night.
 
 **Truth**
-You\u2019re saying "I already blew it." That sentence converts one data point into a license for five more.
+You\u2019re saying "I already blew it." You\u2019ve said it before. That one sentence is the whole machinery.
 
 **Prediction**
-If you keep going: two more hours tonight, skip tomorrow, grand new plan Monday, back here Thursday.
+You know exactly what happens next. Two more hours tonight. Skip tomorrow. Grand new plan Monday. Back here Thursday. Again.
 
 **Interrupt**
 Stop. One slip. One.
