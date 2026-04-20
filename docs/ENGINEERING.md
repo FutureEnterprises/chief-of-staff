@@ -258,6 +258,46 @@ open up the funnel.
 
 ---
 
+## 11. Clerk production key setup (READ THIS BEFORE EVERY DEPLOY)
+
+**Symptom of the bug**: public pages (/, /weight-loss, /how-it-works etc)
+redirect to a URL containing `__clerk_hs_reason=dev-browser-missing`
+when hit without auth. Bots, crawlers, link previews, and logged-out
+first-touch visitors all bounce.
+
+**Root cause**: `pk_test_...` / `sk_test_...` keys in Vercel production.
+Clerk **dev instances** force an `accounts.dev` handshake on every
+request to establish cross-origin cookies — that handshake IS the
+redirect. Clerk **production instances** skip it.
+
+**Fix**:
+1. Clerk Dashboard → Production instance (create one if you only have
+   Development).
+2. API Keys → copy the `pk_live_...` + `sk_live_...` pair.
+3. Vercel → Settings → Environment Variables → **Production**
+   (not Preview, not Development):
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` = `pk_live_...`
+   - `CLERK_SECRET_KEY` = `sk_live_...`
+4. Redeploy.
+5. Verify: `curl https://www.coyl.ai/api/health`
+   should return `"clerkMode": "live"` and `"status": "ok"`.
+
+**Guardrails we ship to catch this before it happens again**:
+- `apps/web/scripts/verify-prod-env.ts` runs as the `prebuild` hook.
+  Fails the Vercel build with a loud remediation message if prod is
+  about to deploy with `pk_test_` keys. Same script warns softly on
+  missing RESEND_API_KEY, CRON_SECRET, ADMIN_EMAILS.
+- `apps/web/src/middleware.ts` logs a one-shot CLERK CONFIG FATAL
+  banner to stderr on every cold start when `VERCEL_ENV === 'production'`
+  and a `pk_test_`/`sk_test_` is detected.
+- `GET /api/health` returns `clerkMode: 'live' | 'test' | 'unset'` plus
+  DB reachability. Use for uptime monitors.
+
+**Dev-mode is still fine**: local `.env.local` can keep `pk_test_` keys;
+the guard only screams when `VERCEL_ENV === 'production'`.
+
+---
+
 ## 10. 90-day no-touch list
 
 Do not build / refactor these until we ship the above:
