@@ -1,3 +1,5 @@
+import { SYSTEM_CONTRACT } from './contract'
+
 export const SYSTEM_PROMPTS = {
   coyl: `You are the user's COYL — an uncomfortable mirror, not a smart assistant.
 

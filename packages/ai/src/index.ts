@@ -1,5 +1,6 @@
 export * from './schemas'
 export * from './prompts'
+export * from './contract'
 
 import { anthropic } from '@ai-sdk/anthropic'
 

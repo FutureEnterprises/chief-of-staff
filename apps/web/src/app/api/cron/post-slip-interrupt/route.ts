@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { Resend } from 'resend'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { classifyState } from '@/lib/user-state'
+import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
 
 export const maxDuration = 60
 
@@ -52,6 +54,8 @@ export async function GET(req: Request) {
       user: {
         select: {
           id: true, name: true, email: true, expoPushToken: true,
+          timezone: true, lastActiveAt: true, currentStreak: true,
+          onboardingCompleted: true,
         },
       },
     },
@@ -59,6 +63,7 @@ export async function GET(req: Request) {
   })
 
   let fired = 0
+  let suppressed = 0
   let errors = 0
 
   for (const slip of candidates) {
@@ -66,16 +71,28 @@ export async function GET(req: Request) {
     const wave: '2h_check' | '24h_resolve' =
       ageMs < 3 * 60 * 60 * 1000 ? '2h_check' : '24h_resolve'
 
-    // Idempotency gate: check if we've already logged this wave for this slip
-    const alreadyFired = await prisma.productivityEvent.findFirst({
-      where: {
-        userId: slip.user.id,
-        eventType: 'AUTOPILOT_INTERRUPTED',
-        eventValue: slip.id,
-        metadataJson: { path: ['wave'], equals: wave },
-      },
-    })
-    if (alreadyFired) continue
+    // Use the shared guard. idempotencyKey baked from slip.id + wave so the
+    // same slip never receives the same wave twice \u2014 also satisfies
+    // recent-action + rate-cap + quiet-hours + state-policy rules in one call.
+    const state = classifyState({
+      onboardingCompleted: slip.user.onboardingCompleted,
+      lastActiveAt: slip.user.lastActiveAt,
+      lastSlipAt: slip.createdAt,
+      lastSlipRecoveredAt: slip.recoveredAt,
+      insideDangerWindow: false,
+      currentStreak: slip.user.currentStreak,
+    }, now)
+    const decision = await guardInterrupt({
+      userId: slip.user.id,
+      state,
+      kind: wave === '2h_check' ? 'POST_SLIP_2H' : 'POST_SLIP_24H',
+      timezone: slip.user.timezone,
+      idempotencyKey: `${slip.id}:${wave}`,
+    }, now)
+    if (!decision.allow) {
+      suppressed++
+      continue
+    }
 
     const firstName = slip.user.name.split(' ')[0] ?? 'you'
     const triggerText = slip.trigger ?? 'the slip'
@@ -159,17 +176,12 @@ export async function GET(req: Request) {
       }
     }
 
-    await prisma.productivityEvent.create({
-      data: {
-        userId: slip.user.id,
-        eventType: 'AUTOPILOT_INTERRUPTED',
-        eventValue: slip.id,
-        metadataJson: {
-          wave,
-          slipId: slip.id,
-          channel: slip.user.expoPushToken ? 'push+email' : 'email',
-        },
-      },
+    await recordInterrupt({
+      userId: slip.user.id,
+      kind: wave === '2h_check' ? 'POST_SLIP_2H' : 'POST_SLIP_24H',
+      idempotencyKey: `${slip.id}:${wave}`,
+      channel: slip.user.expoPushToken ? 'push+email' : 'email',
+      metadata: { wave, slipId: slip.id },
     })
 
     fired++
@@ -178,6 +190,7 @@ export async function GET(req: Request) {
   return NextResponse.json({
     processed: candidates.length,
     fired,
+    suppressed,
     errors,
     timestamp: now.toISOString(),
   })

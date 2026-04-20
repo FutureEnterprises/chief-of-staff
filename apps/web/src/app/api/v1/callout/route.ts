@@ -1,8 +1,9 @@
 import { streamText, convertToModelMessages } from 'ai'
-import { SYSTEM_PROMPTS, AI_MODEL_FAST } from '@repo/ai'
+import { SYSTEM_PROMPTS, AI_MODEL_FAST, composeSystem } from '@repo/ai'
 import { requireDbUser } from '@/lib/auth'
 import { prisma } from '@repo/database'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { effectiveTone, type ToneMode } from '@/lib/user-state'
 import type { UIMessage } from 'ai'
 
 export const maxDuration = 60
@@ -127,16 +128,27 @@ export async function POST(req: Request) {
     commitmentsFormatted || '  - None',
   ].join('\n')
 
-  const toneKey = `tone${(user.toneMode ?? 'NoBs')
-    .split('_')
-    .map((s) => s[0] + s.slice(1).toLowerCase())
-    .join('')
-    .replace('NoBs', 'NoBs')}`
-
+  // Adaptive tone: first-week MENTOR override (first-use softness matters
+  // even for an explicit "be brutally honest" button \u2014 if they haven't
+  // earned the rapport yet, starting savage alienates).
+  const daysSinceSignup = Math.floor(
+    (Date.now() - user.createdAt.getTime()) / (24 * 60 * 60 * 1000),
+  )
+  const tone = effectiveTone(
+    (user.toneMode ?? 'NO_BS') as ToneMode,
+    'ACTIVE', // callout surface is user-initiated \u2014 not a raw state
+    daysSinceSignup,
+  )
+  const toneKey = `tone${toneKeyOf(tone)}`
   const tonePrompt =
     (SYSTEM_PROMPTS as Record<string, string>)[toneKey] ?? SYSTEM_PROMPTS.toneNoBs
 
-  const systemPrompt = `${SYSTEM_PROMPTS.coyl}\n\n${SYSTEM_PROMPTS.calloutMode}\n\n${tonePrompt}\n\nDATA ABOUT THE USER:\n${dataBlock}`
+  const systemPrompt = composeSystem({
+    core: SYSTEM_PROMPTS.coyl,
+    task: SYSTEM_PROMPTS.calloutMode,
+    tone: tonePrompt,
+    context: `DATA ABOUT THE USER:\n${dataBlock}`,
+  })
 
   const messages: UIMessage[] = [
     {
@@ -150,6 +162,14 @@ export async function POST(req: Request) {
   const result = streamText({ model: AI_MODEL_FAST, system: systemPrompt, messages: modelMessages })
 
   return result.toTextStreamResponse()
+}
+
+// 'NO_BS' \u2192 'NoBs' etc, to match the toneNoBs / toneMentor prompt key style.
+function toneKeyOf(mode: ToneMode): string {
+  return mode
+    .split('_')
+    .map((s) => s[0] + s.slice(1).toLowerCase())
+    .join('')
 }
 
 const DAY_NAMES: Record<number, string> = {

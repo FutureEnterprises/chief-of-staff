@@ -1,9 +1,10 @@
 import { streamText, convertToModelMessages } from 'ai'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
-import { SYSTEM_PROMPTS, AI_MODEL } from '@repo/ai'
+import { SYSTEM_PROMPTS, AI_MODEL, composeSystem } from '@repo/ai'
 import { consumeAiAssistAtomic, hasFeature } from '@/lib/services/entitlement.service'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { effectiveTone, classifyState, type ToneMode } from '@/lib/user-state'
 import type { UIMessage } from 'ai'
 
 export const maxDuration = 60
@@ -14,7 +15,10 @@ export async function POST(req: Request) {
 
   const user = await prisma.user.findUnique({
     where: { clerkId },
-    select: { id: true, planType: true, primaryWedge: true, excuseStyle: true, toneMode: true },
+    select: {
+      id: true, planType: true, primaryWedge: true, excuseStyle: true, toneMode: true,
+      createdAt: true, lastActiveAt: true, currentStreak: true, onboardingCompleted: true,
+    },
   })
   if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
 
@@ -47,14 +51,38 @@ export async function POST(req: Request) {
     )
   }
 
-  const systemPrompt =
-    SYSTEM_PROMPTS.decisionSupport
-      .replace('{DATE}', new Date().toLocaleDateString())
-      .replace('{WEDGE}', user.primaryWedge ?? 'PRODUCTIVITY')
-      .replace('{EXCUSE_STYLE}', user.excuseStyle ?? 'unknown')
-      .replace('{TONE_MODE}', user.toneMode ?? 'MENTOR') +
-    '\n\n' +
-    (SYSTEM_PROMPTS[`tone${toneSuffix(user.toneMode)}` as keyof typeof SYSTEM_PROMPTS] ?? '')
+  // Adaptive tone: first-week MENTOR override + state-based softening.
+  const daysSinceSignup = Math.floor(
+    (Date.now() - user.createdAt.getTime()) / (24 * 60 * 60 * 1000),
+  )
+  const state = classifyState({
+    onboardingCompleted: user.onboardingCompleted,
+    lastActiveAt: user.lastActiveAt,
+    lastSlipAt: null,
+    lastSlipRecoveredAt: null,
+    insideDangerWindow: false,
+    currentStreak: user.currentStreak,
+  })
+  const tone = effectiveTone(
+    (user.toneMode ?? 'MENTOR') as ToneMode,
+    state,
+    daysSinceSignup,
+  )
+
+  const taskPrompt = SYSTEM_PROMPTS.decisionSupport
+    .replace('{DATE}', new Date().toLocaleDateString())
+    .replace('{WEDGE}', user.primaryWedge ?? 'PRODUCTIVITY')
+    .replace('{EXCUSE_STYLE}', user.excuseStyle ?? 'unknown')
+    .replace('{TONE_MODE}', tone)
+
+  const tonePrompt =
+    SYSTEM_PROMPTS[`tone${toneSuffix(tone)}` as keyof typeof SYSTEM_PROMPTS] ?? ''
+
+  const systemPrompt = composeSystem({
+    core: SYSTEM_PROMPTS.coyl,
+    task: taskPrompt,
+    tone: tonePrompt,
+  })
 
   // Log the decision (fire and forget)
   if (context) {

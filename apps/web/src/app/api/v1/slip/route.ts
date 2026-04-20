@@ -1,8 +1,9 @@
 import { streamText, convertToModelMessages } from 'ai'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
-import { SYSTEM_PROMPTS, AI_MODEL } from '@repo/ai'
+import { SYSTEM_PROMPTS, AI_MODEL, composeSystem } from '@repo/ai'
 import { consumeAiAssistAtomic, hasFeature } from '@/lib/services/entitlement.service'
+import { effectiveTone, type ToneMode } from '@/lib/user-state'
 import type { UIMessage } from 'ai'
 
 export const maxDuration = 45
@@ -13,7 +14,10 @@ export async function POST(req: Request) {
 
   const user = await prisma.user.findUnique({
     where: { clerkId },
-    select: { id: true, primaryWedge: true, toneMode: true, slipsThisMonth: true },
+    select: {
+      id: true, primaryWedge: true, toneMode: true, slipsThisMonth: true,
+      createdAt: true,
+    },
   })
   if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
 
@@ -81,13 +85,31 @@ export async function POST(req: Request) {
     return Response.json({ error: 'ai_quota_exceeded', slipId: slip.id }, { status: 402 })
   }
 
-  const systemPrompt =
-    SYSTEM_PROMPTS.slipRecovery
-      .replace('{SLIP_CONTEXT}', `${trigger ?? 'slip'}${notes ? ` — ${notes}` : ''}`)
-      .replace('{WEDGE}', user.primaryWedge ?? 'PRODUCTIVITY')
-      .replace('{TONE_MODE}', user.toneMode ?? 'MENTOR') +
-    '\n\n' +
-    (SYSTEM_PROMPTS[`tone${toneSuffix(user.toneMode)}` as keyof typeof SYSTEM_PROMPTS] ?? '')
+  // User is explicitly in the SLIPPED state right now \u2014 softens BEAST\u2192NO_BS
+  // and forces MENTOR during the first week. Matters most here of all the
+  // surfaces \u2014 the user is raw.
+  const daysSinceSignup = Math.floor(
+    (Date.now() - user.createdAt.getTime()) / (24 * 60 * 60 * 1000),
+  )
+  const tone = effectiveTone(
+    (user.toneMode ?? 'MENTOR') as ToneMode,
+    'SLIPPED',
+    daysSinceSignup,
+  )
+
+  const taskPrompt = SYSTEM_PROMPTS.slipRecovery
+    .replace('{SLIP_CONTEXT}', `${trigger ?? 'slip'}${notes ? ` \u2014 ${notes}` : ''}`)
+    .replace('{WEDGE}', user.primaryWedge ?? 'PRODUCTIVITY')
+    .replace('{TONE_MODE}', tone)
+
+  const tonePrompt =
+    SYSTEM_PROMPTS[`tone${toneSuffix(tone)}` as keyof typeof SYSTEM_PROMPTS] ?? ''
+
+  const systemPrompt = composeSystem({
+    core: SYSTEM_PROMPTS.coyl,
+    task: taskPrompt,
+    tone: tonePrompt,
+  })
 
   const baseMessages: UIMessage[] = [
     {

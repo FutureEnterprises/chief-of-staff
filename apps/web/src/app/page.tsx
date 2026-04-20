@@ -29,9 +29,17 @@ async function pickVariant(searchVariant: string | undefined): Promise<Variant> 
   if (explicit) return explicit
   if (sticky === 'a' || sticky === 'b' || sticky === 'c') return sticky
 
-  // 33/33/33 random assignment — cookie set client-side on first render
-  const variants: Variant[] = ['a', 'b', 'c']
-  return variants[Math.floor(Math.random() * 3)]!
+  // Weight-loss-primary bias for the next 90 days. The product is broader
+  // than weight loss (and the app surface reflects that), but the
+  // go-to-market wedge is weight loss \u2014 the landing leans into it by
+  // serving variant C ("Weight loss doesn't fail at lunch. It fails at
+  // 9 PM.") to ~60% of cold traffic, with the universal variants A and B
+  // splitting the remainder. If this bias hurts D7/D30 in /admin, dial
+  // it back here.
+  const roll = Math.random()
+  if (roll < 0.6) return 'c'
+  if (roll < 0.8) return 'a'
+  return 'b'
 }
 
 export default async function HomePage({

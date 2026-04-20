@@ -3,11 +3,12 @@ import { prisma } from '@repo/database'
 import { Resend } from 'resend'
 import { verifyCronAuth } from '@/lib/cron-auth'
 import { batchProcess } from '@/lib/batch'
+import { classifyState } from '@/lib/user-state'
+import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
 
 export const maxDuration = 120
 
 const PAGE_SIZE = 300
-const COOLDOWN_MINUTES = 120 // don't fire same window more than once per 2 hours
 
 /**
  * Precision Interrupt Engine — the JITAI firing loop.
@@ -30,8 +31,8 @@ export async function GET(req: Request) {
   const fromEmail = process.env.RESEND_FROM_EMAIL ?? 'COYL <noreply@coyl.ai>'
 
   const now = new Date()
-  const cooldownCutoff = new Date(now.getTime() - COOLDOWN_MINUTES * 60 * 1000)
   let fired = 0
+  let suppressed = 0
   let cursor: string | undefined
 
   while (true) {
@@ -46,8 +47,16 @@ export async function GET(req: Request) {
         name: true,
         timezone: true,
         expoPushToken: true,
+        lastActiveAt: true,
+        currentStreak: true,
         dangerWindowRecords: {
           where: { active: true },
+        },
+        slipRecords: {
+          where: { createdAt: { gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) } },
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          select: { createdAt: true, recoveredAt: true },
         },
       },
       orderBy: { id: 'asc' },
@@ -81,30 +90,35 @@ export async function GET(req: Request) {
       )
       if (matching.length === 0) return
 
-      // Cooldown check — any DANGER_WINDOW_CROSSED event in last 2h?
-      const recentFire = await prisma.productivityEvent.findFirst({
-        where: {
-          userId: user.id,
-          eventType: 'DANGER_WINDOW_CROSSED',
-          createdAt: { gt: cooldownCutoff },
-        },
-      })
-      if (recentFire) return
-
-      // Check for recent activity (rescue or task completion) — if user is already engaged, skip
-      const recentActivity = await prisma.productivityEvent.findFirst({
-        where: {
-          userId: user.id,
-          eventType: { in: ['RESCUE_TRIGGERED', 'TASK_COMPLETED', 'CHECKIN_COMPLETED'] },
-          createdAt: { gt: cooldownCutoff },
-        },
-      })
-      if (recentActivity) return
+      // Classify user state + ask the shared interrupt guard whether to fire.
+      // The guard handles cooldown, recent-action suppression, rate cap, quiet
+      // hours, and state-policy checks in one place.
+      const lastSlip = user.slipRecords[0]
+      const state = classifyState({
+        onboardingCompleted: true, // already filtered above
+        lastActiveAt: user.lastActiveAt,
+        lastSlipAt: lastSlip?.createdAt ?? null,
+        lastSlipRecoveredAt: lastSlip?.recoveredAt ?? null,
+        insideDangerWindow: true,
+        currentStreak: user.currentStreak,
+      }, now)
+      const decision = await guardInterrupt({
+        userId: user.id,
+        state,
+        kind: 'DANGER_WINDOW',
+        timezone: user.timezone,
+      }, now)
+      if (!decision.allow) {
+        suppressed++
+        return
+      }
 
       const window = matching[0]!
       const firstName = user.name.split(' ')[0]
 
-      // Log the event
+      // Log the sector-specific crossing event (used by analytics + patterns),
+      // separate from the unified AUTOPILOT_INTERRUPTED record written by
+      // recordInterrupt() below.
       await prisma.productivityEvent.create({
         data: {
           userId: user.id,
@@ -165,13 +179,11 @@ export async function GET(req: Request) {
         }
       }
 
-      await prisma.productivityEvent.create({
-        data: {
-          userId: user.id,
-          eventType: 'AUTOPILOT_INTERRUPTED',
-          eventValue: window.id,
-          metadataJson: { channel: user.expoPushToken ? 'push' : 'email' },
-        },
+      await recordInterrupt({
+        userId: user.id,
+        kind: 'DANGER_WINDOW',
+        channel: user.expoPushToken ? 'push+email' : 'email',
+        metadata: { windowId: window.id, label: window.label, hour: currentHour },
       })
 
       fired++
@@ -181,5 +193,5 @@ export async function GET(req: Request) {
     if (users.length < PAGE_SIZE) break
   }
 
-  return NextResponse.json({ fired, timestamp: now.toISOString() })
+  return NextResponse.json({ fired, suppressed, timestamp: now.toISOString() })
 }

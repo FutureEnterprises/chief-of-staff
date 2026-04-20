@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { Resend } from 'resend'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { classifyState, type InterruptKind } from '@/lib/user-state'
+import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
 
 export const maxDuration = 60
 
@@ -51,11 +53,13 @@ export async function GET(req: Request) {
       primaryWedge: true,
       currentStreak: true,
       longestStreak: true,
+      timezone: true,
     },
     take: 200,
   })
 
   let interrupted = 0
+  let suppressed = 0
   let errors = 0
   const nowTs = now.getTime()
 
@@ -63,23 +67,40 @@ export async function GET(req: Request) {
     const daysSilent = Math.floor((nowTs - user.lastActiveAt.getTime()) / (1000 * 60 * 60 * 24))
     const firstName = user.name.split(' ')[0] ?? 'you'
 
-    // Cooldown — if we pinged in the last 3 days, skip.
-    const recentPing = await prisma.productivityEvent.findFirst({
-      where: {
-        userId: user.id,
-        eventType: 'CHURN_EMAIL_SENT',
-        createdAt: { gt: threeDaysAgo },
-      },
-    })
-    if (recentPing) continue
-
-    // Pick tier — only fire at the boundary days (2/5/10) to avoid daily
-    // pings and keep the cadence meaningful. Off-boundary days we skip.
+    // Pick tier off boundary-day ladder so cadence stays meaningful.
     let tier: 'soft' | 'direct' | 'final' | null = null
-    if (daysSilent >= 10 && user.lastActiveAt < tenDaysAgo) tier = 'final'
-    else if (daysSilent >= 5 && user.lastActiveAt < fiveDaysAgo) tier = 'direct'
-    else if (daysSilent >= 2) tier = 'soft'
-    if (!tier) continue
+    let kind: InterruptKind | null = null
+    if (daysSilent >= 10 && user.lastActiveAt < tenDaysAgo) {
+      tier = 'final'
+      kind = 'SILENT_FINAL'
+    } else if (daysSilent >= 5 && user.lastActiveAt < fiveDaysAgo) {
+      tier = 'direct'
+      kind = 'SILENT_DIRECT'
+    } else if (daysSilent >= 2) {
+      tier = 'soft'
+      kind = 'SILENT_SOFT'
+    }
+    if (!tier || !kind) continue
+
+    // Classify + guard through the shared interrupt gate.
+    const state = classifyState({
+      onboardingCompleted: true, // already filtered in the query
+      lastActiveAt: user.lastActiveAt,
+      lastSlipAt: null,
+      lastSlipRecoveredAt: null,
+      insideDangerWindow: false,
+      currentStreak: user.currentStreak,
+    }, now)
+    const decision = await guardInterrupt({
+      userId: user.id,
+      state,
+      kind,
+      timezone: user.timezone,
+    }, now)
+    if (!decision.allow) {
+      suppressed++
+      continue
+    }
 
     // Messaging — all written in COYL's voice. Pattern-calling over task-nagging.
     let pushTitle: string
@@ -175,8 +196,17 @@ export async function GET(req: Request) {
       }
     }
 
-    // Log the event — reuses existing CHURN_EMAIL_SENT type so analytics
-    // and the 3-day cooldown continue to work without a schema migration.
+    // Record the interrupt via shared helper \u2014 feeds cooldown + rate cap
+    // for every future guardInterrupt() call, AND keeps legacy analytics
+    // flowing by also writing CHURN_EMAIL_SENT below.
+    await recordInterrupt({
+      userId: user.id,
+      kind,
+      channel: user.expoPushToken ? 'push+email' : 'email',
+      metadata: { tier, daysSilent, wedge: user.primaryWedge },
+    })
+    // Legacy CHURN_EMAIL_SENT event \u2014 retained so any dashboards or
+    // existing alerting keyed on this type don't silently break.
     await prisma.productivityEvent.create({
       data: {
         userId: user.id,
@@ -196,6 +226,7 @@ export async function GET(req: Request) {
   return NextResponse.json({
     processed: silentUsers.length,
     interrupted,
+    suppressed,
     errors,
     timestamp: now.toISOString(),
   })
