@@ -51,9 +51,10 @@ const COPY: Record<Variant, {
         </span>
       </>
     ),
-    // v3 spec locked copy — matches COYL_homepage_v3_FINAL.md §HERO exactly.
+    // v4 spec (COYL_homepage_v4.md §HERO): "bad day" \u2192 "spiral".
+    // The spiral word carries more emotional weight + ties to the loop section.
     subhead:
-      "Because you\u2019re on autopilot. COYL catches the moment you usually blow it \u2014 before it turns into a bad day.",
+      "Because you\u2019re on autopilot. COYL catches the moment you usually blow it \u2014 before it turns into a spiral.",
     primaryCta: 'Start catching your patterns',
   },
   c: {

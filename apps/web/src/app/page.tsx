@@ -6,18 +6,18 @@ import { CrystalBackground } from '@/components/landing/crystal-bg'
 import { GlassNav } from '@/components/landing/glass-nav'
 import { HeroVariants } from '@/components/landing/hero-variants'
 import { BrandStatement } from '@/components/landing/brand-statement'
-import { FeaturesGrid } from '@/components/landing/features-grid'
 import { LiveExample } from '@/components/landing/live-example'
 import { RecoverySection } from '@/components/landing/recovery-section'
 import { RescueDemo } from '@/components/landing/rescue-demo'
 import { UniversalWedges } from '@/components/landing/universal-wedges'
+import { YouIf } from '@/components/landing/you-if'
 import { FinalCta } from '@/components/landing/final-cta'
-// Cut from the homepage per COYL_homepage_v3_FINAL.md spec:
-//   - PricingSection (spec's homepage ends at Final CTA \u2014 pricing
-//     lives at /#pricing via nav or post-signup)
-//   - WedgeClarity, AiDemo, PatternIntelligence, YouIf (already cut
-//     in the previous bloat-reduction pass, kept available as exports
-//     in case narrower-page data says to re-introduce)
+// Cut from the homepage per COYL_homepage_v4.md (cut-convert-win pass):
+//   - FeaturesGrid (demoted as "deep feature breakdown"; still exists for
+//     internal/feature pages if needed)
+//   - PricingSection (detailed tiers live at /pricing, not on homepage)
+//   - WedgeClarity, AiDemo, PatternIntelligence (still exports for
+//     re-introduction if A/B tests justify)
 import { LandingFooter } from '@/components/landing/footer'
 
 type Variant = 'a' | 'b' | 'c'
@@ -73,16 +73,17 @@ export default async function HomePage({
         <GlassNav />
 
         <main className="relative z-10">
-          {/* v3 spec order (COYL_homepage_v3_FINAL.md):
+          {/* v4 spec order (COYL_homepage_v4.md):
               1. Hero
               2. This is your loop          \u2190 BrandStatement
-              3. What COYL does              \u2190 FeaturesGrid
-              4. Real moment demo            \u2190 LiveExample
-              5. Try it now                  \u2190 RescueDemo
-              6. Built first for weight loss \u2190 UniversalWedges
+              3. Try it now                  \u2190 RescueDemo (moved up)
+              4. This is for you             \u2190 YouIf (restored)
+              5. Real moment                 \u2190 LiveExample
+              6. Wedge                       \u2190 UniversalWedges
               7. Recovery                    \u2190 RecoverySection
               8. Final CTA                   \u2190 FinalCta
-              Cut: PricingSection (moved off the homepage). */}
+              Cut: FeaturesGrid (3-block explanation \u2014 demoted as
+                                  "deep feature breakdown" per v4 \u00a71) */}
 
           {/* 1. Hero */}
           <HeroVariants variant={variant} />
@@ -90,23 +91,23 @@ export default async function HomePage({
           {/* 2. This is your loop */}
           <BrandStatement />
 
-          {/* 3. What COYL does */}
-          <FeaturesGrid />
-
-          {/* Iconic-line motif \u2014 lands between Features and the Real-moment
-              demo so it hits right before the emotional Friday-night scene.
-              Per spec \u00a73: "This stops the moment you usually screw yourself." */}
+          {/* Iconic-line motif between Loop and Try-it. V4 Option 1 locked:
+              "It's not the mistake. It's what you do after." Single-line,
+              no outcome copy beneath it \u2014 v4 wants less, not more. */}
           <IconicLine />
 
-          {/* 4. Real moment \u2014 Friday night "I'll restart Monday" scene */}
-          <LiveExample />
-
-          {/* 5. Try it now \u2014 interactive, still the #try-it anchor target */}
+          {/* 3. Try it now \u2014 interactive, still the #try-it anchor target */}
           <div id="try-it">
             <RescueDemo />
           </div>
 
-          {/* 6. Wedge \u2014 Built first for weight loss */}
+          {/* 4. This is for you \u2014 recognition bullets */}
+          <YouIf />
+
+          {/* 5. Real moment \u2014 Friday night "I'll restart Monday" scene */}
+          <LiveExample />
+
+          {/* 6. Wedge \u2014 Built first for weight loss + one-line broaden */}
           <UniversalWedges />
 
           {/* 7. Recovery */}
@@ -127,23 +128,21 @@ export default async function HomePage({
  * so readers see it enough to stick. Styled as a quiet full-width
  * statement between sections \u2014 not a CTA, just a recurring motif.
  */
+/**
+ * V4 \u00a76 LOCKED iconic line \u2014 Option 1. Single-line, no surrounding
+ * subcopy. Homepage should feel obvious and immediate; stacking three
+ * variations of the tagline dilutes the hit. Use this line verbatim in
+ * ads, product headers, and social per spec.
+ */
 function IconicLine() {
   return (
-    <section className="relative mx-auto max-w-5xl px-6 py-20 text-center md:px-12">
-      <p className="text-2xl font-black leading-tight tracking-tight text-white md:text-4xl">
-        This stops the moment<br />
-        you usually{' '}
+    <section className="relative mx-auto max-w-5xl px-6 py-16 text-center md:px-12">
+      <p className="text-3xl font-black leading-tight tracking-tight text-white md:text-5xl">
+        It&apos;s not the mistake.<br />
+        It&apos;s{' '}
         <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-          screw yourself
+          what you do after
         </span>.
-      </p>
-      {/* GODFILE \u00a715 message stack \u2014 outcome sits under the iconic line so the
-          reader sees the reward for the interruption, not just the pain. */}
-      <p className="mt-5 text-lg font-semibold text-gray-300 md:text-xl">
-        COYL makes sure you do what you said you&apos;d do.
-      </p>
-      <p className="mt-2 text-sm font-semibold uppercase tracking-[0.3em] text-gray-500">
-        You don&apos;t need discipline. You need interruption.
       </p>
     </section>
   )
