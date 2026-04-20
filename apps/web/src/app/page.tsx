@@ -137,7 +137,12 @@ function IconicLine() {
           screw yourself
         </span>.
       </p>
-      <p className="mt-4 text-sm font-semibold uppercase tracking-[0.3em] text-gray-500">
+      {/* GODFILE \u00a715 message stack \u2014 outcome sits under the iconic line so the
+          reader sees the reward for the interruption, not just the pain. */}
+      <p className="mt-5 text-lg font-semibold text-gray-300 md:text-xl">
+        COYL makes sure you do what you said you&apos;d do.
+      </p>
+      <p className="mt-2 text-sm font-semibold uppercase tracking-[0.3em] text-gray-500">
         You don&apos;t need discipline. You need interruption.
       </p>
     </section>

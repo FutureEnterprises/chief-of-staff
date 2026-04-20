@@ -1,12 +1,44 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { BreadcrumbSchema } from '@/app/structured-data'
 
 export const metadata: Metadata = {
-  title: 'COYL for weight loss',
-  description: 'Weight loss is not lost in one meal. It is lost in the script after it. COYL interrupts the patterns that make weight loss fail.',
+  title: 'COYL for weight loss \u2014 stop the 9 PM kitchen moment',
+  description:
+    "Most diets don't fail at lunch. They fail at 9 PM. COYL catches the exact moment the weight-loss script breaks \u2014 late-night eating, weekend spirals, 'I already blew it' collapses.",
+  keywords: [
+    'weight loss app',
+    'stop binge eating',
+    'late night eating',
+    'weekend overeating',
+    'stop eating at night',
+    'emotional eating app',
+    'stop food spiral',
+  ],
+  alternates: { canonical: '/weight-loss' },
+  openGraph: {
+    title: 'COYL for weight loss \u2014 stop the 9 PM kitchen moment',
+    description:
+      "Most diets don't fail at lunch. They fail at 9 PM. COYL catches the exact moment the weight-loss script breaks.",
+    url: 'https://coyl.ai/weight-loss',
+  },
 }
 
 export default function WeightLossPage() {
+  return (
+    <>
+      <BreadcrumbSchema
+        items={[
+          { name: 'COYL', url: 'https://coyl.ai' },
+          { name: 'Weight loss', url: 'https://coyl.ai/weight-loss' },
+        ]}
+      />
+      <WeightLossContent />
+    </>
+  )
+}
+
+function WeightLossContent() {
   const painPoints = [
     { title: 'Late-night kitchen autopilot', body: 'You\'re not hungry. You\'re on autopilot. COYL fires at 9 PM.' },
     { title: 'Weekend collapse', body: 'Friday night leaks into Saturday leaks into Sunday. One interruption resets the loop.' },

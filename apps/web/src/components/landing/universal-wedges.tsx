@@ -15,9 +15,12 @@ import { useRef } from 'react'
  * a 1,200-word detour.
  */
 
+// GODFILE \u00a74: Work is now a first-class wedge alongside weight loss.
+// Still surfaced here as part of the "also works for" expansion so the
+// single-wedge focus of weight loss stays primary on the homepage.
 const OTHER_WEDGES = [
+  'work follow-up (the emails you don\u2019t send)',
   'cravings',
-  'habits',
   'procrastination',
   'anything you keep sabotaging',
 ] as const

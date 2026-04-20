@@ -12,6 +12,7 @@ export default function WedgeLayout({ children }: { children: React.ReactNode })
           <nav className="hidden items-center gap-6 text-sm text-gray-400 md:flex">
             <Link href="/how-it-works" className="hover:text-orange-400">How it works</Link>
             <Link href="/weight-loss" className="hover:text-orange-400">Weight loss</Link>
+            <Link href="/work" className="hover:text-orange-400">Work</Link>
             <Link href="/destructive-behaviors" className="hover:text-orange-400">Destructive behaviors</Link>
             <Link href="/decision-support" className="hover:text-orange-400">Decision support</Link>
             <Link href="/recovery" className="hover:text-orange-400">Recovery</Link>

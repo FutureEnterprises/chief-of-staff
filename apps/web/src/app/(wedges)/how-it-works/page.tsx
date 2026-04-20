@@ -52,9 +52,9 @@ export default function HowItWorksPage() {
       <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
         <h2 className="mb-2 text-2xl font-bold text-white">The 7-step loop</h2>
         <p className="mb-8 text-sm text-gray-400">
-          Signal \u2192 Detect \u2192 Interrupt \u2192 Truth \u2192 Action \u2192 Recovery \u2192 Learn.
-          Every real slip runs this cycle. So does every successful interrupt. The
-          loop is what separates COYL from a chatbot or a reminder app.
+          Commitment \u2192 Drift \u2192 Excuse \u2192 Interrupt \u2192 Action \u2192 Recovery \u2192 Learning.
+          Every broken promise runs this cycle. So does every one you keep. The loop
+          is what separates COYL from a chatbot or a reminder app.
         </p>
         <CoreLoop />
       </section>

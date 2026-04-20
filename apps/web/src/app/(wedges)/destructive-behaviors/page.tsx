@@ -2,8 +2,24 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'COYL for destructive behaviors',
-  description: 'Cravings, doomscrolling, impulse spending — the repetitive patterns that take over your day. COYL interrupts them.',
+  title: 'COYL for destructive patterns \u2014 break the craving loop',
+  description:
+    "Cravings, doomscrolling, impulse spending, the drink you said you\u2019d stop \u2014 the repetitive patterns that take over your day. COYL interrupts them at the moment of drift. Not a recovery program; a commitment engine.",
+  keywords: [
+    'craving interruption app',
+    'stop doomscrolling',
+    'impulse spending app',
+    'break bad habits',
+    'behavioral pattern app',
+    'addictive behavior tracker',
+  ],
+  alternates: { canonical: '/destructive-behaviors' },
+  openGraph: {
+    title: 'COYL for destructive patterns \u2014 break the craving loop',
+    description:
+      "Craving, scrolling, impulse spending, the drink you said you'd stop. COYL catches the moment of drift.",
+    url: 'https://coyl.ai/destructive-behaviors',
+  },
 }
 
 export default function DestructiveBehaviorsPage() {

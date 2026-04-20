@@ -104,6 +104,19 @@ export function BrandStatement() {
           You don&apos;t ruin your progress in one moment.<br />
           <span className="text-orange-400">You ruin it in the story you tell yourself after.</span>
         </motion.p>
+
+        {/* GODFILE \u00a70 + \u00a72 \u2014 close with the commitment framing so the section
+            hands off to "What COYL does" with the product premise made explicit. */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="mx-auto mt-6 max-w-3xl text-center text-base text-gray-400 md:text-lg"
+        >
+          Every problem you keep having is a{' '}
+          <span className="font-bold text-orange-400">commitment problem</span>.<br />
+          COYL catches broken commitments before they turn into failure loops.
+        </motion.p>
       </div>
     </section>
   )

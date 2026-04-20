@@ -2,8 +2,16 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Decision support for real life',
-  description: 'When you don\'t trust your own judgment in the moment, use COYL. Structured decisions: best move, cost of the worse one, the excuse you\'re using, smallest next step.',
+  title: 'COYL decision engine \u2014 cut through your own rationalization',
+  description:
+    "When your autopilot is about to decide for you, COYL cuts through. Structured decisions: best move, cost of the worse one, the excuse you're using, smallest next step. Under 120 words, no therapy voice.",
+  alternates: { canonical: '/decision-support' },
+  openGraph: {
+    title: 'COYL decision engine',
+    description:
+      "Structured decisions. Best move, cost of the worse one, the excuse you're using, smallest next step.",
+    url: 'https://coyl.ai/decision-support',
+  },
 }
 
 export default function DecisionSupportPage() {

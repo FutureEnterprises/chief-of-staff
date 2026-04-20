@@ -15,6 +15,7 @@ export default function robots(): MetadataRoute.Robots {
           '/llms.txt',
           '/how-it-works',
           '/weight-loss',
+          '/work',
           '/destructive-behaviors',
           '/decision-support',
           '/recovery',

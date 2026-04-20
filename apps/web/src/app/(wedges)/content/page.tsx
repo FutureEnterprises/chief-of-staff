@@ -42,13 +42,20 @@ type Channel = {
 }
 
 const HOOKS = [
+  // Universal
+  'This stops the moment you usually screw yourself.',
+  'You don\u2019t need more motivation. You need something that catches you.',
+  // Weight-loss wedge
   "You\u2019re not hungry. You\u2019re running a script.",
   'Most diets die at 9 PM.',
   'One bad meal doesn\u2019t kill your progress. The spiral does.',
   'You don\u2019t fail at lunch. You fail at 9 PM.',
-  'Your willpower isn\u2019t broken. Your system is.',
-  'You already know what you\u2019re going to do tonight.',
-  'Stop trying to be disciplined. Interrupt the autopilot.',
+  // Work wedge (GODFILE \u00a712)
+  'You don\u2019t fail at work. You fail when you don\u2019t follow up.',
+  '"I\u2019ll follow up" is the most expensive sentence in sales.',
+  'Waiting is not action.',
+  // Craving / addiction wedge
+  "You already know what you\u2019re going to do tonight.",
   '"I\u2019ll start tomorrow" is a sentence you\u2019ve said for 4 years.',
 ]
 
@@ -192,6 +199,39 @@ const CHANNELS: Channel[] = [
       'Build-in-public: weekly metric threads (D7 retention, rescue rate).',
       'Quote-tweet fitness influencers with "what about 9 PM?"',
       'Reply-guy on diet tweets with "the moment you\u2019re describing isn\u2019t lunch."',
+    ],
+  },
+  {
+    id: 'linkedin',
+    platform: 'LinkedIn',
+    tagline: 'Work wedge. Sales, founders, ops folks. Follow-through framing over productivity-framing.',
+    format: 'Short post or mini-thread',
+    length: '100\u2013250 words',
+    cadence: '3\u20134/week',
+    scripts: [
+      {
+        hook: 'You don\u2019t fail at work. You fail when you don\u2019t follow up.',
+        body:
+          "I counted the emails I said I\u2019d send last month and didn\u2019t. 27. Some of those were deals. One was a referral I\u2019ve been meaning to send a friend for almost a year.\n\nWe love to say we\u2019re \"too busy.\" It\u2019s not the real reason. The real reason is the moment right after the meeting where I tell myself \"I\u2019ll follow up Tuesday\" \u2014 and then Tuesday is the same week as five other \"I\u2019ll follow up Tuesdays\" and none of them happen.\n\nThat\u2019s a commitment problem, not a productivity problem.\n\nI\u2019ve been using COYL \u2014 it catches that exact moment. \"You said you\u2019d follow up on X. Did you?\" I hate it and I love it.",
+        cta: 'Link in comments if you\u2019re the kind of person who reads this and thinks: yeah, that\u2019s me.',
+      },
+      {
+        hook: 'The four sentences that kill deals (and careers):',
+        body:
+          '1. "I\u2019ll follow up."\n2. "I\u2019ll respond tomorrow."\n3. "No reply means stop."\n4. "I\u2019ll get to it after lunch."\n\nEach one sounds reasonable. Each one has cost me a deal. The pattern is the same: a commitment, then a drift, then an excuse, then the thing never happens.\n\nCOYL catches that sequence the moment it starts. Not as a reminder app \u2014 as a commitment engine. The email either went out or it didn\u2019t. Waiting is not action.',
+        cta: 'coyl.ai/work',
+      },
+    ],
+    captions: [
+      { label: 'Short-form A', text: '"I\u2019ll follow up" is the most expensive sentence in sales.' },
+      { label: 'Short-form B', text: 'Your work doesn\u2019t fail because you\u2019re lazy. It fails because you let things slip.' },
+      { label: 'Short-form C', text: 'Waiting is not action. Send the email.' },
+    ],
+    angles: [
+      'Reply to founder threads about "productivity" with "it\u2019s not productivity; it\u2019s follow-through."',
+      'Post a screenshot of the COYL work prompt calling you out. Self-deprecating + vulnerable.',
+      'Weekly "kept vs broken" commitment audit as a series.',
+      'Pitch to sales leaders: "your reps aren\u2019t undertrained, they\u2019re undisciplined at follow-up."',
     ],
   },
 ]

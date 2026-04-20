@@ -3,24 +3,22 @@
 import { motion, useInView } from 'motion/react'
 import { useRef } from 'react'
 import {
-  Radio, Eye, Zap, MessageCircleWarning,
+  Handshake, TrendingDown, MessageCircleWarning, Zap,
   Footprints, Heart, Brain, type LucideIcon,
 } from 'lucide-react'
 
 /**
- * Core Loop visualization \u2014 the GODMODE spec \u00a71.
+ * Core Loop visualization \u2014 the GODFILE spec \u00a71.
  *
- * Signal \u2192 Detect \u2192 Interrupt \u2192 Truth \u2192 Action \u2192 Recovery \u2192 Learn
+ * Commitment \u2192 Drift \u2192 Excuse \u2192 Interrupt \u2192 Action \u2192 Recovery \u2192 Learning
  *
- * This is the piece that separates COYL from a chatbot. The loop is
- * proprietary orchestration, and showing the visual makes the promise
- * legible in a way prose doesn't.
+ * Reframed from "Signal \u2192 Detect \u2192 Interrupt \u2192 Truth \u2192 Action \u2192 Recovery
+ * \u2192 Learn" because the product is now positioned as the commitment
+ * engine, not a signal-detection layer. The LOOP starts with a promise
+ * and ends with what the system learns when the loop closes (or breaks).
  *
- * Rendered as a circular flow on desktop, linear stack on mobile.
- * Each node shows:
- *   \u2022 the label (verb)
- *   \u2022 what's actually happening behind the scenes (plain English)
- *   \u2022 the signal that fires it
+ * Rendered horizontally with arrows on desktop, stacked vertically on
+ * mobile. Each node shows: label (noun), what's happening, what fires it.
  */
 
 type Node = {
@@ -32,45 +30,45 @@ type Node = {
 
 const NODES: Node[] = [
   {
-    label: 'Signal',
-    icon: Radio,
-    what: 'A cue fires. Time of day, a message, a missed check-in, a slip logged, a Friday.',
-    signal: 'Push, cron, chat input, app event',
+    label: 'Commitment',
+    icon: Handshake,
+    what: 'The promise. A rule, a rep, a follow-up you said you\u2019d do. This is the thing COYL exists to protect.',
+    signal: '/commitments, daily rule, work follow-up',
   },
   {
-    label: 'Detect',
-    icon: Eye,
-    what: 'COYL matches the signal to your known pattern. Danger window? Excuse category? Identity state?',
-    signal: 'Classification against your profile',
+    label: 'Drift',
+    icon: TrendingDown,
+    what: 'The gap starts to open. A danger window approaches. A signal gets missed. Autopilot is loading.',
+    signal: 'Time, context, pattern match',
+  },
+  {
+    label: 'Excuse',
+    icon: MessageCircleWarning,
+    what: 'The sentence in your head that justifies the break. "Tomorrow." "I deserve this." "I already blew it."',
+    signal: 'Excuse classifier + user input',
   },
   {
     label: 'Interrupt',
     icon: Zap,
-    what: 'Fire the precision interrupt at the moment it matters. Not a reminder. An intervention.',
-    signal: 'Notification, rescue UI, callout',
-  },
-  {
-    label: 'Truth',
-    icon: MessageCircleWarning,
-    what: 'Name the pattern. Quote the excuse. Predict the next two hours. Uncomfortable, specific.',
-    signal: 'AI response in COYL voice',
+    what: 'Precision fire at the exact moment. Not a reminder \u2014 an intervention. Names the pattern, predicts the cost.',
+    signal: 'Push, rescue UI, callout',
   },
   {
     label: 'Action',
     icon: Footprints,
-    what: 'Hand the user the smallest physical move. Drink water. Walk. Put the phone in another room.',
-    signal: 'Structured section in response',
+    what: 'The smallest physical move the user can take in the next five minutes. Concrete. Executable.',
+    signal: 'Structured response section',
   },
   {
     label: 'Recovery',
     icon: Heart,
-    what: 'If the slip happened anyway, stop the spiral. 2h check, 24h resolve, no shame.',
+    what: 'If the break happened, stop the spiral. 2h check, 24h resolve, no shame. Resume, don\u2019t restart.',
     signal: 'Post-slip cron + /slip flow',
   },
   {
-    label: 'Learn',
+    label: 'Learning',
     icon: Brain,
-    what: 'Update the map. Excuse count +1. Danger window confidence shifts. Identity state recomputed.',
+    what: 'The loop closes. Excuse count +1. Danger window confidence shifts. Next interrupt is sharper.',
     signal: 'Background write back to user model',
   },
 ]
