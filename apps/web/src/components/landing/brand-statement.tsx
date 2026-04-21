@@ -73,10 +73,10 @@ export function BrandStatement() {
           </p>
           <p className="pt-2 text-gray-400">Then:</p>
           <ul className="space-y-1.5 pl-5 text-gray-400">
-            <li>\u2014 you keep going</li>
-            <li>\u2014 you avoid everything</li>
-            <li>\u2014 you disappear</li>
-            <li>\u2014 you restart later</li>
+            <li>&mdash; you keep going</li>
+            <li>&mdash; you avoid everything</li>
+            <li>&mdash; you disappear</li>
+            <li>&mdash; you restart later</li>
           </ul>
         </motion.div>
 

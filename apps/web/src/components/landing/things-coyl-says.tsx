@@ -52,7 +52,7 @@ export function ThingsCoylSays() {
               &ldquo;{line}&rdquo;
             </blockquote>
             <figcaption className="mt-5 text-[10px] font-mono uppercase tracking-widest text-orange-500">
-              \u2014 COYL
+              &mdash; COYL
             </figcaption>
           </motion.figure>
         ))}

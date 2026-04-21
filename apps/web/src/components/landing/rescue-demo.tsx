@@ -317,7 +317,7 @@ export function RescueDemo() {
                     href={`/sign-up?ref=demo&t=${selected.key}`}
                     className="flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 p-4 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-transform hover:scale-[1.01]"
                   >
-                    <span>Want this at the real moment \u2014 not on a landing page?</span>
+                    <span>Want this at the real moment &mdash; not on a landing page?</span>
                     <ArrowRight className="h-4 w-4 shrink-0" />
                   </Link>
                 )}

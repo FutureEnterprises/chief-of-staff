@@ -240,7 +240,7 @@ export function SlipView({ userId, currentStreak }: SlipViewProps) {
                   className="mt-5 flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-emerald-400">You stabilized. You\u2019re back.</p>
+                    <p className="text-xs font-semibold text-emerald-400">You stabilized. You&rsquo;re back.</p>
                     <p className="mt-0.5 text-[11px] text-muted-foreground">
                       Streak preserved: {currentStreak}d. Share if it helps someone else do the same.
                     </p>

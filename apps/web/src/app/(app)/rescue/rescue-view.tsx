@@ -259,7 +259,7 @@ export function RescueView({ userId }: RescueViewProps) {
                     Want the deeper read?
                   </p>
                   <p className="mt-0.5 text-[11px] text-muted-foreground">
-                    COYL\u2019s pattern call on what\u2019s actually running you right now.
+                    COYL&rsquo;s pattern call on what&rsquo;s actually running you right now.
                   </p>
                 </div>
                 <CalloutPanel

@@ -254,7 +254,7 @@ export default function ContentPlaybookPage() {
         </span>
       </div>
       <h1 className="mb-4 text-4xl font-black leading-[1.05] text-white md:text-5xl">
-        The first 1000 users<br />don\u2019t come from ads.
+        The first 1000 users<br />don&rsquo;t come from ads.
       </h1>
       <p className="mb-12 max-w-2xl text-lg text-gray-400">
         They come from content that names the pattern before they click. Ready-to-post
@@ -338,22 +338,22 @@ export default function ContentPlaybookPage() {
       {/* Funnel + attribution footer */}
       <section className="mb-12 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
         <h2 className="mb-3 text-xl font-bold text-white">The funnel</h2>
-        <p className="mb-4 text-sm text-gray-300">Hook \u2192 Landing \u2192 Onboarding \u2192 First rescue \u2192 Hook (share)</p>
+        <p className="mb-4 text-sm text-gray-300">Hook &rarr; Landing &rarr; Onboarding &rarr; First rescue &rarr; Hook (share)</p>
         <ol className="space-y-2 text-sm text-gray-400">
           <li>
-            <span className="font-bold text-orange-400">1. Hook</span> \u2014 one-line recognition from the library above.
+            <span className="font-bold text-orange-400">1. Hook</span> &mdash; one-line recognition from the library above.
           </li>
           <li>
-            <span className="font-bold text-orange-400">2. Landing</span> \u2014 coyl.ai/?v=a|b|c for A/B hero variant.
+            <span className="font-bold text-orange-400">2. Landing</span> &mdash; coyl.ai/?v=a|b|c for A/B hero variant.
           </li>
           <li>
-            <span className="font-bold text-orange-400">3. Onboarding</span> \u2014 opens with COYL\u2019s guess \u2014 "let me guess \u2014 you fail at night?" \u2014 holy-shit moment lands in 10s.
+            <span className="font-bold text-orange-400">3. Onboarding</span> &mdash; opens with COYL&rsquo;s guess &mdash; &ldquo;let me guess &mdash; you fail at night?&rdquo; &mdash; holy-shit moment lands in 10s.
           </li>
           <li>
-            <span className="font-bold text-orange-400">4. First rescue</span> \u2014 user hits a real interrupt within first week. Triggers callout + share moment.
+            <span className="font-bold text-orange-400">4. First rescue</span> &mdash; user hits a real interrupt within first week. Triggers callout + share moment.
           </li>
           <li>
-            <span className="font-bold text-orange-400">5. Share</span> \u2014 "COYL just read me" OG image lands on someone\u2019s feed. Loop closes.
+            <span className="font-bold text-orange-400">5. Share</span> &mdash; &ldquo;COYL just read me&rdquo; OG image lands on someone&rsquo;s feed. Loop closes.
           </li>
         </ol>
       </section>

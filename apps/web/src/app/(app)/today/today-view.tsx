@@ -172,7 +172,7 @@ export function TodayView({
           className="group flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-br from-red-500 to-orange-600 px-5 py-5 text-sm font-black uppercase tracking-wider text-white shadow-[0_0_30px_-5px_rgba(239,68,68,0.5)] transition-all hover:scale-[1.02] hover:shadow-[0_0_50px_-5px_rgba(239,68,68,0.7)]"
         >
           <Flame className="h-5 w-5 transition-transform group-hover:rotate-12" />
-          I\u2019m about to mess up
+          I&rsquo;m about to mess up
         </Link>
         <Link
           href="/decide"
@@ -230,7 +230,7 @@ export function TodayView({
                 That&apos;s your &ldquo;{EXCUSE_TAG[topExcuseCategory] ?? topExcuseCategory.toLowerCase().replace('_', ' ')}&rdquo; excuse again.
               </p>
               <p className="mt-1 text-[11px] text-muted-foreground">
-                {topExcuseCount}\u00d7 this week. We\u2019ll catch it when it fires.
+                {topExcuseCount}&times; this week. We&rsquo;ll catch it when it fires.
               </p>
             </>
           ) : (

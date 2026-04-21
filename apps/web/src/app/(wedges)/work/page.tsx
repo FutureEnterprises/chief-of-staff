@@ -87,12 +87,12 @@ export default function WorkWedgePage() {
       </div>
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-white md:text-6xl">
         You don&apos;t fail at work.<br />
-        <span className="text-orange-400">You fail when you don\u2019t follow up.</span>
+        <span className="text-orange-400">You fail when you don&rsquo;t follow up.</span>
       </h1>
       <p className="mb-12 max-w-2xl text-lg text-gray-400">
-        Most work misses aren\u2019t about competence. They\u2019re about follow-through.
-        The email you didn\u2019t send. The meeting you didn\u2019t close out. The task you
-        promised and let slip. COYL catches those moments \u2014 before they become
+        Most work misses aren&rsquo;t about competence. They&rsquo;re about follow-through.
+        The email you didn&rsquo;t send. The meeting you didn&rsquo;t close out. The task you
+        promised and let slip. COYL catches those moments &mdash; before they become
         missed deals or dropped balls.
       </p>
 
@@ -110,7 +110,7 @@ export default function WorkWedgePage() {
 
       <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
         <h2 className="mb-6 text-2xl font-bold text-white">
-          Meeting \u2192 commitment \u2192 follow-up \u2192 closure.
+          Meeting &rarr; commitment &rarr; follow-up &rarr; closure.
         </h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {CAPABILITIES.map((c) => (
