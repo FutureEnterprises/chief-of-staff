@@ -63,7 +63,7 @@ export function BrandStatement() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.4, duration: 0.8 }}
-          className="mx-auto mt-10 max-w-2xl space-y-3 text-left text-lg leading-relaxed text-gray-300 md:text-xl"
+          className="mx-auto mt-10 max-w-2xl space-y-3 text-center text-lg leading-relaxed text-gray-300 md:text-xl"
         >
           <p>You do well for a few days.</p>
           <p>Then one moment hits.</p>
@@ -72,11 +72,11 @@ export function BrandStatement() {
             <span className="font-semibold italic text-orange-300">&ldquo;I already messed up.&rdquo;</span>
           </p>
           <p className="pt-2 text-gray-400">Then:</p>
-          <ul className="space-y-1.5 pl-5 text-gray-400">
-            <li>&mdash; you keep going</li>
-            <li>&mdash; you avoid everything</li>
-            <li>&mdash; you disappear</li>
-            <li>&mdash; you restart later</li>
+          <ul className="space-y-1.5 text-gray-400">
+            <li>you keep going</li>
+            <li>you avoid everything</li>
+            <li>you disappear</li>
+            <li>you restart later</li>
           </ul>
         </motion.div>
 
