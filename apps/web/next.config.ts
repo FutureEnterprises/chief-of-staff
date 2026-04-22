@@ -21,14 +21,22 @@ const nextConfig: NextConfig = {
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           {
             key: 'Content-Security-Policy',
+            // Clerk production lives on clerk.coyl.ai (encoded in the
+            // publishable key: pk_live_<base64(clerk.coyl.ai$)>). That
+            // subdomain must be allowlisted in script-src, connect-src,
+            // img-src, and frame-src — otherwise clerk-js fails to load
+            // and sign-in / sign-up crash silently on the client. Also
+            // allow challenges.cloudflare.com for the Turnstile CAPTCHA
+            // that Clerk uses as bot protection on the sign-up form.
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' https://js.stripe.com https://*.clerk.accounts.dev https://*.clerk.dev",
+              "script-src 'self' 'unsafe-inline' https://js.stripe.com https://*.clerk.accounts.dev https://*.clerk.dev https://*.clerk.com https://clerk.coyl.ai https://challenges.cloudflare.com",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' https://img.clerk.com https://*.public.blob.vercel-storage.com data:",
-              "connect-src 'self' https://*.clerk.dev https://*.clerk.accounts.dev https://api.stripe.com https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://*.ingest.de.sentry.io",
+              "img-src 'self' https://img.clerk.com https://*.clerk.com https://clerk.coyl.ai https://*.public.blob.vercel-storage.com data:",
+              "connect-src 'self' https://*.clerk.dev https://*.clerk.accounts.dev https://*.clerk.com https://clerk.coyl.ai https://api.stripe.com https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://*.ingest.de.sentry.io",
               "font-src 'self' data:",
-              "frame-src https://js.stripe.com https://*.clerk.accounts.dev",
+              "frame-src https://js.stripe.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk.coyl.ai https://challenges.cloudflare.com https://accounts.google.com",
+              "worker-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
