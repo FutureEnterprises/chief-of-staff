@@ -1,10 +1,57 @@
 import { useAuth } from '@clerk/clerk-expo'
-import { Redirect, Tabs } from 'expo-router'
+import { Redirect, Tabs, useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { BRAND } from '@repo/shared'
+import { useEffect, useRef } from 'react'
+import {
+  registerForPushNotifications,
+  addNotificationResponseListener,
+} from '../../lib/notifications'
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://www.coyl.ai'
+
+/**
+ * Screens we route into when a push notification is tapped. The server-side
+ * crons (danger-window-interrupt, post-slip-interrupt, churn) set
+ * `data.screen` on the push payload; matching values route there, anything
+ * else falls through to /today.
+ */
+const PUSH_ROUTES: Record<string, string> = {
+  today: '/today',
+  rescue: '/rescue',
+  decide: '/decide',
+  patterns: '/patterns',
+  commitments: '/commitments',
+  slip: '/today',
+}
 
 export default function AppTabLayout() {
-  const { isSignedIn } = useAuth()
+  const { isSignedIn, getToken } = useAuth()
+  const router = useRouter()
+  const registrationAttempted = useRef(false)
+
+  // Push-notification registration + tap handling. Runs once per signed-in
+  // session. Fires only on physical devices (lib guards with Device.isDevice).
+  useEffect(() => {
+    if (!isSignedIn || registrationAttempted.current) return
+    registrationAttempted.current = true
+
+    registerForPushNotifications(getToken, API_URL).catch((err) => {
+      // Silent — permission denial is expected and fine, notifications are
+      // an enhancement not a requirement for the app to function.
+      console.warn('[COYL] push registration failed:', err)
+    })
+
+    const sub = addNotificationResponseListener((response) => {
+      const screen = response.notification.request.content.data?.screen as
+        | string
+        | undefined
+      const target = (screen && PUSH_ROUTES[screen]) ?? '/today'
+      router.push(target as never)
+    })
+
+    return () => sub.remove()
+  }, [isSignedIn, getToken, router])
 
   if (!isSignedIn) return <Redirect href="/(auth)/sign-in" />
 
