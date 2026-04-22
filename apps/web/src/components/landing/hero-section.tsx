@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { motion } from 'motion/react'
+import { AutopilotDemoCard } from './autopilot-demo-card'
 
 const letterVariants = {
   hidden: { opacity: 0, x: -40 },
@@ -109,81 +110,10 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        {/* Floating briefing card */}
-        <motion.div
-          initial={{ opacity: 0, y: 40, rotateY: -5 }}
-          animate={{ opacity: 1, y: 0, rotateY: 0 }}
-          transition={{ delay: 0.6, duration: 1, ease: [0.23, 1, 0.32, 1] }}
-          className="relative hidden lg:col-span-5 lg:block"
-        >
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 6, ease: 'easeInOut', repeat: Infinity }}
-            className="relative overflow-hidden rounded-2xl border border-white/5 p-6 shadow-2xl"
-            style={{
-              background: 'linear-gradient(145deg, rgba(30,30,30,0.6), rgba(15,15,15,0.8))',
-              backdropFilter: 'blur(12px)',
-            }}
-          >
-            {/* Scanline overlay */}
-            <div className="pointer-events-none absolute inset-0 opacity-20" style={{
-              background: 'linear-gradient(transparent 50%, rgba(0,0,0,0.1) 50%)',
-              backgroundSize: '100% 4px',
-            }} />
-
-            {/* Header */}
-            <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-4">
-              <div className="flex items-center gap-2">
-                <motion.div
-                  animate={{ opacity: [1, 0.4, 1] }}
-                  transition={{ duration: 1.4, repeat: Infinity }}
-                  className="h-3 w-3 rounded-full bg-red-500"
-                />
-                <span className="text-sm font-bold uppercase tracking-wider text-white">Autopilot detected</span>
-              </div>
-              <span className="font-mono text-xs text-gray-500">9:12 PM</span>
-            </div>
-
-            {/* Scene */}
-            <div className="space-y-3">
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.2 }}
-                className="rounded-lg border border-white/5 bg-black/40 p-3"
-              >
-                <p className="mb-1 text-[11px] font-mono uppercase tracking-wider text-gray-500">You</p>
-                <p className="text-sm text-white">Opened the fridge. Again.</p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.6 }}
-                className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-3"
-              >
-                <p className="mb-1 text-[11px] font-mono uppercase tracking-wider text-orange-500">COYL</p>
-                <p className="text-sm leading-relaxed text-orange-100">
-                  You&apos;re not hungry. This is your usual night loop.
-                  <br />
-                  Drink water. Walk 5 minutes. <span className="font-bold text-orange-400">Then</span> decide.
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2.2 }}
-                className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3"
-              >
-                <span className="text-xs font-semibold text-emerald-400">Paused. Didn&apos;t binge.</span>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-emerald-400">
-                  <path d="M13 4L6 12L3 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </motion.div>
-            </div>
-          </motion.div>
-        </motion.div>
+        {/* Floating briefing card — extracted so /caught and other landings
+            can reuse the same demo. Don't inline it back; the animation
+            timings are load-bearing across surfaces. */}
+        <AutopilotDemoCard className="hidden lg:col-span-5 lg:block" />
       </div>
     </section>
   )

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
+import { AutopilotDemoCard } from '@/components/landing/autopilot-demo-card'
 
 export const metadata: Metadata = {
   title: 'They caught themselves. You can too. \u2014 COYL',
@@ -104,6 +105,14 @@ export default function CaughtPage() {
         Someone you know just used COYL to stop the spiral. Not Monday. Not tomorrow.
         The exact moment they were about to fold. That&rsquo;s the whole product.
       </p>
+
+      {/* Demo card — the "wow in 1 second" screenshot. Shared-link visitors
+          won't read a landing page top-to-bottom; they scan. This card is
+          the scan target. Same component the homepage hero uses so the
+          brand reads consistent across surfaces. */}
+      <div className="mb-10 max-w-md">
+        <AutopilotDemoCard />
+      </div>
 
       <div className="mb-16 flex flex-wrap gap-3">
         <Link
