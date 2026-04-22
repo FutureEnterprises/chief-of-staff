@@ -1,0 +1,48 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["REPLACE_WITH_APPLE_TEAM_ID.ai.coyl.app"],
+        "components": [
+          {
+            "/": "/today",
+            "comment": "Deep link to Today"
+          },
+          {
+            "/": "/rescue",
+            "comment": "Deep link to Rescue"
+          },
+          {
+            "/": "/slip",
+            "comment": "Deep link to Slip recovery"
+          },
+          {
+            "/": "/commitments",
+            "comment": "Deep link to Commitments"
+          },
+          {
+            "/": "/patterns",
+            "comment": "Deep link to Patterns / autopilot map"
+          },
+          {
+            "/": "/caught",
+            "comment": "Shareable recovery landing (open in browser for non-users)"
+          },
+          {
+            "/": "/audit",
+            "comment": "Shareable audit (open in browser for non-users)"
+          },
+          {
+            "/": "/glp1",
+            "comment": "Marketing page"
+          },
+          {
+            "/": "/",
+            "comment": "Homepage"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -9,19 +9,33 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "backgroundColor": "#ff6600",
+      "backgroundColor": "#0a0a0a",
       "resizeMode": "contain"
     },
     "ios": {
       "bundleIdentifier": "ai.coyl.app",
+      "buildNumber": "1",
       "supportsTablet": true,
+      "associatedDomains": [
+        "applinks:coyl.ai",
+        "applinks:www.coyl.ai"
+      ],
+      "privacyManifests": {
+        "usesDataCollection": true
+      },
       "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
         "NSHealthShareUsageDescription": "COYL reads your steps, weight, sleep, and heart rate to detect stress patterns and danger windows — so it can interrupt your autopilot before a slip.",
-        "NSHealthUpdateUsageDescription": "COYL does not write to HealthKit."
+        "NSHealthUpdateUsageDescription": "COYL does not write to HealthKit.",
+        "NSUserNotificationsUsageDescription": "COYL fires surgical interrupts at the exact moments you usually lose. Notifications are how it catches you before the fold.",
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
       "package": "ai.coyl.app",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#ff6600"
       },
@@ -30,7 +44,22 @@
         "android.permission.health.READ_WEIGHT",
         "android.permission.health.READ_SLEEP",
         "android.permission.health.READ_HEART_RATE",
-        "android.permission.health.READ_ACTIVE_CALORIES_BURNED"
+        "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE",
+        "android.permission.WAKE_LOCK"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            { "scheme": "https", "host": "coyl.ai" },
+            { "scheme": "https", "host": "www.coyl.ai" }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
       ]
     },
     "plugins": [
@@ -60,6 +89,17 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/REPLACE_WITH_EAS_PROJECT_ID"
     }
   }
 }

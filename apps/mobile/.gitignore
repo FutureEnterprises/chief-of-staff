@@ -4,3 +4,29 @@
 
 expo-env.d.ts
 # @end expo-cli
+
+# EAS / submission secrets — never commit
+secrets/
+*.p8
+*.p12
+*.mobileprovision
+google-services.json
+GoogleService-Info.plist
+
+# Build artifacts
+.expo/
+dist/
+web-build/
+
+# Native build outputs
+ios/build/
+android/build/
+android/app/build/
+
+# iCloud sync artifacts — if they creep back in, delete immediately
+*\ 2
+*\ 3
+*\ 4
+*\ 2.*
+*\ 3.*
+*\ 4.*

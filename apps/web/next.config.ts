@@ -36,6 +36,23 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      // Apple universal-links probe requires application/json with no redirects.
+      // The file has no extension so Next would otherwise serve it as octet-stream.
+      {
+        source: '/.well-known/apple-app-site-association',
+        headers: [
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'Cache-Control', value: 'public, max-age=3600' },
+        ],
+      },
+      // Android App Links asset linking — also requires application/json.
+      {
+        source: '/.well-known/assetlinks.json',
+        headers: [
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'Cache-Control', value: 'public, max-age=3600' },
+        ],
+      },
     ]
   },
   async redirects() {
