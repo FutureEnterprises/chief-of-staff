@@ -10,6 +10,7 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { completeOnboarding } from '@/app/actions/onboarding'
 import { cn } from '@/lib/utils'
 import { ShareMoment } from '@/components/share/share-moment'
+import { CoylLogo } from '@/components/brand/logo'
 
 const TIMEZONES = [
   'America/New_York', 'America/Chicago', 'America/Denver',
@@ -193,12 +194,9 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 mb-8 flex items-center gap-2"
+        className="relative z-10 mb-8"
       >
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-warm shadow-glow-orange">
-          <Zap className="h-4 w-4 text-white" />
-        </div>
-        <span className="text-sm font-bold tracking-tight">COYL</span>
+        <CoylLogo size="md" />
       </motion.div>
 
       {/* Step indicator */}
@@ -501,7 +499,7 @@ function OpeningFrameStep() {
       >
         <p className="label-xs mb-3 text-orange-500">Before we start</p>
         <h1 className="text-2xl font-black leading-tight text-foreground sm:text-3xl">
-          Let me guess \u2014 you\u2019re good for a few days, then you blow it at night?
+          Let me guess &mdash; you&rsquo;re good for a few days, then you blow it at night?
         </h1>
       </motion.div>
 
@@ -516,7 +514,7 @@ function OpeningFrameStep() {
             onClick={() => setGuessed('yes')}
             className="rounded-xl bg-gradient-to-r from-orange-500 to-red-500 px-4 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.25)]"
           >
-            Yeah, that\u2019s me
+            Yeah, that&rsquo;s me
           </button>
           <button
             onClick={() => setGuessed('no')}
@@ -540,7 +538,7 @@ function OpeningFrameStep() {
             transition={{ delay: 0.1 }}
             className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-4 py-3 text-base font-semibold text-orange-200"
           >
-            Yeah. That\u2019s your pattern.
+            Yeah. That&rsquo;s your pattern.
           </motion.p>
           <motion.p
             initial={{ opacity: 0 }}
@@ -548,7 +546,7 @@ function OpeningFrameStep() {
             transition={{ delay: 0.55 }}
             className="text-sm leading-relaxed text-foreground/90"
           >
-            You don\u2019t fail randomly. You fail at the same time. Same week. Same script.
+            You don&rsquo;t fail randomly. You fail at the same time. Same week. Same script.
           </motion.p>
           <motion.p
             initial={{ opacity: 0 }}
@@ -556,7 +554,7 @@ function OpeningFrameStep() {
             transition={{ delay: 1.0 }}
             className="pt-1 text-base font-bold text-foreground"
           >
-            We\u2019re going to catch it this week.
+            We&rsquo;re going to catch it this week.
           </motion.p>
         </motion.div>
       )}
@@ -677,7 +675,7 @@ function SummaryStep({ data, userId }: { data: FormData; userId: string }) {
     <div>
       <div className="mb-5">
         <p className="label-xs mb-2 text-orange-500">First read</p>
-        <h2 className="heading-2">Here\u2019s what I see.</h2>
+        <h2 className="heading-2">Here&rsquo;s what I see.</h2>
       </div>
 
       {/* Beats stream in one at a time. Feels like COYL speaking, not filling out a form. */}
