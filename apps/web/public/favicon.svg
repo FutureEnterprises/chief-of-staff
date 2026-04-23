@@ -1,19 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 36" fill="none">
-  <!-- Top cap -->
-  <ellipse cx="16" cy="4.5" rx="13.5" ry="2.8" stroke="#ff6600" stroke-width="1.6" fill="none" opacity="0.4"/>
-  <!-- Back arcs (light) -->
-  <path d="M 2.5 4.5 A 13.5 2.8 0 0 1 29.5 4.5" stroke="#ff6600" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.2"/>
-  <!-- Front arc 1 -->
-  <path d="M 29.5 4.5 A 13.5 3.6 0 0 0 2.5 11.2" stroke="#ff6600" stroke-width="2.8" stroke-linecap="round" fill="none"/>
-  <path d="M 2.5 11.2 A 13.5 2.8 0 0 1 29.5 11.2" stroke="#ff6600" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.2"/>
-  <!-- Front arc 2 -->
-  <path d="M 29.5 11.2 A 13.5 3.6 0 0 0 2.5 17.9" stroke="#ff6600" stroke-width="2.8" stroke-linecap="round" fill="none"/>
-  <path d="M 2.5 17.9 A 13.5 2.8 0 0 1 29.5 17.9" stroke="#ff6600" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.2"/>
-  <!-- Front arc 3 -->
-  <path d="M 29.5 17.9 A 13.5 3.6 0 0 0 2.5 24.6" stroke="#ff6600" stroke-width="2.8" stroke-linecap="round" fill="none"/>
-  <path d="M 2.5 24.6 A 13.5 2.8 0 0 1 29.5 24.6" stroke="#ff6600" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.2"/>
-  <!-- Front arc 4 -->
-  <path d="M 29.5 24.6 A 13.5 3.6 0 0 0 2.5 31.3" stroke="#ff6600" stroke-width="2.8" stroke-linecap="round" fill="none"/>
-  <!-- Bottom cap -->
-  <ellipse cx="16" cy="31.3" rx="13.5" ry="2.8" stroke="#ff6600" stroke-width="1.6" fill="none" opacity="0.4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!--
+    COYL favicon — mirrors the CoylMark React component.
+    Broken loop + catch-dot. See apps/web/src/components/brand/logo.tsx
+    for the rationale. Kept geometrically identical so the tab favicon,
+    nav logo, and OG previews read as the same mark.
+  -->
+  <defs>
+    <linearGradient id="g" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ff6600"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+  </defs>
+  <path d="M 13.5 3.2 A 9 9 0 1 0 20.2 15" stroke="url(#g)" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <circle cx="16.9" cy="5.6" r="2.1" fill="#ff6600"/>
 </svg>

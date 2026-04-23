@@ -1,31 +1,39 @@
 <svg width="200" height="48" viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- COYL Logo — wordmark with coil O mark -->
+  <!--
+    COYL wordmark — SVG version for OG previews, social cards, and
+    anywhere we need a flat image asset instead of the React component.
+    The "O" in C[O]YL is replaced by the broken-loop mark so the logo
+    is self-contained: reading the wordmark also reads the product
+    metaphor (loop almost closes, catch-dot at the gap).
+    Kept geometrically consistent with apps/web/src/components/brand/logo.tsx.
+  -->
+  <defs>
+    <linearGradient id="coyl-wordmark-grad" x1="16" y1="10" x2="32" y2="42" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ff6600"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+  </defs>
 
-  <!-- Coil mark replacing the "O" in COYL -->
-  <!-- Outer arc: 300° wound spring suggesting stored energy -->
-  <path
-    d="M 16.2 33.8 A 17.3 17.3 0 1 1 31.8 33.8"
-    stroke="#ff6600"
-    stroke-width="4"
-    stroke-linecap="round"
-    fill="none"
-  />
-  <!-- Inner echo arc: depth/wound feeling -->
-  <path
-    d="M 20.5 31.2 A 9.5 9.5 0 1 1 27.5 31.2"
-    stroke="#ff6600"
-    stroke-width="2.6"
-    stroke-linecap="round"
-    stroke-opacity="0.4"
-    fill="none"
-  />
+  <!-- Broken loop sitting where the "O" would go. 24px radius target so
+       it matches the visual weight of the 34pt letterforms. -->
+  <g transform="translate(16 2)">
+    <!-- Almost-closed ring. Same path as the favicon/mark, scaled ×1.33
+         (30 → 40 viewBox) so it reads at wordmark weight. -->
+    <path
+      d="M 18 4.3 A 12 12 0 1 0 27 20"
+      stroke="url(#coyl-wordmark-grad)"
+      stroke-width="4"
+      stroke-linecap="round"
+      fill="none"
+    />
+    <!-- Catch-dot at the gap -->
+    <circle cx="22.5" cy="7.5" r="2.8" fill="#ff6600"/>
+  </g>
 
   <!-- "C" -->
   <text x="0" y="36" font-family="-apple-system, 'Inter', sans-serif" font-size="34" font-weight="700" letter-spacing="-1.5" fill="#1a1a1a">C</text>
 
-  <!-- Space where O coil sits (x=22 approx) -->
-
-  <!-- "YL" -->
+  <!-- "YL" — Y tinted orange to match the wordmark brand rule -->
   <text x="46" y="36" font-family="-apple-system, 'Inter', sans-serif" font-size="34" font-weight="700" letter-spacing="-1.5" fill="#1a1a1a">
     <tspan fill="#ff6600">Y</tspan>L
   </text>
