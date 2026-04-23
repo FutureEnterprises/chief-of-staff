@@ -105,12 +105,18 @@ const clerkHandler = clerkMiddleware(async (auth, req) => {
 })
 
 /**
- * Top-level middleware. If the incoming request is for a public marketing
- * or health route, skip Clerk entirely so the dev-browser handshake never
- * fires. Everything else goes through Clerk as before.
+ * Top-level middleware. The SHOULD_BYPASS_CLERK list exists ONLY to
+ * dodge the Clerk dev-instance accounts.dev handshake \u2014 on production
+ * keys (pk_live_), clerkMiddleware on public routes is harmless (no
+ * external redirect) AND necessary (so auth() in page.tsx can detect
+ * signed-in users and route them to /today after sign-up).
+ *
+ * So: bypass only when we're on dev keys. On production, every request
+ * goes through clerkMiddleware \u2014 public routes still skip auth.protect()
+ * via isPublicRoute, but the request gets enriched with auth context.
  */
 function handler(req: NextRequest, event: Parameters<typeof clerkHandler>[1]) {
-  if (SHOULD_BYPASS_CLERK(req)) {
+  if (isDevClerkKey && SHOULD_BYPASS_CLERK(req)) {
     return NextResponse.next()
   }
   return clerkHandler(req, event)
