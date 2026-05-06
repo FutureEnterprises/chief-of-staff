@@ -12,6 +12,7 @@ import { RescueDemo } from '@/components/landing/rescue-demo'
 import { UniversalWedges } from '@/components/landing/universal-wedges'
 import { YouIf } from '@/components/landing/you-if'
 import { ThingsCoylSays } from '@/components/landing/things-coyl-says'
+import { Glp1Callout } from '@/components/landing/glp1-callout'
 import { FinalCta } from '@/components/landing/final-cta'
 // Cut from the homepage per COYL_homepage_v4.md (cut-convert-win pass):
 //   - FeaturesGrid (demoted as "deep feature breakdown"; still exists for
@@ -88,6 +89,12 @@ export default async function HomePage({
 
           {/* 1. Hero */}
           <HeroVariants variant={variant} />
+
+          {/* GLP-1 callout band — surfaces the urgent payer-funded wedge
+              right after the hero without replacing it. Lead use case for
+              Year 1 per the May 2026 strategy doc; the dedicated /glp1
+              page is the destination. */}
+          <Glp1Callout />
 
           {/* 2. This is your loop */}
           <BrandStatement />
