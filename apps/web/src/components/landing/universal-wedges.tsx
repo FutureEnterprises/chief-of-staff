@@ -76,7 +76,7 @@ export function UniversalWedges() {
       >
         Built on real behavioral research.{' '}
         <Link href="/science" className="text-orange-400 hover:underline">
-          The research \u2192
+          The research &rarr;
         </Link>
       </motion.p>
     </section>

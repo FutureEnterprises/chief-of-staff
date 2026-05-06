@@ -195,7 +195,7 @@ export function CalloutPanel({ trigger, userId }: Props) {
                       className="h-1.5 w-1.5 rounded-full bg-orange-500"
                     />
                   ))}
-                  <span className="ml-1 text-xs text-gray-400">Reading you\u2026</span>
+                  <span className="ml-1 text-xs text-gray-400">Reading you&hellip;</span>
                 </div>
               )}
 

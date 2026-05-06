@@ -306,7 +306,7 @@ export function RescueDemo() {
                         className="h-1.5 w-1.5 rounded-full bg-orange-500"
                       />
                     ))}
-                    <span className="ml-1 text-xs text-gray-400">COYL is responding\u2026</span>
+                    <span className="ml-1 text-xs text-gray-400">COYL is responding&hellip;</span>
                   </div>
                 )}
 

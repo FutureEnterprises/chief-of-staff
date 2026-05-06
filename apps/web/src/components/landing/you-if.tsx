@@ -57,8 +57,8 @@ export function YouIf() {
         transition={{ delay: 0.7, duration: 0.6 }}
         className="mt-10 text-lg font-bold leading-tight text-white md:text-2xl"
       >
-        This isn\u2019t random.<br />
-        <span className="text-orange-400">It\u2019s a pattern.</span>
+        This isn&rsquo;t random.<br />
+        <span className="text-orange-400">It&rsquo;s a pattern.</span>
       </motion.p>
     </section>
   )
