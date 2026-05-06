@@ -147,6 +147,12 @@ type FormData = {
   excuseStyle: string
   toneMode: string
   firstCommitment: string
+  // GLP-1 companion — captured during onboarding for users on Ozempic /
+  // Wegovy / Mounjaro / etc, skipped (left as empty string + null) for
+  // everyone else. Wired to updateGlp1Profile in handleFinish so the
+  // day-3 cron has data to fire against from day one.
+  glp1Drug: string
+  glp1InjectionWeekday: number | null
   rescuePreference: string
 }
 
@@ -195,6 +201,8 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
     toneMode: 'MENTOR',
     firstCommitment: '',
     rescuePreference: 'call_me_out',
+    glp1Drug: '',
+    glp1InjectionWeekday: null,
   })
 
   const steps = [
@@ -206,6 +214,7 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
     { id: 'tone', label: 'Tone' },
     { id: 'commitment', label: 'Rule' },
     { id: 'rescue', label: 'Rescue' },
+    { id: 'glp1', label: 'GLP-1' },
     { id: 'summary', label: 'Plan' },
   ]
 
@@ -222,7 +231,8 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
       case 5: return !!data.toneMode
       case 6: return data.firstCommitment.trim().length > 2
       case 7: return !!data.rescuePreference
-      case 8: return true
+      case 8: return true // GLP-1 step is optional — skip-friendly
+      case 9: return true
       default: return true
     }
   })()
@@ -259,6 +269,24 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
         dangerWindowsPicked: data.dangerWindowsPicked,
         toneMode: data.toneMode,
       } as Parameters<typeof completeOnboarding>[0])
+
+      // GLP-1 profile is optional — only persist if the user actually
+      // entered a drug name. Wrapped in its own try/catch so a GLP-1
+      // save failure never blocks onboarding completion (the user is
+      // already through the wizard at this point).
+      if (data.glp1Drug.trim()) {
+        try {
+          const { updateGlp1Profile } = await import('@/app/actions/settings')
+          await updateGlp1Profile({
+            glp1Drug: data.glp1Drug.trim(),
+            glp1InjectionWeekday: data.glp1InjectionWeekday,
+            glp1StartedAt: null,
+            glp1EndedAt: null,
+          })
+        } catch (err) {
+          console.warn('[onboarding] GLP-1 save failed (non-blocking)', err)
+        }
+      }
     } finally {
       router.push('/today')
     }
@@ -359,7 +387,8 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
             {step === 5 && <ToneStep data={data} onChange={updateData} />}
             {step === 6 && <CommitmentStep data={data} onChange={updateData} />}
             {step === 7 && <RescuePreferenceStep data={data} onChange={updateData} />}
-            {step === 8 && <SummaryStep data={data} userId={user.id} />}
+            {step === 8 && <Glp1Step data={data} onChange={updateData} />}
+            {step === 9 && <SummaryStep data={data} userId={user.id} />}
           </motion.div>
         </AnimatePresence>
       </main>
@@ -897,6 +926,91 @@ function windowPhrase(picked: string[]): string {
   const first = picked[0]
   if (!first) return 'at some point'
   return phrases[first] ?? 'at the moments you picked'
+}
+
+/**
+ * GLP-1 onboarding step — captures medication + injection day for users
+ * on Ozempic / Wegovy / Mounjaro / etc. Entirely optional. Skipping
+ * (leaving drug blank + clicking Continue) results in null fields.
+ *
+ * Why ask in onboarding instead of just /settings: the day-3 cron is
+ * the single most differentiated feature for the GLP-1 wedge, and it
+ * needs the injection weekday to fire. Users who set it up on day 1 of
+ * the COYL account get the value of the cron immediately. Users who
+ * skip can always come back to /settings.
+ *
+ * Free-text drug field instead of an enum: GLP-1 prescriptions ship
+ * under multiple brands + compounded variations + new entrants every
+ * quarter. An enum maintenance burden every time Lilly ships a new SKU
+ * isn't worth it for a string we just feed back to the user.
+ */
+function Glp1Step({
+  data,
+  onChange,
+}: {
+  data: FormData
+  onChange: (v: Partial<FormData>) => void
+}) {
+  const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+  return (
+    <div>
+      <h1 className="mb-3 text-4xl font-black leading-[1.05] tracking-tight text-white md:text-5xl">
+        On a GLP-1?
+      </h1>
+      <p className="mb-10 max-w-lg text-lg text-gray-400">
+        Ozempic, Wegovy, Mounjaro, Zepbound, compounded? COYL fires a
+        targeted interrupt 72 hours after each dose &mdash; the exact moment
+        appetite suppression tapers. Skip if not on one.
+      </p>
+
+      <div className="space-y-6">
+        <div>
+          <label className="mb-2 block text-xs font-mono uppercase tracking-widest text-gray-500">
+            Medication (leave blank to skip)
+          </label>
+          <input
+            type="text"
+            value={data.glp1Drug}
+            onChange={(e) => onChange({ glp1Drug: e.target.value })}
+            placeholder="Ozempic / Wegovy / Mounjaro / Zepbound / Compounded"
+            className="w-full rounded-2xl border border-white/10 bg-white/[0.02] px-5 py-4 text-lg font-medium text-white placeholder-gray-600 transition-colors duration-200 focus:border-orange-500/50 focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+          />
+        </div>
+
+        {data.glp1Drug.trim().length > 0 && (
+          <div>
+            <label className="mb-2 block text-xs font-mono uppercase tracking-widest text-gray-500">
+              Injection day (in your local timezone)
+            </label>
+            <div className="grid grid-cols-7 gap-2">
+              {weekdays.map((label, idx) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => onChange({ glp1InjectionWeekday: idx })}
+                  className={`rounded-xl border px-2 py-3 text-sm font-bold transition-colors ${
+                    data.glp1InjectionWeekday === idx
+                      ? 'border-orange-500 bg-orange-500/15 text-orange-300'
+                      : 'border-white/10 bg-white/[0.02] text-gray-400 hover:border-orange-500/30'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-[11px] text-gray-500">
+              Day 3 after this is when the autopilot tries to come back. That&rsquo;s when COYL fires.
+            </p>
+          </div>
+        )}
+
+        <p className="text-xs text-gray-500">
+          You can change or remove this any time from /settings. Behavioral support, not medical advice.
+        </p>
+      </div>
+    </div>
+  )
 }
 
 /**
