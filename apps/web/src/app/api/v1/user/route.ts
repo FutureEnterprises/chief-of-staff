@@ -192,3 +192,52 @@ export async function PATCH(req: Request) {
   await prisma.user.update({ where: { id: user.id }, data })
   return NextResponse.json({ success: true })
 }
+
+/**
+ * Account deletion — required by Apple App Store guideline 5.1.1(v) and
+ * GDPR Article 17 ("right to erasure"). Deletes the user row; foreign-
+ * key cascades remove every owned record (commitments, slips, excuses,
+ * danger windows, rescue sessions, etc.) per the schema's onDelete:
+ * Cascade declarations.
+ *
+ * The Clerk session is NOT auto-revoked here — the calling client is
+ * expected to also call `signOut()` from the Clerk SDK. We don't fan
+ * out to Clerk's API to revoke because (a) it requires the management
+ * API key, (b) leaving the Clerk record means the user can re-create
+ * the COYL account with the same email if they change their mind
+ * (the upsert in ensureUserExists handles the rebind).
+ *
+ * Does NOT touch: BillingSubscription / Stripe — that's intentional.
+ * Stripe's data retention is regulatory; we mark the local row deleted
+ * but never delete from Stripe's side. If the user has an active
+ * subscription this returns 409 to force them to cancel first.
+ */
+export async function DELETE() {
+  const { userId: clerkId } = await auth()
+  if (!clerkId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const user = await prisma.user.findUnique({
+    where: { clerkId },
+    select: { id: true, billingSubscription: { select: { status: true } } },
+  })
+  if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
+
+  if (user.billingSubscription?.status === 'active') {
+    return NextResponse.json(
+      {
+        error: 'active_subscription',
+        message: 'Cancel your subscription before deleting your account.',
+      },
+      { status: 409 },
+    )
+  }
+
+  try {
+    await prisma.user.delete({ where: { id: user.id } })
+  } catch (err) {
+    console.error('[DELETE /api/v1/user] failed', err)
+    return NextResponse.json({ error: 'delete_failed' }, { status: 500 })
+  }
+
+  return NextResponse.json({ success: true, deleted: true })
+}

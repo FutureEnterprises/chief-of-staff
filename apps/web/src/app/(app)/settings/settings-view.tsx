@@ -11,7 +11,8 @@ import { toast } from '@/hooks/use-toast'
 import { updateUserSettings, updateGlp1Profile } from '@/app/actions/settings'
 import { UserButton } from '@clerk/nextjs'
 import { PaywallDialog } from '@/components/paywall/paywall-dialog'
-import { Bell, Zap, User as UserIcon, Heart, Flame, Syringe } from 'lucide-react'
+import { Bell, Zap, User as UserIcon, Heart, Flame, Syringe, Download, Trash2, AlertTriangle } from 'lucide-react'
+import { useClerk } from '@clerk/nextjs'
 
 interface SettingsViewProps {
   user: User
@@ -202,6 +203,15 @@ export function SettingsView({ user }: SettingsViewProps) {
             </Button>
           </div>
         </StaggerItem>
+
+        {/* Danger zone — data export + account deletion. Required by Apple
+            App Store guideline 5.1.1(v) (in-app account deletion since
+            2022) and GDPR Articles 15 + 17 (right to access + right to
+            erasure). Live at /settings is the canonical surface; mobile
+            app links to this URL via the existing settings tab. */}
+        <StaggerItem>
+          <DangerZoneCard />
+        </StaggerItem>
       </StaggerList>
 
       <PaywallDialog open={showPaywall} onClose={() => setShowPaywall(false)} />
@@ -354,6 +364,195 @@ function Glp1ProfileCard({ user }: { user: User }) {
           <Button variant="brand" size="sm" onClick={save} disabled={saving}>
             {saving ? 'Saving…' : 'Save GLP-1 profile'}
           </Button>
+        </div>
+      </div>
+    </GlassCard>
+  )
+}
+
+/**
+ * Danger zone — data export + account deletion.
+ *
+ * Both required by App Store guideline 5.1.1(v) and GDPR Article 17.
+ *
+ * Export hits GET /api/v1/user/export — server returns a JSON file as
+ * an attachment, browser downloads automatically via the anchor click.
+ * No client-side parsing; the user gets a raw JSON dump they can keep,
+ * audit, or feed to another tool.
+ *
+ * Delete hits DELETE /api/v1/user — server cascades to all owned
+ * records via Prisma's onDelete: Cascade. Active subscriptions return
+ * 409 to force the user to cancel first (we don't auto-cancel because
+ * the Stripe-side cancellation has its own UX + clawback rules).
+ *
+ * Two-step confirmation: a confirm prompt + the literal word "DELETE"
+ * typed in. Slow on purpose. The brand promise is "no shame" —
+ * accidental account deletion would burn that.
+ */
+function DangerZoneCard() {
+  const clerk = useClerk()
+  const [exporting, setExporting] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [confirmText, setConfirmText] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+
+  async function handleExport() {
+    setExporting(true)
+    try {
+      const res = await fetch('/api/v1/user/export')
+      if (!res.ok) throw new Error('export failed')
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `coyl-data-export-${new Date().toISOString().slice(0, 10)}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      toast({
+        title: 'Export downloaded',
+        description: 'Your data is yours. Always.',
+      })
+    } catch {
+      toast({
+        title: 'Export failed',
+        description: 'Try again or contact support@coyl.ai',
+        variant: 'destructive',
+      })
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  async function handleDelete() {
+    if (confirmText !== 'DELETE') {
+      toast({
+        title: 'Type DELETE to confirm',
+        description: 'Capital letters, exactly.',
+        variant: 'destructive',
+      })
+      return
+    }
+    setDeleting(true)
+    try {
+      const res = await fetch('/api/v1/user', { method: 'DELETE' })
+      if (res.status === 409) {
+        const body = await res.json()
+        toast({
+          title: 'Cancel subscription first',
+          description: body.message ?? 'Cancel your subscription before deleting your account.',
+          variant: 'destructive',
+        })
+        return
+      }
+      if (!res.ok) throw new Error('delete failed')
+
+      // Account is gone DB-side. Sign out the Clerk session + redirect
+      // to home. We don't try to delete the Clerk record itself —
+      // re-signup with the same email rebinds via the upsert in
+      // ensureUserExists.
+      await clerk.signOut({ redirectUrl: '/' })
+    } catch {
+      toast({
+        title: 'Delete failed',
+        description: 'Try again or contact support@coyl.ai',
+        variant: 'destructive',
+      })
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  return (
+    <GlassCard>
+      <div className="mb-4 flex items-center gap-2">
+        <div className="rounded-xl bg-red-500/10 p-2">
+          <AlertTriangle className="h-4 w-4 text-red-400" />
+        </div>
+        <div>
+          <h3 className="heading-4">Your data &middot; danger zone</h3>
+          <p className="text-xs text-muted-foreground">
+            Your data is yours. Take it with you, or delete it for good.
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex flex-col gap-3 rounded-xl border border-border bg-muted/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium text-foreground">Export your data</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Single JSON file: profile, commitments, slips, decisions, events. No third parties involved.
+            </p>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleExport} disabled={exporting}>
+            {exporting ? (
+              <>
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                Building&hellip;
+              </>
+            ) : (
+              <>
+                <Download className="h-3.5 w-3.5" />
+                Download
+              </>
+            )}
+          </Button>
+        </div>
+
+        <div className="rounded-xl border border-red-500/30 bg-red-500/[0.04] p-4">
+          <div className="flex items-start gap-3">
+            <Trash2 className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground">Delete my account</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Permanent. Removes profile, commitments, slips, all events, all logs. Cannot be undone.
+                Cancel any active subscription first.
+              </p>
+
+              {!showDeleteConfirm ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 border-red-500/40 text-red-300 hover:bg-red-500/10 hover:text-red-200"
+                  onClick={() => setShowDeleteConfirm(true)}
+                >
+                  Delete my account
+                </Button>
+              ) : (
+                <div className="mt-3 space-y-2">
+                  <Input
+                    placeholder='Type "DELETE" to confirm'
+                    value={confirmText}
+                    onChange={(e) => setConfirmText(e.target.value)}
+                    className="h-9 border-red-500/30"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setShowDeleteConfirm(false)
+                        setConfirmText('')
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-red-500 bg-red-500/10 text-red-300 hover:bg-red-500/20"
+                      onClick={handleDelete}
+                      disabled={deleting || confirmText !== 'DELETE'}
+                    >
+                      {deleting ? 'Deleting…' : 'Permanently delete'}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </GlassCard>
