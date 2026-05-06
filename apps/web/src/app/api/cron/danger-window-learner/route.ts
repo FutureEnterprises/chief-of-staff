@@ -101,14 +101,35 @@ export async function GET(req: Request) {
           user.timezone || 'UTC',
         )
 
-        if (Object.keys(learned).length === 0) {
-          // No slot reached MIN_SLOT_COUNT — slips were too dispersed to
-          // call a pattern. Don't touch the user's existing windows.
+        // Compute the v1 health-signal correlation block. Reads the
+        // user's last 30 days of FEATURE_USED health-sync events,
+        // computes avg sleep + step + how many slips happened on
+        // low-resilience days (sleep < 6h prior 24h, OR steps < 50%
+        // of their median). Writes to dangerWindows._health for
+        // future surfaces (precision-interrupt cron weight-up, today
+        // screen "you slept badly last night, watch out"). No
+        // behavior change yet — just the signal stored.
+        const healthStats = await computeHealthCorrelations(
+          user.id,
+          user.slipRecords.map((s) => s.createdAt),
+          cutoff,
+        )
+
+        if (Object.keys(learned).length === 0 && !healthStats) {
+          // No slot reached MIN_SLOT_COUNT and no health signal —
+          // slips were too dispersed to call a pattern. Don't touch
+          // the user's existing windows.
           skippedInsufficient++
           continue
         }
 
         const merged = mergeWithExisting(user.dangerWindows, learned)
+        if (healthStats) {
+          // Underscore-prefixed key so it doesn't collide with day-of-week
+          // entries (sun/mon/.../sat). Consumers should ignore unknown
+          // keys; readers that DO understand _health use it.
+          ;(merged as Record<string, unknown>)._health = healthStats
+        }
 
         await prisma.user.update({
           where: { id: user.id },
@@ -237,4 +258,131 @@ function mergeWithExisting(
   }
 
   return base
+}
+
+/**
+ * Health-signal correlation v1.
+ *
+ * Reads the user's last 30 days of FEATURE_USED events emitted by
+ * /api/v1/integrations/health (eventValue starts with 'health_'). For
+ * each slip, looks up the most recent health event in the prior 24h.
+ * Tags slips that fell after low-sleep (<6h) or low-step (<50% of
+ * user's 30d median) days as "low-resilience."
+ *
+ * Returns a small stats blob the precision-interrupt cron can use to
+ * weight its firing decisions and the /today screen can use to show
+ * "you slept badly last night, watch out for the late-night kitchen."
+ *
+ * Returns null if the user has fewer than 7 health events — too sparse
+ * to draw any honest correlation from. Better no signal than fake signal.
+ */
+async function computeHealthCorrelations(
+  userId: string,
+  slipTimestamps: Date[],
+  cutoff: Date,
+): Promise<
+  | {
+      sampleN: number
+      avgSleepHours: number | null
+      medianSteps: number | null
+      slipsAfterLowSleep: number
+      slipsAfterLowSteps: number
+      totalSlips: number
+      lastUpdatedAt: string
+    }
+  | null
+> {
+  type HealthMeta = {
+    date?: string
+    metrics?: {
+      steps?: number
+      sleepHours?: number
+    }
+  }
+
+  const events = await prisma.productivityEvent
+    .findMany({
+      where: {
+        userId,
+        eventType: 'FEATURE_USED',
+        eventValue: { startsWith: 'health_' },
+        createdAt: { gte: cutoff },
+      },
+      select: { createdAt: true, metadataJson: true },
+      orderBy: { createdAt: 'desc' },
+    })
+    .catch(() => [])
+
+  if (events.length < 7) return null
+
+  // Build a date-keyed map of metrics so each slip can look up its
+  // prior-24h day without scanning the whole event list.
+  const byDay = new Map<string, { sleepHours?: number; steps?: number }>()
+  const sleepValues: number[] = []
+  const stepValues: number[] = []
+
+  for (const ev of events) {
+    const meta = ev.metadataJson as HealthMeta | null
+    if (!meta) continue
+    const dateKey = (meta.date || ev.createdAt.toISOString()).slice(0, 10)
+    const existing = byDay.get(dateKey) ?? {}
+    if (typeof meta.metrics?.sleepHours === 'number') {
+      existing.sleepHours = meta.metrics.sleepHours
+      sleepValues.push(meta.metrics.sleepHours)
+    }
+    if (typeof meta.metrics?.steps === 'number') {
+      existing.steps = meta.metrics.steps
+      stepValues.push(meta.metrics.steps)
+    }
+    byDay.set(dateKey, existing)
+  }
+
+  const avgSleepHours =
+    sleepValues.length > 0
+      ? sleepValues.reduce((a, b) => a + b, 0) / sleepValues.length
+      : null
+  const medianSteps =
+    stepValues.length > 0
+      ? [...stepValues].sort((a, b) => a - b)[Math.floor(stepValues.length / 2)]!
+      : null
+
+  // Threshold rules: low sleep is < 6h. Low steps is < 50% of median.
+  const LOW_SLEEP = 6
+  const lowStepsThreshold = medianSteps !== null ? medianSteps * 0.5 : null
+
+  let slipsAfterLowSleep = 0
+  let slipsAfterLowSteps = 0
+  for (const slipAt of slipTimestamps) {
+    // Look up health metrics for the day OF the slip and the day BEFORE.
+    // Either being low counts as low-resilience.
+    const slipDay = slipAt.toISOString().slice(0, 10)
+    const prevDay = new Date(slipAt.getTime() - 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10)
+    const dayMetrics = byDay.get(slipDay) ?? byDay.get(prevDay)
+    if (!dayMetrics) continue
+    if (
+      typeof dayMetrics.sleepHours === 'number' &&
+      dayMetrics.sleepHours < LOW_SLEEP
+    ) {
+      slipsAfterLowSleep++
+    }
+    if (
+      lowStepsThreshold !== null &&
+      typeof dayMetrics.steps === 'number' &&
+      dayMetrics.steps < lowStepsThreshold
+    ) {
+      slipsAfterLowSteps++
+    }
+  }
+
+  return {
+    sampleN: events.length,
+    avgSleepHours: avgSleepHours !== null ? Number(avgSleepHours.toFixed(2)) : null,
+    medianSteps,
+    slipsAfterLowSleep,
+    slipsAfterLowSteps,
+    totalSlips: slipTimestamps.length,
+    lastUpdatedAt: new Date().toISOString(),
+  }
 }
