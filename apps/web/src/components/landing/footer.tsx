@@ -17,13 +17,14 @@ import { CoylLogo } from '@/components/brand/logo'
 export function LandingFooter() {
   // Three-leg wedge balance per the May 2026 ultrathink: weight + work
   // + destructive get equal surface in the footer. Procrastination is
-  // the workplace lead. /work is the follow-through niche. Both are
-  // first-class wedges so visitors see "any compulsive behavior" not
-  // "weight loss with extras."
+  // the workplace consumer lead, /teams is the workplace B2B lead,
+  // /work is the follow-through niche. All three first-class wedges so
+  // visitors see "any compulsive behavior" not "weight loss with extras."
   const product = [
     { label: 'How it works', href: '/how-it-works' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Procrastination + focus', href: '/procrastination' },
+    { label: 'For teams (employer)', href: '/teams' },
     { label: 'GLP-1 companion', href: '/glp1' },
     { label: 'Weight loss', href: '/weight-loss' },
     { label: 'Work follow-through', href: '/work' },

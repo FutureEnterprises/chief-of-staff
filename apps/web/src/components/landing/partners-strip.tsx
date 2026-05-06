@@ -21,21 +21,29 @@ import { ArrowRight, Stethoscope, Building2, FlaskConical } from 'lucide-react'
  * "clinicians" name the actual audiences directly.
  */
 export function PartnersStrip() {
+  // Three buyer audiences. Each routed to its own dedicated page so the
+  // CTA stays scoped to the audience, not a generic /research catch-all.
+  // Per the May 2026 wedge build-out: /teams is the workplace-employer
+  // surface, /research is the clinical-partner surface, /glp1 is the
+  // telehealth-prescriber surface.
   const partners = [
     {
       Icon: Stethoscope,
       label: 'Telehealth GLP-1 prescribers',
       body: 'Add real-time relapse prevention to your weight care program. White-label available.',
+      href: '/glp1',
     },
     {
       Icon: Building2,
       label: 'Employers + health plans',
-      body: 'Reduce regain post-discontinuation. PMPM pricing. Outcome reporting.',
+      body: 'Reduce focus loss + workplace procrastination. PMPM pricing. Outcome reporting.',
+      href: '/teams',
     },
     {
       Icon: FlaskConical,
       label: 'Research labs + clinics',
       body: 'Co-author outcome studies. De-identified data sharing under DUA.',
+      href: '/research',
     },
   ]
 
@@ -67,16 +75,17 @@ export function PartnersStrip() {
 
         <div className="mb-10 grid grid-cols-1 gap-4 md:grid-cols-3">
           {partners.map((p) => (
-            <div
+            <Link
               key={p.label}
-              className="rounded-2xl border border-white/5 bg-black/30 p-5"
+              href={p.href}
+              className="group rounded-2xl border border-white/5 bg-black/30 p-5 transition-all hover:border-orange-500/30 hover:bg-orange-500/[0.04]"
             >
               <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-orange-500/20 bg-orange-500/[0.08] text-orange-400">
                 <p.Icon className="h-5 w-5" />
               </div>
-              <h3 className="text-base font-bold text-white">{p.label}</h3>
+              <h3 className="text-base font-bold text-white group-hover:text-orange-300">{p.label}</h3>
               <p className="mt-2 text-sm leading-relaxed text-gray-400">{p.body}</p>
-            </div>
+            </Link>
           ))}
         </div>
 

@@ -14,6 +14,7 @@ import { YouIf } from '@/components/landing/you-if'
 import { ThingsCoylSays } from '@/components/landing/things-coyl-says'
 import { Glp1Callout } from '@/components/landing/glp1-callout'
 import { ProcrastinationCallout } from '@/components/landing/procrastination-callout'
+import { TeamsCallout } from '@/components/landing/teams-callout'
 import { HowItWorksStrip } from '@/components/landing/how-it-works-strip'
 import { ComparisonTable } from '@/components/landing/comparison-table'
 import { HomepageFaq } from '@/components/landing/homepage-faq'
@@ -108,6 +109,15 @@ export default async function HomePage({
               category position: pattern interrupt is universal; weight
               and workplace are co-leads, not lead-and-aside. */}
           <ProcrastinationCallout />
+
+          {/* Teams callout — workplace + employer B2B surface. Per the
+              wedge ultrathink, /procrastination addresses the consumer
+              side of workplace; /teams addresses the buyer (HR head,
+              benefits broker). Three callouts in sequence (Glp1 +
+              Procrastination + Teams) cover both verticals × both
+              audience types — D2C and B2B — without overloading the
+              hero or burying any of them in a footer strip. */}
+          <TeamsCallout />
 
           {/* How COYL works — three-step answer to "what is this thing?"
               for cold traffic. Per the May 2026 homepage audit, the page
