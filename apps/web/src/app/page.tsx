@@ -13,6 +13,8 @@ import { UniversalWedges } from '@/components/landing/universal-wedges'
 import { YouIf } from '@/components/landing/you-if'
 import { ThingsCoylSays } from '@/components/landing/things-coyl-says'
 import { Glp1Callout } from '@/components/landing/glp1-callout'
+import { HowItWorksStrip } from '@/components/landing/how-it-works-strip'
+import { PartnersStrip } from '@/components/landing/partners-strip'
 import { FinalCta } from '@/components/landing/final-cta'
 // Cut from the homepage per COYL_homepage_v4.md (cut-convert-win pass):
 //   - FeaturesGrid (demoted as "deep feature breakdown"; still exists for
@@ -96,6 +98,14 @@ export default async function HomePage({
               page is the destination. */}
           <Glp1Callout />
 
+          {/* How COYL works — three-step answer to "what is this thing?"
+              for cold traffic. Per the May 2026 homepage audit, the page
+              previously made visitors sit through 4 emotional sections
+              before they could explain the product to themselves. This
+              strip gives them the answer in 5 seconds, then the
+              emotional sections deepen the why. */}
+          <HowItWorksStrip />
+
           {/* 2. This is your loop */}
           <BrandStatement />
 
@@ -125,6 +135,14 @@ export default async function HomePage({
 
           {/* 7. Recovery */}
           <RecoverySection />
+
+          {/* B2B partners strip — telehealth GLP-1, employers, research
+              labs. Per the May 2026 audit, the homepage was 100%
+              consumer-facing with no surface for the 3 audiences that
+              gate $60M of the $100M revenue plan. Honest framing — no
+              fake logos, no fake outcome stats, single mailto +
+              /research deep link. */}
+          <PartnersStrip />
 
           {/* 8. Final CTA */}
           <FinalCta />

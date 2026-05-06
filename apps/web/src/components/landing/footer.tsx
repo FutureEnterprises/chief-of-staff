@@ -3,24 +3,102 @@
 import Link from 'next/link'
 import { CoylLogo } from '@/components/brand/logo'
 
+/**
+ * Landing footer — expanded per the May 2026 homepage audit.
+ *
+ * Old footer was Terms / Privacy / Cookies / © which signals "not a
+ * real company yet." A real footer with category-grouped links signals
+ * a product visitors can navigate, raises trust, and gives Google more
+ * internal links for SEO.
+ *
+ * Three categories: Product (consumer surfaces), Partners (B2B + research),
+ * Legal (compliance). Brand mark + tagline stays in the lead column.
+ */
 export function LandingFooter() {
+  const product = [
+    { label: 'How it works', href: '/how-it-works' },
+    { label: 'Pricing', href: '/pricing' },
+    { label: 'GLP-1 companion', href: '/glp1' },
+    { label: 'Weight loss', href: '/weight-loss' },
+    { label: 'Work follow-through', href: '/work' },
+    { label: 'Recovery', href: '/recovery' },
+  ]
+
+  const partners = [
+    { label: 'Research + outcomes', href: '/research' },
+    { label: 'The science', href: '/science' },
+    { label: 'Decision support', href: '/decision-support' },
+    { label: 'Destructive patterns', href: '/destructive-behaviors' },
+    { label: 'Autopilot map', href: '/autopilot-map' },
+    { label: 'Content playbook', href: '/content' },
+  ]
+
+  const legal = [
+    { label: 'Terms', href: '/terms' },
+    { label: 'Privacy', href: '/privacy' },
+    { label: 'Cookies', href: '/cookies' },
+    { label: 'Sign in', href: '/sign-in' },
+  ]
+
   return (
     <footer className="relative z-10 border-t border-white/5 bg-[#0a0a0a] pb-8 pt-16">
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 px-6 md:flex-row md:justify-between md:px-12">
-        <div className="flex flex-col items-center md:items-start">
-          <CoylLogo size="sm" theme="dark" />
-          <p className="mt-2 font-mono text-xs text-gray-600">
-            Take control of your sh<span className="inline-block translate-y-[-1px]" role="img" aria-label="poop">💩</span>t.
-          </p>
+      <div className="mx-auto max-w-7xl px-6 md:px-12">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+          <div className="col-span-2 flex flex-col md:col-span-1">
+            <CoylLogo size="sm" theme="dark" />
+            <p className="mt-3 max-w-[14rem] text-xs leading-relaxed text-gray-500">
+              The pattern-interrupt AI for people who already know what to do.
+            </p>
+            <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-gray-600">
+              Behavioral support · Not medical treatment
+            </p>
+          </div>
+
+          <FooterColumn title="Product" links={product} />
+          <FooterColumn title="More" links={partners} />
+          <FooterColumn title="Account" links={legal} />
         </div>
 
-        <div className="flex items-center gap-6 text-sm text-gray-500">
-          <Link href="/terms" className="transition-colors hover:text-orange-500">Terms</Link>
-          <Link href="/privacy" className="transition-colors hover:text-orange-500">Privacy</Link>
-          <Link href="/cookies" className="transition-colors hover:text-orange-500">Cookies</Link>
-          <span className="text-gray-600">&copy; {new Date().getFullYear()} COYL</span>
+        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/5 pt-6 md:flex-row md:items-center">
+          <span className="text-xs text-gray-600">
+            &copy; {new Date().getFullYear()} COYL &middot; Stop the script before it runs your life.
+          </span>
+          <Link
+            href="/sign-up?ref=footer"
+            className="text-xs font-bold text-orange-400 transition-colors hover:text-orange-300"
+          >
+            Start free &rarr;
+          </Link>
         </div>
       </div>
     </footer>
+  )
+}
+
+function FooterColumn({
+  title,
+  links,
+}: {
+  title: string
+  links: Array<{ label: string; href: string }>
+}) {
+  return (
+    <div>
+      <p className="mb-3 font-mono text-[10px] font-bold uppercase tracking-widest text-orange-500">
+        {title}
+      </p>
+      <ul className="space-y-2">
+        {links.map((l) => (
+          <li key={l.href}>
+            <Link
+              href={l.href}
+              className="text-sm text-gray-400 transition-colors hover:text-white"
+            >
+              {l.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }

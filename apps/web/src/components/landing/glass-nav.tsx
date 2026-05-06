@@ -22,18 +22,26 @@ export function GlassNav() {
           <CoylLogo size="md" theme="dark" />
         </Link>
 
+        {/*
+          Nav rename per the May 2026 homepage audit. Manifesto-mode labels
+          ("Philosophy / The Engine / Commit / Initialize") were brand-voice
+          but cold-traffic-hostile — visitors couldn't find pricing, how
+          it works, or sign-up. Replaced with the standard SaaS shape: a
+          clear navigation pattern + a real CTA. Brand voice stays in the
+          hero copy, the BrandStatement section, and the Truth card.
+        */}
         <div className="hidden items-center gap-8 text-sm font-medium tracking-wide text-gray-400 md:flex">
-          <a href="#philosophy" className="transition-colors hover:text-white">Philosophy</a>
-          <a href="#engine" className="transition-colors hover:text-white">The Engine</a>
-          <a href="#pricing" className="transition-colors hover:text-white">Commit</a>
+          <Link href="/how-it-works" className="transition-colors hover:text-white">How it works</Link>
+          <Link href="/pricing" className="transition-colors hover:text-white">Pricing</Link>
+          <Link href="/research" className="transition-colors hover:text-white">Research</Link>
         </div>
 
         <Link
-          href="/sign-up"
-          className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:border-orange-500/50 hover:bg-white/10"
+          href="/sign-up?ref=nav"
+          className="flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)] transition-all hover:shadow-[0_0_24px_rgba(255,102,0,0.5)]"
         >
-          Initialize
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-orange-500">
+          Start free
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </Link>

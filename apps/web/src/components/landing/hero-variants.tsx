@@ -147,21 +147,34 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               href={`/sign-up?v=${variant}`}
               className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-orange-600 to-red-600 px-8 py-4 text-lg font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(255,102,0,0.5)]"
             >
-              <span className="relative z-10">{copy.primaryCta}</span>
+              <span className="relative z-10">Start free</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="relative z-10">
                 <path d="M8 1v14M1 8l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" transform="rotate(-90 8 8)" />
               </svg>
             </Link>
-            <a
-              href="#try-it"
-              className="group flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-8 py-4 text-lg font-semibold text-white transition-colors hover:bg-white/10"
+            <Link
+              href="/pricing"
+              className="group flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-8 py-4 text-lg font-semibold text-white transition-colors hover:border-orange-500/40 hover:bg-white/10"
             >
-              Try it now
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:translate-y-1">
-                <path d="M7 1v12m0 0l5-5m-5 5L2 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              See pricing
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:translate-x-0.5">
+                <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </a>
+            </Link>
           </motion.div>
+
+          {/* Pricing-anchor line. Audit caught that visitors can't see what
+              this costs without scrolling — surfacing the $0/$19 floor
+              right under the CTAs answers the "how much?" objection
+              without polluting the hero. */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+            className="mt-4 text-sm text-gray-500"
+          >
+            Free forever to start. Core from $19/mo. No credit card.
+          </motion.p>
         </div>
 
         {/* Static 9:12 PM fridge scene — consistent across variants */}
