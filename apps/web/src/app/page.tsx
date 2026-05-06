@@ -13,6 +13,7 @@ import { UniversalWedges } from '@/components/landing/universal-wedges'
 import { YouIf } from '@/components/landing/you-if'
 import { ThingsCoylSays } from '@/components/landing/things-coyl-says'
 import { Glp1Callout } from '@/components/landing/glp1-callout'
+import { ProcrastinationCallout } from '@/components/landing/procrastination-callout'
 import { HowItWorksStrip } from '@/components/landing/how-it-works-strip'
 import { ComparisonTable } from '@/components/landing/comparison-table'
 import { HomepageFaq } from '@/components/landing/homepage-faq'
@@ -99,6 +100,14 @@ export default async function HomePage({
               Year 1 per the May 2026 strategy doc; the dedicated /glp1
               page is the destination. */}
           <Glp1Callout />
+
+          {/* Procrastination callout — paired with Glp1Callout per the
+              May 2026 wedge ultrathink. The brand says "any compulsive
+              behavior" but surfaces had been over-indexing on weight.
+              These two equal-weight bands declare the brand's actual
+              category position: pattern interrupt is universal; weight
+              and workplace are co-leads, not lead-and-aside. */}
+          <ProcrastinationCallout />
 
           {/* How COYL works — three-step answer to "what is this thing?"
               for cold traffic. Per the May 2026 homepage audit, the page
