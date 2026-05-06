@@ -33,6 +33,15 @@ model User {
   trialEndsAt           DateTime?
   onboardingCompleted   Boolean   @default(false)
   expoPushToken         String?
+  // GLP-1 companion profile — set during onboarding for users on
+  // Ozempic / Wegovy / Mounjaro / Zepbound / etc. Drives the day-3
+  // post-injection intervention timing in the precision-interrupt
+  // cron and unlocks the clinician-shareable summary feature for B2B
+  // partners. All fields nullable so non-GLP-1 users are unaffected.
+  glp1Drug              String?     // Ozempic, Wegovy, Mounjaro, Zepbound, "compounded", or other free-text
+  glp1InjectionWeekday  Int?        // 0=Sun..6=Sat — day the user injects, in their local timezone
+  glp1StartedAt         DateTime?   // approximate start date for the prescription
+  glp1EndedAt           DateTime?   // null while still on the drug; set when user comes off (triggers 90-day relapse-prevention protocol)
   // Intent data (collected during onboarding)
   role                  String?
   useCase               String?

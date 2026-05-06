@@ -88,6 +88,43 @@ export function TodayView({
         <p className="text-xs text-muted-foreground">{formatDate(new Date())}</p>
       </div>
 
+      {/* RECOVERY MODE — explicit banner when the user just slipped.
+          Per the May 2026 audit §4.4: the brand promise is "no restart,
+          continue." This banner makes the promise visible. Hides streak
+          surface in the IDENTITY LINE below by short-circuiting the
+          warning tone — recovery is its own state, not a guilt state.
+          Auto-clears 24h after the slip via the existing recoveryState
+          state machine in lib/user-state.ts. */}
+      {(user.recoveryState === 'SLIPPED' || user.recoveryState === 'RECOVERING') && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-4 overflow-hidden rounded-3xl border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-500/[0.08] via-emerald-500/[0.03] to-transparent p-5"
+        >
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+              <span className="text-base font-black">↺</span>
+            </div>
+            <div className="flex-1">
+              <p className="label-xs text-emerald-400">RECOVERY MODE · 24H</p>
+              <p className="mt-1 text-lg font-black leading-tight text-foreground">
+                You slipped. Good. Now we stop the damage.
+              </p>
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                Streak preserved. No Monday reset. One tiny better move and you&rsquo;re back.
+              </p>
+              <Link
+                href="/slip"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-4 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-500/25"
+              >
+                Build the recovery plan →
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* IDENTITY LINE — the accusatory/affirming one-liner from
           identity-sentence.ts. Sets the emotional register for the page.
           Deterministic from user data, no AI latency. */}
