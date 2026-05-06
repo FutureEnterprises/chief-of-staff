@@ -134,10 +134,10 @@ export default function ResearchPage() {
 
       <div className="mb-16 flex flex-wrap gap-3">
         <Link
-          href="mailto:research@coyl.ai?subject=Clinical%20study%20partnership"
+          href="/clinical-study"
           className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
         >
-          Run a study with us
+          See the 12-week protocol &rarr;
         </Link>
         <Link
           href="/science"
@@ -146,6 +146,36 @@ export default function ResearchPage() {
           Read the underlying science
         </Link>
       </div>
+
+      {/* Live-study banner — replaces the "we want to run" framing with a
+          "the protocol is real, here's how to enroll" surface. The /research
+          page stays focused on outcomes-we-track; partners click through to
+          /clinical-study for the IRB-ready protocol. */}
+      <section className="mb-16 rounded-3xl border border-orange-500/40 bg-gradient-to-br from-orange-500/[0.08] to-transparent p-8">
+        <div className="mb-3 flex flex-wrap items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/40 bg-orange-500/[0.08] px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest text-orange-400">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-orange-400" />
+            Open for partner enrollment
+          </span>
+          <span className="text-[10px] font-mono uppercase tracking-widest text-gray-500">
+            Protocol v0.9 &middot; IRB pathway: minimal-risk expedited
+          </span>
+        </div>
+        <h2 className="mb-3 text-2xl font-bold text-white md:text-3xl">
+          GLP-1 weight-regain study &mdash; protocol live.
+        </h2>
+        <p className="mb-5 max-w-2xl text-base text-gray-300">
+          12 weeks, N=80, randomized 1:1. Tests whether real-time pattern interrupt
+          during GLP-1 maintenance reduces weight regain in the 90 days after
+          discontinuation. The protocol is drafted and partner-ready.
+        </p>
+        <Link
+          href="/clinical-study"
+          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
+        >
+          Read the protocol &rarr;
+        </Link>
+      </section>
 
       <section className="mb-16">
         <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">

@@ -58,7 +58,13 @@ COYL is a behavioral support tool. It is not medical treatment, not a substitute
 
 - Homepage: https://coyl.ai
 - How it works: https://coyl.ai/how-it-works
+- Pricing: https://coyl.ai/pricing
+- Research & outcomes: https://coyl.ai/research
+- Clinical study (12-week GLP-1 protocol): https://coyl.ai/clinical-study
 - Weight loss wedge: https://coyl.ai/weight-loss
+- GLP-1 companion: https://coyl.ai/glp1
+- Procrastination wedge: https://coyl.ai/procrastination
+- Workplace / employer: https://coyl.ai/teams
 - Destructive behaviors wedge: https://coyl.ai/destructive-behaviors
 - Decision support: https://coyl.ai/decision-support
 - Recovery: https://coyl.ai/recovery
@@ -66,6 +72,18 @@ COYL is a behavioral support tool. It is not medical treatment, not a substitute
 - Science: https://coyl.ai/science
 - Terms: https://coyl.ai/terms
 - Privacy: https://coyl.ai/privacy
+
+## Research Posture
+
+COYL has a published 12-week behavioral study protocol open for partner
+enrollment: a randomized, minimal-risk, IRB-friendly study testing real-time
+pattern interrupt during GLP-1 maintenance against weight regain at 90 days
+post-discontinuation. N=80, 1:1 randomization, intervention vs. waitlist
+control. Protocol, eligibility, IRB pathway, and partner ask are public at
+https://coyl.ai/clinical-study. We are NOT claiming outcome data we have
+not collected. We track in-app metrics (Patterns Defeated, Same-Night
+Recovery, Streak Integrity, Excuse Frequency, Danger-Window Accuracy) on
+live users and report them in aggregate at https://coyl.ai/research.
 
 ## Contact
 

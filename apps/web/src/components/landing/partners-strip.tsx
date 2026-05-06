@@ -42,8 +42,8 @@ export function PartnersStrip() {
     {
       Icon: FlaskConical,
       label: 'Research labs + clinics',
-      body: 'Co-author outcome studies. De-identified data sharing under DUA.',
-      href: '/research',
+      body: '12-week GLP-1 study open for enrollment. Protocol drafted, IRB pathway mapped.',
+      href: '/clinical-study',
     },
   ]
 
@@ -91,11 +91,17 @@ export function PartnersStrip() {
 
         <div className="flex flex-wrap items-center gap-3">
           <Link
-            href="/research"
+            href="/clinical-study"
             className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
           >
-            See research + outcomes
+            See the clinical protocol
             <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+          <Link
+            href="/research"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-5 py-2.5 text-sm font-semibold text-gray-200 hover:border-orange-500/40 hover:text-white"
+          >
+            Outcomes we measure
           </Link>
           <Link
             href="mailto:partners@coyl.ai?subject=COYL%20partnership"

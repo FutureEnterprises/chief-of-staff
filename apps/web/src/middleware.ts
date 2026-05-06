@@ -23,6 +23,7 @@ const isPublicRoute = createRouteMatcher([
   '/glp1',
   '/pricing',
   '/research',
+  '/clinical-study',
   '/procrastination',
   '/teams',
   '/api/webhooks/(.*)',
