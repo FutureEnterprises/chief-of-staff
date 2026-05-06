@@ -16,34 +16,39 @@ const sizes = {
 }
 
 /**
- * CoylMark — the broken loop.
+ * CoylMark — modern geometric "C".
  *
- * Reads as a nearly-closed ring with a visible gap at the upper-right,
- * with a single filled dot bridging the gap. The shape is the entire
- * product metaphor in one glyph:
+ * Bold open arc forming the letter C. ~270° of a circle, heavy stroke,
+ * round endcaps. Orange→red gradient from top to bottom-right gives the
+ * mark visual momentum — reads like a C being drawn left-to-right, not
+ * a static O with a hole. The opening on the right keeps the negative
+ * space active so the eye finishes the shape itself.
  *
- *   • ring    = the autopilot loop — the pattern that keeps running you
- *   • gap     = the interrupt — the exact moment the loop is about to close
- *   • dot     = COYL — the thing that catches it right before completion
+ * Why a clean C, not the previous broken-loop:
+ *   • The broken-loop concept tried to encode "interrupted pattern" in
+ *     the silhouette. It read as a generic loading spinner at small
+ *     sizes and lost its meaning entirely below 16px.
+ *   • A bold C is the universally-readable letterform, plays directly
+ *     against the wordmark, and references the brand name (COYL) AND
+ *     the etymology (coil) without needing a visual gimmick.
+ *   • Sized for favicon legibility: the 4px stroke at 24px viewBox is
+ *     thick enough to survive the 16×16 browser tab raster.
  *
  * Geometric properties:
- *   • viewBox 0 0 24 24, renders crisply at 16px (favicon) through 1024px
- *     (iOS app icon) without pixel snapping issues.
- *   • Single open arc path, 3px stroke, linecap=round so the ends read as
- *     deliberate terminators rather than cut-offs.
- *   • Gradient stroke (#ff6600 → #ef4444) matches the site's CTA gradient.
- *   • Solid-fill dot uses the top gradient stop so it holds at tiny sizes
- *     where gradients blur into a single color anyway.
+ *   • viewBox 0 0 24 24 — scales crisply from 16px favicon to 1024px
+ *     iOS app icon.
+ *   • Arc center (12, 12), radius 8, stroke-width 4. Keeps the inner
+ *     bowl readable while the stroke fills enough visual weight.
+ *   • Arc spans from ≈345° down through 180° to ≈15° (the long way
+ *     around) leaving a 30° gap on the right — the C opening.
+ *   • Linear gradient #ff6600 → #ef4444 oriented top → bottom-right so
+ *     the warmer hue reads first (we're left-to-right readers).
  *
- * The `gradientUnits="userSpaceOnUse"` + explicit coordinates guarantee the
- * gradient direction is stable across sizes. Without this, the gradient
- * recomputes per-render at different sizes and the logo looks inconsistent
- * between favicon and hero contexts.
+ * Per-size unique gradient id so multiple marks on the same page don't
+ * clash via the global SVG id namespace.
  */
 export function CoylMark({ size = 30, className }: { size?: number; className?: string }) {
-  // Unique gradient id per size so multiple marks on one page don't clash
-  // via the global SVG id namespace. 30 → "coyl-mark-grad-30".
-  const gradId = `coyl-mark-grad-${size}`
+  const gradId = `coyl-c-${size}`
 
   return (
     <svg
@@ -69,29 +74,26 @@ export function CoylMark({ size = 30, className }: { size?: number; className?: 
         </linearGradient>
       </defs>
 
-      {/* The almost-closed loop. Large-arc, sweep-clockwise, starting just past
-          12 o'clock and ending at roughly 2 o'clock — leaves a ~50° gap at the
-          upper-right that the dot fills. Tuned empirically for balance. */}
+      {/* The C — 270° arc opening on the right. Endpoints calculated so
+          the arc takes the long way around (large-arc flag 1, sweep
+          flag 0 = counter-clockwise) leaving the right side open. */}
       <path
-        d="M 13.5 3.2 A 9 9 0 1 0 20.2 15"
+        d="M 19.7 7.5 A 8 8 0 1 0 19.7 16.5"
         stroke={`url(#${gradId})`}
-        strokeWidth="3"
+        strokeWidth="4"
         strokeLinecap="round"
         fill="none"
       />
-
-      {/* The catch point. Slightly larger than the stroke so it reads as a
-          deliberate endpoint, not an accidental join. Filled with the warm
-          end of the gradient so it pops against the cooler arc tail. */}
-      <circle cx="16.9" cy="5.6" r="2.1" fill="#ff6600" />
     </svg>
   )
 }
 
 /**
- * Full COYL logotype — mark + wordmark. The Y is always orange so the eye
- * lands on the middle letter (matches the hero H1 and /caught H1 treatment
- * where the orange highlight carries the "catch" moment).
+ * Full COYL logotype — mark + wordmark. Mark sits left, wordmark right.
+ * The Y in the wordmark stays orange (eyepath anchor + reinforces the
+ * accent letter). With the new mark also rendering as a C, the read
+ * becomes: [orange C glyph] COYL — letterforms going left-to-right,
+ * mark and wordmark amplifying each other instead of fighting.
  */
 export function CoylLogo({
   className,

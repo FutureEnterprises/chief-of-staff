@@ -2,9 +2,10 @@
   <!--
     COYL wordmark — SVG version for OG previews, social cards, and
     anywhere we need a flat image asset instead of the React component.
-    The "O" in C[O]YL is replaced by the broken-loop mark so the logo
-    is self-contained: reading the wordmark also reads the product
-    metaphor (loop almost closes, catch-dot at the gap).
+    The "O" in COYL is replaced by the geometric C-mark so the logo
+    is self-contained: the eye reads the C-shape, then "OYL," then
+    completes the word "COYL" mentally. The C-mark also doubles as the
+    standalone product symbol — favicon, app icon, social avatar.
     Kept geometrically consistent with apps/web/src/components/brand/logo.tsx.
   -->
   <defs>
@@ -14,28 +15,23 @@
     </linearGradient>
   </defs>
 
-  <!-- Broken loop sitting where the "O" would go. 24px radius target so
-       it matches the visual weight of the 34pt letterforms. -->
-  <g transform="translate(16 2)">
-    <!-- Almost-closed ring. Same path as the favicon/mark, scaled ×1.33
-         (30 → 40 viewBox) so it reads at wordmark weight. -->
+  <!-- The C-mark sits where the "C" letterform would go. The wordmark
+       continues with "OYL" beside it. Geometric arc, 270° opening on
+       the right, 5px stroke at this scale matches the 34pt font weight. -->
+  <g transform="translate(8 4)">
     <path
-      d="M 18 4.3 A 12 12 0 1 0 27 20"
+      d="M 30 12 A 12 12 0 1 0 30 28"
       stroke="url(#coyl-wordmark-grad)"
-      stroke-width="4"
+      stroke-width="5"
       stroke-linecap="round"
       fill="none"
     />
-    <!-- Catch-dot at the gap -->
-    <circle cx="22.5" cy="7.5" r="2.8" fill="#ff6600"/>
   </g>
 
-  <!-- "C" -->
-  <text x="0" y="36" font-family="-apple-system, 'Inter', sans-serif" font-size="34" font-weight="700" letter-spacing="-1.5" fill="#1a1a1a">C</text>
-
-  <!-- "YL" — Y tinted orange to match the wordmark brand rule -->
+  <!-- "OYL" — wordmark continuation. Y stays orange to honor the
+       brand rule (Y is the accent letter across all surfaces). -->
   <text x="46" y="36" font-family="-apple-system, 'Inter', sans-serif" font-size="34" font-weight="700" letter-spacing="-1.5" fill="#1a1a1a">
-    <tspan fill="#ff6600">Y</tspan>L
+    O<tspan fill="#ff6600">Y</tspan>L
   </text>
 
   <!-- Tagline -->
