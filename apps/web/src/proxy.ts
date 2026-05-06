@@ -126,9 +126,13 @@ function handler(req: NextRequest, event: Parameters<typeof clerkHandler>[1]) {
   return clerkHandler(req, event)
 }
 
+// Next.js 16 renamed the file convention from middleware.ts → proxy.ts and
+// the `config` export → `proxyConfig`. The default-export handler pattern
+// still works (Clerk v6.12 supports both conventions), so the existing
+// clerk-wrapped handler stays and we just rename the config export.
 export default clerkConfigured ? handler : () => undefined // dev passthrough
 
-export const config = {
+export const proxyConfig = {
   matcher: [
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
   ],
