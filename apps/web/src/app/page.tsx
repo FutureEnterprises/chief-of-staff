@@ -14,6 +14,8 @@ import { YouIf } from '@/components/landing/you-if'
 import { ThingsCoylSays } from '@/components/landing/things-coyl-says'
 import { Glp1Callout } from '@/components/landing/glp1-callout'
 import { HowItWorksStrip } from '@/components/landing/how-it-works-strip'
+import { ComparisonTable } from '@/components/landing/comparison-table'
+import { HomepageFaq } from '@/components/landing/homepage-faq'
 import { PartnersStrip } from '@/components/landing/partners-strip'
 import { FinalCta } from '@/components/landing/final-cta'
 // Cut from the homepage per COYL_homepage_v4.md (cut-convert-win pass):
@@ -119,6 +121,14 @@ export default async function HomePage({
             <RescueDemo />
           </div>
 
+          {/* Comparison table \u2014 cold visitors compare COYL to Noom /
+              MFP / Calibrate in their head; this gives them a structured
+              way to do it. Wins on three axes: when-it-acts (only COYL
+              fires at decision moment), bad-day handling (no restart),
+              and price ($19 below Noom's $60 and Calibrate's ~$137). Per
+              May 2026 audit \u00a77. */}
+          <ComparisonTable />
+
           {/* 4. This is for you \u2014 recognition bullets */}
           <YouIf />
 
@@ -135,6 +145,13 @@ export default async function HomePage({
 
           {/* 7. Recovery */}
           <RecoverySection />
+
+          {/* Homepage FAQ — five highest-frequency cold-traffic
+              objections (GLP-1 replace?, privacy, notification volume,
+              what-if-it-doesn't-work, medical disclaimer). Sits before
+              B2B + final CTA so consumer questions are answered before
+              we ask for the click. Full FAQ continues on /pricing. */}
+          <HomepageFaq />
 
           {/* B2B partners strip — telehealth GLP-1, employers, research
               labs. Per the May 2026 audit, the homepage was 100%
