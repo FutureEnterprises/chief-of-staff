@@ -28,6 +28,13 @@ export const updateUserSchema = z.object({
   reminderIntensity: z.enum(['GENTLE', 'STANDARD', 'RELENTLESS']).optional(),
   emailBriefingEnabled: z.boolean().optional(),
   emailBriefingDays: z.array(z.enum(['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'])).optional(),
+  // GLP-1 companion profile — set in /settings or onboarding. All fields
+  // nullable; sending null explicitly clears the value (used when a user
+  // marks themselves "no longer on the drug" or removes the profile).
+  glp1Drug: z.string().min(1).max(50).nullable().optional(),
+  glp1InjectionWeekday: z.number().int().min(0).max(6).nullable().optional(),
+  glp1StartedAt: z.string().datetime().nullable().optional(),
+  glp1EndedAt: z.string().datetime().nullable().optional(),
 })
 
 export type UpdateUserInput = z.infer<typeof updateUserSchema>

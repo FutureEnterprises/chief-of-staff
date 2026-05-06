@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { PageTransition, StaggerList, StaggerItem, motion } from '@/components/motion/animations'
 import { toast } from '@/hooks/use-toast'
-import { updateUserSettings } from '@/app/actions/settings'
+import { updateUserSettings, updateGlp1Profile } from '@/app/actions/settings'
 import { UserButton } from '@clerk/nextjs'
 import { PaywallDialog } from '@/components/paywall/paywall-dialog'
-import { Bell, Zap, User as UserIcon, Heart, Flame } from 'lucide-react'
+import { Bell, Zap, User as UserIcon, Heart, Flame, Syringe } from 'lucide-react'
 
 interface SettingsViewProps {
   user: User
@@ -181,6 +181,14 @@ export function SettingsView({ user }: SettingsViewProps) {
           </GlassCard>
         </StaggerItem>
 
+        {/* GLP-1 companion profile — feeds the day-3 interrupt cron and
+            unlocks the 90-day relapse-prevention protocol when the user
+            comes off the drug. Self-contained section with its own save
+            action so it doesn't touch reminder / briefing state. */}
+        <StaggerItem>
+          <Glp1ProfileCard user={user} />
+        </StaggerItem>
+
         {/* Save */}
         <StaggerItem>
           <div className="flex justify-end">
@@ -198,6 +206,157 @@ export function SettingsView({ user }: SettingsViewProps) {
 
       <PaywallDialog open={showPaywall} onClose={() => setShowPaywall(false)} />
     </PageTransition>
+  )
+}
+
+/**
+ * GLP-1 companion profile card.
+ *
+ * Lets users self-identify as on Ozempic / Wegovy / Mounjaro / etc, set
+ * their injection weekday, and mark themselves off-the-drug. This is the
+ * data that drives the day-3 interrupt cron (post-injection hunger
+ * return is reliably ~72 hours after the dose for semaglutide /
+ * tirzepatide) and unlocks the clinician-shareable summary feature.
+ *
+ * Self-contained state + save so the user can update without touching
+ * the parent settings form.
+ */
+function Glp1ProfileCard({ user }: { user: User }) {
+  // Cast through the User type so we can read the new fields without
+  // requiring a global type bump everywhere.
+  const u = user as User & {
+    glp1Drug?: string | null
+    glp1InjectionWeekday?: number | null
+    glp1StartedAt?: Date | string | null
+    glp1EndedAt?: Date | string | null
+  }
+
+  const [drug, setDrug] = useState<string>(u.glp1Drug ?? '')
+  const [weekday, setWeekday] = useState<number | ''>(
+    typeof u.glp1InjectionWeekday === 'number' ? u.glp1InjectionWeekday : '',
+  )
+  const [startedAt, setStartedAt] = useState<string>(
+    u.glp1StartedAt
+      ? new Date(u.glp1StartedAt).toISOString().slice(0, 10)
+      : '',
+  )
+  const [offTheDrug, setOffTheDrug] = useState<boolean>(!!u.glp1EndedAt)
+  const [saving, setSaving] = useState(false)
+
+  async function save() {
+    setSaving(true)
+    try {
+      await updateGlp1Profile({
+        glp1Drug: drug.trim() ? drug.trim() : null,
+        glp1InjectionWeekday: typeof weekday === 'number' ? weekday : null,
+        glp1StartedAt: startedAt
+          ? new Date(`${startedAt}T00:00:00.000Z`).toISOString()
+          : null,
+        glp1EndedAt: offTheDrug ? new Date().toISOString() : null,
+      })
+      toast({
+        title: 'GLP-1 profile saved',
+        description: drug.trim()
+          ? 'COYL will tune interrupts to your injection cycle.'
+          : 'GLP-1 profile cleared.',
+      })
+    } catch {
+      toast({
+        title: 'Error',
+        description: 'Failed to save GLP-1 profile.',
+        variant: 'destructive',
+      })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+  return (
+    <GlassCard>
+      <div className="mb-4 flex items-center gap-2">
+        <div className="rounded-xl bg-orange-500/10 p-2">
+          <Syringe className="h-4 w-4 text-orange-500" />
+        </div>
+        <div>
+          <h3 className="heading-4">GLP-1 companion</h3>
+          <p className="text-xs text-muted-foreground">
+            On Ozempic, Wegovy, Mounjaro, Zepbound, or compounded? Tell COYL so it can time interrupts to your cycle.
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="mb-1.5 block text-xs font-mono uppercase tracking-widest text-muted-foreground">
+            Medication
+          </label>
+          <Input
+            value={drug}
+            onChange={(e) => setDrug(e.target.value)}
+            placeholder="Ozempic / Wegovy / Mounjaro / Zepbound / Compounded / none"
+            className="h-10"
+          />
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            Leave blank to remove the GLP-1 profile.
+          </p>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-xs font-mono uppercase tracking-widest text-muted-foreground">
+            Injection day
+          </label>
+          <div className="grid grid-cols-7 gap-1.5">
+            {weekdayLabels.map((label, idx) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => setWeekday(idx)}
+                className={`rounded-lg border px-2 py-2 text-xs font-bold transition-colors ${
+                  weekday === idx
+                    ? 'border-orange-500 bg-orange-500/15 text-orange-300'
+                    : 'border-border bg-muted/20 text-muted-foreground hover:border-orange-500/30'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            COYL fires a day-3 hunger-return interrupt 72 hours after this day, in your local timezone.
+          </p>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-xs font-mono uppercase tracking-widest text-muted-foreground">
+            Started (optional)
+          </label>
+          <Input
+            type="date"
+            value={startedAt}
+            onChange={(e) => setStartedAt(e.target.value)}
+            className="h-10"
+          />
+        </div>
+
+        <div className="flex items-center justify-between gap-4 rounded-xl border border-border bg-muted/10 p-3">
+          <div>
+            <p className="text-sm font-medium text-foreground">I&rsquo;m off the drug now</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Triggers the 90-day relapse-prevention protocol.
+            </p>
+          </div>
+          <Toggle checked={offTheDrug} onChange={setOffTheDrug} />
+        </div>
+
+        <div className="flex justify-end">
+          <Button variant="brand" size="sm" onClick={save} disabled={saving}>
+            {saving ? 'Saving…' : 'Save GLP-1 profile'}
+          </Button>
+        </div>
+      </div>
+    </GlassCard>
   )
 }
 
