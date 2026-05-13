@@ -19,6 +19,19 @@ export const metadata: Metadata = {
     description:
       'What we measure, what we publish, and how to study real-time pattern interrupt with us.',
     url: 'https://coyl.ai/research',
+    images: [
+      {
+        url: '/api/og?title=What+we+measure.+What+we+publish.&kicker=Research+%26+Outcomes',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'COYL Research & Outcomes',
+    description: 'What we measure, what we publish, and how to study real-time pattern interrupt with us.',
+    images: ['/api/og?title=What+we+measure.+What+we+publish.&kicker=Research+%26+Outcomes'],
   },
 }
 

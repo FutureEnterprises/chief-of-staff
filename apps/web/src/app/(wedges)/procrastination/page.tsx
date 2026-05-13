@@ -22,6 +22,19 @@ export const metadata: Metadata = {
     description:
       "30-second tab-switches compound into lost days. COYL fires the moment you reach.",
     url: 'https://coyl.ai/procrastination',
+    images: [
+      {
+        url: '/api/og?title=Catch+the+tab+switch+before+it+costs+the+day.&kicker=Procrastination',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'COYL for procrastination — catch the tab switch before it costs the day',
+    description: '30-second tab-switches compound into lost days. COYL fires the moment you reach.',
+    images: ['/api/og?title=Catch+the+tab+switch+before+it+costs+the+day.&kicker=Procrastination'],
   },
 }
 

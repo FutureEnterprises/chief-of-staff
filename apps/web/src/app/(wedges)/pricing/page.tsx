@@ -18,6 +18,19 @@ export const metadata: Metadata = {
     description:
       'Free to start. $19/mo for the full interrupt + recovery engine. Plus and Premium for accountability and stakes.',
     url: 'https://coyl.ai/pricing',
+    images: [
+      {
+        url: '/api/og?title=Pay+for+the+interrupt%2C+not+for+the+guilt.&kicker=Pricing',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Pricing — COYL',
+    description: 'Free to start. $19/mo Core. $29/mo Plus. $49/mo Premium. Cancel anytime.',
+    images: ['/api/og?title=Pay+for+the+interrupt%2C+not+for+the+guilt.&kicker=Pricing'],
   },
 }
 

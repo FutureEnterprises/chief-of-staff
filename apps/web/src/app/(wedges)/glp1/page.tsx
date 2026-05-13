@@ -22,6 +22,19 @@ export const metadata: Metadata = {
     description:
       "The drug suppresses appetite. COYL catches the autopilot. Built for Ozempic, Wegovy, Mounjaro users who want the weight to stay off.",
     url: 'https://coyl.ai/glp1',
+    images: [
+      {
+        url: '/api/og?title=What+the+drug+can%27t+do%2C+we+do.&kicker=GLP-1+companion',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'COYL for GLP-1 \u2014 what the drug can\u2019t do, we do',
+    description: 'For Ozempic, Wegovy, Mounjaro users who want the weight to stay off.',
+    images: ['/api/og?title=What+the+drug+can%27t+do%2C+we+do.&kicker=GLP-1+companion'],
   },
 }
 

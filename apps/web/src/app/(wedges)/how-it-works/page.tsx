@@ -3,8 +3,38 @@ import Link from 'next/link'
 import { CoreLoop } from '@/components/landing/core-loop'
 
 export const metadata: Metadata = {
-  title: 'How COYL works',
-  description: 'The autopilot interruption loop: detect the script, interrupt the moment, recover before the spiral.',
+  title: 'How COYL works — detect, interrupt, recover',
+  description:
+    "Three-step loop: detect the autopilot script you keep running, interrupt at the moment of drift (not the next morning), recover before one slip becomes a week. The mechanism behind every COYL surface.",
+  keywords: [
+    'how coyl works',
+    'autopilot interruption mechanism',
+    'jitai behavior change',
+    'pattern interrupt how it works',
+    'real-time behavior change',
+    'recovery engine behavior change',
+    'detect interrupt recover',
+  ],
+  alternates: { canonical: '/how-it-works' },
+  openGraph: {
+    title: 'How COYL works — detect, interrupt, recover',
+    description:
+      "Detect the autopilot script. Interrupt at the moment of drift. Recover before one slip becomes a week.",
+    url: 'https://coyl.ai/how-it-works',
+    images: [
+      {
+        url: '/api/og?title=Detect.+Interrupt.+Recover.&kicker=How+it+works',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'How COYL works — detect, interrupt, recover',
+    description: 'Detect the autopilot script. Interrupt at drift. Recover before one slip becomes a week.',
+    images: ['/api/og?title=Detect.+Interrupt.+Recover.&kicker=How+it+works'],
+  },
 }
 
 export default function HowItWorksPage() {

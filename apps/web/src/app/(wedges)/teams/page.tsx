@@ -22,6 +22,19 @@ export const metadata: Metadata = {
     description:
       '23 minutes per interrupt. COYL fires before the tab switch. PMPM pricing for employers.',
     url: 'https://coyl.ai/teams',
+    images: [
+      {
+        url: '/api/og?title=23+minutes+per+interrupt.+We+fire+before+the+tab+switch.&kicker=For+teams',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'COYL for teams — workplace productivity, in full',
+    description: '23 minutes per interrupt. COYL fires before the tab switch. PMPM pricing for employers.',
+    images: ['/api/og?title=23+minutes+per+interrupt.+We+fire+before+the+tab+switch.&kicker=For+teams'],
   },
 }
 

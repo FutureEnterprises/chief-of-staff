@@ -19,6 +19,19 @@ export const metadata: Metadata = {
     description:
       '12-week randomized study on GLP-1 weight regain. Protocol drafted. IRB pathway mapped. Looking for telehealth prescribers and clinics with a GLP-1 cohort.',
     url: 'https://coyl.ai/clinical-study',
+    images: [
+      {
+        url: '/api/og?title=12+weeks.+80+patients.+One+question+worth+answering.&kicker=Clinical+study',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'COYL Clinical Study — Open for partner enrollment',
+    description: '12-week randomized study on GLP-1 weight regain. Protocol drafted. IRB pathway mapped.',
+    images: ['/api/og?title=12+weeks.+80+patients.+One+question+worth+answering.&kicker=Clinical+study'],
   },
 }
 

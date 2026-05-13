@@ -7,27 +7,42 @@ import { OrganizationSchema, WebSiteSchema } from './structured-data'
 import './globals.css'
 
 // Root metadata \u2014 positioned for search + social preview around the
-// current "commitment engine" framing. Title stays under 60 chars to
-// avoid SERP truncation; description sits in the 150-160 band.
+// autopilot-interruption framing (post-v4 rebrand). Title stays under 60
+// chars to avoid SERP truncation; description sits in the 150\u2013160 band.
+//
+// Keywords cover the four highest-intent buyer searches: GLP-1
+// companions, late-night-eating, procrastination/focus, and the
+// autopilot/JITAI category language. Brand-name keyword is included
+// last (Google rewards brand-name presence in keyword arrays for
+// disambiguation against the dictionary word "coil").
+//
+// openGraph.images points at the dynamic /api/og route so every share
+// \u2014 Twitter/X, LinkedIn, iMessage, Slack, Discord, Facebook \u2014 gets a
+// branded 1200\u00d7630 preview instead of collapsing to a tiny favicon.
+const OG_DEFAULT = '/api/og?title=It%27s+not+the+mistake.+It%27s+what+you+do+after.&kicker=COYL'
+
 export const metadata: Metadata = {
   title: {
-    default: "COYL \u2014 It's not the mistake. It's what you do after.",
+    default: "COYL \u2014 Stop the script before it runs your life",
     template: '%s | COYL',
   },
   description:
-    "COYL catches broken commitments before they become failure loops. Interrupts the autopilot moment you're about to fold \u2014 late-night eating, dropped follow-ups, spiraling. Built first for weight loss.",
+    "COYL catches your autopilot \u2014 late-night eating, the 9 PM kitchen, procrastination spirals, post-GLP-1 weight regain \u2014 at the exact moment before you fold. Real-time pattern interrupt + recovery, not another habit tracker.",
   keywords: [
-    'commitment engine',
-    'behavior interruption',
     'autopilot interruption app',
-    'weight loss app',
-    'late-night eating stop',
-    'follow-through app',
-    'sales follow-up tool',
+    'glp-1 companion app',
+    'ozempic behavior change',
+    'wegovy maintenance app',
+    'weight regain after glp-1',
+    'stop late night eating',
     'stop binge eating app',
-    'quit doomscrolling',
-    'accountability app',
-    'behavior change AI',
+    'pattern interrupt app',
+    'jitai behavioral health',
+    'procrastination intervention',
+    'workplace focus app',
+    'noom alternative',
+    'recovery engine app',
+    'real-time behavior change',
     'coyl',
   ],
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://coyl.ai'),
@@ -44,15 +59,26 @@ export const metadata: Metadata = {
     siteName: 'COYL',
     locale: 'en_US',
     url: 'https://coyl.ai',
-    title: "COYL \u2014 It's not the mistake. It's what you do after.",
+    title: "COYL \u2014 Stop the script before it runs your life",
     description:
-      "The commitment engine. Catches autopilot loops before they turn into failure loops. Built first for weight loss \u2014 works for work follow-up, cravings, procrastination.",
+      "Real-time autopilot interruption. Catches the 9 PM kitchen, the doom-scroll, the post-GLP-1 regain \u2014 before they cost the day. Built first for weight loss.",
+    images: [
+      {
+        url: OG_DEFAULT,
+        width: 1200,
+        height: 630,
+        alt: 'COYL \u2014 Stop the script before it runs your life',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "COYL \u2014 It's not the mistake. It's what you do after.",
+    site: '@coylapp',
+    creator: '@coylapp',
+    title: "COYL \u2014 Stop the script before it runs your life",
     description:
-      "Catches broken commitments before they become failure loops. Works on the exact moment you usually fold.",
+      "Real-time autopilot interruption. Catches the 9 PM kitchen, the doom-scroll, the post-GLP-1 regain.",
+    images: [OG_DEFAULT],
   },
   robots: {
     index: true,
@@ -62,7 +88,18 @@ export const metadata: Metadata = {
       follow: true,
       'max-image-preview': 'large',
       'max-snippet': -1,
+      'max-video-preview': -1,
     },
+  },
+  category: 'health',
+  applicationName: 'COYL',
+  authors: [{ name: 'COYL' }],
+  creator: 'COYL',
+  publisher: 'COYL',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
   },
 }
 

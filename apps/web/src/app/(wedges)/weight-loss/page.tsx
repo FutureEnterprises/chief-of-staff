@@ -21,6 +21,19 @@ export const metadata: Metadata = {
     description:
       "Most diets don't fail at lunch. They fail at 9 PM. COYL catches the exact moment the weight-loss script breaks.",
     url: 'https://coyl.ai/weight-loss',
+    images: [
+      {
+        url: '/api/og?title=Diets+don%27t+fail+at+lunch.+They+fail+at+9+PM.&kicker=Weight+loss',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'COYL for weight loss \u2014 stop the 9 PM kitchen moment',
+    description: "Diets don't fail at lunch. They fail at 9 PM. COYL catches the exact moment.",
+    images: ['/api/og?title=Diets+don%27t+fail+at+lunch.+They+fail+at+9+PM.&kicker=Weight+loss'],
   },
 }
 

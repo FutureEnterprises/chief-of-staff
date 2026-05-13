@@ -2,8 +2,38 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'The science behind COYL',
-  description: 'Grounded in peer-reviewed behavioral research: habit automaticity, dietary lapse triggers, just-in-time adaptive interventions, relapse prevention, and implementation intentions.',
+  title: 'The science behind COYL — peer-reviewed behavioral research',
+  description:
+    'Grounded in peer-reviewed behavioral research: habit automaticity, dietary lapse triggers, just-in-time adaptive interventions (JITAI), relapse prevention, and implementation intentions. Every claim cited to a primary source.',
+  keywords: [
+    'jitai research',
+    'behavior change science',
+    'habit automaticity research',
+    'dietary lapse research',
+    'implementation intentions',
+    'relapse prevention research',
+    'behavioral medicine app',
+  ],
+  alternates: { canonical: '/science' },
+  openGraph: {
+    title: 'The science behind COYL — peer-reviewed behavioral research',
+    description:
+      'Habit automaticity. Dietary lapse triggers. JITAI. Relapse prevention. Implementation intentions. Every claim cited.',
+    url: 'https://coyl.ai/science',
+    images: [
+      {
+        url: '/api/og?title=Grounded+in+real+behavior+science.&kicker=The+science',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'The science behind COYL',
+    description: 'Every claim cited to peer-reviewed behavioral research. JITAI, habit automaticity, relapse prevention.',
+    images: ['/api/og?title=Grounded+in+real+behavior+science.&kicker=The+science'],
+  },
 }
 
 type Citation = {

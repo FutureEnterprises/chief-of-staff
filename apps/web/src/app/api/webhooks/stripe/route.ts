@@ -2,6 +2,50 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import Stripe from 'stripe'
 
+type PaidTier = 'CORE' | 'PLUS' | 'PREMIUM'
+
+/**
+ * Map a Stripe price ID to one of our four PlanType paid tiers.
+ *
+ * Source of truth for tier definitions: apps/web/src/lib/services/entitlement.service.ts
+ * Source of truth for price IDs: Vercel env vars (set per Stripe Dashboard).
+ *
+ * Without this mapping, every paid checkout writes `planType: 'PRO'` to the
+ * user record. PRO is the legacy paid plan and is treated as Core in
+ * entitlements, which means a Plus customer paying $29/mo or a Premium
+ * customer paying $49/mo would receive only Core features. That is a
+ * revenue and trust bug, so map explicitly and fail closed (return null,
+ * caller falls back to PRO for legacy safety) if no env match is found.
+ */
+function tierFromPriceId(priceId: string | null | undefined): PaidTier | null {
+  if (!priceId) return null
+
+  const env = process.env
+  // Backwards compat: legacy PRO_* env names map to Core, since PRO has
+  // always been the entry paid plan in our schema.
+  if (
+    priceId === env.STRIPE_CORE_MONTHLY_PRICE_ID ||
+    priceId === env.STRIPE_CORE_ANNUAL_PRICE_ID ||
+    priceId === env.STRIPE_PRO_MONTHLY_PRICE_ID ||
+    priceId === env.STRIPE_PRO_ANNUAL_PRICE_ID
+  ) {
+    return 'CORE'
+  }
+  if (
+    priceId === env.STRIPE_PLUS_MONTHLY_PRICE_ID ||
+    priceId === env.STRIPE_PLUS_ANNUAL_PRICE_ID
+  ) {
+    return 'PLUS'
+  }
+  if (
+    priceId === env.STRIPE_PREMIUM_MONTHLY_PRICE_ID ||
+    priceId === env.STRIPE_PREMIUM_ANNUAL_PRICE_ID
+  ) {
+    return 'PREMIUM'
+  }
+  return null
+}
+
 export async function POST(req: Request) {
   const stripeKey = process.env.STRIPE_SECRET_KEY
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
@@ -61,11 +105,20 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
   const subscriptionId = session.subscription as string
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
 
+  // Resolve the paid tier from the actual price the customer purchased.
+  // Falls back to 'PRO' (legacy, treated as CORE downstream) only if no env
+  // match — fail visible but not destructive.
+  const priceId = subscription.items.data[0]?.price.id ?? null
+  const resolvedTier = tierFromPriceId(priceId) ?? 'PRO'
+  if (!tierFromPriceId(priceId)) {
+    console.warn('Stripe webhook: no price-ID env match, falling back to PRO', { priceId, userId })
+  }
+
   await prisma.$transaction([
     prisma.user.update({
       where: { id: userId },
       data: {
-        planType: 'PRO',
+        planType: resolvedTier,
         trialEndsAt: subscription.trial_end
           ? new Date(subscription.trial_end * 1000)
           : null,
@@ -76,8 +129,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
       update: {
         stripeCustomerId: session.customer as string,
         stripeSubscriptionId: subscriptionId,
-        stripePriceId: subscription.items.data[0]?.price.id ?? null,
-        planType: 'PRO',
+        stripePriceId: priceId,
+        planType: resolvedTier,
         status: subscription.status,
         renewsAt: subscription.current_period_end
           ? new Date(subscription.current_period_end * 1000)
@@ -90,8 +143,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
         userId,
         stripeCustomerId: session.customer as string,
         stripeSubscriptionId: subscriptionId,
-        stripePriceId: subscription.items.data[0]?.price.id ?? null,
-        planType: 'PRO',
+        stripePriceId: priceId,
+        planType: resolvedTier,
         status: subscription.status,
         startedAt: new Date(),
         renewsAt: subscription.current_period_end
@@ -144,15 +197,19 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   if (!userId) return
 
   const isActive = subscription.status === 'active' || subscription.status === 'trialing'
-  const planType: 'PRO' | 'FREE' = isActive ? 'PRO' : 'FREE'
+  // When active, resolve tier from the price the customer is on right now
+  // (handles upgrades and downgrades). When inactive, drop to FREE.
+  const priceId = subscription.items.data[0]?.price.id ?? null
+  const resolvedTier = isActive ? (tierFromPriceId(priceId) ?? 'PRO') : 'FREE'
 
   await prisma.$transaction([
-    prisma.user.update({ where: { id: userId }, data: { planType } }),
+    prisma.user.update({ where: { id: userId }, data: { planType: resolvedTier } }),
     prisma.billingSubscription.updateMany({
       where: { stripeSubscriptionId: subscription.id },
       data: {
         status: subscription.status,
-        planType,
+        planType: resolvedTier,
+        stripePriceId: priceId,
         renewsAt: subscription.current_period_end
           ? new Date(subscription.current_period_end * 1000)
           : null,

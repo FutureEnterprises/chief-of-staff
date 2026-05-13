@@ -1,9 +1,17 @@
 /**
- * Schema.org structured data — Organization, Software, Website, FAQ.
+ * Schema.org structured data — Organization, SoftwareApplication, WebSite,
+ * FAQPage, BreadcrumbList.
  *
- * All descriptions align with the GODFILE positioning:
- * "COYL makes sure you do what you said you'd do."
- * Commitment engine framing, not productivity-app framing.
+ * All descriptions match the live autopilot-interruption framing (post-v4
+ * rebrand). Earlier copies used "commitment engine" language; that was
+ * removed because it (a) didn't match what's on /, /how-it-works, or any
+ * wedge page, and (b) hurt Google's understanding of the site as a single
+ * topical cluster.
+ *
+ * Schema is the single most under-leveraged SEO lever for a new domain.
+ * Rich-result eligibility (FAQ accordions, sitelinks, app-card knowledge
+ * panels) is unlocked by clean, accurate JSON-LD — costs nothing to ship,
+ * compounds for years.
  */
 
 export function OrganizationSchema() {
@@ -11,11 +19,32 @@ export function OrganizationSchema() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'COYL',
+    legalName: 'COYL, Inc.',
     url: 'https://coyl.ai',
     logo: 'https://coyl.ai/favicon.svg',
     description:
-      "The commitment engine. COYL catches broken commitments before they turn into failure loops — whether the commitment is a diet, a workout, a follow-up email, or a rule you set for yourself.",
+      "Real-time autopilot interruption for behavior change. COYL catches the 9 PM kitchen, the doom-scroll, the post-GLP-1 regain, the workplace tab-switch — at the exact moment before you fold.",
     foundingDate: '2026',
+    contactPoint: [
+      {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: 'hello@coyl.ai',
+        availableLanguage: 'en',
+      },
+      {
+        '@type': 'ContactPoint',
+        contactType: 'business',
+        email: 'partners@coyl.ai',
+        availableLanguage: 'en',
+      },
+      {
+        '@type': 'ContactPoint',
+        contactType: 'research',
+        email: 'research@coyl.ai',
+        availableLanguage: 'en',
+      },
+    ],
     sameAs: [],
   }
 
@@ -36,15 +65,16 @@ export function SoftwareApplicationSchema() {
     applicationSubCategory: 'BehavioralHealthApplication',
     operatingSystem: 'Web, iOS, Android',
     description:
-      "AI-powered commitment and behavior-interruption engine. Detects your autopilot patterns — late-night eating, dropped follow-ups, avoidance loops — and interrupts at the exact moment you're about to break your own word.",
+      "AI-powered real-time pattern interrupt. Detects autopilot loops (late-night eating, doom-scrolling, post-GLP-1 regain, workplace procrastination) and fires at the exact moment of drift — not the next morning. Includes recovery engine for shame-resistant re-entry after slips.",
     url: 'https://coyl.ai',
+    image: 'https://coyl.ai/api/og?title=Stop+the+script+before+it+runs+your+life&kicker=COYL',
     offers: [
       {
         '@type': 'Offer',
         name: 'Free',
         price: '0',
         priceCurrency: 'USD',
-        description: 'Core rescue + decision + recovery flows. 20 AI assists per month.',
+        description: 'Self-trust score, basic autopilot map, 20 AI charges/month.',
       },
       {
         '@type': 'Offer',
@@ -57,7 +87,7 @@ export function SoftwareApplicationSchema() {
           priceCurrency: 'USD',
           billingDuration: 'P1M',
         },
-        description: 'Full rescue, recovery engine, autopilot map, excuse detection.',
+        description: 'Full rescue + recovery engine, pattern detection, excuse detection, 500 AI charges/month.',
       },
       {
         '@type': 'Offer',
@@ -70,17 +100,32 @@ export function SoftwareApplicationSchema() {
           priceCurrency: 'USD',
           billingDuration: 'P1M',
         },
-        description: 'Everything in Core + accountability partners, precision interrupts, pattern reports.',
+        description: 'Everything in Core + accountability partner, challenge pods, precision interrupts (JITAI), 1,500 AI charges/month.',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Premium',
+        price: '49',
+        priceCurrency: 'USD',
+        priceSpecification: {
+          '@type': 'UnitPriceSpecification',
+          price: '49',
+          priceCurrency: 'USD',
+          billingDuration: 'P1M',
+        },
+        description: 'Everything in Plus + scenario simulator, financial stakes, Apple Health + Google Fit + Calendar, unlimited AI.',
       },
     ],
     featureList: [
-      'Rescue flow — interrupt autopilot the moment before you act',
-      'Decision engine — call out the real choice under the surface one',
-      'Recovery engine — stop one slip from becoming a week',
-      'Autopilot pattern map — learns your danger windows',
-      'Excuse detection — names the sentence in your head',
-      'Identity tracking — shows who you are becoming',
-      'Multi-domain: weight loss, work follow-up, cravings, focus',
+      'Real-time pattern interrupt — fires at the moment of drift, not the morning after',
+      'Precision interrupts (JITAI) at learned danger windows',
+      'Recovery engine — same-night recovery, no Monday reset, 1-day grace period',
+      'GLP-1 companion — day-3 interrupt for Ozempic, Wegovy, Mounjaro users',
+      'Excuse detection across 8 categories (Delay, Reward, Minimization, Collapse, Exhaustion, Exception, Compensation, Social Pressure)',
+      'Autopilot map — learns your danger windows from slip history',
+      'Self-trust score and identity-state tracking',
+      'Four delivery modes — Mentor, Strategist, No-BS, Beast',
+      'Multi-wedge: weight loss, procrastination, destructive behaviors, workplace focus',
     ],
   }
 
@@ -93,46 +138,60 @@ export function SoftwareApplicationSchema() {
 }
 
 export function FAQSchema() {
+  // Keep questions tightly matched to search-intent queries Google sees:
+  // "is coyl a real app", "ozempic companion app", "noom alternative",
+  // "is coyl medical", "what is coyl pricing". Each FAQ-Page item is
+  // eligible for a rich-result accordion on the SERP.
   const faqs = [
     {
       question: 'What is COYL?',
       answer:
-        "COYL is a commitment and behavior-interruption engine. It detects the autopilot patterns that run your life — late-night eating, dropped follow-ups, scrolling, spending — and interrupts at the exact moment you're about to break your own word. Built first for weight loss; works for work follow-up, cravings, and procrastination.",
+        "COYL is a real-time autopilot interruption app. It detects the patterns that run your life — late-night eating, the 9 PM kitchen, post-GLP-1 weight regain, doom-scrolling, the workplace tab switch — and fires at the exact moment of drift, before the slip happens. Built first for weight loss; the same engine works for procrastination, cravings, and destructive loops.",
     },
     {
-      question: 'How is COYL different from a productivity app or habit tracker?',
+      question: 'How is COYL different from Noom, Calm, BetterUp, or a habit tracker?',
       answer:
-        "Productivity apps assume you forgot what to do. Habit trackers assume you need reminders. COYL assumes neither — the real problem is that you know what to do and your autopilot takes over anyway. COYL's job is to fire at the exact moment of drift, name the excuse, and give you one physical move.",
+        "Habit trackers reward streaks the next morning. Noom coaches you in the afternoon. Calm guides a meditation later. COYL is the only app that fires in the moment of drift — pre-empting the slip, not reviewing it after. Real-time pattern interrupt, not next-day journaling.",
     },
     {
-      question: 'Does COYL work for weight loss?',
+      question: 'Does COYL work for GLP-1 users (Ozempic, Wegovy, Mounjaro)?',
       answer:
-        "Yes — it's the primary wedge. COYL catches the 9 PM kitchen moment, the weekend spiral, and the 'I already blew it' sentence that turns one slip into a week. It doesn't count calories. It interrupts the loop that breaks your calorie goals.",
+        "Yes — GLP-1 maintenance is a primary wedge. The drug suppresses appetite. It does not touch the 9 PM kitchen loop, the stress-eat reflex, or the 'I deserve this' script. When the prescription ends, those scripts are still there and most of the weight comes back. COYL trains the interrupt during the medicated window so the behavior survives discontinuation. A 12-week behavioral study protocol is open for partner enrollment at coyl.ai/clinical-study.",
     },
     {
-      question: 'Does COYL work for sales and work follow-through?',
+      question: 'Does COYL work for weight loss without GLP-1?',
       answer:
-        "Yes — /work is a full wedge. COYL catches 'I'll follow up' commitments, meeting action items, and the emails that quietly drop. Meeting → commitment → follow-up → closure. The email either went out or it didn't. Waiting is not action.",
+        "Yes — most users are not on a GLP-1. COYL catches the 9 PM kitchen moment, the weekend spiral, and the 'I already blew it' sentence that turns one slip into a lost week. It doesn't count calories. It interrupts the loop that breaks every calorie goal.",
     },
     {
-      question: 'Is COYL a therapy app?',
+      question: 'Does COYL work for procrastination and workplace focus?',
       answer:
-        "No. COYL is not a replacement for therapy, medical treatment, or professional mental-health support. It's a behavioral interruption system. If you're dealing with clinical eating disorders, substance addiction, or anything that needs licensed care, see a professional first.",
+        "Yes — /procrastination is a full wedge. The average knowledge worker loses 23 minutes per interrupt. COYL fires the moment you reach for the doom-scroll tab — before the deep-work block is dead, not after. Also available as a B2B offering for employers and benefits programs at coyl.ai/teams.",
     },
     {
-      question: 'Is COYL free?',
+      question: 'Is COYL therapy or medical treatment?',
       answer:
-        "Yes, there's a free tier. Core is $19/month for the full rescue + recovery engine and pattern map. Plus is $29/month and adds accountability partners + precision interrupts. Premium is $49/month with financial stakes, scenario simulator, and health integrations.",
+        "No. COYL is a behavioral support tool, not therapy, medical treatment, or a substitute for licensed care. If you're dealing with a diagnosed eating disorder, active addiction, or psychiatric crisis, please work with a qualified professional first.",
+    },
+    {
+      question: 'How much does COYL cost?',
+      answer:
+        "Free forever to start (25 active commitments, 20 AI charges/month, basic autopilot map). Core is $19/month for the full rescue + recovery engine. Plus is $29/month and adds accountability partner + precision interrupts. Premium is $49/month with financial stakes, scenario simulator, and health integrations. Annual plans save ~22%. No credit card required for Free.",
     },
     {
       question: 'Does COYL have a mobile app?',
       answer:
-        "Yes. iOS and Android, built with React Native. Interrupts fire via push notifications at your mapped danger windows.",
+        "Yes — iOS and Android, built with Expo / React Native. Precision interrupts fire via push notifications at your mapped danger windows. Apple Health and Google Health Connect integrations on the Premium tier.",
     },
     {
-      question: 'How does the AI know when to interrupt me?',
+      question: 'How does COYL know when to interrupt me?',
       answer:
-        "You map your danger windows during onboarding — the times and contexts where you usually slip. COYL fires at those windows, and also learns from your slip history so the interrupts sharpen over the first few weeks.",
+        "During onboarding you map your danger windows — the times and contexts where you usually slip. COYL fires push notifications at those windows. As you log slips and recoveries, the model sharpens over the first 4–6 weeks. The danger-window engine is a Just-in-Time Adaptive Intervention (JITAI), aligned with published behavioral-medicine research.",
+    },
+    {
+      question: 'What happens to my data if I cancel?',
+      answer:
+        "Your account drops to the Free tier; your data stays yours. You can export everything as JSON from Settings → Data Export, or delete your account entirely. We do not hold your slip history hostage.",
     },
   ]
 
@@ -165,7 +224,12 @@ export function WebSiteSchema() {
     alternateName: 'Control Over Your Life',
     url: 'https://coyl.ai',
     description:
-      "The commitment engine that makes sure you do what you said you'd do. Catches autopilot loops before they become failure loops.",
+      "Real-time autopilot interruption for behavior change. Stop the script before it runs your life.",
+    publisher: {
+      '@type': 'Organization',
+      name: 'COYL',
+      url: 'https://coyl.ai',
+    },
   }
 
   return (
@@ -177,7 +241,7 @@ export function WebSiteSchema() {
 }
 
 /**
- * BreadcrumbList \u2014 used on wedge pages for search result breadcrumbs.
+ * BreadcrumbList — used on wedge pages for search result breadcrumbs.
  * Accepts an array of { name, url } pairs.
  */
 export function BreadcrumbSchema({
