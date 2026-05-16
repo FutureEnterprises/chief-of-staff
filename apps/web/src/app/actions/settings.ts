@@ -82,3 +82,43 @@ export async function updateGlp1Profile(data: {
   revalidatePath('/settings')
   revalidatePath('/today')
 }
+
+/**
+ * Update per-interrupt opt-outs + quiet hours.
+ *
+ * Stored as a single Json blob on User.notificationPrefs — see
+ * lib/notification-prefs.ts for the shape and policy. Validation is light
+ * (booleans + hour ints) because this isn't a security-critical surface;
+ * the worst a malformed write does is set a quiet-hour the user didn't
+ * intend, which they can correct from the same UI.
+ */
+export async function updateNotificationPrefs(data: {
+  dangerWindow?: boolean
+  glp1Day3?: boolean
+  postSlip?: boolean
+  quietHoursStart?: number | null
+  quietHoursEnd?: number | null
+}) {
+  const user = await requireDbUser()
+
+  const clean = (h: number | null | undefined) => {
+    if (h == null) return null
+    if (!Number.isInteger(h) || h < 0 || h > 23) return null
+    return h
+  }
+
+  const prefs = {
+    dangerWindow: data.dangerWindow ?? true,
+    glp1Day3: data.glp1Day3 ?? true,
+    postSlip: data.postSlip ?? true,
+    quietHoursStart: clean(data.quietHoursStart),
+    quietHoursEnd: clean(data.quietHoursEnd),
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { notificationPrefs: prefs },
+  })
+
+  revalidatePath('/settings')
+}

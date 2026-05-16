@@ -40,6 +40,19 @@ model User {
   // this set, in parallel with Expo push for the mobile cohort. Lets
   // web-only and pre-App-Store-launch users get real-time interrupts.
   webPushSubscription   Json?
+  // Per-interrupt-channel opt-out + quiet hours. Single Json blob so
+  // adding a new interrupt class (SMS, accountability partner ping,
+  // etc.) doesn't require a migration. Shape:
+  //   {
+  //     "dangerWindow": boolean,       // default true
+  //     "glp1Day3": boolean,           // default true
+  //     "postSlip": boolean,           // default true
+  //     "quietHoursStart": 0..23 | null, // local-tz hour, inclusive
+  //     "quietHoursEnd":   0..23 | null  // local-tz hour, exclusive
+  //   }
+  // Crons read this before firing. Quiet hours are interpreted in the
+  // user's timezone — same logic the danger-window match already uses.
+  notificationPrefs     Json?
   // GLP-1 companion profile — set during onboarding for users on
   // Ozempic / Wegovy / Mounjaro / Zepbound / etc. Drives the day-3
   // post-injection intervention timing in the precision-interrupt
@@ -842,6 +855,12 @@ enum EventType {
   SHARE_CLICKED
   CALLOUT_VIEWED
   PROMPT_DISMISSED
+  // Consent-architecture feedback after a push-triggered rescue.
+  // eventValue is 'helpful' | 'not_helpful'; metadata carries
+  // { source, windowId, trigger }. Read by the interrupt-history
+  // feed on /today and (eventually) by the danger-window-learner
+  // cron's weighting logic.
+  INTERRUPT_FEEDBACK
 }
 
 // ============================================================
@@ -920,4 +939,37 @@ model BillingSubscription {
   user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("billing_subscriptions")
+}
+
+/**
+ * SmsSignup — captures phone numbers from the /catch-me funnel-
+ * compression landing page. These are not full users yet; they've just
+ * opted into a one-shot SMS "we'll text you tonight at 9pm" intro.
+ *
+ * The flow:
+ *   TikTok bio link → /catch-me → user enters phone → row created
+ *   → cron fires at user's local 9pm → introSentAt populated
+ *   → SMS contains a deep link back to /sign-up?ref=sms
+ *
+ * Distinct from full users because (a) they haven't agreed to anything
+ * beyond a single SMS, (b) we shouldn't pollute User analytics with
+ * phone-only prospects, (c) GDPR right-to-erasure is cleaner on a
+ * separate model.
+ */
+model SmsSignup {
+  id          String    @id @default(cuid())
+  phoneNumber String    @unique
+  source      String?
+  // ISO-3166 timezone string captured at signup (browser TZ). Used by
+  // the SMS-send cron to fire intro messages at the user's local 9pm.
+  timezone    String?
+  introSentAt DateTime?
+  // Did this signup convert to a paid or free account? Populated by the
+  // sign-up flow when the SMS deep-link is followed.
+  convertedAt DateTime?
+  convertedUserId String?
+  createdAt   DateTime  @default(now())
+
+  @@index([createdAt])
+  @@map("sms_signups")
 }

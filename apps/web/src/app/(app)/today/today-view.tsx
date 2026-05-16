@@ -18,6 +18,7 @@ import {
 import { formatDate } from '@/lib/utils'
 import { CalloutPanel } from '@/components/callout/callout-panel'
 import { WebPushEnableBanner } from '@/components/web-push/enable-banner'
+import { InterruptHistory } from '@/components/interrupt-history/interrupt-history'
 import { identitySentence } from '@/lib/identity-sentence'
 
 type TaskWithRelations = Task & {
@@ -343,6 +344,14 @@ export function TodayView({
           )}
         </GlassCard>
       </motion.div>
+
+      {/* Recent interrupts — visible proof the JITAI claim is real.
+          Server-rendered shell, client component fetches the data
+          (small list, mostly cached). Closes the "is COYL actually
+          firing for me" question without making the user check email. */}
+      <div className="mb-6">
+        <InterruptHistory />
+      </div>
 
       {/* Secondary CTAs — check-ins */}
       <div className="mb-8 flex flex-wrap gap-2">

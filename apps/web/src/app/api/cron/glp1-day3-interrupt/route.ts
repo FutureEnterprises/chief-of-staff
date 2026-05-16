@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { verifyCronAuth } from '@/lib/cron-auth'
 import { sendWebPushForUser } from '@/lib/web-push'
+import { shouldFire } from '@/lib/notification-prefs'
 
 export const maxDuration = 120
 
@@ -57,6 +58,7 @@ export async function GET(req: Request) {
         timezone: true,
         expoPushToken: true,
         webPushSubscription: true,
+        notificationPrefs: true,
         glp1Drug: true,
         glp1InjectionWeekday: true,
       },
@@ -91,6 +93,17 @@ export async function GET(req: Request) {
       const day3 = (injectDay + 3) % 7
       if (localDay !== day3) continue
       if (localHour < 17 || localHour >= 21) continue
+
+      // Honor opt-out + quiet hours.
+      if (!shouldFire({
+        type: 'glp1Day3',
+        prefs: user.notificationPrefs,
+        timezone: user.timezone,
+        now,
+      })) {
+        suppressed++
+        continue
+      }
 
       // Cooldown: skip if we already fired a glp1_day3 push in the last
       // 6 days. The injection cycle is 7 days, so 6 days gives us a 1-day

@@ -5,6 +5,7 @@ import { verifyCronAuth } from '@/lib/cron-auth'
 import { classifyState } from '@/lib/user-state'
 import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
 import { sendWebPushForUser } from '@/lib/web-push'
+import { shouldFire } from '@/lib/notification-prefs'
 
 export const maxDuration = 60
 
@@ -55,7 +56,7 @@ export async function GET(req: Request) {
       user: {
         select: {
           id: true, name: true, email: true, expoPushToken: true,
-          webPushSubscription: true,
+          webPushSubscription: true, notificationPrefs: true,
           timezone: true, lastActiveAt: true, currentStreak: true,
           onboardingCompleted: true,
         },
@@ -72,6 +73,17 @@ export async function GET(req: Request) {
     const ageMs = now.getTime() - slip.createdAt.getTime()
     const wave: '2h_check' | '24h_resolve' =
       ageMs < 3 * 60 * 60 * 1000 ? '2h_check' : '24h_resolve'
+
+    // Honor per-class opt-out + quiet hours.
+    if (!shouldFire({
+      type: 'postSlip',
+      prefs: slip.user.notificationPrefs,
+      timezone: slip.user.timezone,
+      now,
+    })) {
+      suppressed++
+      continue
+    }
 
     // Use the shared guard. idempotencyKey baked from slip.id + wave so the
     // same slip never receives the same wave twice \u2014 also satisfies

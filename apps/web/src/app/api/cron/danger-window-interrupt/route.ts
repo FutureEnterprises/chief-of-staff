@@ -6,6 +6,7 @@ import { batchProcess } from '@/lib/batch'
 import { classifyState } from '@/lib/user-state'
 import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
 import { sendWebPushForUser } from '@/lib/web-push'
+import { shouldFire } from '@/lib/notification-prefs'
 
 export const maxDuration = 120
 
@@ -49,6 +50,7 @@ export async function GET(req: Request) {
         timezone: true,
         expoPushToken: true,
         webPushSubscription: true,
+        notificationPrefs: true,
         lastActiveAt: true,
         currentStreak: true,
         dangerWindowRecords: {
@@ -91,6 +93,19 @@ export async function GET(req: Request) {
         currentHour < w.endHour
       )
       if (matching.length === 0) return
+
+      // Honor per-class opt-out + quiet hours from notificationPrefs.
+      // The interrupt-guard already handles cooldown/rate-cap; this is
+      // the user-policy layer on top.
+      if (!shouldFire({
+        type: 'dangerWindow',
+        prefs: user.notificationPrefs,
+        timezone: user.timezone,
+        now,
+      })) {
+        suppressed++
+        return
+      }
 
       // Classify user state + ask the shared interrupt guard whether to fire.
       // The guard handles cooldown, recent-action suppression, rate cap, quiet

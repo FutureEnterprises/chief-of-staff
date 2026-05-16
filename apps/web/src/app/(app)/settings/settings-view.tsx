@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { PageTransition, StaggerList, StaggerItem, motion } from '@/components/motion/animations'
 import { toast } from '@/hooks/use-toast'
-import { updateUserSettings, updateGlp1Profile } from '@/app/actions/settings'
+import { updateUserSettings, updateGlp1Profile, updateNotificationPrefs } from '@/app/actions/settings'
 import { UserButton } from '@clerk/nextjs'
 import { PaywallDialog } from '@/components/paywall/paywall-dialog'
 import { Bell, Zap, User as UserIcon, Heart, Flame, Syringe, Download, Trash2, AlertTriangle } from 'lucide-react'
@@ -180,6 +180,15 @@ export function SettingsView({ user }: SettingsViewProps) {
               </div>
             </div>
           </GlassCard>
+        </StaggerItem>
+
+        {/* Per-interrupt opt-out + quiet hours. Lives between the basic
+            settings card and the GLP-1 card because consent over what
+            fires when is a higher-order concern than profile data. The
+            transparency promise from /pricing + /science: opt-in, easy
+            to disable, never marketing. */}
+        <StaggerItem>
+          <NotificationPrefsCard user={user} />
         </StaggerItem>
 
         {/* GLP-1 companion profile — feeds the day-3 interrupt cron and
@@ -368,6 +377,183 @@ function Glp1ProfileCard({ user }: { user: User }) {
       </div>
     </GlassCard>
   )
+}
+
+/**
+ * Notification preferences — per-class opt-out + quiet hours.
+ *
+ * Three booleans (one per interrupt cron) + two hour pickers. Saves
+ * directly via updateNotificationPrefs (no batching with the basic
+ * settings save — different concern, different cadence). Defaults match
+ * the policy in lib/notification-prefs.ts: every class on, no quiet hours.
+ *
+ * Transparency note: the card shows the user EXACTLY which interrupt
+ * cron fires when. This is the consent-architecture surface — opt-in
+ * by default, but the user can see what's running and turn each off.
+ */
+function NotificationPrefsCard({ user }: { user: User }) {
+  const initialPrefs = (user.notificationPrefs ?? null) as null | {
+    dangerWindow?: boolean
+    glp1Day3?: boolean
+    postSlip?: boolean
+    quietHoursStart?: number | null
+    quietHoursEnd?: number | null
+  }
+  const [dangerWindow, setDangerWindow] = useState(initialPrefs?.dangerWindow !== false)
+  const [glp1Day3, setGlp1Day3] = useState(initialPrefs?.glp1Day3 !== false)
+  const [postSlip, setPostSlip] = useState(initialPrefs?.postSlip !== false)
+  const [quietStart, setQuietStart] = useState<number | null>(initialPrefs?.quietHoursStart ?? null)
+  const [quietEnd, setQuietEnd] = useState<number | null>(initialPrefs?.quietHoursEnd ?? null)
+  const [savingPrefs, setSavingPrefs] = useState(false)
+
+  async function save() {
+    setSavingPrefs(true)
+    try {
+      await updateNotificationPrefs({
+        dangerWindow,
+        glp1Day3,
+        postSlip,
+        quietHoursStart: quietStart,
+        quietHoursEnd: quietEnd,
+      })
+      toast({ title: 'Saved', description: 'Interrupt preferences updated.' })
+    } catch {
+      toast({ title: 'Error', description: 'Failed to update preferences.', variant: 'destructive' })
+    } finally {
+      setSavingPrefs(false)
+    }
+  }
+
+  const hourOptions = [
+    { value: '', label: 'None' },
+    ...Array.from({ length: 24 }, (_, h) => ({
+      value: String(h),
+      label: formatHour12(h),
+    })),
+  ]
+
+  return (
+    <GlassCard>
+      <div className="mb-4 flex items-center gap-2">
+        <Bell className="h-4 w-4 text-orange-500" />
+        <h3 className="text-base font-semibold">Interrupt preferences</h3>
+      </div>
+      <p className="mb-5 text-xs text-muted-foreground">
+        Decide which interrupts can fire and when. Every channel is on by default; turn each off if it&rsquo;s not your moment. Easy to re-enable later.
+      </p>
+
+      <div className="space-y-3">
+        <PrefToggle
+          label="Danger window push"
+          description="Fires when you&rsquo;re inside one of your mapped risk windows (every 15 min check)."
+          enabled={dangerWindow}
+          onChange={setDangerWindow}
+        />
+        <PrefToggle
+          label="GLP-1 day-3 push"
+          description="Only if your GLP-1 profile is set. Fires day-3 after injection between 5&ndash;9 PM local."
+          enabled={glp1Day3}
+          onChange={setGlp1Day3}
+        />
+        <PrefToggle
+          label="Post-slip recovery push"
+          description="Fires 2 hours and 24 hours after you log a slip. The window where the spiral writes itself."
+          enabled={postSlip}
+          onChange={setPostSlip}
+        />
+      </div>
+
+      <Separator className="my-5" />
+
+      <div>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          Quiet hours
+        </p>
+        <p className="mb-3 text-xs text-muted-foreground">
+          No interrupts during this window. Leave both at &ldquo;None&rdquo; for no quiet hours. End time can wrap past midnight (e.g. 10 PM &rarr; 7 AM).
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="mb-1 block text-xs text-muted-foreground">From</label>
+            <select
+              value={quietStart == null ? '' : String(quietStart)}
+              onChange={(e) => setQuietStart(e.target.value === '' ? null : Number(e.target.value))}
+              className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white focus:border-orange-500/40 focus:outline-none"
+            >
+              {hourOptions.map((o) => (
+                <option key={o.value || 'none-start'} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-muted-foreground">Until</label>
+            <select
+              value={quietEnd == null ? '' : String(quietEnd)}
+              onChange={(e) => setQuietEnd(e.target.value === '' ? null : Number(e.target.value))}
+              className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white focus:border-orange-500/40 focus:outline-none"
+            >
+              {hourOptions.map((o) => (
+                <option key={o.value || 'none-end'} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 flex justify-end">
+        <Button variant="brand" onClick={save} disabled={savingPrefs}>
+          {savingPrefs ? 'Saving...' : 'Save preferences'}
+        </Button>
+      </div>
+    </GlassCard>
+  )
+}
+
+function PrefToggle({
+  label,
+  description,
+  enabled,
+  onChange,
+}: {
+  label: string
+  description: React.ReactNode
+  enabled: boolean
+  onChange: (v: boolean) => void
+}) {
+  return (
+    <button
+      onClick={() => onChange(!enabled)}
+      type="button"
+      className={`group flex w-full items-start gap-3 rounded-xl border p-3 text-left transition-colors ${
+        enabled
+          ? 'border-orange-500/30 bg-orange-500/[0.05]'
+          : 'border-white/10 bg-white/[0.02]'
+      }`}
+    >
+      <span
+        className={`mt-1 flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
+          enabled ? 'bg-orange-500' : 'bg-white/10'
+        }`}
+      >
+        <span
+          className={`h-4 w-4 rounded-full bg-white transition-transform ${
+            enabled ? 'translate-x-4' : 'translate-x-0.5'
+          }`}
+        />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold text-foreground">{label}</span>
+        <span className="mt-0.5 block text-xs text-muted-foreground">{description}</span>
+      </span>
+    </button>
+  )
+}
+
+function formatHour12(h: number): string {
+  if (h === 0) return '12 AM'
+  if (h < 12) return `${h} AM`
+  if (h === 12) return '12 PM'
+  return `${h - 12} PM`
 }
 
 /**
