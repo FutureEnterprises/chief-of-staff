@@ -19,6 +19,19 @@ export const metadata: Metadata = {
     description:
       "Craving, scrolling, impulse spending, the drink you said you'd stop. COYL catches the moment of drift.",
     url: 'https://coyl.ai/destructive-behaviors',
+    images: [
+      {
+        url: '/api/og?title=Break+the+craving+loop+at+the+moment+of+drift.&kicker=Destructive+patterns',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'COYL for destructive patterns \u2014 break the craving loop',
+    description: 'Cravings, scrolling, impulse spending. COYL catches the moment of drift.',
+    images: ['/api/og?title=Break+the+craving+loop+at+the+moment+of+drift.&kicker=Destructive+patterns'],
   },
 }
 

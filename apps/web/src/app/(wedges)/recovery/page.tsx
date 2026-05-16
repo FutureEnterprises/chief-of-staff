@@ -3,7 +3,33 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Recovery — built for when you fall off',
-  description: 'Most apps punish you when you slip. COYL catches you, stabilizes you, and gets you moving again — tonight, not next Monday.',
+  description: 'Most apps punish you when you slip. COYL catches you, stabilizes you, and gets you moving again — tonight, not next Monday. Same-night recovery, 1-day grace on streaks, shame-resistant re-entry.',
+  keywords: [
+    'recovery from slip app',
+    'shame-resistant behavior change',
+    'no monday reset app',
+    'streak forgiveness app',
+    'slip recovery protocol',
+  ],
+  alternates: { canonical: '/recovery' },
+  openGraph: {
+    title: 'Recovery — built for when you fall off',
+    description: 'Most apps punish you when you slip. COYL catches you, stabilizes you, and gets you moving again.',
+    url: 'https://coyl.ai/recovery',
+    images: [
+      {
+        url: '/api/og?title=Built+for+bad+days.+Not+perfect+users.&kicker=Recovery+engine',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Recovery — built for when you fall off',
+    description: 'Same-night recovery. No Monday reset. 1-day grace on streaks.',
+    images: ['/api/og?title=Built+for+bad+days.+Not+perfect+users.&kicker=Recovery+engine'],
+  },
 }
 
 export default function RecoveryPage() {

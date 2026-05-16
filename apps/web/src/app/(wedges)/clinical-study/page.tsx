@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { BreadcrumbSchema } from '@/app/structured-data'
+import { BreadcrumbSchema, MedicalStudySchema } from '@/app/structured-data'
 
 export const metadata: Metadata = {
   title: 'Clinical study — 12-week GLP-1 maintenance protocol — COYL',
@@ -174,6 +174,7 @@ export default function ClinicalStudyPage() {
           { name: 'Clinical Study', url: 'https://coyl.ai/clinical-study' },
         ]}
       />
+      <MedicalStudySchema />
 
       <div className="mb-4 flex items-center gap-3">
         <span className="h-px w-8 bg-orange-500" />

@@ -11,6 +11,19 @@ export const metadata: Metadata = {
     description:
       "Structured decisions. Best move, cost of the worse one, the excuse you're using, smallest next step.",
     url: 'https://coyl.ai/decision-support',
+    images: [
+      {
+        url: '/api/og?title=Cut+through+your+own+rationalization.&kicker=Decision+engine',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'COYL decision engine',
+    description: "Structured decisions. Best move, cost of the worse one, the excuse, the next step.",
+    images: ['/api/og?title=Cut+through+your+own+rationalization.&kicker=Decision+engine'],
   },
 }
 

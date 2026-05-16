@@ -2,8 +2,35 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'See how you keep getting in your own way',
-  description: 'COYL remembers the excuses you forget. Your danger windows. Your failure chains. Your recovery speed. Visible truth.',
+  title: 'Autopilot map — see how you keep getting in your own way',
+  description: 'COYL remembers the excuses you forget. Your danger windows, your failure chains, your recovery speed. The script you keep running, made visible.',
+  keywords: [
+    'autopilot map',
+    'behavior pattern visualization',
+    'excuse tracker',
+    'danger window heatmap',
+    'self-trust score',
+    'failure chain detection',
+  ],
+  alternates: { canonical: '/autopilot-map' },
+  openGraph: {
+    title: 'Autopilot map — see how you keep getting in your own way',
+    description: 'COYL remembers the excuses you forget. Visible truth.',
+    url: 'https://coyl.ai/autopilot-map',
+    images: [
+      {
+        url: '/api/og?title=It+remembers+the+excuses+you+forget+you+use.&kicker=Autopilot+map',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Autopilot map — see how you keep getting in your own way',
+    description: 'COYL remembers the excuses you forget.',
+    images: ['/api/og?title=It+remembers+the+excuses+you+forget+you+use.&kicker=Autopilot+map'],
+  },
 }
 
 export default function PatternsMarketingPage() {

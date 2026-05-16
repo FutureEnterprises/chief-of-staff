@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { CoylLogo } from '@/components/brand/logo'
+import { NewsletterSignup } from '@/components/newsletter/signup'
 
 /**
  * Landing footer — expanded per the May 2026 homepage audit.
@@ -32,10 +33,12 @@ export function LandingFooter() {
 
   const partners = [
     { label: 'Research + outcomes', href: '/research' },
+    { label: 'Clinical study', href: '/clinical-study' },
     { label: 'The science', href: '/science' },
     { label: 'Decision support', href: '/decision-support' },
     { label: 'Destructive patterns', href: '/destructive-behaviors' },
     { label: 'Autopilot map', href: '/autopilot-map' },
+    { label: 'Changelog', href: '/changelog' },
     { label: 'Content playbook', href: '/content' },
   ]
 
@@ -49,6 +52,13 @@ export function LandingFooter() {
   return (
     <footer className="relative z-10 border-t border-white/5 bg-[#0a0a0a] pb-8 pt-16">
       <div className="mx-auto max-w-7xl px-6 md:px-12">
+        {/* Newsletter capture — every bouncing visitor is a free lead we
+            otherwise lose. Footer placement gets the visitor who scrolled
+            all the way without converting. */}
+        <div className="mb-12">
+          <NewsletterSignup source="footer" />
+        </div>
+
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           <div className="col-span-2 flex flex-col md:col-span-1">
             <CoylLogo size="sm" theme="dark" />

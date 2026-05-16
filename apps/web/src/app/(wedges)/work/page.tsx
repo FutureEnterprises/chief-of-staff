@@ -21,6 +21,19 @@ export const metadata: Metadata = {
     description:
       "You don't fail at work. You fail when you don't follow up. COYL catches the commitment before it drops.",
     url: 'https://coyl.ai/work',
+    images: [
+      {
+        url: '/api/og?title=Catch+the+follow-ups+that+kill+deals.&kicker=Work',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'COYL for work \u2014 catch the follow-ups that kill deals',
+    description: "You don't fail at work. You fail when you don't follow up.",
+    images: ['/api/og?title=Catch+the+follow-ups+that+kill+deals.&kicker=Work'],
   },
 }
 

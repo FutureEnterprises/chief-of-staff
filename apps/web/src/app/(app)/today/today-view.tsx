@@ -26,6 +26,7 @@ type TaskWithRelations = Task & {
 
 type ActiveCommitment = { id: string; rule: string; keepCount: number; breakCount: number } | null
 type NextDangerWindow = { label: string; whenText: string; hoursUntil: number } | null
+type ActiveDangerWindow = { id: string; label: string; startHour: number; endHour: number; minutesIn: number } | null
 
 interface TodayViewProps {
   dueTodayTasks: TaskWithRelations[]
@@ -35,6 +36,10 @@ interface TodayViewProps {
   user: User
   activeCommitment?: ActiveCommitment
   nextDangerWindow?: NextDangerWindow
+  /** The window the user is INSIDE right now (their local time matches an
+   *  active danger window). When present, /today renders a real-time
+   *  intervention banner instead of waiting for the user to find Rescue. */
+  activeDangerWindow?: ActiveDangerWindow
   topExcuseCategory?: string | null
   topExcuseCount?: number
   selfTrustDelta?: number | null
@@ -62,6 +67,7 @@ export function TodayView({
   user,
   activeCommitment,
   nextDangerWindow,
+  activeDangerWindow,
   topExcuseCategory,
   topExcuseCount,
   selfTrustDelta,
@@ -119,6 +125,51 @@ export function TodayView({
                 className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-4 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-500/25"
               >
                 Build the recovery plan →
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* INSIDE A DANGER WINDOW RIGHT NOW.
+          The single most important UI state in the product. When the user
+          is currently inside a known risk window, /today turns into a
+          live intervention surface — pulsing red border, the window name,
+          how many minutes they've been in it, and a one-tap rescue path.
+          The same matching logic the danger-window-interrupt cron uses
+          for push notifications, surfaced server-side at page render so
+          a user without mobile installed (Core, or pre-launch mobile)
+          still sees the moment. */}
+      {activeDangerWindow && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.35 }}
+          className="mb-4 overflow-hidden rounded-3xl border-2 border-red-500/60 bg-gradient-to-br from-red-500/[0.12] via-orange-500/[0.06] to-transparent p-5 shadow-[0_0_50px_-8px_rgba(239,68,68,0.45)]"
+        >
+          <div className="flex items-start gap-3">
+            <motion.div
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 1.6, repeat: Infinity }}
+              className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-red-500/20 text-red-300"
+            >
+              <Flame className="h-5 w-5" />
+            </motion.div>
+            <div className="flex-1">
+              <p className="label-xs text-red-400">
+                YOU&rsquo;RE IN: {activeDangerWindow.label.toUpperCase()} &middot; {activeDangerWindow.minutesIn} MIN IN
+              </p>
+              <p className="mt-1 text-lg font-black leading-tight text-foreground sm:text-xl">
+                This is the moment your autopilot runs.
+              </p>
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                You already know how it ends if nothing interrupts it. One tap, one different choice, the night doesn&rsquo;t turn into the week.
+              </p>
+              <Link
+                href={`/rescue?windowId=${activeDangerWindow.id}&from=danger_window`}
+                className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-red-500 to-orange-500 px-5 py-2 text-xs font-black uppercase tracking-wider text-white shadow-[0_0_20px_-3px_rgba(239,68,68,0.6)]"
+              >
+                Open rescue &rarr;
               </Link>
             </div>
           </div>

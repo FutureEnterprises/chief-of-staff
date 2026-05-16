@@ -89,6 +89,13 @@ async function getTodayData(userId: string, userTimezone: string) {
 
   // Find next danger window crossing in user's TZ
   const nextWindow = computeNextDangerWindow(dangerWindows, userTimezone)
+  // Find the window the user is INSIDE right now, if any. This is what
+  // turns /today from "informational dashboard" into "real-time intervention
+  // surface" — when a user is currently in a known risk window, the rescue
+  // path should glow rather than wait for them to discover it. The same
+  // computation the danger-window-interrupt cron uses for matching, just
+  // surfaced server-side on page render.
+  const activeWindow = computeActiveDangerWindow(dangerWindows, userTimezone)
 
   // Self-trust delta: compare current to ~1 week ago (from stored weekly report event)
   const prevScore = typeof selfTrustWeekAgo?.metadataJson === 'object' && selfTrustWeekAgo?.metadataJson !== null
@@ -106,10 +113,48 @@ async function getTodayData(userId: string, userTimezone: string) {
     user,
     activeCommitment,
     nextDangerWindow: nextWindow,
+    activeDangerWindow: activeWindow,
     topExcuseCategory: topExcuseLast7[0]?.category ?? null,
     topExcuseCount: topExcuseLast7[0]?._count ?? 0,
     selfTrustDelta,
   }
+}
+
+/**
+ * Returns the danger window the user is currently inside (their local
+ * weekday + hour matches one of their active windows), or null. Wildcard
+ * dayOfWeek (-1) matches every day. Mirrors the matching logic in the
+ * danger-window-interrupt cron so the two surfaces never diverge: if the
+ * cron is about to fire a push, /today is already lit.
+ */
+function computeActiveDangerWindow(
+  windows: Array<{ id: string; label: string; dayOfWeek: number; startHour: number; endHour: number }>,
+  tz: string
+): { id: string; label: string; startHour: number; endHour: number; minutesIn: number } | null {
+  if (windows.length === 0) return null
+  const now = new Date()
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz,
+    weekday: 'short',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
+  }).formatToParts(now)
+  const weekdayStr = parts.find((p) => p.type === 'weekday')?.value ?? 'Mon'
+  const hourStr = parts.find((p) => p.type === 'hour')?.value ?? '0'
+  const minuteStr = parts.find((p) => p.type === 'minute')?.value ?? '0'
+  const dayMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }
+  const currentDay = dayMap[weekdayStr] ?? 0
+  const currentHour = parseInt(hourStr, 10)
+  const currentMinute = parseInt(minuteStr, 10)
+
+  for (const w of windows) {
+    if (w.dayOfWeek !== -1 && w.dayOfWeek !== currentDay) continue
+    if (currentHour < w.startHour || currentHour >= w.endHour) continue
+    const minutesIn = (currentHour - w.startHour) * 60 + currentMinute
+    return { id: w.id, label: w.label, startHour: w.startHour, endHour: w.endHour, minutesIn }
+  }
+  return null
 }
 
 function computeNextDangerWindow(

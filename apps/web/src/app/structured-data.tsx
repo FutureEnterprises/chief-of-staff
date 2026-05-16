@@ -241,6 +241,47 @@ export function WebSiteSchema() {
 }
 
 /**
+ * MedicalStudy — for /clinical-study. Tells Google (and ChatGPT,
+ * Perplexity, etc.) that the page describes a registered behavioral
+ * study, not a marketing claim. Improves rich-result eligibility for
+ * health-adjacent queries and gives the page a legitimate research
+ * surface in AI search results.
+ *
+ * Status is "Recruiting" because the protocol is open for partner
+ * enrollment, not yet underway. Update to "Active" when first partner
+ * signs, "Completed" at readout.
+ */
+export function MedicalStudySchema() {
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalStudy',
+    name: 'COYL-GLP1-MAINT-01 — Behavioral interrupt during GLP-1 maintenance for prevention of post-discontinuation weight regain',
+    description:
+      "A 12-week randomized, minimal-risk behavioral study testing whether real-time pattern-interrupt training delivered alongside an active GLP-1 receptor agonist prescription reduces weight regain in the 90 days after the medication is discontinued. N=80, randomized 1:1 to intervention (Rx + COYL Premium) versus standard care (Rx alone). Powered for effect-size estimation, not confirmatory inference.",
+    url: 'https://coyl.ai/clinical-study',
+    studyDesign: 'RandomizedControlledTrial',
+    studyLocation: {
+      '@type': 'Country',
+      name: 'United States',
+    },
+    sponsor: {
+      '@type': 'Organization',
+      name: 'COYL, Inc.',
+      url: 'https://coyl.ai',
+    },
+    status: 'Recruiting',
+    healthCondition: 'Obesity, post-pharmacologic weight regain',
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  )
+}
+
+/**
  * BreadcrumbList — used on wedge pages for search result breadcrumbs.
  * Accepts an array of { name, url } pairs.
  */

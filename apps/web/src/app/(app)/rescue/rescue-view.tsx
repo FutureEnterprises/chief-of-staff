@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'motion/react'
 import { PageTransition } from '@/components/motion/animations'
 import { PaywallDialog } from '@/components/paywall/paywall-dialog'
@@ -41,7 +43,23 @@ export function RescueView({ userId }: RescueViewProps) {
   const [delayRemaining, setDelayRemaining] = useState(0)
   const [showFollowUp, setShowFollowUp] = useState(false)
   const [followUpLogged, setFollowUpLogged] = useState<'pulled' | 'slipped' | null>(null)
+  const [feedback, setFeedback] = useState<'helpful' | 'not_helpful' | null>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // Deep-link entry handling. When the user taps a push notification or
+  // clicks the /today danger-window banner, the URL carries context:
+  //   ?from=danger_window&windowId=X
+  //   ?from=push&trigger=BINGE_URGE
+  //   ?from=demo&t=SPIRALING       (homepage rescue-demo deep link)
+  // We surface "why you're here" so the user feels seen rather than
+  // surveilled — the single most effective lever against the surveillance
+  // perception risk for JITAI products.
+  const searchParams = useSearchParams()
+  const fromSource = searchParams.get('from')
+  const windowId = searchParams.get('windowId')
+  const triggerParam = searchParams.get('trigger') ?? searchParams.get('t')
+  const cameFromDangerWindow = fromSource === 'danger_window'
+  const cameFromPush = fromSource === 'push' || cameFromDangerWindow
 
   async function handleTrigger(trigger: Trigger) {
     setSelectedTrigger(trigger)
@@ -162,6 +180,37 @@ export function RescueView({ userId }: RescueViewProps) {
 
         <div className="flex-1 overflow-y-auto px-6 py-6">
           <div className="mx-auto max-w-2xl">
+            {/* "Why this fired" — consent-architecture transparency.
+                If the user got here from a push or the /today banner, show
+                them WHY the interrupt fired before showing the triggers.
+                This is what converts the surveillance perception into
+                trust: the user can see the reasoning, not just the
+                notification. */}
+            {cameFromPush && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 rounded-2xl border border-orange-500/30 bg-orange-500/[0.05] p-4"
+              >
+                <p className="label-xs text-orange-400">
+                  Why this fired
+                </p>
+                <p className="mt-1 text-sm text-foreground">
+                  {cameFromDangerWindow
+                    ? "You're inside one of your mapped danger windows. The pattern from past slips puts this hour in your top risk band."
+                    : "A precision interrupt fired based on your danger window history."}
+                </p>
+                {windowId && (
+                  <Link
+                    href="/patterns"
+                    className="mt-2 inline-block text-xs font-semibold text-orange-300 hover:text-orange-200"
+                  >
+                    See the full pattern &rarr;
+                  </Link>
+                )}
+              </motion.div>
+            )}
+
             <p className="mb-6 text-center text-sm text-muted-foreground">
               You&apos;re not alone in the moment. Tap what&apos;s happening and COYL will interrupt the script.
             </p>
@@ -240,6 +289,67 @@ export function RescueView({ userId }: RescueViewProps) {
                 I got it from here
               </button>
             </div>
+          )}
+
+          {/* Consent-architecture feedback bar.
+              Every push notification needs an in-app "was this helpful or
+              creepy?" loop. The signal does two things: (1) the user feels
+              agency over the surveillance, which converts the perception
+              from creepy → useful; (2) the data trains the interrupt
+              guard's rate cap and the danger-window-learner cron's risk
+              weighting. Fire-and-forget POST to /api/v1/events. */}
+          {!loading && response && cameFromPush && !feedback && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="rounded-xl border border-white/10 bg-white/[0.02] p-3"
+            >
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                Was this fire helpful?
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setFeedback('helpful')
+                    void fetch('/api/v1/events', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        eventType: 'INTERRUPT_FEEDBACK',
+                        eventValue: 'helpful',
+                        metadata: { source: fromSource, windowId, trigger: selectedTrigger?.key ?? null },
+                      }),
+                    }).catch(() => {})
+                  }}
+                  className="flex-1 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20"
+                >
+                  Caught me
+                </button>
+                <button
+                  onClick={() => {
+                    setFeedback('not_helpful')
+                    void fetch('/api/v1/events', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        eventType: 'INTERRUPT_FEEDBACK',
+                        eventValue: 'not_helpful',
+                        metadata: { source: fromSource, windowId, trigger: selectedTrigger?.key ?? null },
+                      }),
+                    }).catch(() => {})
+                  }}
+                  className="flex-1 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-xs font-semibold text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
+                >
+                  Wasn&rsquo;t the moment
+                </button>
+              </div>
+            </motion.div>
+          )}
+          {feedback && (
+            <p className="text-center text-[11px] text-muted-foreground">
+              {feedback === 'helpful' ? 'Logged. The model gets sharper.' : "Logged. We'll back off this window."}
+            </p>
           )}
 
           {/* Callout trigger — appears after the rescue response streams.
