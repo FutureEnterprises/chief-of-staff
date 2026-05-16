@@ -4,6 +4,7 @@ import { Resend } from 'resend'
 import { verifyCronAuth } from '@/lib/cron-auth'
 import { classifyState } from '@/lib/user-state'
 import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
+import { sendWebPushForUser } from '@/lib/web-push'
 
 export const maxDuration = 60
 
@@ -54,6 +55,7 @@ export async function GET(req: Request) {
       user: {
         select: {
           id: true, name: true, email: true, expoPushToken: true,
+          webPushSubscription: true,
           timezone: true, lastActiveAt: true, currentStreak: true,
           onboardingCompleted: true,
         },
@@ -140,6 +142,15 @@ export async function GET(req: Request) {
       ].join('\n')
     }
 
+    // Push payload — shared between Expo and Web push so the deep link
+    // and notification copy stay identical regardless of delivery wire.
+    const pushData = {
+      type: 'post_slip',
+      slipId: slip.id,
+      wave,
+      deepLinkPath: '/slip',
+    }
+
     // Expo push
     if (slip.user.expoPushToken) {
       try {
@@ -151,7 +162,7 @@ export async function GET(req: Request) {
             sound: 'default',
             title: pushTitle,
             body: pushBody,
-            data: { type: 'post_slip', slipId: slip.id, wave },
+            data: pushData,
             priority: 'high',
           }),
         })
@@ -160,6 +171,17 @@ export async function GET(req: Request) {
         errors++
       }
     }
+
+    // Web Push — parity with mobile push. Helper handles expired-
+    // subscription cleanup so the next cron tick doesn't retry a dead
+    // endpoint. Important for the slip-recovery flow because users who
+    // are mid-spiral often clear cookies / change browsers, which
+    // invalidates the subscription.
+    await sendWebPushForUser({
+      userId: slip.user.id,
+      subscription: slip.user.webPushSubscription,
+      payload: { title: pushTitle, body: pushBody, data: pushData },
+    })
 
     if (resendKey) {
       try {
@@ -176,11 +198,18 @@ export async function GET(req: Request) {
       }
     }
 
+    // Channel string reflects every wire used. Unified format with the
+    // danger-window-interrupt cron: "expo+web+email", "web+email", etc.
+    const channels: string[] = []
+    if (slip.user.expoPushToken) channels.push('expo')
+    if (slip.user.webPushSubscription) channels.push('web')
+    if (resendKey) channels.push('email')
+
     await recordInterrupt({
       userId: slip.user.id,
       kind: wave === '2h_check' ? 'POST_SLIP_2H' : 'POST_SLIP_24H',
       idempotencyKey: `${slip.id}:${wave}`,
-      channel: slip.user.expoPushToken ? 'push+email' : 'email',
+      channel: channels.join('+') || 'none',
       metadata: { wave, slipId: slip.id },
     })
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { sendWebPushForUser } from '@/lib/web-push'
 
 export const maxDuration = 120
 
@@ -42,15 +43,7 @@ export async function GET(req: Request) {
   let suppressed = 0
 
   while (true) {
-    const users: Array<{
-      id: string
-      email: string
-      name: string
-      timezone: string
-      expoPushToken: string | null
-      glp1Drug: string | null
-      glp1InjectionWeekday: number | null
-    }> = await prisma.user.findMany({
+    const users = await prisma.user.findMany({
       where: {
         onboardingCompleted: true,
         glp1Drug: { not: null },
@@ -63,6 +56,7 @@ export async function GET(req: Request) {
         name: true,
         timezone: true,
         expoPushToken: true,
+        webPushSubscription: true,
         glp1Drug: true,
         glp1InjectionWeekday: true,
       },
@@ -124,6 +118,10 @@ export async function GET(req: Request) {
 
       // Push payload — tone matches the brand voice (direct, observational,
       // not motivational). Single line that lands on the lock screen.
+      const pushTitle = `${firstName}. Day 3 after ${drugName}.`
+      const pushBody = `Hunger comes back tonight. The 9pm kitchen is the test. Catch yourself before it does.`
+      const pushData = { type: 'glp1_day3', deepLinkPath: '/rescue?from=push&t=BINGE_URGE' }
+
       if (user.expoPushToken) {
         try {
           await fetch('https://exp.host/--/api/v2/push/send', {
@@ -135,9 +133,9 @@ export async function GET(req: Request) {
             body: JSON.stringify({
               to: user.expoPushToken,
               sound: 'default',
-              title: `${firstName}. Day 3 after ${drugName}.`,
-              body: `Hunger comes back tonight. The 9pm kitchen is the test. Catch yourself before it does.`,
-              data: { type: 'glp1_day3', screen: 'rescue' },
+              title: pushTitle,
+              body: pushBody,
+              data: pushData,
               priority: 'high',
             }),
           })
@@ -145,6 +143,15 @@ export async function GET(req: Request) {
           // silent — push delivery failures shouldn't break the cron
         }
       }
+
+      // Web Push parity with mobile. The helper handles expired-
+      // subscription cleanup so the next cron tick doesn't retry a
+      // dead endpoint.
+      await sendWebPushForUser({
+        userId: user.id,
+        subscription: user.webPushSubscription,
+        payload: { title: pushTitle, body: pushBody, data: pushData },
+      })
 
       // Record the event for cooldown + analytics + the eventual
       // clinician-shareable summary. Even if push delivery silently

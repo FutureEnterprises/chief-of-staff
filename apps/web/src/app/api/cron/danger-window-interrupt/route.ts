@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
-import { prisma, Prisma } from '@repo/database'
+import { prisma } from '@repo/database'
 import { Resend } from 'resend'
 import { verifyCronAuth } from '@/lib/cron-auth'
 import { batchProcess } from '@/lib/batch'
 import { classifyState } from '@/lib/user-state'
 import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
-import { sendWebPush, type WebPushSubscription } from '@/lib/web-push'
+import { sendWebPushForUser } from '@/lib/web-push'
 
 export const maxDuration = 120
 
@@ -156,27 +156,15 @@ export async function GET(req: Request) {
         }
       }
 
-      // Web Push — fires the same notification to browsers that subscribed
-      // via the /today enable banner. Closes the real-time gap for Core
-      // and Free users who don't have the mobile app installed yet.
-      // If the subscription is expired (404/410), clear it so we don't
-      // hammer a dead endpoint on every 15-min cron tick.
-      if (user.webPushSubscription) {
-        const sub = user.webPushSubscription as unknown as WebPushSubscription
-        const result = await sendWebPush(sub, {
-          title: pushTitle,
-          body: pushBody,
-          data: pushData,
-        })
-        if (result === 'expired') {
-          await prisma.user
-            .update({
-              where: { id: user.id },
-              data: { webPushSubscription: Prisma.JsonNull },
-            })
-            .catch(() => {})
-        }
-      }
+      // Web Push — fires the same notification to browsers subscribed
+      // via the /today enable banner. Helper handles the expired-cleanup
+      // branch (404/410 from the push service clears the DB row so the
+      // next cron tick doesn't hammer a dead endpoint).
+      await sendWebPushForUser({
+        userId: user.id,
+        subscription: user.webPushSubscription,
+        payload: { title: pushTitle, body: pushBody, data: pushData },
+      })
 
       // Email fallback — same voice, slightly longer form
       if (resend) {

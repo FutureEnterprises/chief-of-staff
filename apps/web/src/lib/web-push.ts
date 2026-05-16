@@ -1,4 +1,5 @@
 import webpush from 'web-push'
+import { prisma, Prisma } from '@repo/database'
 
 /**
  * Web Push helper.
@@ -39,7 +40,7 @@ export type WebPushPayload = {
   data?: Record<string, unknown>
 }
 
-export type SendResult = 'sent' | 'expired' | 'error'
+export type SendResult = 'sent' | 'expired' | 'error' | 'skipped'
 
 let configured = false
 
@@ -91,4 +92,39 @@ export async function sendWebPush(
     })
     return 'error'
   }
+}
+
+/**
+ * Cron-friendly wrapper: take a user row (or anything with id +
+ * webPushSubscription Json), send if subscribed, auto-clear the DB row
+ * on expired so the next cron tick doesn't retry a dead endpoint.
+ *
+ * Returns 'skipped' when the user has no subscription — lets the caller
+ * compose a channel string ("expo+web+email") without an outer null check.
+ *
+ * Threading the prisma update through here means each cron only has to
+ * pass the user object + payload, not implement its own cleanup branch.
+ */
+export async function sendWebPushForUser(args: {
+  userId: string
+  subscription: unknown
+  payload: WebPushPayload
+}): Promise<SendResult> {
+  if (!args.subscription) return 'skipped'
+
+  const sub = args.subscription as WebPushSubscription
+  if (!sub.endpoint || !sub.keys?.p256dh || !sub.keys?.auth) {
+    return 'skipped'
+  }
+
+  const result = await sendWebPush(sub, args.payload)
+  if (result === 'expired') {
+    await prisma.user
+      .update({
+        where: { id: args.userId },
+        data: { webPushSubscription: Prisma.JsonNull },
+      })
+      .catch(() => {})
+  }
+  return result
 }
