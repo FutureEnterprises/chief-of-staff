@@ -117,6 +117,12 @@ async function getTodayData(userId: string, userTimezone: string) {
     topExcuseCategory: topExcuseLast7[0]?.category ?? null,
     topExcuseCount: topExcuseLast7[0]?._count ?? 0,
     selfTrustDelta,
+    // Web push enablement signals — passed to the banner so it knows
+    // whether to render. Cheap booleans, computed from data already
+    // fetched above.
+    hasWebPushSubscription: user?.webPushSubscription !== null && user?.webPushSubscription !== undefined,
+    hasMobilePush: Boolean(user?.expoPushToken),
+    hasDangerWindows: dangerWindows.length > 0,
   }
 }
 

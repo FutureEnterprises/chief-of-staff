@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { CalloutPanel } from '@/components/callout/callout-panel'
+import { WebPushEnableBanner } from '@/components/web-push/enable-banner'
 import { identitySentence } from '@/lib/identity-sentence'
 
 type TaskWithRelations = Task & {
@@ -43,6 +44,9 @@ interface TodayViewProps {
   topExcuseCategory?: string | null
   topExcuseCount?: number
   selfTrustDelta?: number | null
+  hasWebPushSubscription?: boolean
+  hasMobilePush?: boolean
+  hasDangerWindows?: boolean
 }
 
 // The word COYL uses to name this excuse category when calling it out.
@@ -71,6 +75,9 @@ export function TodayView({
   topExcuseCategory,
   topExcuseCount,
   selfTrustDelta,
+  hasWebPushSubscription = false,
+  hasMobilePush = false,
+  hasDangerWindows = false,
 }: TodayViewProps) {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const hour = new Date().getHours()
@@ -93,6 +100,16 @@ export function TodayView({
         </p>
         <p className="text-xs text-muted-foreground">{formatDate(new Date())}</p>
       </div>
+
+      {/* Browser push enablement — only renders if the user has danger
+          windows mapped, no existing subscription, and hasn't dismissed
+          recently. Closes the "I get the value at risk windows" promise
+          for users who don't have the mobile app yet. */}
+      <WebPushEnableBanner
+        alreadySubscribed={hasWebPushSubscription}
+        hasDangerWindows={hasDangerWindows}
+        hasMobilePush={hasMobilePush}
+      />
 
       {/* RECOVERY MODE — explicit banner when the user just slipped.
           Per the May 2026 audit §4.4: the brand promise is "no restart,

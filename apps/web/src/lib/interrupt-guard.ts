@@ -274,11 +274,21 @@ export async function guardInterrupt(
  * (push or email). This is what populates the cooldown/rate-cap checks
  * for future calls.
  */
+/**
+ * Channel string for an interrupt delivery. Open string so we can compose
+ * multi-channel deliveries — e.g. 'expo+web+email' when a single
+ * interrupt fans out across mobile push, web push, and email fallback.
+ * The persisted value is metadata for analytics; not exhaustively
+ * type-enumerated because new channels (SMS, Slack, etc.) shouldn't
+ * require a schema change to log.
+ */
+export type InterruptChannel = string
+
 export async function recordInterrupt(args: {
   userId: string
   kind: InterruptKind
   idempotencyKey?: string
-  channel: 'push' | 'email' | 'push+email' | 'in-app'
+  channel: InterruptChannel
   metadata?: Record<string, unknown>
 }): Promise<void> {
   await prisma.productivityEvent.create({

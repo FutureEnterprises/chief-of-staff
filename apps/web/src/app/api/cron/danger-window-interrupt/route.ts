@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@repo/database'
+import { prisma, Prisma } from '@repo/database'
 import { Resend } from 'resend'
 import { verifyCronAuth } from '@/lib/cron-auth'
 import { batchProcess } from '@/lib/batch'
 import { classifyState } from '@/lib/user-state'
 import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
+import { sendWebPush, type WebPushSubscription } from '@/lib/web-push'
 
 export const maxDuration = 120
 
@@ -47,6 +48,7 @@ export async function GET(req: Request) {
         name: true,
         timezone: true,
         expoPushToken: true,
+        webPushSubscription: true,
         lastActiveAt: true,
         currentStreak: true,
         dangerWindowRecords: {
@@ -131,6 +133,10 @@ export async function GET(req: Request) {
       // Expo push notification — pattern-calling tone.
       // The push IS the interruption. Copy has to land in the 3 seconds
       // it takes a person to read a lock-screen notification.
+      const pushTitle = `${firstName}. This is the moment.`
+      const pushBody = `${window.label}. You already know how this ends. Open before it does.`
+      const pushData = { type: 'danger_window', windowId: window.id }
+
       if (user.expoPushToken) {
         try {
           await fetch('https://exp.host/--/api/v2/push/send', {
@@ -139,14 +145,36 @@ export async function GET(req: Request) {
             body: JSON.stringify({
               to: user.expoPushToken,
               sound: 'default',
-              title: `${firstName}. This is the moment.`,
-              body: `${window.label}. You already know how this ends. Open before it does.`,
-              data: { type: 'danger_window', windowId: window.id },
+              title: pushTitle,
+              body: pushBody,
+              data: pushData,
               priority: 'high',
             }),
           })
         } catch {
           // silent
+        }
+      }
+
+      // Web Push — fires the same notification to browsers that subscribed
+      // via the /today enable banner. Closes the real-time gap for Core
+      // and Free users who don't have the mobile app installed yet.
+      // If the subscription is expired (404/410), clear it so we don't
+      // hammer a dead endpoint on every 15-min cron tick.
+      if (user.webPushSubscription) {
+        const sub = user.webPushSubscription as unknown as WebPushSubscription
+        const result = await sendWebPush(sub, {
+          title: pushTitle,
+          body: pushBody,
+          data: pushData,
+        })
+        if (result === 'expired') {
+          await prisma.user
+            .update({
+              where: { id: user.id },
+              data: { webPushSubscription: Prisma.JsonNull },
+            })
+            .catch(() => {})
         }
       }
 
@@ -179,10 +207,19 @@ export async function GET(req: Request) {
         }
       }
 
+      // Channel string reflects every wire the interrupt was sent on.
+      // Used by the autopilot-autopsy analytics + interrupt-feedback
+      // weighting; an interrupt that fired on push+web+email gets the
+      // same dedupe key but the cost-accounting recognizes the fanout.
+      const channels: string[] = []
+      if (user.expoPushToken) channels.push('expo')
+      if (user.webPushSubscription) channels.push('web')
+      if (resend) channels.push('email')
+
       await recordInterrupt({
         userId: user.id,
         kind: 'DANGER_WINDOW',
-        channel: user.expoPushToken ? 'push+email' : 'email',
+        channel: channels.join('+') || 'none',
         metadata: { windowId: window.id, label: window.label, hour: currentHour },
       })
 

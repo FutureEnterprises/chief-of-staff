@@ -33,6 +33,13 @@ model User {
   trialEndsAt           DateTime?
   onboardingCompleted   Boolean   @default(false)
   expoPushToken         String?
+  // Web Push subscription for users who don't have the mobile app yet.
+  // PushSubscription JSON from the browser's PushManager.subscribe() —
+  // shape: { endpoint, expirationTime, keys: { p256dh, auth } }.
+  // The danger-window-interrupt cron sends web push to any user with
+  // this set, in parallel with Expo push for the mobile cohort. Lets
+  // web-only and pre-App-Store-launch users get real-time interrupts.
+  webPushSubscription   Json?
   // GLP-1 companion profile — set during onboarding for users on
   // Ozempic / Wegovy / Mounjaro / Zepbound / etc. Drives the day-3
   // post-injection intervention timing in the precision-interrupt
