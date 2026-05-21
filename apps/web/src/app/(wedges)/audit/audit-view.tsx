@@ -3,6 +3,14 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
+import {
+  buildArchetype,
+  buildShareUrl,
+  type WedgeId,
+  type WindowId,
+  type ScriptId,
+  type Archetype,
+} from '@/lib/audit-archetype'
 
 /**
  * AuditView \u2014 the interactive quiz body for /audit.
@@ -17,9 +25,8 @@ import { motion, AnimatePresence } from 'motion/react'
  * is indexable for long-tail search ("autopilot audit", "self-sabotage quiz").
  */
 
-type WedgeId = 'weight' | 'work' | 'destructive' | 'consistency' | 'spending' | 'focus'
-type WindowId = 'morning' | 'afternoon' | 'afterwork' | 'latenight'
-type ScriptId = 'reward' | 'delay' | 'collapse' | 'minimize' | 'exhaustion' | 'social'
+// WedgeId, WindowId, ScriptId now imported from lib/audit-archetype so
+// the public share page (/a/[slug]) and this view stay in sync.
 
 const WEDGES: { id: WedgeId; label: string; line: string }[] = [
   { id: 'weight', label: 'Food / weight', line: 'The kitchen. The fridge. The snack you said you wouldn\u2019t.' },
@@ -98,68 +105,8 @@ function resultHeadline(wedge: WedgeId, window: WindowId): string {
   return `Your autopilot runs ${windowShort[window]} on ${wedgeShort[wedge]}.`
 }
 
-/**
- * Map (wedge × window) to a named archetype — the MBTI-of-self-
- * sabotage moment from the viral mechanics playbook. The archetype is
- * the shareable atom: people post "I'm a Night Fridge Saboteur"
- * because it says something true without admitting failure. The result
- * page elevates this to headline status with one-tap share.
- */
-function buildArchetype(wedge: WedgeId, windowChoice: WindowId, script: ScriptId): {
-  name: string
-  emoji: string
-  prevalenceCopy: string
-} {
-  const key = `${wedge}_${windowChoice}` as const
-
-  const table: Record<string, { name: string; emoji: string }> = {
-    weight_latenight:      { name: 'Night Fridge Saboteur',      emoji: '🌙' },
-    weight_afterwork:      { name: 'Post-Work Snacker',          emoji: '🍿' },
-    weight_afternoon:      { name: 'Afternoon Crash Eater',      emoji: '🍪' },
-    weight_morning:        { name: 'Stress Breakfast Skipper',   emoji: '☕' },
-    work_morning:          { name: 'Inbox Avoider',              emoji: '📥' },
-    work_afternoon:        { name: 'Two-PM Drifter',             emoji: '🫥' },
-    work_afterwork:        { name: 'End-of-Day Bailer',          emoji: '🚪' },
-    work_latenight:        { name: 'Promise-Tomorrow Procrast.', emoji: '⏳' },
-    focus_morning:         { name: 'Morning Tab Hopper',         emoji: '📑' },
-    focus_afternoon:       { name: 'Afternoon Doom-Scroller',    emoji: '📱' },
-    focus_afterwork:       { name: 'Evening Couch Vortex',       emoji: '🛋️' },
-    focus_latenight:       { name: 'Two-AM Wikipedia Spiral',    emoji: '🌀' },
-    spending_morning:      { name: 'Morning Cart Filler',        emoji: '🛒' },
-    spending_afternoon:    { name: 'Boredom Buyer',              emoji: '💳' },
-    spending_afterwork:    { name: 'Reward-Spend Justifier',     emoji: '🎁' },
-    spending_latenight:    { name: 'Late-Night Impulse Buyer',   emoji: '🌃' },
-    destructive_morning:   { name: 'Morning Reset Resetter',     emoji: '🔁' },
-    destructive_afternoon: { name: 'Mid-Day Coper',              emoji: '🌫️' },
-    destructive_afterwork: { name: 'Post-Work Numbing Loop',     emoji: '🍷' },
-    destructive_latenight: { name: 'Late-Night Same-Mistake',    emoji: '🔂' },
-    consistency_morning:   { name: 'Monday Restart Champion',    emoji: '📅' },
-    consistency_afternoon: { name: 'Afternoon Quit Artist',      emoji: '🪂' },
-    consistency_afterwork: { name: 'Evening Streak-Breaker',     emoji: '🔥' },
-    consistency_latenight: { name: 'Pre-Midnight Cave-In',       emoji: '🌃' },
-  }
-
-  const entry = table[key] ?? { name: 'Autopilot Operator', emoji: '🎯' }
-
-  // Prevalence copy — plausibility anchors calibrated to category
-  // benchmarks, not real data. If/when we have aggregate archetype
-  // stats, drive from there. Honest framing: "% of you" is the
-  // archetype prevalence, not a clinical statistic.
-  const scriptModifier: Record<ScriptId, string> = {
-    reward:     '78% of you tell yourself "I deserve this."',
-    delay:      '82% of you say "tomorrow" at least 3x a week.',
-    collapse:   '74% of you fold the whole day after one slip.',
-    minimize:   "69% of you tell yourself \"one time won't matter.\"",
-    exhaustion: '71% of you blame tiredness for the same exact choice.',
-    social:     '66% of you fold under social pressure, not appetite.',
-  }
-
-  return {
-    name: entry.name,
-    emoji: entry.emoji,
-    prevalenceCopy: scriptModifier[script],
-  }
-}
+// buildArchetype lives in @/lib/audit-archetype so it can be re-used
+// at the public /a/[slug] share page for SSR rendering and OG meta.
 
 export function AuditView() {
   const [step, setStep] = useState<0 | 1 | 2 | 3>(0)
@@ -389,20 +336,31 @@ function StepWrap({
 }
 
 /**
- * One-tap share of the archetype result. Uses native Web Share API on
- * mobile (Twitter/iMessage/etc. sharesheet) + clipboard fallback. The
- * shared text is intentionally short and screenshot-friendly so it
- * works on platforms that strip URLs.
+ * One-tap share of the archetype result.
+ *
+ * Shares a PERSONALIZED URL (/a/{slug}) so the recipient lands on a
+ * dedicated archetype card with social meta (OG image renders the
+ * archetype name). This is the entire viral conversion loop:
+ *   share → recipient sees archetype card → recipient takes audit →
+ *   recipient gets their archetype → recipient shares.
+ *
+ * Uses native Web Share API on mobile (Twitter/iMessage/etc. sharesheet)
+ * with clipboard fallback on desktop.
  */
-function ArchetypeShareButton({ archetype }: { archetype: { name: string; emoji: string; prevalenceCopy: string } }) {
+function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
   const [copied, setCopied] = useState(false)
-  const shareText = `${archetype.emoji} I'm a ${archetype.name}. ${archetype.prevalenceCopy} Find your archetype:`
-  const shareUrl = 'https://coyl.ai/audit'
+
+  const shareUrl = buildShareUrl(archetype)
+  const shareText = `${archetype.emoji} I'm a ${archetype.name}. ${archetype.prevalenceCopy} Find yours:`
 
   async function handleShare() {
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
-        await navigator.share({ title: 'COYL · Autopilot Audit', text: shareText, url: shareUrl })
+        await navigator.share({
+          title: `COYL · I'm a ${archetype.name}`,
+          text: shareText,
+          url: shareUrl,
+        })
         return
       } catch {
         // user cancelled — fall through to clipboard
@@ -418,11 +376,28 @@ function ArchetypeShareButton({ archetype }: { archetype: { name: string; emoji:
   }
 
   return (
-    <button
-      onClick={handleShare}
-      className="mt-4 inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-xs font-bold text-gray-900 backdrop-blur-sm hover:bg-gray-100"
-    >
-      {copied ? 'Copied' : 'Share my archetype'}
-    </button>
+    <div className="mt-5 flex flex-wrap items-center gap-2">
+      <button
+        onClick={handleShare}
+        className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2.5 text-xs font-bold text-white transition-colors hover:bg-gray-800"
+      >
+        {copied ? 'Copied link' : 'Share my archetype'}
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
+          <path
+            d="M1 6h10m0 0L7 2m4 4L7 10"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+      <Link
+        href={shareUrl}
+        className="text-xs font-semibold text-orange-700 underline-offset-4 hover:underline"
+      >
+        view share card →
+      </Link>
+    </div>
   )
 }
