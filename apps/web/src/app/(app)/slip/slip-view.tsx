@@ -1,4 +1,19 @@
 'use client'
+/**
+ * AESTHETIC UPGRADE — May 2026 (operator surface)
+ * Refero references applied:
+ *   - 554b801c-3b31-4086-a7e5-ae613cdd618b (Linear): compact element gap,
+ *     6px card radius, hairline borders, monospace section labels,
+ *     refined medium-weight headlines instead of font-black.
+ *   - 6e9baa82-2f2f-4e77-8b0d-566325635dbe (Axiom): single orange accent,
+ *     2px-feeling rectangular surfaces, charcoal card backgrounds,
+ *     monospace meta-data.
+ *   - 11d3e58a-87d7-4a9a-bbf5-720f4fd3ffc6 (Linear Changelog): timeline
+ *     entry pattern — slip entries presented as stacked sections with
+ *     thin graphite separation, mono timestamps, tight letter-spacing.
+ * Slip-specific: a log surface used in recovery — bias for calm structure,
+ * no theatrical emphasis. Reduce caps-bombing, lean on type weight.
+ */
 
 import { useState } from 'react'
 import { motion } from 'motion/react'
@@ -96,59 +111,59 @@ export function SlipView({ userId, currentStreak }: SlipViewProps) {
   if (!trigger) {
     return (
       <PageTransition className="flex h-full flex-col">
-        <div className="border-b px-6 py-4">
-          <h1 className="text-sm font-semibold">Slip recovery</h1>
-          <p className="text-xs text-muted-foreground">No Monday reset. We continue now.</p>
+        <div className="border-b border-white/[0.06] px-6 py-3.5">
+          <h1 className="text-[13px] font-semibold tracking-[-0.01em]">Slip recovery</h1>
+          <p className="font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">No Monday reset. We continue now.</p>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-8">
+        <div className="flex-1 overflow-y-auto px-6 py-7">
           <div className="mx-auto max-w-xl">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-8 text-center"
+              className="mb-6 text-center"
             >
-              <p className="mb-2 text-4xl font-black leading-tight text-white">
+              <p className="text-3xl font-semibold leading-[1.05] tracking-[-0.025em] text-white sm:text-4xl">
                 You slipped.
               </p>
-              <p className="mb-3 text-4xl font-black leading-tight text-orange-400">
+              <p className="mb-3 text-3xl font-semibold leading-[1.05] tracking-[-0.025em] text-orange-400 sm:text-4xl">
                 Good. Now we stop the damage.
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-[13px] leading-relaxed text-muted-foreground">
                 Pick what happened. COYL builds the next move in 10 seconds.
               </p>
             </motion.div>
 
-            <div className="mb-6 grid grid-cols-1 gap-2">
+            <div className="mb-5 grid grid-cols-1 gap-1.5">
               {QUICK_TAGS.map((t, i) => (
                 <motion.button
                   key={t.value}
-                  initial={{ opacity: 0, y: 8 }}
+                  initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 * i }}
+                  transition={{ delay: 0.04 * i, duration: 0.28, ease: [0.23, 1, 0.32, 1] }}
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => submit(t.value)}
-                  className="glass flex items-center gap-3 rounded-2xl px-5 py-4 text-left text-sm font-semibold transition-all hover:border-orange-500/30"
+                  className="flex items-center gap-3 rounded-md border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-left text-[13px] font-semibold tracking-[-0.005em] transition-all hover:border-orange-500/40 hover:bg-orange-500/[0.04]"
                 >
-                  <span className="text-2xl">{t.emoji}</span>
+                  <span className="text-xl">{t.emoji}</span>
                   {t.label}
                 </motion.button>
               ))}
             </div>
 
-            <div className="glass rounded-2xl p-4">
-              <label className="mb-2 block text-xs font-semibold text-muted-foreground">Or tell COYL what happened</label>
+            <div className="rounded-md border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+              <label className="mb-1.5 block font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Or tell COYL what happened</label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="e.g. Ate the whole pint. Ignored weigh-in. Missed workout."
-                className="min-h-[60px] w-full resize-none border-0 bg-transparent p-0 text-sm outline-none"
+                className="min-h-[60px] w-full resize-none border-0 bg-transparent p-0 text-[13px] leading-relaxed outline-none placeholder:text-muted-foreground/60"
               />
               <button
                 onClick={() => submit('other', notes)}
                 disabled={!notes.trim()}
-                className="mt-2 flex items-center gap-1 text-xs font-semibold text-orange-400 disabled:opacity-40"
+                className="mt-1.5 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-orange-400 transition-opacity hover:text-orange-300 disabled:opacity-40"
               >
                 Get recovery plan <ArrowRight className="h-3 w-3" />
               </button>
@@ -163,12 +178,12 @@ export function SlipView({ userId, currentStreak }: SlipViewProps) {
 
   return (
     <PageTransition className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b px-6 py-4">
+      <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-3.5">
         <div>
-          <h1 className="text-sm font-semibold">Slip recovery</h1>
-          <p className="text-xs text-muted-foreground capitalize">{trigger}</p>
+          <h1 className="text-[13px] font-semibold tracking-[-0.01em]">Slip recovery</h1>
+          <p className="font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">{trigger}</p>
         </div>
-        <button onClick={reset} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+        <button onClick={reset} className="flex items-center gap-1 rounded-sm px-2 py-1 font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground">
           <RotateCcw className="h-3 w-3" /> Log another
         </button>
       </div>
@@ -176,53 +191,53 @@ export function SlipView({ userId, currentStreak }: SlipViewProps) {
       <div className="flex-1 overflow-y-auto px-6 py-6">
         <div className="mx-auto max-w-2xl">
           {loading && !response && (
-            <div className="glass rounded-2xl p-6 text-center">
+            <div className="rounded-md border border-white/[0.06] bg-white/[0.02] px-5 py-5 text-center">
               <motion.div
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{ duration: 1.2, repeat: Infinity }}
-                className="mb-2 text-sm font-semibold text-orange-400"
+                className="mb-1.5 text-[13px] font-semibold tracking-[-0.005em] text-orange-400"
               >
                 Building your next move…
               </motion.div>
-              <p className="text-xs text-muted-foreground">No shame. Just next move.</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">No shame. Just next move.</p>
             </div>
           )}
 
           {response && <StructuredResponse text={response} accentColor="orange" />}
 
           {!loading && response && (
-            <div className="mt-6">
-              <p className="mb-3 label-xs text-orange-500">Stabilize — tap when done</p>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <div className="mt-5">
+              <p className="mb-2.5 font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500">Stabilize — tap when done</p>
+              <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3">
                 {stabilizeActions.map((a) => {
                   const done = !!stabilizeDone[a.key]
                   return (
                     <button
                       key={a.key}
                       onClick={() => setStabilizeDone((s) => ({ ...s, [a.key]: !s[a.key] }))}
-                      className={`flex items-center gap-2 rounded-xl border p-3 text-xs font-semibold transition-all ${
+                      className={`flex items-center gap-2 rounded-md border px-3 py-2.5 text-[12px] font-semibold transition-all ${
                         done
-                          ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
-                          : 'border-border hover:bg-muted'
+                          ? 'border-emerald-500/40 bg-emerald-500/[0.08] text-emerald-400'
+                          : 'border-white/[0.08] bg-white/[0.02] text-foreground/90 hover:bg-white/[0.05]'
                       }`}
                     >
-                      {done ? <span className="text-base">✓</span> : <a.icon className="h-4 w-4" />}
+                      {done ? <span className="text-[15px]">✓</span> : <a.icon className="h-3.5 w-3.5" />}
                       {a.label}
                     </button>
                   )
                 })}
               </div>
 
-              <div className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <div className="mt-5 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
                 <Link
                   href="/today"
-                  className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-warm px-4 py-3 text-sm font-bold text-white shadow-glow-orange"
+                  className="flex items-center justify-center gap-1.5 rounded-md bg-gradient-warm px-4 py-2.5 text-[12px] font-bold uppercase tracking-[0.08em] text-white shadow-[0_0_18px_-4px_rgba(255,102,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.15)] transition-shadow hover:shadow-[0_0_28px_-4px_rgba(255,102,0,0.6)]"
                 >
-                  Back to today <ArrowRight className="h-4 w-4" />
+                  Back to today <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
                 <Link
                   href="/commitments"
-                  className="flex items-center justify-center gap-1.5 rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm font-semibold hover:bg-muted"
+                  className="flex items-center justify-center gap-1.5 rounded-md border border-white/[0.08] bg-white/[0.02] px-4 py-2.5 text-[12px] font-semibold text-foreground transition-colors hover:bg-white/[0.05]"
                 >
                   Set tomorrow&apos;s rule
                 </Link>
@@ -237,12 +252,12 @@ export function SlipView({ userId, currentStreak }: SlipViewProps) {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="mt-5 flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3"
+                  className="mt-4 flex items-center gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/[0.04] px-3 py-2.5"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-emerald-400">You stabilized. You&rsquo;re back.</p>
-                    <p className="mt-0.5 text-[11px] text-muted-foreground">
-                      Streak preserved: {currentStreak}d. Share if it helps someone else do the same.
+                    <p className="text-[12px] font-semibold tracking-[-0.005em] text-emerald-400">You stabilized. You&rsquo;re back.</p>
+                    <p className="mt-0.5 font-mono text-[10px] tabular-nums text-muted-foreground">
+                      Streak preserved: {currentStreak}d &middot; share if it helps someone else
                     </p>
                   </div>
                   <ShareMoment

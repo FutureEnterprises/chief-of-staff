@@ -1,4 +1,18 @@
 'use client'
+/**
+ * AESTHETIC UPGRADE — May 2026 (operator surface)
+ * Refero references applied:
+ *   - 554b801c-3b31-4086-a7e5-ae613cdd618b (Linear): midnight command-center
+ *     layering, compact 24px section gap, monospace metadata, single accent
+ *     restraint, 6px card radius, tight letter-spacing.
+ *   - 6e9baa82-2f2f-4e77-8b0d-566325635dbe (Axiom): industrial precision —
+ *     2px radius on rectangular surfaces, single orange CTA spotlight,
+ *     monospace data labels, thin medium-gray borders for tonal separation.
+ *   - 11d3e58a-87d7-4a9a-bbf5-720f4fd3ffc6 (Linear Changelog): mono
+ *     timestamps, tabular-nums data alignment, ghost capsule pills,
+ *     compact element gap, refined medium-weight headlines.
+ * Density/typography tightened for daily-use surface. Brand orange preserved.
+ */
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
@@ -90,16 +104,19 @@ export function TodayView({
     .slice(0, 3)
 
   return (
-    <PageTransition className="relative mx-auto max-w-3xl px-6 py-8">
-      {/* Decorative gradient mesh */}
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-mesh opacity-60" />
+    <PageTransition className="relative mx-auto max-w-3xl px-6 py-6">
+      {/* Decorative gradient mesh — Linear-style restrained ambient lift */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-mesh opacity-40" />
 
-      {/* Header */}
-      <div className="mb-6">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+      {/* Header — operator-style metadata rail. Greeting + monospace timestamp,
+          flush-baseline. Mirrors Linear Changelog's date treatment. */}
+      <div className="mb-5 flex items-baseline justify-between border-b border-white/[0.06] pb-3">
+        <p className="label-xs text-foreground/90">
           {greeting}, {firstName}
         </p>
-        <p className="text-xs text-muted-foreground">{formatDate(new Date())}</p>
+        <p className="font-mono text-[10px] uppercase tracking-[0.08em] tabular-nums text-muted-foreground">
+          {formatDate(new Date())}
+        </p>
       </div>
 
       {/* Browser push enablement — only renders if the user has danger
@@ -124,23 +141,23 @@ export function TodayView({
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-4 overflow-hidden rounded-2xl border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-500/[0.08] via-emerald-500/[0.03] to-transparent p-5"
+          className="mb-3 overflow-hidden rounded-md border border-emerald-500/30 bg-gradient-to-br from-emerald-500/[0.06] via-emerald-500/[0.02] to-transparent p-4"
         >
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
-              <span className="text-base font-black">↺</span>
+            <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+              <span className="text-sm font-bold">↺</span>
             </div>
             <div className="flex-1">
-              <p className="label-xs text-emerald-400">RECOVERY MODE · 24H</p>
-              <p className="mt-1 text-lg font-black leading-tight text-foreground">
+              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-emerald-400">RECOVERY MODE · 24H</p>
+              <p className="mt-1.5 text-base font-semibold leading-tight tracking-[-0.01em] text-foreground">
                 You slipped. Good. Now we stop the damage.
               </p>
-              <p className="mt-1.5 text-xs text-muted-foreground">
+              <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
                 Streak preserved. No Monday reset. One tiny better move and you&rsquo;re back.
               </p>
               <Link
                 href="/slip"
-                className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-4 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-500/25"
+                className="mt-2.5 inline-flex items-center gap-1.5 rounded-sm border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/20"
               >
                 Build the recovery plan →
               </Link>
@@ -160,32 +177,32 @@ export function TodayView({
           still sees the moment. */}
       {activeDangerWindow && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.35 }}
-          className="mb-4 overflow-hidden rounded-2xl border-2 border-red-500/60 bg-gradient-to-br from-red-500/[0.12] via-orange-500/[0.06] to-transparent p-5 shadow-[0_0_50px_-8px_rgba(239,68,68,0.45)]"
+          className="mb-3 overflow-hidden rounded-md border border-red-500/60 bg-gradient-to-br from-red-500/[0.10] via-orange-500/[0.05] to-transparent p-4 shadow-[0_0_36px_-10px_rgba(239,68,68,0.45),inset_0_1px_0_0_rgba(255,255,255,0.02)]"
         >
           <div className="flex items-start gap-3">
             <motion.div
               animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 1.6, repeat: Infinity }}
-              className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-red-500/20 text-red-300"
+              className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-red-500/30 bg-red-500/15 text-red-300"
             >
-              <Flame className="h-5 w-5" />
+              <Flame className="h-4 w-4" />
             </motion.div>
             <div className="flex-1">
-              <p className="label-xs text-red-400">
+              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-red-400 tabular-nums">
                 YOU&rsquo;RE IN: {activeDangerWindow.label.toUpperCase()} &middot; {activeDangerWindow.minutesIn} MIN IN
               </p>
-              <p className="mt-1 text-lg font-black leading-tight text-foreground sm:text-xl">
+              <p className="mt-1.5 text-lg font-semibold leading-tight tracking-[-0.015em] text-foreground sm:text-xl">
                 This is the moment your autopilot runs.
               </p>
-              <p className="mt-1.5 text-xs text-muted-foreground">
+              <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
                 You already know how it ends if nothing interrupts it. One tap, one different choice, the night doesn&rsquo;t turn into the week.
               </p>
               <Link
                 href={`/rescue?windowId=${activeDangerWindow.id}&from=danger_window`}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-red-500 to-orange-500 px-5 py-2 text-xs font-black uppercase tracking-wider text-white shadow-[0_0_20px_-3px_rgba(239,68,68,0.6)]"
+                className="mt-2.5 inline-flex items-center gap-1.5 rounded-sm bg-gradient-to-r from-red-500 to-orange-500 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-white shadow-[0_0_16px_-3px_rgba(239,68,68,0.6)] transition-shadow hover:shadow-[0_0_24px_-3px_rgba(239,68,68,0.8)]"
               >
                 Open rescue &rarr;
               </Link>
@@ -218,46 +235,49 @@ export function TodayView({
           <motion.div
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`mb-4 rounded-xl border-l-[3px] ${borderColor} bg-black/30 px-4 py-3`}
+            className={`mb-3 rounded-sm border-l-2 ${borderColor} bg-white/[0.02] px-4 py-2.5`}
           >
-            <p className={`text-[10px] font-mono uppercase tracking-widest ${textColor}`}>
+            <p className={`font-mono text-[10px] uppercase tracking-[0.12em] ${textColor}`}>
               Identity read
             </p>
-            <p className="mt-1 text-base font-bold text-foreground sm:text-lg">
+            <p className="mt-1 text-[15px] font-semibold tracking-[-0.01em] text-foreground sm:text-base">
               {id.headline}
             </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">{id.evidence}</p>
+            <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">{id.evidence}</p>
           </motion.div>
         )
       })()}
 
-      {/* TONIGHT'S RULE — dominant hero */}
+      {/* TONIGHT'S RULE — dominant hero. Axiom-inspired: charcoal card,
+          single orange accent, refined medium-weight headline (not black). */}
       {activeCommitment ? (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 overflow-hidden rounded-2xl border-2 border-orange-500/40 bg-gradient-to-br from-orange-500/15 via-orange-500/5 to-transparent p-6 shadow-[0_0_40px_-10px_rgba(255,102,0,0.4)]"
+          className="mb-3 overflow-hidden rounded-md border border-orange-500/30 bg-gradient-to-br from-orange-500/[0.10] via-orange-500/[0.03] to-transparent p-5 shadow-[0_0_28px_-12px_rgba(255,102,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)]"
         >
-          <p className="label-xs mb-3 text-orange-500">Today&apos;s rule</p>
-          <p className="text-2xl font-black leading-tight text-foreground sm:text-3xl md:text-4xl">
+          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500">Today&apos;s rule</p>
+          <p className="mt-2 text-2xl font-semibold leading-[1.15] tracking-[-0.02em] text-foreground sm:text-3xl">
             {activeCommitment.rule}
           </p>
-          <p className="mt-4 text-xs text-muted-foreground">
-            <span className="text-emerald-400">{activeCommitment.keepCount} kept</span>
-            {activeCommitment.breakCount > 0 && (
-              <> · <span className="text-red-400">{activeCommitment.breakCount} broken</span></>
-            )}
-            <Link href="/commitments" className="ml-3 text-orange-400 hover:text-orange-300">Manage →</Link>
-          </p>
+          <div className="mt-3 flex items-center justify-between border-t border-white/[0.04] pt-3 text-[11px] font-mono tabular-nums">
+            <span className="text-muted-foreground">
+              <span className="text-emerald-400">{activeCommitment.keepCount} kept</span>
+              {activeCommitment.breakCount > 0 && (
+                <> · <span className="text-red-400">{activeCommitment.breakCount} broken</span></>
+              )}
+            </span>
+            <Link href="/commitments" className="text-orange-400 hover:text-orange-300">Manage →</Link>
+          </div>
         </motion.div>
       ) : (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 rounded-2xl border-2 border-dashed border-orange-500/30 p-6 text-center"
+          className="mb-3 rounded-md border border-dashed border-orange-500/25 bg-white/[0.01] p-5 text-center"
         >
-          <p className="text-sm text-muted-foreground">No rule set yet.</p>
-          <Link href="/commitments" className="mt-2 inline-block text-sm font-bold text-orange-400">
+          <p className="text-[13px] text-muted-foreground">No rule set yet.</p>
+          <Link href="/commitments" className="mt-1.5 inline-block text-[13px] font-semibold text-orange-400 hover:text-orange-300">
             Set today&apos;s rule →
           </Link>
         </motion.div>
@@ -271,76 +291,77 @@ export function TodayView({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3"
+        className="mb-3 grid grid-cols-1 gap-2 md:grid-cols-3"
       >
         <Link
           href="/rescue"
-          className="group flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-br from-red-500 to-orange-600 px-5 py-5 text-sm font-black uppercase tracking-wider text-white shadow-[0_0_30px_-5px_rgba(239,68,68,0.5)] transition-all hover:scale-[1.02] hover:shadow-[0_0_50px_-5px_rgba(239,68,68,0.7)]"
+          className="group flex items-center justify-center gap-2.5 rounded-md bg-gradient-to-br from-red-500 to-orange-600 px-4 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-white shadow-[0_0_22px_-6px_rgba(239,68,68,0.5),inset_0_1px_0_0_rgba(255,255,255,0.12)] transition-all hover:shadow-[0_0_36px_-6px_rgba(239,68,68,0.75)]"
         >
-          <Flame className="h-5 w-5 transition-transform group-hover:rotate-12" />
+          <Flame className="h-4 w-4 transition-transform group-hover:rotate-12" />
           I&rsquo;m about to mess up
         </Link>
         <Link
           href="/decide"
-          className="group flex items-center justify-center gap-3 rounded-2xl border-2 border-orange-500/40 bg-gradient-to-br from-orange-500/10 to-transparent px-5 py-5 text-sm font-black uppercase tracking-wider text-foreground transition-all hover:scale-[1.02] hover:border-orange-500/60 hover:bg-orange-500/15"
+          className="group flex items-center justify-center gap-2.5 rounded-md border border-orange-500/30 bg-gradient-to-br from-orange-500/[0.08] to-transparent px-4 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-foreground transition-all hover:border-orange-500/50 hover:bg-orange-500/[0.12]"
         >
-          <Brain className="h-5 w-5 text-orange-500 transition-transform group-hover:scale-110" />
+          <Brain className="h-4 w-4 text-orange-500 transition-transform group-hover:scale-110" />
           What should I do?
         </Link>
         <Link
           href="/slip"
-          className="group flex items-center justify-center gap-3 rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-transparent px-5 py-5 text-sm font-black uppercase tracking-wider text-foreground transition-all hover:scale-[1.02] hover:border-amber-500/60 hover:bg-amber-500/15"
+          className="group flex items-center justify-center gap-2.5 rounded-md border border-amber-500/30 bg-gradient-to-br from-amber-500/[0.08] to-transparent px-4 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-foreground transition-all hover:border-amber-500/50 hover:bg-amber-500/[0.12]"
         >
-          <AlertTriangle className="h-5 w-5 text-amber-500 transition-transform group-hover:scale-110" />
+          <AlertTriangle className="h-4 w-4 text-amber-500 transition-transform group-hover:scale-110" />
           I already slipped
         </Link>
       </motion.div>
 
-      {/* Quick stats row — Next Danger Window + Self-Trust + Pattern */}
+      {/* Quick stats row — Linear-style metric panels. Tight 12px padding,
+          monospace labels, hairline borders, tabular-nums for data alignment. */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="mb-8 grid grid-cols-1 gap-3 md:grid-cols-3"
+        className="mb-6 grid grid-cols-1 gap-2 md:grid-cols-3"
       >
-        <GlassCard className="!p-4">
-          <p className="label-xs mb-2 text-orange-500">Next danger window</p>
+        <GlassCard className="!p-3.5">
+          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500/90">Next danger window</p>
           {nextDangerWindow ? (
             <>
-              <p className="text-sm font-bold text-foreground">{nextDangerWindow.label}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{nextDangerWindow.whenText}</p>
+              <p className="mt-1.5 text-[13px] font-semibold tracking-[-0.01em] text-foreground">{nextDangerWindow.label}</p>
+              <p className="mt-0.5 font-mono text-[11px] tabular-nums text-muted-foreground">{nextDangerWindow.whenText}</p>
             </>
           ) : (
-            <p className="text-sm text-muted-foreground">None mapped yet</p>
+            <p className="mt-1.5 text-[13px] text-muted-foreground">None mapped yet</p>
           )}
         </GlassCard>
 
-        <GlassCard className="!p-4">
-          <p className="label-xs mb-2 text-orange-500">Self-Trust</p>
-          <div className="flex items-baseline gap-2">
-            <AnimatedCounter value={user.selfTrustScore ?? 0} className="text-2xl font-black tabular-nums text-foreground" />
-            <span className="text-xs text-muted-foreground">/ 100</span>
+        <GlassCard className="!p-3.5">
+          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500/90">Self-Trust</p>
+          <div className="mt-1.5 flex items-baseline gap-1.5">
+            <AnimatedCounter value={user.selfTrustScore ?? 0} className="text-2xl font-semibold tabular-nums tracking-[-0.02em] text-foreground" />
+            <span className="font-mono text-[10px] tabular-nums text-muted-foreground">/ 100</span>
           </div>
           {selfTrustDelta != null && selfTrustDelta !== 0 && (
-            <p className={`mt-0.5 text-xs font-semibold ${selfTrustDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            <p className={`mt-0.5 font-mono text-[10px] font-semibold tabular-nums ${selfTrustDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
               {selfTrustDelta > 0 ? '↑' : '↓'} {Math.abs(selfTrustDelta)} this week
             </p>
           )}
         </GlassCard>
 
-        <GlassCard className="!p-4">
-          <p className="label-xs mb-2 text-orange-500">Excuse detected</p>
+        <GlassCard className="!p-3.5">
+          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500/90">Excuse detected</p>
           {topExcuseCategory && topExcuseCount && topExcuseCount > 1 ? (
             <>
-              <p className="text-sm font-bold leading-snug text-foreground">
+              <p className="mt-1.5 text-[13px] font-semibold leading-snug tracking-[-0.01em] text-foreground">
                 That&apos;s your &ldquo;{EXCUSE_TAG[topExcuseCategory] ?? topExcuseCategory.toLowerCase().replace('_', ' ')}&rdquo; excuse again.
               </p>
-              <p className="mt-1 text-[11px] text-muted-foreground">
-                {topExcuseCount}&times; this week. We&rsquo;ll catch it when it fires.
+              <p className="mt-1 font-mono text-[10px] tabular-nums text-muted-foreground">
+                {topExcuseCount}&times; this week · we&rsquo;ll catch it
               </p>
             </>
           ) : (
-            <p className="text-sm text-muted-foreground">Not enough data yet</p>
+            <p className="mt-1.5 text-[13px] text-muted-foreground">Not enough data yet</p>
           )}
         </GlassCard>
       </motion.div>
@@ -349,12 +370,12 @@ export function TodayView({
           Server-rendered shell, client component fetches the data
           (small list, mostly cached). Closes the "is COYL actually
           firing for me" question without making the user check email. */}
-      <div className="mb-6">
+      <div className="mb-5">
         <InterruptHistory />
       </div>
 
-      {/* Secondary CTAs — check-ins */}
-      <div className="mb-8 flex flex-wrap gap-2">
+      {/* Secondary CTAs — Linear Changelog ghost-capsule pills. */}
+      <div className="mb-6 flex flex-wrap gap-1.5">
         <Button variant="glass" size="sm" asChild>
           <Link href="/chat?mode=morning">
             <Sun className="h-3.5 w-3.5 text-amber-500" /> Set today&apos;s rule
@@ -365,21 +386,20 @@ export function TodayView({
             <Moon className="h-3.5 w-3.5 text-indigo-400" /> Did you keep your word?
           </Link>
         </Button>
-        {/* Callout Mode — "Be brutally honest." Opens a modal that streams
-            COYL's sharpest read of the user's current pattern, with share. */}
         <CalloutPanel
           userId={user.id}
           trigger={
-            <span className="inline-flex items-center gap-1.5 rounded-xl border border-orange-500/40 bg-gradient-to-r from-orange-500/10 to-red-500/10 px-3 py-1.5 text-xs font-bold text-orange-300 transition-all hover:border-orange-500/60 hover:from-orange-500/20 hover:to-red-500/20 hover:shadow-[0_0_16px_rgba(255,102,0,0.2)]">
-              <Flame className="h-3.5 w-3.5 text-orange-400" />
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/30 bg-orange-500/[0.06] px-3 py-1 text-[11px] font-semibold text-orange-300 transition-all hover:border-orange-500/50 hover:bg-orange-500/[0.12]">
+              <Flame className="h-3 w-3 text-orange-400" />
               Be brutally honest
             </span>
           }
         />
       </div>
 
-      {/* Stats */}
-      <StaggerList className="mb-8 grid grid-cols-4 gap-3">
+      {/* Stats — Linear dashboard tile pattern. Tight gap, mono labels,
+          tabular numerals, hairline tonal separation. */}
+      <StaggerList className="mb-6 grid grid-cols-4 gap-2">
         {[
           { label: 'Due today', value: dueTodayTasks.length, color: 'var(--status-open)', icon: Clock },
           { label: 'Overdue', value: overdueTasks.length, color: overdueTasks.length > 0 ? 'var(--status-blocked)' : 'var(--status-completed)', icon: AlertTriangle },
@@ -389,12 +409,12 @@ export function TodayView({
           <StaggerItem key={stat.label}>
             <GlassCard borderColor={stat.color} hover>
               <div className="flex items-start justify-between">
-                <AnimatedCounter value={stat.value} className="text-2xl font-bold leading-none" />
-                <div className="rounded-lg p-1.5" style={{ backgroundColor: `${stat.color}15` }}>
-                  <stat.icon className="h-4 w-4" style={{ color: stat.color }} />
+                <AnimatedCounter value={stat.value} className="text-2xl font-semibold leading-none tabular-nums tracking-[-0.02em]" />
+                <div className="rounded-sm p-1" style={{ backgroundColor: `${stat.color}15` }}>
+                  <stat.icon className="h-3.5 w-3.5" style={{ color: stat.color }} />
                 </div>
               </div>
-              <div className="mt-2 label-xs text-muted-foreground">{stat.label}</div>
+              <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">{stat.label}</div>
             </GlassCard>
           </StaggerItem>
         ))}
@@ -404,11 +424,11 @@ export function TodayView({
       {criticalTasks.length > 0 && (
         <Section
           title="Top priorities"
-          icon={<Zap className="h-3.5 w-3.5 text-amber-500" />}
+          icon={<Zap className="h-3 w-3 text-amber-500" />}
           count={criticalTasks.length}
-          className="mb-6"
+          className="mb-5"
         >
-          <StaggerList className="space-y-2">
+          <StaggerList className="space-y-1.5">
             {criticalTasks.map((task) => (
               <StaggerItem key={task.id}>
                 <TaskCard task={task} compact />
@@ -420,8 +440,8 @@ export function TodayView({
 
       {/* Due today */}
       {dueTodayTasks.length > 0 && (
-        <Section title="Due today" count={dueTodayTasks.length} className="mb-6">
-          <StaggerList className="space-y-2">
+        <Section title="Due today" count={dueTodayTasks.length} className="mb-5">
+          <StaggerList className="space-y-1.5">
             {dueTodayTasks.map((task) => (
               <StaggerItem key={task.id}>
                 <TaskCard task={task} />
@@ -435,11 +455,11 @@ export function TodayView({
       {followUpsDueToday.length > 0 && (
         <Section
           title="Follow-ups due"
-          icon={<RefreshCw className="h-3.5 w-3.5 text-amber-500" />}
+          icon={<RefreshCw className="h-3 w-3 text-amber-500" />}
           count={followUpsDueToday.length}
-          className="mb-6"
+          className="mb-5"
         >
-          <StaggerList className="space-y-2">
+          <StaggerList className="space-y-1.5">
             {followUpsDueToday.map((task) => (
               <StaggerItem key={task.id}>
                 <TaskCard task={task} showFollowUp />
@@ -453,12 +473,12 @@ export function TodayView({
       {overdueTasks.length > 0 && (
         <Section
           title="Overdue"
-          icon={<AlertTriangle className="h-3.5 w-3.5 text-red-500" />}
+          icon={<AlertTriangle className="h-3 w-3 text-red-500" />}
           count={overdueTasks.length}
           countVariant="destructive"
-          className="mb-6"
+          className="mb-5"
         >
-          <StaggerList className="space-y-2">
+          <StaggerList className="space-y-1.5">
             {overdueTasks.map((task) => (
               <StaggerItem key={task.id}>
                 <TaskCard task={task} showOverdue />
@@ -498,18 +518,18 @@ export function TodayView({
       {/* Recently completed */}
       <AnimatePresence>
         {recentlyCompleted.length > 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-8">
-            <Separator className="mb-6" />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6">
+            <Separator className="mb-5" />
             <Section
               title="Completed today"
-              icon={<CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />}
+              icon={<CheckCircle2 className="h-3 w-3 text-emerald-500" />}
               count={recentlyCompleted.length}
             >
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 {recentlyCompleted.map((task) => (
-                  <div key={task.id} className="flex items-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-muted/50">
-                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                    <span className="text-sm text-muted-foreground line-through">{task.title}</span>
+                  <div key={task.id} className="flex items-center gap-2 rounded-sm px-2.5 py-1.5 transition-colors hover:bg-white/[0.02]">
+                    <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-500" />
+                    <span className="text-[13px] text-muted-foreground line-through">{task.title}</span>
                   </div>
                 ))}
               </div>
@@ -518,18 +538,18 @@ export function TodayView({
         )}
       </AnimatePresence>
 
-      {/* FAB */}
+      {/* FAB — slightly more rectangular per operator aesthetic */}
       <motion.button
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.3, type: 'spring', stiffness: 400, damping: 25 }}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.92 }}
+        whileHover={{ scale: 1.06 }}
+        whileTap={{ scale: 0.94 }}
         onClick={() => setShowCreateModal(true)}
-        className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-warm text-white shadow-lg shadow-orange-500/25 animate-pulse-glow"
+        className="fixed bottom-6 right-6 flex h-12 w-12 items-center justify-center rounded-md bg-gradient-warm text-white shadow-[0_0_24px_-4px_rgba(255,102,0,0.5),inset_0_1px_0_0_rgba(255,255,255,0.15)] animate-pulse-glow"
         aria-label="Add task"
       >
-        <Plus className="h-6 w-6" />
+        <Plus className="h-5 w-5" />
       </motion.button>
 
       <AnimatePresence>
@@ -553,11 +573,11 @@ function Section({
 }) {
   return (
     <section className={className}>
-      <div className="mb-3 flex items-center gap-2">
+      <div className="mb-2.5 flex items-center gap-1.5 border-b border-white/[0.04] pb-2">
         {icon}
-        <h2 className="label-xs text-muted-foreground">{title}</h2>
+        <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">{title}</h2>
         {count !== undefined && (
-          <Badge variant={countVariant} className="h-4 px-1.5 text-[10px]">{count}</Badge>
+          <Badge variant={countVariant} className="h-4 px-1.5 font-mono text-[10px] tabular-nums">{count}</Badge>
         )}
       </div>
       {children}
