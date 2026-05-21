@@ -1,41 +1,17 @@
 'use client'
 /**
- * /today — Whoop/Oura DNA, signature ring, spatial depth (no SVG viz).
- * Founder direction May 2026: previous Linear/Stripe-Dashboard surface
- * read as "AI dashboard". This redesign moves /today into a biometric-
- * wearable register — premium, alive, layered, and unmistakably COYL.
- *
- * REFERO REFERENCES APPLIED (one-line each):
- *   - 31c2ea57-68e4-4dec-bdea-6ca5baae2c5f (The Outsiders, Readiness):
- *       hero-as-score pattern; HUGE numeric centered, short interpretive
- *       sentence underneath, glassy translucent cards on a deep dark base.
- *   - 85702559-5176-4cb1-a244-57af3597a801 (The Outsiders, Progress):
- *       glassmorphism-on-near-black, large display numerics paired with
- *       compact sparkline-style satellite cards, soft inner shadow depth.
- *   - 4f852081-3d37-4f91-a758-3a7f4867bf88 (GrowPal, Sleep):
- *       grid of small circular progress rings as daily history — informs
- *       the satellite-mini-ring layout under the main score ring.
- *   - c5819e61-5c00-441c-b702-91d16473a807 (Longevity Deck, Stress):
- *       dark-mode HRV dashboard layered metric tiles + segmented controls
- *       with restrained typographic chrome; informs the row-of-metric look.
- *   - 1b7e4f5c-c3c2-48d5-8f34-3ecdd17f422e (Peloton, style):
- *       cinematic dark-premium discipline — single brand accent, generous
- *       breathing, strict restraint on competing colors.
- *
- * WHY each decision:
- *   - No SVG: the brief is locked. CSS `conic-gradient()` paints the ring
- *     natively — same shape Whoop/Oura use, with less paint cost and
- *     full motion/react animateability. SVG would invite chart libraries.
- *   - Ring viz: a single hero atom anchors the screenshot. A Whoop strain
- *     dial is iconic; we want /today to feel the same way at a glance.
- *   - Color discipline: ONLY orange. Whoop is teal, Oura is mint — we
- *     copy their LAYOUT not their palette. Orange stays load-bearing.
- *   - Spatial layers (3 z-planes):
- *       z-0  : warm dark base + drifting orange radial gradient (ambient)
- *       z-10 : the score ring + satellite metrics + identity panel
- *       z-20 : overlay surfaces (danger window banner, FAB, modal)
- *   - Type system: ui-serif greeting for warmth; Geist sans body; Geist
- *     mono tabular-nums for biometric numbers at 60-88px.
+ * AESTHETIC UPGRADE — May 2026 (operator surface)
+ * Refero references applied:
+ *   - 554b801c-3b31-4086-a7e5-ae613cdd618b (Linear): midnight command-center
+ *     layering, compact 24px section gap, monospace metadata, single accent
+ *     restraint, 6px card radius, tight letter-spacing.
+ *   - 6e9baa82-2f2f-4e77-8b0d-566325635dbe (Axiom): industrial precision —
+ *     2px radius on rectangular surfaces, single orange CTA spotlight,
+ *     monospace data labels, thin medium-gray borders for tonal separation.
+ *   - 11d3e58a-87d7-4a9a-bbf5-720f4fd3ffc6 (Linear Changelog): mono
+ *     timestamps, tabular-nums data alignment, ghost capsule pills,
+ *     compact element gap, refined medium-weight headlines.
+ * Density/typography tightened for daily-use surface. Brand orange preserved.
  */
 import { useState } from 'react'
 import Link from 'next/link'
@@ -44,13 +20,14 @@ import type { Task, User, Tag } from '@repo/database'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { GlassCard } from '@/components/ui/glass-card'
 import { TaskCard } from '@/components/tasks/task-card'
 import { TaskCreateModal } from '@/components/tasks/task-create-modal'
-import { StaggerList, StaggerItem, PageTransition } from '@/components/motion/animations'
-import { TodayScoreRing } from '@/components/today/today-score-ring'
+import { EmptyState } from '@/components/ui/empty-state'
+import { StaggerList, StaggerItem, PageTransition, AnimatedCounter } from '@/components/motion/animations'
 import {
   Sun, Moon, Plus, CheckCircle2, AlertTriangle,
-  RefreshCw, Zap, Flame, Brain, Shield,
+  RefreshCw, Clock, Zap, Flame, Brain,
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { CalloutPanel } from '@/components/callout/callout-panel'
@@ -75,6 +52,9 @@ interface TodayViewProps {
   user: User
   activeCommitment?: ActiveCommitment
   nextDangerWindow?: NextDangerWindow
+  /** The window the user is INSIDE right now (their local time matches an
+   *  active danger window). When present, /today renders a real-time
+   *  intervention banner instead of waiting for the user to find Rescue. */
   activeDangerWindow?: ActiveDangerWindow
   topExcuseCategory?: string | null
   topExcuseCount?: number
@@ -84,6 +64,9 @@ interface TodayViewProps {
   hasDangerWindows?: boolean
 }
 
+// The word COYL uses to name this excuse category when calling it out.
+// "That's your 'tomorrow' excuse again" — the short tag goes inside the
+// quote. Keeps the spec voice consistent with onboarding + patterns.
 const EXCUSE_TAG: Record<string, string> = {
   DELAY: 'tomorrow',
   REWARD: 'deserving',
@@ -93,44 +76,6 @@ const EXCUSE_TAG: Record<string, string> = {
   EXCEPTION: 'special week',
   COMPENSATION: "I'll make up for it",
   SOCIAL_PRESSURE: "couldn't say no",
-}
-
-/**
- * TODAY SCORE — composite 0-100 read of the operator's day.
- *
- * Formula (intentionally simple, deterministic, no surprise):
- *   base                                = 50  (neutral starting point)
- *   + 12 * keptCommitments               (rewards behavior we want)
- *   + 6  * interruptsSucceeded           (rewards engaging the JITAI)
- *   + 8  * selfTrustScore/100 scaled     (longer-arc trust signal)
- *   - 14 * brokenCommitments             (slip-or-break penalty)
- *   - 10 * slipsToday                    (today-specific damage)
- *
- * Clamped to [0, 100]. Tier mapping at consumption site.
- */
-function computeTodayScore(opts: {
-  kept: number
-  broken: number
-  interruptsWon: number
-  slipsToday: number
-  selfTrust: number
-}): number {
-  const { kept, broken, interruptsWon, slipsToday, selfTrust } = opts
-  const raw =
-    50 +
-    12 * kept +
-    6 * interruptsWon +
-    8 * (selfTrust / 100) -
-    14 * broken -
-    10 * slipsToday
-  return Math.max(0, Math.min(100, Math.round(raw)))
-}
-
-function scoreTone(score: number): 'positive' | 'neutral' | 'warning' | 'danger' {
-  if (score >= 75) return 'positive'
-  if (score >= 55) return 'neutral'
-  if (score >= 35) return 'warning'
-  return 'danger'
 }
 
 export function TodayView({
@@ -158,198 +103,53 @@ export function TodayView({
     .filter((t) => t.priority === 'CRITICAL' || t.priority === 'HIGH')
     .slice(0, 3)
 
-  // Score composite — falls back gracefully when commitments are absent.
-  const kept = activeCommitment?.keepCount ?? 0
-  const broken = activeCommitment?.breakCount ?? 0
-  const slipsToday = user.recoveryState === 'SLIPPED' ? 1 : 0
-  // interruptsWonToday is not on user; default to 0 — the surface still
-  // renders proudly because the formula rewards trust + kept rules.
-  const interruptsWon = 0
-  const todayScore = computeTodayScore({
-    kept,
-    broken,
-    interruptsWon,
-    slipsToday,
-    selfTrust: user.selfTrustScore ?? 0,
-  })
-  const tone = scoreTone(todayScore)
-
-  // Satellite metric percentages — each maps to its own 0-100 mini-ring.
-  // Streak: cap at 30 days as full ring (longer is presented as 100%).
-  const streakPct = Math.min(100, Math.round(((user.currentStreak ?? 0) / 30) * 100))
-  const selfTrustPct = Math.max(0, Math.min(100, user.selfTrustScore ?? 0))
-  const interruptsPct = Math.min(100, interruptsWon * 20)
-
   return (
-    <PageTransition className="relative mx-auto max-w-3xl px-5 py-8 sm:px-6">
-      {/* ════════════════════ Z-PLANE 0 — AMBIENT BACKGROUND ════════════════════
-          Warm-dark wash with a slow-drifting orange radial that lives behind
-          everything. This is the "atmosphere" plane — pure mood, no content. */}
-      <div className="pointer-events-none absolute inset-0 -z-20 overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(120% 80% at 50% 0%, #14110e 0%, #0e0d0b 55%, #07060500 100%)',
-          }}
-        />
-        <motion.div
-          aria-hidden
-          animate={{
-            opacity: [0.35, 0.6, 0.35],
-            x: ['-2%', '2%', '-2%'],
-            y: ['-1%', '1%', '-1%'],
-          }}
-          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute left-1/2 top-[8%] h-[520px] w-[520px] -translate-x-1/2 rounded-full blur-3xl"
-          style={{
-            background:
-              'radial-gradient(circle, rgba(255,102,0,0.22) 0%, rgba(255,102,0,0.06) 45%, transparent 75%)',
-          }}
-        />
-        {/* Subtle dot pattern — anti-banding on the gradient, premium feel.
-            Pure CSS so no SVG anywhere on the page. */}
-        <div
-          className="absolute inset-0 opacity-[0.04] mix-blend-overlay"
-          style={{
-            backgroundImage:
-              'radial-gradient(rgba(255,255,255,0.5) 1px, transparent 1px)',
-            backgroundSize: '3px 3px',
-          }}
-        />
-      </div>
+    <PageTransition className="relative mx-auto max-w-3xl px-6 py-6">
+      {/* Decorative gradient mesh — Linear-style restrained ambient lift */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-mesh opacity-40" />
 
-      {/* ════════════════════ Z-PLANE 10 — CONTENT (THE DASHBOARD) ════════════════════ */}
-
-      {/* HEADER — serif greeting + monospace timestamp. The serif is the
-          single moment of warmth on the page; everything else is grotesk
-          + mono. Mirrors the wearable-app trick of one elegant accent. */}
-      <motion.div
-        initial={{ opacity: 0, y: -6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-6 flex items-baseline justify-between"
-      >
-        <p
-          className="text-[22px] font-medium tracking-[-0.02em] text-foreground sm:text-[26px]"
-          style={{ fontFamily: 'ui-serif, "Iowan Old Style", Georgia, serif' }}
-        >
-          {greeting}, <span className="italic text-orange-300/90">{firstName}</span>
+      {/* Header — operator-style metadata rail. Greeting + monospace timestamp,
+          flush-baseline. Mirrors Linear Changelog's date treatment. */}
+      <div className="mb-5 flex items-baseline justify-between border-b border-white/[0.06] pb-3">
+        <p className="label-xs text-foreground/90">
+          {greeting}, {firstName}
         </p>
-        <p className="font-mono text-[10px] uppercase tracking-[0.18em] tabular-nums text-muted-foreground">
+        <p className="font-mono text-[10px] uppercase tracking-[0.08em] tabular-nums text-muted-foreground">
           {formatDate(new Date())}
         </p>
-      </motion.div>
+      </div>
 
+      {/* Browser push enablement — only renders if the user has danger
+          windows mapped, no existing subscription, and hasn't dismissed
+          recently. Closes the "I get the value at risk windows" promise
+          for users who don't have the mobile app yet. */}
       <WebPushEnableBanner
         alreadySubscribed={hasWebPushSubscription}
         hasDangerWindows={hasDangerWindows}
         hasMobilePush={hasMobilePush}
       />
 
-      {/* SIGNATURE RING — the photo-atom. Built entirely with CSS conic-gradient.
-          When the user is in a danger window, the perimeter pulses orange. */}
-      <motion.section
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.06, ease: [0.23, 1, 0.32, 1] }}
-        className="mb-8 flex flex-col items-center pt-6"
-      >
-        <TodayScoreRing
-          score={todayScore}
-          caption={tone === 'positive' ? 'On track today' : tone === 'danger' ? 'Today needs you' : 'Today'}
-          tone={tone}
-          pulse={Boolean(activeDangerWindow)}
-          satellites={[
-            {
-              label: 'Streak',
-              value: user.currentStreak ?? 0,
-              percent: streakPct,
-              display: `${user.currentStreak ?? 0}d`,
-            },
-            {
-              label: 'Self-trust',
-              value: selfTrustPct,
-              percent: selfTrustPct,
-              display: `${selfTrustPct}`,
-            },
-            {
-              label: 'Interrupts',
-              value: interruptsWon,
-              percent: interruptsPct,
-              display: `${interruptsWon}`,
-            },
-          ]}
-        />
-      </motion.section>
-
-      {/* ACTIVE DANGER WINDOW — overlay surface (z-plane 20 in effect).
-          Highest-urgency moment in the product. */}
-      <AnimatePresence>
-        {activeDangerWindow && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98, y: 6 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35 }}
-            className="relative z-20 mb-5 overflow-hidden rounded-2xl border border-orange-500/40 p-5"
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(255,90,30,0.12) 0%, rgba(255,90,30,0.04) 60%, transparent 100%)',
-              boxShadow:
-                '0 24px 60px -20px rgba(255,90,30,0.45), inset 0 1px 0 rgba(255,255,255,0.04)',
-            }}
-          >
-            <div className="flex items-start gap-3">
-              <motion.div
-                animate={{ opacity: [0.55, 1, 0.55] }}
-                transition={{ duration: 1.6, repeat: Infinity }}
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-orange-500/40 bg-orange-500/15 text-orange-300"
-              >
-                <Flame className="h-4 w-4" />
-              </motion.div>
-              <div className="flex-1">
-                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-orange-300 tabular-nums">
-                  You&rsquo;re in: {activeDangerWindow.label} &middot; {activeDangerWindow.minutesIn} min in
-                </p>
-                <p className="mt-2 text-lg font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-xl">
-                  This is the moment your autopilot runs.
-                </p>
-                <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
-                  You already know how it ends. One tap, one different choice, the night doesn&rsquo;t turn into the week.
-                </p>
-                <Link
-                  href={`/rescue?windowId=${activeDangerWindow.id}&from=danger_window`}
-                  className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.10em] text-white shadow-[0_0_20px_-3px_rgba(255,102,0,0.7)] transition-shadow hover:shadow-[0_0_28px_-2px_rgba(255,102,0,0.85)]"
-                >
-                  Open rescue &rarr;
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* RECOVERY MODE — softer "we caught you" register */}
+      {/* RECOVERY MODE — explicit banner when the user just slipped.
+          Per the May 2026 audit §4.4: the brand promise is "no restart,
+          continue." This banner makes the promise visible. Hides streak
+          surface in the IDENTITY LINE below by short-circuiting the
+          warning tone — recovery is its own state, not a guilt state.
+          Auto-clears 24h after the slip via the existing recoveryState
+          state machine in lib/user-state.ts. */}
       {(user.recoveryState === 'SLIPPED' || user.recoveryState === 'RECOVERING') && (
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-5 overflow-hidden rounded-2xl border border-white/[0.05] p-5"
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(255,102,0,0.06) 0%, rgba(255,102,0,0.015) 50%, transparent 100%)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
-          }}
+          className="mb-3 overflow-hidden rounded-md border border-emerald-500/30 bg-gradient-to-br from-emerald-500/[0.06] via-emerald-500/[0.02] to-transparent p-4"
         >
           <div className="flex items-start gap-3">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-orange-500/30 bg-orange-500/10 text-orange-300">
-              <Shield className="h-4 w-4" />
+            <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+              <span className="text-sm font-bold">↺</span>
             </div>
             <div className="flex-1">
-              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-orange-300">Recovery mode &middot; 24h</p>
-              <p className="mt-2 text-lg font-semibold leading-tight tracking-[-0.015em] text-foreground">
+              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-emerald-400">RECOVERY MODE · 24H</p>
+              <p className="mt-1.5 text-base font-semibold leading-tight tracking-[-0.01em] text-foreground">
                 You slipped. Good. Now we stop the damage.
               </p>
               <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
@@ -357,17 +157,63 @@ export function TodayView({
               </p>
               <Link
                 href="/slip"
-                className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-orange-500/40 bg-orange-500/10 px-3.5 py-1.5 text-[11px] font-semibold text-orange-300 transition-colors hover:bg-orange-500/15"
+                className="mt-2.5 inline-flex items-center gap-1.5 rounded-sm border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/20"
               >
-                Build the recovery plan &rarr;
+                Build the recovery plan →
               </Link>
             </div>
           </div>
         </motion.div>
       )}
 
-      {/* IDENTITY LINE — the headline read on who you are today. Lives just
-          under the ring as the "interpretation" layer. */}
+      {/* INSIDE A DANGER WINDOW RIGHT NOW.
+          The single most important UI state in the product. When the user
+          is currently inside a known risk window, /today turns into a
+          live intervention surface — pulsing red border, the window name,
+          how many minutes they've been in it, and a one-tap rescue path.
+          The same matching logic the danger-window-interrupt cron uses
+          for push notifications, surfaced server-side at page render so
+          a user without mobile installed (Core, or pre-launch mobile)
+          still sees the moment. */}
+      {activeDangerWindow && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.35 }}
+          className="mb-3 overflow-hidden rounded-md border border-red-500/60 bg-gradient-to-br from-red-500/[0.10] via-orange-500/[0.05] to-transparent p-4 shadow-[0_0_36px_-10px_rgba(239,68,68,0.45),inset_0_1px_0_0_rgba(255,255,255,0.02)]"
+        >
+          <div className="flex items-start gap-3">
+            <motion.div
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 1.6, repeat: Infinity }}
+              className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-red-500/30 bg-red-500/15 text-red-300"
+            >
+              <Flame className="h-4 w-4" />
+            </motion.div>
+            <div className="flex-1">
+              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-red-400 tabular-nums">
+                YOU&rsquo;RE IN: {activeDangerWindow.label.toUpperCase()} &middot; {activeDangerWindow.minutesIn} MIN IN
+              </p>
+              <p className="mt-1.5 text-lg font-semibold leading-tight tracking-[-0.015em] text-foreground sm:text-xl">
+                This is the moment your autopilot runs.
+              </p>
+              <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+                You already know how it ends if nothing interrupts it. One tap, one different choice, the night doesn&rsquo;t turn into the week.
+              </p>
+              <Link
+                href={`/rescue?windowId=${activeDangerWindow.id}&from=danger_window`}
+                className="mt-2.5 inline-flex items-center gap-1.5 rounded-sm bg-gradient-to-r from-red-500 to-orange-500 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-white shadow-[0_0_16px_-3px_rgba(239,68,68,0.6)] transition-shadow hover:shadow-[0_0_24px_-3px_rgba(239,68,68,0.8)]"
+              >
+                Open rescue &rarr;
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* IDENTITY LINE — the accusatory/affirming one-liner from
+          identity-sentence.ts. Sets the emotional register for the page.
+          Deterministic from user data, no AI latency. */}
       {(() => {
         const id = identitySentence({
           identityState: user.identityState ?? null,
@@ -377,207 +223,211 @@ export function TodayView({
           slipsThisMonth: user.slipsThisMonth,
           selfTrustScore: user.selfTrustScore ?? 0,
         })
-        const accent =
-          id.tone === 'warning' ? 'text-orange-300'
-          : id.tone === 'positive' ? 'text-orange-200'
+        const borderColor =
+          id.tone === 'warning' ? 'border-red-500/30'
+          : id.tone === 'positive' ? 'border-emerald-500/30'
+          : 'border-orange-500/30'
+        const textColor =
+          id.tone === 'warning' ? 'text-red-300'
+          : id.tone === 'positive' ? 'text-emerald-300'
           : 'text-orange-300'
         return (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12, duration: 0.5 }}
-            className="mb-5 rounded-2xl border border-white/[0.04] p-5"
-            style={{
-              background:
-                'linear-gradient(180deg, rgba(255,255,255,0.018) 0%, rgba(255,255,255,0.005) 100%)',
-              boxShadow:
-                'inset 0 1px 0 rgba(255,255,255,0.03), 0 12px 32px -20px rgba(0,0,0,0.7)',
-            }}
+            className={`mb-3 rounded-sm border-l-2 ${borderColor} bg-white/[0.02] px-4 py-2.5`}
           >
-            <p className={`font-mono text-[10px] uppercase tracking-[0.18em] ${accent}`}>
+            <p className={`font-mono text-[10px] uppercase tracking-[0.12em] ${textColor}`}>
               Identity read
             </p>
-            <p
-              className="mt-2 text-[17px] font-medium leading-[1.25] tracking-[-0.015em] text-foreground"
-              style={{ fontFamily: 'ui-serif, "Iowan Old Style", Georgia, serif' }}
-            >
+            <p className="mt-1 text-[15px] font-semibold tracking-[-0.01em] text-foreground sm:text-base">
               {id.headline}
             </p>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">{id.evidence}</p>
+            <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">{id.evidence}</p>
           </motion.div>
         )
       })()}
 
-      {/* TONIGHT'S RULE — hero card. Floating, warm, depth via box-shadow. */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.18, duration: 0.5 }}
-        className="mb-4"
-      >
-        {activeCommitment ? (
-          <div
-            className="relative overflow-hidden rounded-2xl border border-orange-500/25 p-6"
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(255,102,0,0.10) 0%, rgba(255,102,0,0.02) 55%, transparent 100%)',
-              boxShadow:
-                '0 30px 70px -30px rgba(255,102,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)',
-            }}
-          >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full blur-3xl"
-              style={{ background: 'radial-gradient(circle, rgba(255,102,0,0.18) 0%, transparent 70%)' }}
-            />
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-orange-400">
-              Today&apos;s rule
-            </p>
-            <p
-              className="mt-3 text-[24px] font-medium leading-[1.15] tracking-[-0.02em] text-foreground sm:text-[28px]"
-              style={{ fontFamily: 'ui-serif, "Iowan Old Style", Georgia, serif' }}
-            >
-              {activeCommitment.rule}
-            </p>
-            <div className="mt-4 flex items-center justify-between border-t border-white/[0.05] pt-3 font-mono text-[11px] tabular-nums">
-              <span className="text-muted-foreground">
-                <span className="text-orange-200">{activeCommitment.keepCount} kept</span>
-                {activeCommitment.breakCount > 0 && (
-                  <> &middot; <span className="text-orange-400/80">{activeCommitment.breakCount} broken</span></>
-                )}
-              </span>
-              <Link href="/commitments" className="text-orange-300 transition-colors hover:text-orange-200">
-                Manage &rarr;
-              </Link>
-            </div>
+      {/* TONIGHT'S RULE — dominant hero. Axiom-inspired: charcoal card,
+          single orange accent, refined medium-weight headline (not black). */}
+      {activeCommitment ? (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-3 overflow-hidden rounded-md border border-orange-500/30 bg-gradient-to-br from-orange-500/[0.10] via-orange-500/[0.03] to-transparent p-5 shadow-[0_0_28px_-12px_rgba(255,102,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)]"
+        >
+          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500">Today&apos;s rule</p>
+          <p className="mt-2 text-2xl font-semibold leading-[1.15] tracking-[-0.02em] text-foreground sm:text-3xl">
+            {activeCommitment.rule}
+          </p>
+          <div className="mt-3 flex items-center justify-between border-t border-white/[0.04] pt-3 text-[11px] font-mono tabular-nums">
+            <span className="text-muted-foreground">
+              <span className="text-emerald-400">{activeCommitment.keepCount} kept</span>
+              {activeCommitment.breakCount > 0 && (
+                <> · <span className="text-red-400">{activeCommitment.breakCount} broken</span></>
+              )}
+            </span>
+            <Link href="/commitments" className="text-orange-400 hover:text-orange-300">Manage →</Link>
           </div>
-        ) : (
-          <div className="rounded-2xl border border-dashed border-orange-500/25 bg-white/[0.01] p-6 text-center">
-            <p className="text-[13px] text-muted-foreground">No rule set yet.</p>
-            <Link href="/commitments" className="mt-2 inline-block text-[13px] font-semibold text-orange-300 hover:text-orange-200">
-              Set today&apos;s rule &rarr;
-            </Link>
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-3 rounded-md border border-dashed border-orange-500/25 bg-white/[0.01] p-5 text-center"
+        >
+          <p className="text-[13px] text-muted-foreground">No rule set yet.</p>
+          <Link href="/commitments" className="mt-1.5 inline-block text-[13px] font-semibold text-orange-400 hover:text-orange-300">
+            Set today&apos;s rule →
+          </Link>
+        </motion.div>
+      )}
+
+      {/* THREE-CTA ROW — the core UX primitives from the spec.
+          All three equal-weight; slip gets promoted out of the secondary
+          row because recovery is as important as prevention. Stacks
+          1-col mobile, 3-col desktop. */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="mb-3 grid grid-cols-1 gap-2 md:grid-cols-3"
+      >
+        <Link
+          href="/rescue"
+          className="group flex items-center justify-center gap-2.5 rounded-md bg-gradient-to-br from-red-500 to-orange-600 px-4 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-white shadow-[0_0_22px_-6px_rgba(239,68,68,0.5),inset_0_1px_0_0_rgba(255,255,255,0.12)] transition-all hover:shadow-[0_0_36px_-6px_rgba(239,68,68,0.75)]"
+        >
+          <Flame className="h-4 w-4 transition-transform group-hover:rotate-12" />
+          I&rsquo;m about to mess up
+        </Link>
+        <Link
+          href="/decide"
+          className="group flex items-center justify-center gap-2.5 rounded-md border border-orange-500/30 bg-gradient-to-br from-orange-500/[0.08] to-transparent px-4 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-foreground transition-all hover:border-orange-500/50 hover:bg-orange-500/[0.12]"
+        >
+          <Brain className="h-4 w-4 text-orange-500 transition-transform group-hover:scale-110" />
+          What should I do?
+        </Link>
+        <Link
+          href="/slip"
+          className="group flex items-center justify-center gap-2.5 rounded-md border border-amber-500/30 bg-gradient-to-br from-amber-500/[0.08] to-transparent px-4 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-foreground transition-all hover:border-amber-500/50 hover:bg-amber-500/[0.12]"
+        >
+          <AlertTriangle className="h-4 w-4 text-amber-500 transition-transform group-hover:scale-110" />
+          I already slipped
+        </Link>
+      </motion.div>
+
+      {/* Quick stats row — Linear-style metric panels. Tight 12px padding,
+          monospace labels, hairline borders, tabular-nums for data alignment. */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="mb-6 grid grid-cols-1 gap-2 md:grid-cols-3"
+      >
+        <GlassCard className="!p-3.5">
+          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500/90">Next danger window</p>
+          {nextDangerWindow ? (
+            <>
+              <p className="mt-1.5 text-[13px] font-semibold tracking-[-0.01em] text-foreground">{nextDangerWindow.label}</p>
+              <p className="mt-0.5 font-mono text-[11px] tabular-nums text-muted-foreground">{nextDangerWindow.whenText}</p>
+            </>
+          ) : (
+            <p className="mt-1.5 text-[13px] text-muted-foreground">None mapped yet</p>
+          )}
+        </GlassCard>
+
+        <GlassCard className="!p-3.5">
+          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500/90">Self-Trust</p>
+          <div className="mt-1.5 flex items-baseline gap-1.5">
+            <AnimatedCounter value={user.selfTrustScore ?? 0} className="text-2xl font-semibold tabular-nums tracking-[-0.02em] text-foreground" />
+            <span className="font-mono text-[10px] tabular-nums text-muted-foreground">/ 100</span>
           </div>
-        )}
+          {selfTrustDelta != null && selfTrustDelta !== 0 && (
+            <p className={`mt-0.5 font-mono text-[10px] font-semibold tabular-nums ${selfTrustDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              {selfTrustDelta > 0 ? '↑' : '↓'} {Math.abs(selfTrustDelta)} this week
+            </p>
+          )}
+        </GlassCard>
+
+        <GlassCard className="!p-3.5">
+          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500/90">Excuse detected</p>
+          {topExcuseCategory && topExcuseCount && topExcuseCount > 1 ? (
+            <>
+              <p className="mt-1.5 text-[13px] font-semibold leading-snug tracking-[-0.01em] text-foreground">
+                That&apos;s your &ldquo;{EXCUSE_TAG[topExcuseCategory] ?? topExcuseCategory.toLowerCase().replace('_', ' ')}&rdquo; excuse again.
+              </p>
+              <p className="mt-1 font-mono text-[10px] tabular-nums text-muted-foreground">
+                {topExcuseCount}&times; this week · we&rsquo;ll catch it
+              </p>
+            </>
+          ) : (
+            <p className="mt-1.5 text-[13px] text-muted-foreground">Not enough data yet</p>
+          )}
+        </GlassCard>
       </motion.div>
 
-      {/* THREE PRIMARY ACTIONS — equal-weight CTAs, raised tiles with depth.
-          Each tile has its own subtle gradient + inner highlight; spatial
-          motion via whileHover scale. */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.24, duration: 0.5 }}
-        className="mb-4 grid grid-cols-1 gap-2.5 md:grid-cols-3"
-      >
-        <ActionTile href="/rescue" icon={<Flame className="h-4 w-4" />} label="I'm about to mess up" emphasis />
-        <ActionTile href="/decide" icon={<Brain className="h-4 w-4" />} label="What should I do?" />
-        <ActionTile href="/slip" icon={<AlertTriangle className="h-4 w-4" />} label="I already slipped" />
-      </motion.div>
-
-      {/* CONTEXTUAL METRIC ROW — three slim glass tiles, biometric typography. */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.30, duration: 0.5 }}
-        className="mb-7 grid grid-cols-1 gap-2.5 md:grid-cols-3"
-      >
-        <MetricTile
-          label="Next danger window"
-          primary={nextDangerWindow?.label ?? 'None mapped yet'}
-          secondary={nextDangerWindow?.whenText}
-        />
-        <MetricTile
-          label="Self-trust"
-          primary={`${user.selfTrustScore ?? 0}`}
-          primaryMono
-          unit="/ 100"
-          secondary={
-            selfTrustDelta != null && selfTrustDelta !== 0
-              ? `${selfTrustDelta > 0 ? '↑' : '↓'} ${Math.abs(selfTrustDelta)} this week`
-              : undefined
-          }
-          secondaryAccent={selfTrustDelta != null && selfTrustDelta > 0 ? 'positive' : selfTrustDelta != null && selfTrustDelta < 0 ? 'negative' : undefined}
-        />
-        <MetricTile
-          label="Excuse detected"
-          primary={
-            topExcuseCategory && topExcuseCount && topExcuseCount > 1
-              ? `"${EXCUSE_TAG[topExcuseCategory] ?? topExcuseCategory.toLowerCase().replace('_', ' ')}"`
-              : 'Not enough data'
-          }
-          secondary={
-            topExcuseCategory && topExcuseCount && topExcuseCount > 1
-              ? `${topExcuseCount}× this week`
-              : undefined
-          }
-        />
-      </motion.div>
-
-      {/* Recent interrupts — server proof the JITAI is firing. */}
-      <div className="mb-6">
+      {/* Recent interrupts — visible proof the JITAI claim is real.
+          Server-rendered shell, client component fetches the data
+          (small list, mostly cached). Closes the "is COYL actually
+          firing for me" question without making the user check email. */}
+      <div className="mb-5">
         <InterruptHistory />
       </div>
 
-      {/* Secondary CTAs — capsule pills, restrained */}
-      <div className="mb-7 flex flex-wrap gap-2">
+      {/* Secondary CTAs — Linear Changelog ghost-capsule pills. */}
+      <div className="mb-6 flex flex-wrap gap-1.5">
         <Button variant="glass" size="sm" asChild>
           <Link href="/chat?mode=morning">
-            <Sun className="h-3.5 w-3.5 text-orange-300" /> Set today&apos;s rule
+            <Sun className="h-3.5 w-3.5 text-amber-500" /> Set today&apos;s rule
           </Link>
         </Button>
         <Button variant="glass" size="sm" asChild>
           <Link href="/chat?mode=night">
-            <Moon className="h-3.5 w-3.5 text-orange-200/70" /> Did you keep your word?
+            <Moon className="h-3.5 w-3.5 text-indigo-400" /> Did you keep your word?
           </Link>
         </Button>
         <CalloutPanel
           userId={user.id}
           trigger={
             <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/30 bg-orange-500/[0.06] px-3 py-1 text-[11px] font-semibold text-orange-300 transition-all hover:border-orange-500/50 hover:bg-orange-500/[0.12]">
-              <Flame className="h-3 w-3 text-orange-300" />
+              <Flame className="h-3 w-3 text-orange-400" />
               Be brutally honest
             </span>
           }
         />
       </div>
 
-      {/* TASKS ROLL-UP — biometric numerics, glassy tiles */}
-      <StaggerList className="mb-7 grid grid-cols-4 gap-2.5">
+      {/* Stats — Linear dashboard tile pattern. Tight gap, mono labels,
+          tabular numerals, hairline tonal separation. */}
+      <StaggerList className="mb-6 grid grid-cols-4 gap-2">
         {[
-          { label: 'Due', value: dueTodayTasks.length },
-          { label: 'Overdue', value: overdueTasks.length, urgent: overdueTasks.length > 0 },
-          { label: 'Follow-ups', value: followUpsDueToday.length },
-          { label: 'Done', value: recentlyCompleted.length },
+          { label: 'Due today', value: dueTodayTasks.length, color: 'var(--status-open)', icon: Clock },
+          { label: 'Overdue', value: overdueTasks.length, color: overdueTasks.length > 0 ? 'var(--status-blocked)' : 'var(--status-completed)', icon: AlertTriangle },
+          { label: 'Follow-ups', value: followUpsDueToday.length, color: 'var(--status-in-progress)', icon: RefreshCw },
+          { label: 'Done today', value: recentlyCompleted.length, color: 'var(--status-completed)', icon: CheckCircle2 },
         ].map((stat) => (
           <StaggerItem key={stat.label}>
-            <div
-              className="rounded-2xl border border-white/[0.05] px-3 py-3.5"
-              style={{
-                background:
-                  'linear-gradient(180deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.005) 100%)',
-                boxShadow:
-                  'inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 24px -16px rgba(0,0,0,0.7)',
-              }}
-            >
-              <p className="font-mono text-[28px] font-semibold leading-none tabular-nums tracking-[-0.04em] text-foreground">
-                {stat.value}
-              </p>
-              <p
-                className={`mt-2 font-mono text-[9.5px] uppercase tracking-[0.16em] ${
-                  stat.urgent ? 'text-orange-300' : 'text-muted-foreground'
-                }`}
-              >
-                {stat.label}
-              </p>
-            </div>
+            <GlassCard borderColor={stat.color} hover>
+              <div className="flex items-start justify-between">
+                <AnimatedCounter value={stat.value} className="text-2xl font-semibold leading-none tabular-nums tracking-[-0.02em]" />
+                <div className="rounded-sm p-1" style={{ backgroundColor: `${stat.color}15` }}>
+                  <stat.icon className="h-3.5 w-3.5" style={{ color: stat.color }} />
+                </div>
+              </div>
+              <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">{stat.label}</div>
+            </GlassCard>
           </StaggerItem>
         ))}
       </StaggerList>
 
       {/* Top priorities */}
       {criticalTasks.length > 0 && (
-        <Section title="Top priorities" icon={<Zap className="h-3 w-3 text-orange-300" />} count={criticalTasks.length} className="mb-6">
+        <Section
+          title="Top priorities"
+          icon={<Zap className="h-3 w-3 text-amber-500" />}
+          count={criticalTasks.length}
+          className="mb-5"
+        >
           <StaggerList className="space-y-1.5">
             {criticalTasks.map((task) => (
               <StaggerItem key={task.id}>
@@ -588,8 +438,9 @@ export function TodayView({
         </Section>
       )}
 
+      {/* Due today */}
       {dueTodayTasks.length > 0 && (
-        <Section title="Due today" count={dueTodayTasks.length} className="mb-6">
+        <Section title="Due today" count={dueTodayTasks.length} className="mb-5">
           <StaggerList className="space-y-1.5">
             {dueTodayTasks.map((task) => (
               <StaggerItem key={task.id}>
@@ -600,8 +451,14 @@ export function TodayView({
         </Section>
       )}
 
+      {/* Follow-ups */}
       {followUpsDueToday.length > 0 && (
-        <Section title="Follow-ups due" icon={<RefreshCw className="h-3 w-3 text-orange-300" />} count={followUpsDueToday.length} className="mb-6">
+        <Section
+          title="Follow-ups due"
+          icon={<RefreshCw className="h-3 w-3 text-amber-500" />}
+          count={followUpsDueToday.length}
+          className="mb-5"
+        >
           <StaggerList className="space-y-1.5">
             {followUpsDueToday.map((task) => (
               <StaggerItem key={task.id}>
@@ -612,8 +469,15 @@ export function TodayView({
         </Section>
       )}
 
+      {/* Overdue */}
       {overdueTasks.length > 0 && (
-        <Section title="Overdue" icon={<AlertTriangle className="h-3 w-3 text-orange-400" />} count={overdueTasks.length} countVariant="destructive" className="mb-6">
+        <Section
+          title="Overdue"
+          icon={<AlertTriangle className="h-3 w-3 text-red-500" />}
+          count={overdueTasks.length}
+          countVariant="destructive"
+          className="mb-5"
+        >
           <StaggerList className="space-y-1.5">
             {overdueTasks.map((task) => (
               <StaggerItem key={task.id}>
@@ -624,53 +488,47 @@ export function TodayView({
         </Section>
       )}
 
+      {/* Empty state */}
       {totalAttention === 0 && (
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-          className="rounded-2xl border border-white/[0.04] py-12 text-center"
-          style={{
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%)',
-          }}
+          transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
         >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.1 }}
-            className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full"
-            style={{
-              background:
-                'radial-gradient(circle at 50% 35%, #ff8020 0%, #ff6600 70%)',
-              boxShadow: '0 12px 32px -8px rgba(255,102,0,0.55)',
-            }}
-          >
-            <CheckCircle2 className="h-7 w-7 text-white" />
-          </motion.div>
-          <h3
-            className="text-[20px] font-medium tracking-[-0.02em] text-foreground"
-            style={{ fontFamily: 'ui-serif, "Iowan Old Style", Georgia, serif' }}
-          >
-            All caught up
-          </h3>
-          <p className="mx-auto mt-1 max-w-xs text-[13px] text-muted-foreground">
-            Nothing urgent. Use the quiet — set tomorrow&rsquo;s rule now.
-          </p>
-          <Button variant="brand" size="sm" className="mt-5" onClick={() => setShowCreateModal(true)}>
-            <Plus className="h-3.5 w-3.5" /> Add a task
-          </Button>
+          <GlassCard className="py-12 text-center">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.1 }}
+              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-warm"
+            >
+              <CheckCircle2 className="h-8 w-8 text-white" />
+            </motion.div>
+            <h3 className="heading-3 text-foreground">All caught up</h3>
+            <p className="mx-auto mt-1 max-w-xs text-sm text-muted-foreground">
+              Nothing urgent needs your attention right now. Great execution.
+            </p>
+            <Button variant="brand" size="sm" className="mt-4" onClick={() => setShowCreateModal(true)}>
+              <Plus className="h-3.5 w-3.5" /> Add a task
+            </Button>
+          </GlassCard>
         </motion.div>
       )}
 
+      {/* Recently completed */}
       <AnimatePresence>
         {recentlyCompleted.length > 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-7">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6">
             <Separator className="mb-5" />
-            <Section title="Completed today" icon={<CheckCircle2 className="h-3 w-3 text-orange-200" />} count={recentlyCompleted.length}>
+            <Section
+              title="Completed today"
+              icon={<CheckCircle2 className="h-3 w-3 text-emerald-500" />}
+              count={recentlyCompleted.length}
+            >
               <div className="space-y-0.5">
                 {recentlyCompleted.map((task) => (
-                  <div key={task.id} className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition-colors hover:bg-white/[0.02]">
-                    <CheckCircle2 className="h-3 w-3 shrink-0 text-orange-200" />
+                  <div key={task.id} className="flex items-center gap-2 rounded-sm px-2.5 py-1.5 transition-colors hover:bg-white/[0.02]">
+                    <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-500" />
                     <span className="text-[13px] text-muted-foreground line-through">{task.title}</span>
                   </div>
                 ))}
@@ -680,125 +538,26 @@ export function TodayView({
         )}
       </AnimatePresence>
 
-      {/* ════════════════════ Z-PLANE 20 — OVERLAY (FAB) ════════════════════ */}
+      {/* FAB — slightly more rectangular per operator aesthetic */}
       <motion.button
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.4, type: 'spring', stiffness: 400, damping: 25 }}
+        transition={{ delay: 0.3, type: 'spring', stiffness: 400, damping: 25 }}
         whileHover={{ scale: 1.06 }}
         whileTap={{ scale: 0.94 }}
         onClick={() => setShowCreateModal(true)}
-        className="fixed bottom-6 right-6 z-20 grid h-13 w-13 place-items-center rounded-full text-white"
-        style={{
-          width: 52,
-          height: 52,
-          background: 'radial-gradient(circle at 35% 30%, #ff8020 0%, #ff6600 70%)',
-          boxShadow:
-            '0 18px 40px -10px rgba(255,102,0,0.55), inset 0 1px 0 rgba(255,255,255,0.18)',
-        }}
+        className="fixed bottom-6 right-6 flex h-12 w-12 items-center justify-center rounded-md bg-gradient-warm text-white shadow-[0_0_24px_-4px_rgba(255,102,0,0.5),inset_0_1px_0_0_rgba(255,255,255,0.15)] animate-pulse-glow"
         aria-label="Add task"
       >
         <Plus className="h-5 w-5" />
       </motion.button>
 
       <AnimatePresence>
-        {showCreateModal && <TaskCreateModal onClose={() => setShowCreateModal(false)} />}
+        {showCreateModal && (
+          <TaskCreateModal onClose={() => setShowCreateModal(false)} />
+        )}
       </AnimatePresence>
     </PageTransition>
-  )
-}
-
-/* ════════════════════ Subcomponents ════════════════════ */
-
-function ActionTile({
-  href,
-  icon,
-  label,
-  emphasis,
-}: {
-  href: string
-  icon: React.ReactNode
-  label: string
-  emphasis?: boolean
-}) {
-  return (
-    <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
-      <Link
-        href={href}
-        className="group flex items-center justify-center gap-2.5 rounded-2xl border px-4 py-4 text-[12px] font-semibold uppercase tracking-[0.10em] transition-all"
-        style={
-          emphasis
-            ? {
-                color: '#ffffff',
-                borderColor: 'rgba(255,102,0,0.35)',
-                background:
-                  'linear-gradient(135deg, rgba(255,102,0,0.95) 0%, rgba(224,92,0,0.95) 100%)',
-                boxShadow:
-                  '0 16px 40px -14px rgba(255,102,0,0.6), inset 0 1px 0 rgba(255,255,255,0.18)',
-              }
-            : {
-                color: 'hsl(var(--foreground))',
-                borderColor: 'rgba(255,255,255,0.06)',
-                background:
-                  'linear-gradient(180deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.005) 100%)',
-                boxShadow:
-                  'inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 22px -12px rgba(0,0,0,0.65)',
-              }
-        }
-      >
-        <span className={emphasis ? 'text-white' : 'text-orange-300'}>{icon}</span>
-        {label}
-      </Link>
-    </motion.div>
-  )
-}
-
-function MetricTile({
-  label,
-  primary,
-  primaryMono,
-  unit,
-  secondary,
-  secondaryAccent,
-}: {
-  label: string
-  primary: string
-  primaryMono?: boolean
-  unit?: string
-  secondary?: string
-  secondaryAccent?: 'positive' | 'negative'
-}) {
-  const secondaryColor =
-    secondaryAccent === 'positive' ? 'text-orange-200'
-    : secondaryAccent === 'negative' ? 'text-orange-400/80'
-    : 'text-muted-foreground'
-  return (
-    <motion.div
-      whileHover={{ y: -1 }}
-      transition={{ duration: 0.2 }}
-      className="rounded-2xl border border-white/[0.05] p-4"
-      style={{
-        background:
-          'linear-gradient(180deg, rgba(255,255,255,0.022) 0%, rgba(255,255,255,0.005) 100%)',
-        boxShadow:
-          'inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 28px -18px rgba(0,0,0,0.7)',
-      }}
-    >
-      <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-orange-300/80">{label}</p>
-      <div className="mt-2 flex items-baseline gap-1.5">
-        <p
-          className={`text-[15px] font-semibold leading-tight tracking-[-0.01em] text-foreground ${
-            primaryMono ? 'font-mono text-[24px] tabular-nums tracking-[-0.03em]' : ''
-          }`}
-        >
-          {primary}
-        </p>
-        {unit && <span className="font-mono text-[10px] tabular-nums text-muted-foreground">{unit}</span>}
-      </div>
-      {secondary && (
-        <p className={`mt-1 font-mono text-[10px] tabular-nums ${secondaryColor}`}>{secondary}</p>
-      )}
-    </motion.div>
   )
 }
 
@@ -816,7 +575,7 @@ function Section({
     <section className={className}>
       <div className="mb-2.5 flex items-center gap-1.5 border-b border-white/[0.04] pb-2">
         {icon}
-        <h2 className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{title}</h2>
+        <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">{title}</h2>
         {count !== undefined && (
           <Badge variant={countVariant} className="h-4 px-1.5 font-mono text-[10px] tabular-nums">{count}</Badge>
         )}
