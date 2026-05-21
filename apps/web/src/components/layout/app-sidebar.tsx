@@ -42,7 +42,6 @@ export function AppSidebar({ user }: AppSidebarProps) {
       <div className="flex h-14 items-center border-b border-white/[0.06] px-5">
         <CoylLogo size="sm" />
       </div>
-
       {/* Nav */}
       <nav className="flex-1 space-y-0.5 overflow-y-auto p-3 pt-4">
         {navItems.map((item, i) => {
@@ -80,7 +79,6 @@ export function AppSidebar({ user }: AppSidebarProps) {
           )
         })}
       </nav>
-
       {/* Footer */}
       <div className="border-t border-white/[0.06] p-3">
         {/* Execution Score + Streak */}
@@ -112,7 +110,6 @@ export function AppSidebar({ user }: AppSidebarProps) {
         <div className="mt-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5">
           <div className="flex items-center gap-2.5">
             <UserButton
-              afterSignOutUrl="/"
               appearance={{
                 elements: {
                   // Override Clerk's default email-hash-derived gradient
@@ -130,8 +127,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                   userButtonPopoverActionButtonText: 'text-[#f5f3ee]',
                   userButtonPopoverFooter: 'hidden',
                 },
-              }}
-            />
+              }} />
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-semibold text-[#f5f3ee]">{user.name}</p>
               <p className="truncate text-[11px] text-[#8a847a]">
@@ -153,5 +149,5 @@ export function AppSidebar({ user }: AppSidebarProps) {
         </button>
       </div>
     </aside>
-  )
+  );
 }
