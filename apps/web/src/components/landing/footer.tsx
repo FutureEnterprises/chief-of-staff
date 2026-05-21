@@ -35,6 +35,7 @@ export function LandingFooter() {
 
   const partners = [
     { label: 'Protocol (BIP)', href: '/protocol' },
+    { label: 'Developers', href: '/developers' },
     { label: 'Press kit', href: '/press' },
     { label: 'Safety', href: '/safety' },
     { label: 'Research + outcomes', href: '/research' },
