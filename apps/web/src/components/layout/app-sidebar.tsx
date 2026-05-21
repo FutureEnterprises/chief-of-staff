@@ -37,9 +37,9 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const { signOut } = useClerk()
 
   return (
-    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-[hsl(var(--sidebar-border))] bg-[hsl(var(--sidebar))] backdrop-blur-xl">
+    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-white/[0.06] bg-[#100e0a] backdrop-blur-xl">
       {/* Brand */}
-      <div className="flex h-14 items-center border-b border-[hsl(var(--sidebar-border))] px-5">
+      <div className="flex h-14 items-center border-b border-white/[0.06] px-5">
         <CoylLogo size="sm" />
       </div>
 
@@ -82,7 +82,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-[hsl(var(--sidebar-border))] p-3">
+      <div className="border-t border-white/[0.06] p-3">
         {/* Execution Score + Streak */}
         <div className="mb-2 flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-500/10 to-transparent px-3 py-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500/20 text-sm font-black text-orange-500">
@@ -109,12 +109,32 @@ export function AppSidebar({ user }: AppSidebarProps) {
           <Settings className={cn('h-4 w-4 shrink-0', pathname === '/settings' && 'text-orange-500')} />
           Settings
         </Link>
-        <div className="mt-2 glass rounded-xl px-3 py-2.5">
+        <div className="mt-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5">
           <div className="flex items-center gap-2.5">
-            <UserButton afterSignOutUrl="/" />
+            <UserButton
+              afterSignOutUrl="/"
+              appearance={{
+                elements: {
+                  // Override Clerk's default email-hash-derived gradient
+                  // (which renders cool purple/blue) so the avatar reads
+                  // as part of the warm-charcoal + orange brand DNA.
+                  // The ring matches the orange focal accent doctrine.
+                  userButtonAvatarBox:
+                    'w-7 h-7 rounded-full ring-1 ring-orange-500/40',
+                  userButtonTrigger:
+                    'focus:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/40 rounded-full',
+                  userButtonPopoverCard:
+                    'bg-[#100e0a] border border-white/[0.08] text-[#f5f3ee]',
+                  userButtonPopoverActionButton:
+                    'text-[#f5f3ee] hover:bg-white/[0.04]',
+                  userButtonPopoverActionButtonText: 'text-[#f5f3ee]',
+                  userButtonPopoverFooter: 'hidden',
+                },
+              }}
+            />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-semibold text-foreground">{user.name}</p>
-              <p className="truncate text-[11px] text-muted-foreground">
+              <p className="truncate text-xs font-semibold text-[#f5f3ee]">{user.name}</p>
+              <p className="truncate text-[11px] text-[#8a847a]">
                 {user.planType === 'FREE' ? (
                   <span>Free plan <span className="text-orange-500">&#183; Upgrade</span></span>
                 ) : (

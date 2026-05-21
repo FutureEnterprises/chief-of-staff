@@ -26,26 +26,34 @@ import { CalloutPanel } from '@/components/callout/callout-panel'
 import { AutopilotCard } from '@/components/share/autopilot-card'
 import { ShareActions } from '@/components/share/share-actions'
 import type { ShareCardData } from '@/lib/rescue-share'
-import { Flame, ArrowLeft, AlertCircle } from 'lucide-react'
+import {
+  Flame, ArrowLeft, AlertCircle,
+  // Trigger icons — replace the prior cross-OS-inconsistent emojis so
+  // the surface reads premium and stays on-brand. Each rescue moment
+  // gets a thin-stroke Lucide glyph in its semantic color.
+  Cookie, Package, Wind, Wine, BedDouble, Scale,
+  Smartphone, CreditCard, Zap, Loader,
+  type LucideIcon,
+} from 'lucide-react'
 
 type Trigger = {
   key: string
   label: string
-  emoji: string
+  Icon: LucideIcon
   color: string
 }
 
 const TRIGGERS: Trigger[] = [
-  { key: 'BINGE_URGE', label: 'I want to binge', emoji: '🍔', color: 'red' },
-  { key: 'DELIVERY_URGE', label: "I'm ordering food", emoji: '📦', color: 'red' },
-  { key: 'NICOTINE_URGE', label: 'I want nicotine', emoji: '💨', color: 'orange' },
-  { key: 'ALCOHOL_URGE', label: 'I want to drink', emoji: '🍷', color: 'orange' },
-  { key: 'SKIP_WORKOUT', label: 'I want to skip today', emoji: '😴', color: 'yellow' },
-  { key: 'SKIP_WEIGHIN', label: "I don't want to weigh in", emoji: '⚖️', color: 'yellow' },
-  { key: 'DOOMSCROLL', label: 'I keep scrolling', emoji: '📱', color: 'purple' },
-  { key: 'IMPULSE_SPEND', label: "I'm about to buy something", emoji: '💳', color: 'purple' },
-  { key: 'ALREADY_SLIPPED', label: 'I already slipped', emoji: '💥', color: 'red' },
-  { key: 'SPIRALING', label: "I'm spiraling", emoji: '🌀', color: 'red' },
+  { key: 'BINGE_URGE', label: 'I want to binge', Icon: Cookie, color: 'red' },
+  { key: 'DELIVERY_URGE', label: "I'm ordering food", Icon: Package, color: 'red' },
+  { key: 'NICOTINE_URGE', label: 'I want nicotine', Icon: Wind, color: 'orange' },
+  { key: 'ALCOHOL_URGE', label: 'I want to drink', Icon: Wine, color: 'orange' },
+  { key: 'SKIP_WORKOUT', label: 'I want to skip today', Icon: BedDouble, color: 'yellow' },
+  { key: 'SKIP_WEIGHIN', label: "I don't want to weigh in", Icon: Scale, color: 'yellow' },
+  { key: 'DOOMSCROLL', label: 'I keep scrolling', Icon: Smartphone, color: 'purple' },
+  { key: 'IMPULSE_SPEND', label: "I'm about to buy something", Icon: CreditCard, color: 'purple' },
+  { key: 'ALREADY_SLIPPED', label: 'I already slipped', Icon: Zap, color: 'red' },
+  { key: 'SPIRALING', label: "I'm spiraling", Icon: Loader, color: 'red' },
 ]
 
 interface RescueViewProps {
@@ -276,7 +284,12 @@ export function RescueView({ userId }: RescueViewProps) {
                   onClick={() => handleTrigger(t)}
                   className="group flex items-center gap-4 bg-[#0e0d0b] px-5 py-5 text-left transition-colors hover:bg-[#13110d]"
                 >
-                  <span className="text-2xl opacity-80">{t.emoji}</span>
+                  <span
+                    aria-hidden
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/[0.04] ring-1 ring-white/[0.06] transition-colors group-hover:bg-orange-500/10 group-hover:ring-orange-500/30"
+                  >
+                    <t.Icon className="h-5 w-5 text-[#a39d92] transition-colors group-hover:text-orange-400" strokeWidth={1.5} />
+                  </span>
                   <span className="font-serif text-[19px] font-normal leading-tight tracking-[-0.005em] text-[#f5f3ee] transition-colors group-hover:text-orange-300">
                     {t.label}.
                   </span>
@@ -316,7 +329,12 @@ export function RescueView({ userId }: RescueViewProps) {
             </p>
           </div>
           <div className="mt-4 flex items-baseline gap-4">
-            <span className="font-serif text-4xl leading-none text-[#f5f3ee]/85">{selectedTrigger.emoji}</span>
+            <span
+              aria-hidden
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-500/10 ring-1 ring-orange-500/30"
+            >
+              <selectedTrigger.Icon className="h-6 w-6 text-orange-400" strokeWidth={1.5} />
+            </span>
             <h1 className="font-serif text-3xl font-normal leading-[1.06] tracking-[-0.015em] text-[#f5f3ee] sm:text-4xl">
               {selectedTrigger.label}.
             </h1>
