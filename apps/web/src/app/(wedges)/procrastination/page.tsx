@@ -197,7 +197,7 @@ export default function ProcrastinationWedgePage() {
         </ul>
       </section>
 
-      <section className="mb-16 rounded-3xl border border-white/10 bg-white/[0.02] p-8">
+      <section className="mb-16 rounded-2xl border border-white/10 bg-white/[0.02] p-8">
         <p className="text-sm uppercase tracking-widest text-gray-500">Same engine</p>
         <p className="mt-2 text-lg text-gray-300">
           COYL for weight loss catches the 9 PM kitchen. COYL for procrastination catches the
@@ -207,7 +207,7 @@ export default function ProcrastinationWedgePage() {
         </p>
       </section>
 
-      <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/[0.04] p-8">
+      <section className="mb-16 rounded-2xl border border-orange-500/20 bg-orange-500/[0.04] p-8">
         <p className="text-sm uppercase tracking-widest text-orange-500">For employers</p>
         <p className="mt-2 text-lg font-bold text-white">
           Workplace procrastination is the #1 hidden cost on every knowledge-worker P&amp;L.

@@ -218,7 +218,7 @@ export default function ResearchPage() {
         </div>
       </section>
 
-      <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/[0.05] p-8">
+      <section className="mb-16 rounded-2xl border border-orange-500/20 bg-orange-500/[0.05] p-8">
         <h2 className="mb-6 text-2xl font-bold text-white">
           Three studies we want to run.
         </h2>
@@ -262,7 +262,7 @@ export default function ResearchPage() {
         </ul>
       </section>
 
-      <section className="mb-12 rounded-3xl border border-white/10 bg-white/[0.02] p-8">
+      <section className="mb-12 rounded-2xl border border-white/10 bg-white/[0.02] p-8">
         <p className="text-sm uppercase tracking-widest text-gray-500">For partners</p>
         <p className="mt-2 text-lg text-gray-300">
           If you run a clinic, a telehealth GLP-1 program, or a research lab and want to

@@ -266,8 +266,10 @@ export function PricingView() {
         })}
       </section>
 
-      {/* Compare-the-loops belt */}
-      <section className="mb-20 rounded-3xl border border-white/5 bg-white/[0.02] p-8">
+      {/* Compare-the-loops belt. Per design-system-v2 §"Migration",
+          inner marketing blocks use rounded-2xl; only the tier cards
+          + final CTA stay at 3xl as the page anchors. */}
+      <section className="mb-20 rounded-2xl border border-white/5 bg-white/[0.02] p-8">
         <h2 className="mb-2 text-2xl font-bold text-white">
           What you get on every tier.
         </h2>

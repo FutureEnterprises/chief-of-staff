@@ -251,8 +251,11 @@ export default function ClinicalStudyPage() {
         </p>
       </section>
 
-      {/* Design diagram (simple ASCII-ish flow, no images required) */}
-      <section className="mb-16 rounded-3xl border border-white/10 bg-white/[0.02] p-8">
+      {/* Design diagram (simple ASCII-ish flow, no images required).
+          Inner card — rounded-2xl per design-system-v2 §"Migration".
+          Hero status row + final CTA stay rounded-3xl as the page
+          anchors. */}
+      <section className="mb-16 rounded-2xl border border-white/10 bg-white/[0.02] p-8">
         <h2 className="mb-6 text-2xl font-bold text-white">Design</h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
@@ -387,9 +390,9 @@ export default function ClinicalStudyPage() {
         </div>
       </section>
 
-      {/* Roles */}
+      {/* Roles — paired cards. Inner blocks → rounded-2xl. */}
       <section className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-3xl border border-orange-500/30 bg-orange-500/[0.04] p-6">
+        <div className="rounded-2xl border border-orange-500/30 bg-orange-500/[0.04] p-6">
           <p className="text-xs font-mono uppercase tracking-widest text-orange-400">
             COYL provides
           </p>
@@ -402,7 +405,7 @@ export default function ClinicalStudyPage() {
             ))}
           </ul>
         </div>
-        <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
           <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
             Partner provides
           </p>

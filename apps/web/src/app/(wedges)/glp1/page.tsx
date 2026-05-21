@@ -171,7 +171,7 @@ export default function GLP1Page() {
         </ul>
       </section>
 
-      <section className="mb-16 rounded-3xl border border-white/10 bg-white/[0.02] p-8">
+      <section className="mb-16 rounded-2xl border border-white/10 bg-white/[0.02] p-8">
         <p className="text-sm uppercase tracking-widest text-gray-500">The maintenance problem</p>
         <p className="mt-2 text-lg text-gray-300">
           The weight loss is the easy part. The hard part is the day the prescription ends and the
@@ -180,7 +180,7 @@ export default function GLP1Page() {
         </p>
       </section>
 
-      <section className="mb-12 rounded-3xl border border-white/5 bg-white/[0.02] p-6 text-sm text-gray-500">
+      <section className="mb-12 rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-sm text-gray-500">
         <p>
           <span className="font-bold text-gray-300">Not medical advice.</span> COYL is
           behavioral support, not treatment. Always work with your prescriber on medication
