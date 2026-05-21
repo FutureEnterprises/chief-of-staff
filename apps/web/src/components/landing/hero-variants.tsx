@@ -176,33 +176,25 @@ export function HeroVariants({ variant }: { variant: Variant }) {
             Free forever to start. Core from $19/mo. No credit card.
           </motion.p>
 
-          {/* /audit funnel-entry — the viral-mechanics playbook §2: the
-              MBTI-of-self-sabotage moment. Surfaced as a secondary
-              path right below the primary CTAs so cold visitors who
-              aren't ready to sign up have a 60-second "try the quiz"
-              alternative that produces a shareable archetype. */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
+          {/* Micro-funnel chip — the /audit quiz. Per design-system v2
+              §"hero CTA stack", a hero gets at most one micro-funnel
+              line below the primary CTAs. Single line, low saturation,
+              inline link — not a decorated panel. */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: 1.4, duration: 0.5 }}
-            className="mt-8 flex flex-wrap items-center gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/[0.04] px-4 py-3 backdrop-blur-sm"
+            className="mt-3 text-sm text-gray-500"
           >
-            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-orange-400">
-              60 seconds
-            </span>
-            <span className="text-sm text-gray-200">
-              Find your autopilot archetype.
-            </span>
+            Or take the{' '}
             <Link
               href="/audit"
-              className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white hover:bg-white/15"
+              className="font-semibold text-orange-400 underline-offset-4 hover:text-orange-300 hover:underline"
             >
-              Take the audit
-              <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </Link>
-          </motion.div>
+              60-second autopilot audit
+            </Link>{' '}
+            <span className="text-gray-600">&middot; find your archetype.</span>
+          </motion.p>
         </div>
 
         {/* Static 9:12 PM fridge scene — consistent across variants */}

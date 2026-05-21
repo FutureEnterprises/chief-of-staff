@@ -106,6 +106,64 @@
     --surface-gradient: linear-gradient(135deg, rgba(255, 102, 0, 0.06) 0%, rgba(255, 61, 0, 0.03) 100%);
     --glow-orange: 0 0 30px rgba(255, 102, 0, 0.35);
     --glow-success: 0 0 30px rgba(16, 185, 129, 0.3);
+
+    /* Design system v2 — synthesized from Pipe + Linear + Axelar.
+       Tokens for the layered-surface approach. Use these in new
+       components instead of arbitrary bg-white/[0.0X] values so
+       the whole system stays in lockstep. */
+    --coyl-bg:           #08090a;
+    --coyl-surface-1:    #0f1011;  /* elevated card, sidebar, inputs */
+    --coyl-surface-2:    #161718;  /* prominent card, sticky bars */
+    --coyl-border:       #23252a;  /* all separators, input borders */
+    --coyl-border-muted: #1b1d20;  /* very subtle hairlines */
+    --coyl-text:         #f7f8f8;  /* headlines, primary copy */
+    --coyl-text-muted:   #8a8f98;  /* body secondary, eyebrows */
+    --coyl-text-dim:     #62666d;  /* metadata, captions */
+  }
+}
+
+/* Design system v2 — utility primitives matching the Pipe/Linear
+   synthesis. Apply these instead of stacking arbitrary border + bg
+   utilities so the system stays consistent.
+
+   Usage:
+     <div class="coyl-card">              — comfortable marketing card (16px radius)
+     <div class="coyl-card coyl-compact"> — Linear-style operational card (8px radius, dense padding)
+     <div class="coyl-surface-1">         — elevated layer with proper border
+     <p  class="coyl-eyebrow">            — mono uppercase tracking-widest in muted */
+@layer components {
+  .coyl-surface-1 {
+    background-color: var(--coyl-surface-1, #0f1011);
+    border: 1px solid var(--coyl-border, #23252a);
+  }
+  .coyl-surface-2 {
+    background-color: var(--coyl-surface-2, #161718);
+    border: 1px solid var(--coyl-border, #23252a);
+  }
+  .coyl-card {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    border: 1px solid var(--coyl-border-muted, #1b1d20);
+    border-radius: 1rem; /* 16px — marketing default */
+    padding: 1.5rem;
+  }
+  .coyl-card.coyl-compact {
+    border-radius: 0.5rem; /* 8px — Linear-style operational */
+    padding: 0.75rem 1rem;
+  }
+  .coyl-eyebrow {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--coyl-text-muted, #8a8f98);
+  }
+  .coyl-eyebrow-accent {
+    color: rgb(251, 146, 60); /* tailwind orange-400 */
   }
 }
 

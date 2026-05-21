@@ -124,7 +124,7 @@ export function TodayView({
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-4 overflow-hidden rounded-3xl border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-500/[0.08] via-emerald-500/[0.03] to-transparent p-5"
+          className="mb-4 overflow-hidden rounded-2xl border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-500/[0.08] via-emerald-500/[0.03] to-transparent p-5"
         >
           <div className="flex items-start gap-3">
             <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
@@ -163,7 +163,7 @@ export function TodayView({
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.35 }}
-          className="mb-4 overflow-hidden rounded-3xl border-2 border-red-500/60 bg-gradient-to-br from-red-500/[0.12] via-orange-500/[0.06] to-transparent p-5 shadow-[0_0_50px_-8px_rgba(239,68,68,0.45)]"
+          className="mb-4 overflow-hidden rounded-2xl border-2 border-red-500/60 bg-gradient-to-br from-red-500/[0.12] via-orange-500/[0.06] to-transparent p-5 shadow-[0_0_50px_-8px_rgba(239,68,68,0.45)]"
         >
           <div className="flex items-start gap-3">
             <motion.div
@@ -236,7 +236,7 @@ export function TodayView({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 overflow-hidden rounded-3xl border-2 border-orange-500/40 bg-gradient-to-br from-orange-500/15 via-orange-500/5 to-transparent p-6 shadow-[0_0_40px_-10px_rgba(255,102,0,0.4)]"
+          className="mb-4 overflow-hidden rounded-2xl border-2 border-orange-500/40 bg-gradient-to-br from-orange-500/15 via-orange-500/5 to-transparent p-6 shadow-[0_0_40px_-10px_rgba(255,102,0,0.4)]"
         >
           <p className="label-xs mb-3 text-orange-500">Today&apos;s rule</p>
           <p className="text-2xl font-black leading-tight text-foreground sm:text-3xl md:text-4xl">
@@ -254,7 +254,7 @@ export function TodayView({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 rounded-3xl border-2 border-dashed border-orange-500/30 p-6 text-center"
+          className="mb-4 rounded-2xl border-2 border-dashed border-orange-500/30 p-6 text-center"
         >
           <p className="text-sm text-muted-foreground">No rule set yet.</p>
           <Link href="/commitments" className="mt-2 inline-block text-sm font-bold text-orange-400">
