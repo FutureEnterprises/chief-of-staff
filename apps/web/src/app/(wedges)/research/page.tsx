@@ -203,7 +203,7 @@ export default function ResearchPage() {
           {METRICS.map((m) => (
             <div
               key={m.title}
-              className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
+              className="rounded-2xl border border-gray-200 bg-white p-6"
             >
               <p className="mb-2 text-[10px] font-mono font-bold uppercase tracking-widest text-orange-500">
                 {m.label}

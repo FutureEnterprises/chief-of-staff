@@ -179,7 +179,7 @@ export default function CaughtPage() {
             <Link
               key={w.href}
               href={w.href}
-              className="group rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-5 transition-all hover:border-orange-500/30 hover:bg-orange-500/5"
+              className="group rounded-2xl border border-gray-200 bg-white p-5 transition-all hover:border-orange-300 hover:bg-orange-50"
             >
               <p className="text-base font-bold text-gray-900 group-hover:text-orange-700">
                 {w.label}

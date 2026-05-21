@@ -146,7 +146,7 @@ export default function ProcrastinationWedgePage() {
         {MOMENTS.map((m, i) => (
           <div
             key={i}
-            className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-5"
+            className="rounded-2xl border border-gray-200 bg-white p-5"
           >
             <p className="text-base font-semibold italic text-orange-700">{m.you}</p>
             <p className="mt-2 text-sm text-gray-600">{m.real}</p>

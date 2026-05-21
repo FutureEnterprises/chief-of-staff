@@ -162,7 +162,7 @@ export default function ChangelogPage() {
         {RELEASES.map((r) => (
           <article
             key={r.date + r.title}
-            className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
+            className="rounded-2xl border border-gray-200 bg-white p-6"
           >
             <p className="font-mono text-[11px] uppercase tracking-widest text-orange-500">
               {new Date(r.date).toLocaleDateString('en-US', {

@@ -216,7 +216,7 @@ export function AuditView() {
                 setWedge(w.id)
                 setStep(2)
               }}
-              className="group rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-5 text-left transition-all hover:border-orange-500/30 hover:bg-orange-500/5"
+              className="group rounded-2xl border border-gray-200 bg-white p-5 text-left transition-all hover:border-orange-300 hover:bg-orange-50"
             >
               <p className="text-base font-bold text-gray-900 group-hover:text-orange-700">{w.label}</p>
               <p className="mt-1 text-sm text-gray-600">{w.line}</p>
@@ -239,7 +239,7 @@ export function AuditView() {
                 setWindowChoice(w.id)
                 setStep(3)
               }}
-              className="group rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-5 text-left transition-all hover:border-orange-500/30 hover:bg-orange-500/5"
+              className="group rounded-2xl border border-gray-200 bg-white p-5 text-left transition-all hover:border-orange-300 hover:bg-orange-50"
             >
               <p className="text-base font-bold text-gray-900 group-hover:text-orange-700">{w.label}</p>
               <p className="mt-1 text-sm text-gray-600">{w.hours}</p>
@@ -259,7 +259,7 @@ export function AuditView() {
             <button
               key={s.id}
               onClick={() => setScript(s.id)}
-              className="group rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-5 text-left transition-all hover:border-orange-500/30 hover:bg-orange-500/5"
+              className="group rounded-2xl border border-gray-200 bg-white p-5 text-left transition-all hover:border-orange-300 hover:bg-orange-50"
             >
               <p className="text-lg font-semibold italic text-orange-700">{s.quote}</p>
             </button>
@@ -420,7 +420,7 @@ function ArchetypeShareButton({ archetype }: { archetype: { name: string; emoji:
   return (
     <button
       onClick={handleShare}
-      className="mt-4 inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-xs font-bold text-gray-900 backdrop-blur-sm hover:bg-white/15"
+      className="mt-4 inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-xs font-bold text-gray-900 backdrop-blur-sm hover:bg-gray-100"
     >
       {copied ? 'Copied' : 'Share my archetype'}
     </button>

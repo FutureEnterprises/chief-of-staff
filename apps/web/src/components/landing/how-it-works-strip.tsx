@@ -69,7 +69,7 @@ export function HowItWorksStrip() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ delay: i * 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="rounded-3xl border border-gray-200 bg-gradient-to-br from-white/[0.03] to-transparent p-8"
+            className="rounded-3xl border border-gray-200 bg-white p-8"
           >
             <div className="mb-6 flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-orange-600 tracking-widest">

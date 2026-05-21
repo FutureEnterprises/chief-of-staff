@@ -57,7 +57,7 @@ export default function RecoveryPage() {
           { title: 'Pattern note on every slip', body: 'What does this slip tell us about the script? Data, not judgment.' },
           { title: 'No starvation compensation', body: 'For weight loss users, we specifically block the "skip the next meal" script that makes bingeing worse.' },
         ].map((f) => (
-          <div key={f.title} className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-5">
+          <div key={f.title} className="rounded-2xl border border-gray-200 bg-white p-5">
             <h3 className="mb-2 text-base font-bold text-gray-900">{f.title}</h3>
             <p className="text-sm text-gray-600">{f.body}</p>
           </div>

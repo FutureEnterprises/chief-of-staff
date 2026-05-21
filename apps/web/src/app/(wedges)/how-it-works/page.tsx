@@ -71,7 +71,7 @@ export default function HowItWorksPage() {
             body: 'Built for bad days, not perfect users. Shame-resistant re-entry. Same-night recovery. Resume the streak, don\'t restart the plan.',
           },
         ].map((s) => (
-          <div key={s.n} className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-6">
+          <div key={s.n} className="rounded-2xl border border-gray-200 bg-white p-6">
             <p className="mb-3 text-xs font-mono text-orange-500">{s.n}</p>
             <h3 className="mb-2 text-lg font-bold text-gray-900">{s.title}</h3>
             <p className="text-sm text-gray-600">{s.body}</p>

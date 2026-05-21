@@ -288,7 +288,7 @@ export default function ContentPlaybookPage() {
         <section
           key={c.id}
           id={c.id}
-          className="mb-16 rounded-2xl border border-gray-200 bg-gradient-to-br from-white/[0.02] to-transparent p-6 md:p-8"
+          className="mb-16 rounded-2xl border border-gray-200 bg-white p-6 md:p-8"
         >
           <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
             <h2 className="text-2xl font-bold text-gray-900">{c.platform}</h2>

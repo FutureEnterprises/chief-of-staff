@@ -54,7 +54,7 @@ export function PartnersStrip() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="rounded-3xl border border-gray-200 bg-gradient-to-br from-white/[0.04] via-orange-500/[0.02] to-transparent p-8 md:p-12"
+        className="rounded-3xl border border-gray-200 bg-gradient-to-br from-white to-orange-50/40 p-8 md:p-12"
       >
         <div className="mb-2 flex items-center gap-3">
           <span className="h-px w-8 bg-orange-500" />

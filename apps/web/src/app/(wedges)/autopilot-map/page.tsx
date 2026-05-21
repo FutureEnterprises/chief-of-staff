@@ -57,7 +57,7 @@ export default function PatternsMarketingPage() {
           { title: 'What actually works', body: 'Interventions that interrupted scripts for YOU specifically.' },
           { title: 'Identity trend', body: 'From sleepwalking → avoidant → recovering → resilient → high-self-trust.' },
         ].map((p) => (
-          <div key={p.title} className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-5">
+          <div key={p.title} className="rounded-2xl border border-gray-200 bg-white p-5">
             <h3 className="mb-2 text-base font-bold text-gray-900">{p.title}</h3>
             <p className="text-sm text-gray-600">{p.body}</p>
           </div>

@@ -204,7 +204,7 @@ export function PricingView() {
               className={`relative flex flex-col rounded-3xl border p-6 ${
                 t.featured
                   ? 'border-orange-500/40 bg-gradient-to-br from-orange-500/[0.06] to-transparent'
-                  : 'border-gray-200 bg-gradient-to-br from-white/[0.03] to-transparent'
+                  : 'border-gray-200 bg-white'
               }`}
             >
               {t.featured && (
@@ -237,7 +237,7 @@ export function PricingView() {
                 className={`mb-6 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition-all duration-200 ${
                   t.featured
                     ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_0_20px_rgba(255,102,0,0.35)] hover:shadow-[0_0_28px_rgba(255,102,0,0.5)]'
-                    : 'border border-gray-200 bg-white text-gray-100 hover:border-orange-500/30 hover:text-gray-900'
+                    : 'border border-gray-200 bg-white text-gray-100 hover:border-orange-300 hover:text-gray-900'
                 }`}
               >
                 {t.cta}

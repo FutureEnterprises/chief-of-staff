@@ -171,7 +171,7 @@ export default function TeamsWedgePage() {
         {STAT_ROWS.map((s) => (
           <div
             key={s.label}
-            className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
+            className="rounded-2xl border border-gray-200 bg-white p-6"
           >
             <div className="mb-3 flex items-baseline gap-1">
               <span className="text-5xl font-black text-orange-600">{s.n}</span>
@@ -196,7 +196,7 @@ export default function TeamsWedgePage() {
           {USE_CASES.map((u) => (
             <div
               key={u.title}
-              className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
+              className="rounded-2xl border border-gray-200 bg-white p-6"
             >
               <h3 className="text-base font-bold text-gray-900">{u.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-gray-600">{u.body}</p>

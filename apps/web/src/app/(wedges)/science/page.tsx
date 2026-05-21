@@ -108,7 +108,7 @@ export default function SciencePage() {
 
       <div className="mb-12 space-y-8">
         {CITATIONS.map((c, i) => (
-          <section key={i} className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-6">
+          <section key={i} className="rounded-2xl border border-gray-200 bg-white p-6">
             <p className="mb-3 text-xs font-mono text-orange-500">FINDING {String(i + 1).padStart(2, '0')}</p>
             <h3 className="mb-3 text-lg font-bold text-gray-900">{c.claim}</h3>
             <p className="mb-4 text-sm text-gray-600">{c.explanation}</p>

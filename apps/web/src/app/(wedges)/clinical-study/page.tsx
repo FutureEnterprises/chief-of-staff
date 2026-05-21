@@ -298,7 +298,7 @@ export default function ClinicalStudyPage() {
             { t: 'Week 13–24', b: 'Discontinuation window, +30/+60/+90 weight' },
             { t: 'Week 25', b: 'Dataset lock, analysis, readout' },
           ].map((s) => (
-            <div key={s.t} className="rounded-xl border border-gray-200 bg-black/20 p-4">
+            <div key={s.t} className="rounded-xl border border-gray-200 bg-white p-4">
               <p className="text-xs font-mono uppercase tracking-widest text-orange-600">
                 {s.t}
               </p>
@@ -340,7 +340,7 @@ export default function ClinicalStudyPage() {
 
       {/* Eligibility */}
       <section className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-gray-200 bg-black/20 p-6">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6">
           <p className="text-xs font-mono uppercase tracking-widest text-orange-600">
             Inclusion
           </p>
@@ -353,7 +353,7 @@ export default function ClinicalStudyPage() {
             ))}
           </ul>
         </div>
-        <div className="rounded-2xl border border-gray-200 bg-black/20 p-6">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6">
           <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
             Exclusion
           </p>
@@ -381,7 +381,7 @@ export default function ClinicalStudyPage() {
           {RISK.map((r) => (
             <div
               key={r.h}
-              className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
+              className="rounded-2xl border border-gray-200 bg-white p-6"
             >
               <h3 className="mb-2 text-base font-bold text-gray-900">{r.h}</h3>
               <p className="text-sm leading-relaxed text-gray-600">{r.b}</p>
@@ -433,7 +433,7 @@ export default function ClinicalStudyPage() {
           {TIMELINE.map((t, i) => (
             <li
               key={t.phase}
-              className="flex gap-4 rounded-2xl border border-gray-200 bg-black/20 p-5"
+              className="flex gap-4 rounded-2xl border border-gray-200 bg-white p-5"
             >
               <span className="font-mono text-xl font-black text-orange-600">
                 {String(i + 1).padStart(2, '0')}
