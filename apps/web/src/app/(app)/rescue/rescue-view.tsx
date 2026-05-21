@@ -430,7 +430,7 @@ export function RescueView({ userId }: RescueViewProps) {
           )}
           {feedback && (
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
-              {feedback === 'helpful' ? 'Logged. The model gets sharper.' : 'Logged. We&rsquo;ll back off this window.'}
+              {feedback === 'helpful' ? 'Logged. The model gets sharper.' : "Logged. We'll back off this window."}
             </p>
           )}
 

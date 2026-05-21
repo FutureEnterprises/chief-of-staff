@@ -150,7 +150,7 @@ export function CatchMeView() {
           disabled={submitting || !phone}
           className="w-full rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 px-6 py-4 text-base font-black text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-transform hover:scale-[1.01] disabled:opacity-60"
         >
-          {submitting ? 'Locking it in&hellip;' : 'Text me tonight at 9'}
+          {submitting ? 'Locking it in…' : 'Text me tonight at 9'}
         </button>
 
         <p className="text-[11px] leading-relaxed text-gray-500">

@@ -162,12 +162,12 @@ export function WebPushEnableBanner({
               <p className="label-xs text-orange-400">Browser interrupts</p>
               <p className="mt-1 text-sm font-semibold text-foreground">
                 {state === 'success'
-                  ? 'On. We&rsquo;ll catch you next time.'
+                  ? "On. We'll catch you next time."
                   : state === 'denied'
                     ? 'Blocked. Re-enable in your browser settings if you change your mind.'
                     : state === 'error'
                       ? "Couldn't enable. Check your browser settings."
-                      : 'Get the interrupt at your danger windows, even when COYL isn&rsquo;t open.'}
+                      : "Get the interrupt at your danger windows, even when COYL isn't open."}
               </p>
               {state === 'idle' && (
                 <p className="mt-1 text-xs text-muted-foreground">
