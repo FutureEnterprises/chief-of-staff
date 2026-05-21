@@ -109,20 +109,20 @@ export function CoreLoop() {
               )}
 
               {/* The node card */}
-              <div className="relative z-10 flex h-full flex-col rounded-2xl border border-orange-500/20 bg-gradient-to-br from-orange-500/[0.08] via-orange-500/[0.02] to-transparent p-3">
+              <div className="relative z-10 flex h-full flex-col rounded-2xl border border-orange-200 bg-white p-3">
                 <div className="mb-2 flex items-center gap-2">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-orange-500/40 bg-orange-500/15 text-orange-400">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-orange-200 bg-orange-50 text-orange-600">
                     <Icon className="h-3.5 w-3.5" strokeWidth={2} />
                   </div>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-orange-500">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-orange-600">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                 </div>
-                <h4 className="text-sm font-bold text-white">{node.label}</h4>
-                <p className="mt-1.5 flex-1 text-[11px] leading-relaxed text-gray-400">
+                <h4 className="text-sm font-bold text-gray-900">{node.label}</h4>
+                <p className="mt-1.5 flex-1 text-[11px] leading-relaxed text-gray-600">
                   {node.what}
                 </p>
-                <p className="mt-3 border-t border-white/5 pt-2 text-[10px] text-gray-500">
+                <p className="mt-3 border-t border-gray-200 pt-2 text-[10px] text-gray-500">
                   {node.signal}
                 </p>
               </div>

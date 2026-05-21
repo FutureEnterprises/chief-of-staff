@@ -71,18 +71,18 @@ export function PMPMCalculator() {
   )
 
   return (
-    <section className="rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/[0.06] via-white/[0.02] to-transparent p-8 md:p-10">
+    <section className="rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-white p-8 md:p-10">
       <div className="mb-2 flex items-center gap-3">
         <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
+        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-600">
           Estimate your cost
         </span>
       </div>
 
-      <h2 className="mb-2 text-2xl font-bold text-white md:text-3xl">
+      <h2 className="mb-2 text-2xl font-bold text-gray-900 md:text-3xl">
         PMPM pricing, no &ldquo;contact us&rdquo;.
       </h2>
-      <p className="mb-8 max-w-2xl text-base text-gray-400">
+      <p className="mb-8 max-w-2xl text-base text-gray-600">
         Slide to your headcount. The price is the price. Annual prepay
         saves {Math.round(ANNUAL_DISCOUNT * 100)}%. We&rsquo;ll send the
         full proposal pack when you&rsquo;re ready to talk.
@@ -107,7 +107,7 @@ export function PMPMCalculator() {
                     setSeats(Math.max(10, Math.min(10000, v)))
                   }
                 }}
-                className="w-32 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-2xl font-black tabular-nums text-white focus:border-orange-500/40 focus:outline-none"
+                className="w-32 rounded-lg border border-gray-200 bg-white px-3 py-2 text-2xl font-black tabular-nums text-gray-900 focus:border-orange-500/40 focus:outline-none"
               />
               <span className="text-sm text-gray-500">employees</span>
             </div>
@@ -116,7 +116,7 @@ export function PMPMCalculator() {
             <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
               Your tier
             </p>
-            <p className="mt-1 text-sm font-bold text-orange-300">{tier.label}</p>
+            <p className="mt-1 text-sm font-bold text-orange-600">{tier.label}</p>
           </div>
         </div>
         <input
@@ -129,7 +129,7 @@ export function PMPMCalculator() {
           className="w-full accent-orange-500"
           aria-label="Headcount slider"
         />
-        <div className="mt-1 flex justify-between text-[10px] font-mono uppercase tracking-widest text-gray-600">
+        <div className="mt-1 flex justify-between text-[10px] font-mono uppercase tracking-widest text-gray-500">
           <span>10</span>
           <span>500</span>
           <span>1,000</span>
@@ -138,14 +138,14 @@ export function PMPMCalculator() {
       </div>
 
       {/* Interval toggle */}
-      <div className="mb-6 inline-flex rounded-full border border-white/10 bg-white/[0.02] p-1">
+      <div className="mb-6 inline-flex rounded-full border border-gray-200 bg-white p-1">
         <button
           onClick={() => setInterval('monthly')}
           aria-pressed={interval === 'monthly'}
           className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
             interval === 'monthly'
               ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white'
-              : 'text-gray-400 hover:text-white'
+              : 'text-gray-600 hover:text-gray-900'
           }`}
         >
           Monthly
@@ -156,11 +156,11 @@ export function PMPMCalculator() {
           className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
             interval === 'annual'
               ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white'
-              : 'text-gray-400 hover:text-white'
+              : 'text-gray-600 hover:text-gray-900'
           }`}
         >
           Annual
-          <span className="ml-1.5 rounded-full bg-orange-500/20 px-1.5 py-0.5 text-[10px] font-bold text-orange-300">
+          <span className="ml-1.5 rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] font-bold text-orange-700">
             − {Math.round(ANNUAL_DISCOUNT * 100)}%
           </span>
         </button>
@@ -174,39 +174,39 @@ export function PMPMCalculator() {
         transition={{ duration: 0.2 }}
         className="grid grid-cols-1 gap-4 md:grid-cols-3"
       >
-        <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
+        <div className="rounded-2xl border border-gray-200 bg-white p-5">
           <p className="text-[10px] font-mono uppercase tracking-widest text-gray-500">
             PMPM rate
           </p>
-          <p className="mt-2 text-2xl font-black text-white tabular-nums">
+          <p className="mt-2 text-2xl font-black text-gray-900 tabular-nums">
             ${effectivePmpm.toFixed(2)}
           </p>
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-gray-600">
             per member, per month
             {interval === 'annual' && (
               <span className="text-gray-500"> (annual prepay)</span>
             )}
           </p>
         </div>
-        <div className="rounded-2xl border border-orange-500/30 bg-orange-500/[0.06] p-5">
-          <p className="text-[10px] font-mono uppercase tracking-widest text-orange-400">
+        <div className="rounded-2xl border border-orange-300 bg-orange-50 p-5 shadow-[0_0_24px_rgba(255,102,0,0.08)]">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-orange-700">
             Monthly cost
           </p>
-          <p className="mt-2 text-3xl font-black text-white tabular-nums">
+          <p className="mt-2 text-3xl font-black text-gray-900 tabular-nums">
             {fmtUSD(monthlyEffective)}
           </p>
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-gray-700">
             {seats.toLocaleString()} × ${effectivePmpm.toFixed(2)}
           </p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
+        <div className="rounded-2xl border border-gray-200 bg-white p-5">
           <p className="text-[10px] font-mono uppercase tracking-widest text-gray-500">
             Annual total
           </p>
-          <p className="mt-2 text-3xl font-black text-white tabular-nums">
+          <p className="mt-2 text-3xl font-black text-gray-900 tabular-nums">
             {fmtUSD(annualTotal)}
           </p>
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-gray-600">
             Pilot 30 days free
           </p>
         </div>
@@ -225,17 +225,17 @@ export function PMPMCalculator() {
                 key={t.label}
                 className={`rounded-xl border px-3 py-3 ${
                   active
-                    ? 'border-orange-500/40 bg-orange-500/[0.06]'
-                    : 'border-white/5 bg-black/20'
+                    ? 'border-orange-300 bg-orange-50'
+                    : 'border-gray-200 bg-white'
                 }`}
               >
                 <p className={`text-[10px] font-mono uppercase tracking-widest ${
-                  active ? 'text-orange-400' : 'text-gray-500'
+                  active ? 'text-orange-700' : 'text-gray-500'
                 }`}>
                   {t.label}
                 </p>
                 <p className={`mt-1 text-base font-black tabular-nums ${
-                  active ? 'text-white' : 'text-gray-400'
+                  active ? 'text-gray-900' : 'text-gray-700'
                 }`}>
                   ${t.pmpm}/PMPM
                 </p>
@@ -255,7 +255,7 @@ export function PMPMCalculator() {
           Get the pilot proposal
           <ArrowRight className="h-3.5 w-3.5" />
         </a>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-600">
           We respond within 1 business day with the full proposal pack.
         </p>
       </div>
