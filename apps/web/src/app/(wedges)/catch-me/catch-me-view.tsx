@@ -69,11 +69,11 @@ export function CatchMeView() {
           </span>
         </div>
 
-        <h1 className="mb-4 text-3xl font-black leading-tight text-white md:text-5xl">
+        <h1 className="mb-4 text-3xl font-black leading-tight text-gray-900 md:text-5xl">
           Check your phone.<br />
-          <span className="text-orange-400">We&rsquo;ll text at 9pm.</span>
+          <span className="text-orange-600">We&rsquo;ll text at 9pm.</span>
         </h1>
-        <p className="mb-8 text-base text-gray-400">
+        <p className="mb-8 text-base text-gray-600">
           One message will land tonight. If you want the full system &mdash;
           danger windows, recovery engine, the rest &mdash; sign up now and
           we&rsquo;ll text the deep link instead.
@@ -89,7 +89,7 @@ export function CatchMeView() {
         <p className="mt-8 text-xs text-gray-500">
           Didn&rsquo;t get the SMS? Check that you used a US number and that
           your carrier isn&rsquo;t filtering. Email{' '}
-          <a href="mailto:hello@coyl.ai" className="text-orange-400 underline">
+          <a href="mailto:hello@coyl.ai" className="text-orange-600 underline">
             hello@coyl.ai
           </a>{' '}
           if it&rsquo;s stuck.
@@ -107,20 +107,20 @@ export function CatchMeView() {
         </span>
       </div>
 
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-white md:text-6xl">
+      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
         Want this<br />
         to catch you<br />
-        <span className="text-orange-400">tonight at 9pm?</span>
+        <span className="text-orange-600">tonight at 9pm?</span>
       </h1>
 
-      <p className="mb-10 max-w-md text-lg text-gray-400">
+      <p className="mb-10 max-w-md text-lg text-gray-600">
         That&rsquo;s the moment your autopilot usually runs. We&rsquo;ll text you
         then &mdash; one message, one tap, the script doesn&rsquo;t get to write the night.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="phone" className="mb-2 block text-xs font-semibold uppercase tracking-widest text-gray-400">
+          <label htmlFor="phone" className="mb-2 block text-xs font-semibold uppercase tracking-widest text-gray-600">
             Your number
           </label>
           <input
@@ -132,7 +132,7 @@ export function CatchMeView() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="(555) 123-4567"
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-lg text-white placeholder:text-gray-500 focus:border-orange-500/40 focus:outline-none"
+            className="w-full rounded-2xl border border-gray-200 bg-white px-5 py-4 text-lg text-gray-900 placeholder:text-gray-500 focus:border-orange-500/40 focus:outline-none"
           />
         </div>
 
@@ -148,17 +148,17 @@ export function CatchMeView() {
           By tapping the button you agree to one SMS at 9pm tonight. Reply
           STOP to opt out at any time. Standard message + data rates apply.
           We do not sell your number. Full{' '}
-          <Link href="/privacy" className="text-orange-400 underline">
+          <Link href="/privacy" className="text-orange-600 underline">
             privacy policy
           </Link>
           .
         </p>
       </form>
 
-      <div className="mt-12 border-t border-white/5 pt-6">
+      <div className="mt-12 border-t border-gray-200 pt-6">
         <p className="text-xs text-gray-500">
           Not ready for SMS?{' '}
-          <Link href="/sign-up?ref=catch-me-skip" className="text-orange-400 underline">
+          <Link href="/sign-up?ref=catch-me-skip" className="text-orange-600 underline">
             Sign up directly
           </Link>{' '}
           for the full system.

@@ -145,7 +145,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
           >
             <Link
               href={`/sign-up?v=${variant}`}
-              className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-orange-600 to-red-600 px-8 py-4 text-lg font-bold text-gray-900 shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(255,102,0,0.5)]"
+              className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-orange-600 to-red-600 px-8 py-4 text-lg font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(255,102,0,0.5)]"
             >
               <span className="relative z-10">Start free</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="relative z-10">

@@ -100,12 +100,12 @@ export default function GLP1Page() {
         </span>
       </div>
 
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-white md:text-6xl">
+      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
         The drug suppresses appetite.<br />
-        <span className="text-orange-400">COYL catches the autopilot.</span>
+        <span className="text-orange-600">COYL catches the autopilot.</span>
       </h1>
 
-      <p className="mb-10 max-w-2xl text-lg text-gray-400">
+      <p className="mb-10 max-w-2xl text-lg text-gray-600">
         Ozempic, Wegovy, Mounjaro. Brilliant drugs. They quiet the hunger.
         They don&rsquo;t touch the 9pm kitchen, the stress-eat, the &ldquo;I deserve this.&rdquo;
         Those scripts are still running. COYL catches them at the exact moment they fire.
@@ -120,32 +120,32 @@ export default function GLP1Page() {
         </Link>
         <Link
           href="/audit"
-          className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200 hover:border-orange-500/40 hover:text-orange-300"
+          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
         >
           Find your autopilot (60s)
         </Link>
       </div>
 
       <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-6 text-2xl font-bold text-white">
+        <h2 className="mb-6 text-2xl font-bold text-gray-900">
           What the drug does. What it doesn&rsquo;t.
         </h2>
         <div className="grid grid-cols-1 gap-4">
           {DRUG_GAPS.map((g) => (
             <div
               key={g.drug}
-              className="rounded-xl border border-orange-500/30 bg-black/40 p-5"
+              className="rounded-xl border border-orange-500/30 bg-gray-100 p-5"
             >
               <div className="mb-2 flex flex-wrap items-center gap-3 text-sm">
-                <span className="rounded-full bg-white/10 px-3 py-1 font-semibold text-white">
+                <span className="rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-900">
                   {g.drug}
                 </span>
                 <span className="text-gray-500">&rarr;</span>
-                <span className="rounded-full bg-orange-500/20 px-3 py-1 font-semibold text-orange-300">
+                <span className="rounded-full bg-orange-500/20 px-3 py-1 font-semibold text-orange-700">
                   {g.gap}
                 </span>
               </div>
-              <p className="text-base leading-relaxed text-gray-400">{g.body}</p>
+              <p className="text-base leading-relaxed text-gray-600">{g.body}</p>
             </div>
           ))}
         </div>
@@ -156,14 +156,14 @@ export default function GLP1Page() {
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           Scripts the drug won&rsquo;t catch
         </h2>
-        <h3 className="mb-6 text-2xl font-bold text-white md:text-4xl">
+        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-4xl">
           COYL catches them in your head.
         </h3>
         <ul className="space-y-3">
           {SCRIPTS_THE_DRUG_WON_T_CATCH.map((line) => (
             <li
               key={line}
-              className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-5 py-3 text-lg font-semibold italic text-white"
+              className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-5 py-3 text-lg font-semibold italic text-gray-900"
             >
               {line}
             </li>
@@ -171,18 +171,18 @@ export default function GLP1Page() {
         </ul>
       </section>
 
-      <section className="mb-16 rounded-2xl border border-white/10 bg-white/[0.02] p-8">
+      <section className="mb-16 rounded-2xl border border-gray-200 bg-white p-8">
         <p className="text-sm uppercase tracking-widest text-gray-500">The maintenance problem</p>
-        <p className="mt-2 text-lg text-gray-300">
+        <p className="mt-2 text-lg text-gray-700">
           The weight loss is the easy part. The hard part is the day the prescription ends and the
-          script is still there, waiting. <span className="font-bold text-white">COYL trains the
+          script is still there, waiting. <span className="font-bold text-gray-900">COYL trains the
           interrupt while you&rsquo;re on the drug so it&rsquo;s muscle memory when you&rsquo;re off.</span>
         </p>
       </section>
 
-      <section className="mb-12 rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-sm text-gray-500">
+      <section className="mb-12 rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-500">
         <p>
-          <span className="font-bold text-gray-300">Not medical advice.</span> COYL is
+          <span className="font-bold text-gray-700">Not medical advice.</span> COYL is
           behavioral support, not treatment. Always work with your prescriber on medication
           decisions.
         </p>
@@ -197,7 +197,7 @@ export default function GLP1Page() {
         </Link>
         <Link
           href="/how-it-works"
-          className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200 hover:border-orange-500/40 hover:text-orange-300"
+          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
         >
           How COYL works
         </Link>

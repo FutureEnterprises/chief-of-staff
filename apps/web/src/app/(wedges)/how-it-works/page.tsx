@@ -44,10 +44,10 @@ export default function HowItWorksPage() {
         <span className="h-px w-8 bg-orange-500" />
         <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">How it works</span>
       </div>
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-white md:text-6xl">
+      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
         Detect the script.<br />Interrupt the moment.<br />Recover before the spiral.
       </h1>
-      <p className="mb-16 max-w-2xl text-lg text-gray-400">
+      <p className="mb-16 max-w-2xl text-lg text-gray-600">
         COYL is a behavior interruption and decision support system. It learns where your
         autopilot takes over, fires in the exact moments it matters, and keeps one bad
         decision from becoming a bad week.
@@ -71,17 +71,17 @@ export default function HowItWorksPage() {
             body: 'Built for bad days, not perfect users. Shame-resistant re-entry. Same-night recovery. Resume the streak, don\'t restart the plan.',
           },
         ].map((s) => (
-          <div key={s.n} className="rounded-2xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent p-6">
+          <div key={s.n} className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-6">
             <p className="mb-3 text-xs font-mono text-orange-500">{s.n}</p>
-            <h3 className="mb-2 text-lg font-bold text-white">{s.title}</h3>
-            <p className="text-sm text-gray-400">{s.body}</p>
+            <h3 className="mb-2 text-lg font-bold text-gray-900">{s.title}</h3>
+            <p className="text-sm text-gray-600">{s.body}</p>
           </div>
         ))}
       </section>
 
       <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-2 text-2xl font-bold text-white">The 7-step loop</h2>
-        <p className="mb-8 text-sm text-gray-400">
+        <h2 className="mb-2 text-2xl font-bold text-gray-900">The 7-step loop</h2>
+        <p className="mb-8 text-sm text-gray-600">
           Commitment &rarr; Drift &rarr; Excuse &rarr; Interrupt &rarr; Action &rarr; Recovery &rarr; Learning.
           Every broken promise runs this cycle. So does every one you keep. The loop
           is what separates COYL from a chatbot or a reminder app.
@@ -91,7 +91,7 @@ export default function HowItWorksPage() {
 
       <div className="flex gap-3">
         <Link href="/sign-up" className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white">Build my anti-autopilot plan</Link>
-        <Link href="/science" className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200">See the research</Link>
+        <Link href="/science" className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800">See the research</Link>
       </div>
     </>
   )

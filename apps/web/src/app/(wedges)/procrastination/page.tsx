@@ -116,12 +116,12 @@ export default function ProcrastinationWedgePage() {
         </span>
       </div>
 
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-white md:text-6xl">
+      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
         You don&rsquo;t have a focus problem.<br />
-        <span className="text-orange-400">You have a 30-second tab-switch problem.</span>
+        <span className="text-orange-600">You have a 30-second tab-switch problem.</span>
       </h1>
 
-      <p className="mb-12 max-w-2xl text-lg text-gray-400">
+      <p className="mb-12 max-w-2xl text-lg text-gray-600">
         The tab switch happens in half a second. The recovery from it costs 23 minutes &mdash;
         if you ever actually recover. COYL fires before the gesture completes, not after the
         deep-work block is already dead.
@@ -136,7 +136,7 @@ export default function ProcrastinationWedgePage() {
         </Link>
         <Link
           href="/how-it-works"
-          className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200 hover:border-orange-500/40 hover:text-orange-300"
+          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
         >
           How it works
         </Link>
@@ -146,32 +146,32 @@ export default function ProcrastinationWedgePage() {
         {MOMENTS.map((m, i) => (
           <div
             key={i}
-            className="rounded-2xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent p-5"
+            className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-5"
           >
-            <p className="text-base font-semibold italic text-orange-300">{m.you}</p>
-            <p className="mt-2 text-sm text-gray-400">{m.real}</p>
+            <p className="text-base font-semibold italic text-orange-700">{m.you}</p>
+            <p className="mt-2 text-sm text-gray-600">{m.real}</p>
           </div>
         ))}
       </section>
 
       <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-2 text-2xl font-bold text-white">
+        <h2 className="mb-2 text-2xl font-bold text-gray-900">
           Tab switch &rarr; excuse &rarr; interrupt &rarr; back in the block.
         </h2>
-        <p className="mb-6 text-sm text-gray-400">
+        <p className="mb-6 text-sm text-gray-600">
           The procrastination loop runs the same way every time. COYL fires at step 2.
         </p>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {CAPABILITIES.map((c) => (
             <div
               key={c.title}
-              className="rounded-xl border border-orange-500/30 bg-black/40 p-5"
+              className="rounded-xl border border-orange-500/30 bg-gray-100 p-5"
             >
               <p className="text-xs font-mono uppercase tracking-widest text-orange-500">
                 Stage
               </p>
-              <h3 className="mt-2 text-base font-bold text-white">{c.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-400">{c.body}</p>
+              <h3 className="mt-2 text-base font-bold text-gray-900">{c.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{c.body}</p>
             </div>
           ))}
         </div>
@@ -182,14 +182,14 @@ export default function ProcrastinationWedgePage() {
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           The six sentences that kill the block
         </h2>
-        <h3 className="mb-6 text-2xl font-bold text-white md:text-4xl">
+        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-4xl">
           COYL catches them in your head.
         </h3>
         <ul className="space-y-3">
           {SCRIPTS.map((line) => (
             <li
               key={line}
-              className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-5 py-3 text-lg font-semibold italic text-white"
+              className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-5 py-3 text-lg font-semibold italic text-gray-900"
             >
               {line}
             </li>
@@ -197,29 +197,29 @@ export default function ProcrastinationWedgePage() {
         </ul>
       </section>
 
-      <section className="mb-16 rounded-2xl border border-white/10 bg-white/[0.02] p-8">
+      <section className="mb-16 rounded-2xl border border-gray-200 bg-white p-8">
         <p className="text-sm uppercase tracking-widest text-gray-500">Same engine</p>
-        <p className="mt-2 text-lg text-gray-300">
+        <p className="mt-2 text-lg text-gray-700">
           COYL for weight loss catches the 9 PM kitchen. COYL for procrastination catches the
-          11 AM Twitter tab. <span className="font-bold text-white">Different trigger, same loop.</span>{' '}
+          11 AM Twitter tab. <span className="font-bold text-gray-900">Different trigger, same loop.</span>{' '}
           A compulsion is happening before you decide. COYL fires in the half-second between
           the impulse and the action.
         </p>
       </section>
 
-      <section className="mb-16 rounded-2xl border border-orange-500/20 bg-orange-500/[0.04] p-8">
+      <section className="mb-16 rounded-2xl border border-orange-500/20 bg-orange-50 p-8">
         <p className="text-sm uppercase tracking-widest text-orange-500">For employers</p>
-        <p className="mt-2 text-lg font-bold text-white">
+        <p className="mt-2 text-lg font-bold text-gray-900">
           Workplace procrastination is the #1 hidden cost on every knowledge-worker P&amp;L.
         </p>
-        <p className="mt-3 text-base text-gray-300">
+        <p className="mt-3 text-base text-gray-700">
           The average focus session is destroyed every 11 minutes. The recovery cost is 23.
           Multiply by your headcount. COYL embeds in the workflow as the interrupt your team
           actually wants. Outcome reporting available.
         </p>
         <Link
           href="/research"
-          className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-orange-500/40 bg-orange-500/[0.08] px-4 py-2 text-sm font-bold text-orange-200 hover:border-orange-500/60 hover:text-white"
+          className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-orange-500/40 bg-orange-100 px-4 py-2 text-sm font-bold text-orange-200 hover:border-orange-500/60 hover:text-gray-900"
         >
           For partners &rarr;
         </Link>
@@ -234,7 +234,7 @@ export default function ProcrastinationWedgePage() {
         </Link>
         <Link
           href="/science"
-          className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200 hover:border-orange-500/40 hover:text-orange-300"
+          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
         >
           The research
         </Link>

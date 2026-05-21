@@ -92,7 +92,7 @@ export function PartnersStrip() {
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/clinical-study"
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-gray-900 shadow-[0_0_16px_rgba(255,102,0,0.3)]"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
           >
             See the clinical protocol
             <ArrowRight className="h-3.5 w-3.5" />

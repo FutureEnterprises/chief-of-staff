@@ -94,7 +94,7 @@ export function HowItWorksStrip() {
         </Link>
         <Link
           href="/sign-up?ref=how-it-works"
-          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-gray-900 shadow-[0_0_16px_rgba(255,102,0,0.3)]"
+          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
         >
           Start free
         </Link>

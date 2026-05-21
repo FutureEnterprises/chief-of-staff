@@ -12,14 +12,14 @@ export function GlassNav() {
       transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
       className="fixed left-0 right-0 top-0 z-50 border-b border-gray-200"
       style={{
-        background: 'rgba(10, 10, 10, 0.6)',
+        background: 'rgba(250, 250, 247, 0.85)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
       }}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12">
         <Link href="/" className="group">
-          <CoylLogo size="md" theme="dark" />
+          <CoylLogo size="md" theme="light" />
         </Link>
 
         {/*
@@ -38,7 +38,7 @@ export function GlassNav() {
 
         <Link
           href="/sign-up?ref=nav"
-          className="flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-gray-900 shadow-[0_0_16px_rgba(255,102,0,0.3)] transition-all hover:shadow-[0_0_24px_rgba(255,102,0,0.5)]"
+          className="flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)] transition-all hover:shadow-[0_0_24px_rgba(255,102,0,0.5)]"
         >
           Start free
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">

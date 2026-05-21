@@ -183,12 +183,12 @@ export default function ClinicalStudyPage() {
         </span>
       </div>
 
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-white md:text-6xl">
+      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
         12 weeks. 80 patients.<br />
-        <span className="text-orange-400">One question worth answering.</span>
+        <span className="text-orange-600">One question worth answering.</span>
       </h1>
 
-      <p className="mb-10 max-w-2xl text-lg text-gray-400">
+      <p className="mb-10 max-w-2xl text-lg text-gray-600">
         Does real-time pattern interrupt during GLP-1 maintenance reduce weight regain
         after the prescription ends? The protocol is drafted. The IRB pathway is mapped.
         We&rsquo;re looking for telehealth prescribers, obesity-medicine clinics, and
@@ -198,7 +198,7 @@ export default function ClinicalStudyPage() {
       {/* Status row — replaces the typical "trust badge" cluster.
           Honest status > fake credibility. */}
       <section className="mb-16 rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/[0.06] to-transparent p-6 md:p-8">
-        <p className="mb-5 text-xs font-mono uppercase tracking-widest text-orange-400">
+        <p className="mb-5 text-xs font-mono uppercase tracking-widest text-orange-600">
           Status
         </p>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
@@ -207,7 +207,7 @@ export default function ClinicalStudyPage() {
               <p className="text-[10px] font-mono uppercase tracking-widest text-gray-500">
                 {s.label}
               </p>
-              <p className="mt-1 text-sm font-bold text-white">{s.value}</p>
+              <p className="mt-1 text-sm font-bold text-gray-900">{s.value}</p>
             </div>
           ))}
         </div>
@@ -220,7 +220,7 @@ export default function ClinicalStudyPage() {
           </Link>
           <Link
             href="/research"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-5 py-2.5 text-sm font-semibold text-gray-200 hover:border-orange-500/40 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-800 hover:border-orange-500/40 hover:text-gray-900"
           >
             Back to outcomes
           </Link>
@@ -233,18 +233,18 @@ export default function ClinicalStudyPage() {
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           The question
         </h2>
-        <h3 className="mb-6 text-2xl font-bold text-white md:text-3xl">
+        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
           GLP-1s suppress appetite while you take them.<br />
           The autopilot is still there when you stop.
         </h3>
-        <p className="mb-8 max-w-3xl text-base leading-relaxed text-gray-400">
+        <p className="mb-8 max-w-3xl text-base leading-relaxed text-gray-600">
           Published discontinuation literature shows ~two-thirds of weight loss returns within
           a year of stopping a GLP-1, with the largest regain occurring in the first 90 days.
           The drug suppressed the hunger signal, but it never touched the late-night
           kitchen loop, the stress-eat reflex, or the &ldquo;I deserve this&rdquo; script.
           When the suppression lifts, the script is right where the user left it.
         </p>
-        <p className="max-w-3xl text-base leading-relaxed text-gray-400">
+        <p className="max-w-3xl text-base leading-relaxed text-gray-600">
           COYL is built to interrupt that script in real time. The hypothesis is that
           training the interrupt during the medicated window builds behavioral muscle
           memory that survives discontinuation. That&rsquo;s the question this study answers.
@@ -255,35 +255,35 @@ export default function ClinicalStudyPage() {
           Inner card — rounded-2xl per design-system-v2 §"Migration".
           Hero status row + final CTA stay rounded-3xl as the page
           anchors. */}
-      <section className="mb-16 rounded-2xl border border-white/10 bg-white/[0.02] p-8">
-        <h2 className="mb-6 text-2xl font-bold text-white">Design</h2>
+      <section className="mb-16 rounded-2xl border border-gray-200 bg-white p-8">
+        <h2 className="mb-6 text-2xl font-bold text-gray-900">Design</h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
+          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
             <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
               Recruitment
             </p>
-            <p className="mt-2 text-base font-bold text-white">N = 80</p>
-            <p className="mt-2 text-sm text-gray-400">
+            <p className="mt-2 text-base font-bold text-gray-900">N = 80</p>
+            <p className="mt-2 text-sm text-gray-600">
               Randomized 1:1 to intervention or control. Stratified by baseline BMI and
               GLP-1 type.
             </p>
           </div>
-          <div className="rounded-2xl border border-orange-500/30 bg-orange-500/[0.04] p-5">
-            <p className="text-xs font-mono uppercase tracking-widest text-orange-400">
+          <div className="rounded-2xl border border-orange-500/30 bg-orange-50 p-5">
+            <p className="text-xs font-mono uppercase tracking-widest text-orange-600">
               Intervention arm
             </p>
-            <p className="mt-2 text-base font-bold text-white">Rx + COYL Premium</p>
-            <p className="mt-2 text-sm text-gray-400">
+            <p className="mt-2 text-base font-bold text-gray-900">Rx + COYL Premium</p>
+            <p className="mt-2 text-sm text-gray-600">
               GLP-1 prescription per usual care, plus 12 weeks of COYL Premium access
               (rescue flows, recovery engine, precision interrupts, pattern detection).
             </p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
+          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
             <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
               Control arm
             </p>
-            <p className="mt-2 text-base font-bold text-white">Rx alone</p>
-            <p className="mt-2 text-sm text-gray-400">
+            <p className="mt-2 text-base font-bold text-gray-900">Rx alone</p>
+            <p className="mt-2 text-sm text-gray-600">
               GLP-1 prescription per usual care. Waitlist offered Premium after the
               12-week active phase. Reduces ethical concern around withholding a
               promising consumer tool.
@@ -298,11 +298,11 @@ export default function ClinicalStudyPage() {
             { t: 'Week 13–24', b: 'Discontinuation window, +30/+60/+90 weight' },
             { t: 'Week 25', b: 'Dataset lock, analysis, readout' },
           ].map((s) => (
-            <div key={s.t} className="rounded-xl border border-white/5 bg-black/20 p-4">
-              <p className="text-xs font-mono uppercase tracking-widest text-orange-400">
+            <div key={s.t} className="rounded-xl border border-gray-200 bg-black/20 p-4">
+              <p className="text-xs font-mono uppercase tracking-widest text-orange-600">
                 {s.t}
               </p>
-              <p className="mt-2 text-sm text-gray-300">{s.b}</p>
+              <p className="mt-2 text-sm text-gray-700">{s.b}</p>
             </div>
           ))}
         </div>
@@ -314,7 +314,7 @@ export default function ClinicalStudyPage() {
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           Outcomes
         </h2>
-        <h3 className="mb-6 text-2xl font-bold text-white md:text-3xl">
+        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
           Pre-specified. Reproducible from the events table.
         </h3>
         <div className="space-y-3">
@@ -323,10 +323,10 @@ export default function ClinicalStudyPage() {
               key={o.tier}
               className="rounded-2xl border-l-[3px] border-orange-500/60 bg-orange-500/[0.03] px-6 py-5"
             >
-              <p className="text-[10px] font-mono uppercase tracking-widest text-orange-400">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-orange-600">
                 {o.tier}
               </p>
-              <p className="mt-2 text-base leading-relaxed text-gray-200">{o.body}</p>
+              <p className="mt-2 text-base leading-relaxed text-gray-800">{o.body}</p>
             </div>
           ))}
         </div>
@@ -340,26 +340,26 @@ export default function ClinicalStudyPage() {
 
       {/* Eligibility */}
       <section className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-white/5 bg-black/20 p-6">
-          <p className="text-xs font-mono uppercase tracking-widest text-orange-400">
+        <div className="rounded-2xl border border-gray-200 bg-black/20 p-6">
+          <p className="text-xs font-mono uppercase tracking-widest text-orange-600">
             Inclusion
           </p>
           <ul className="mt-4 space-y-2">
             {ELIGIBILITY_IN.map((e) => (
-              <li key={e} className="flex gap-2 text-sm text-gray-300">
-                <span className="text-orange-400">+</span>
+              <li key={e} className="flex gap-2 text-sm text-gray-700">
+                <span className="text-orange-600">+</span>
                 <span>{e}</span>
               </li>
             ))}
           </ul>
         </div>
-        <div className="rounded-2xl border border-white/5 bg-black/20 p-6">
+        <div className="rounded-2xl border border-gray-200 bg-black/20 p-6">
           <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
             Exclusion
           </p>
           <ul className="mt-4 space-y-2">
             {ELIGIBILITY_OUT.map((e) => (
-              <li key={e} className="flex gap-2 text-sm text-gray-400">
+              <li key={e} className="flex gap-2 text-sm text-gray-600">
                 <span className="text-gray-600">&minus;</span>
                 <span>{e}</span>
               </li>
@@ -374,17 +374,17 @@ export default function ClinicalStudyPage() {
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           IRB &amp; data handling
         </h2>
-        <h3 className="mb-6 text-2xl font-bold text-white md:text-3xl">
+        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
           Minimal risk. Expedited pathway. Partner-ready DUA.
         </h3>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {RISK.map((r) => (
             <div
               key={r.h}
-              className="rounded-2xl border border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
+              className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
             >
-              <h3 className="mb-2 text-base font-bold text-white">{r.h}</h3>
-              <p className="text-sm leading-relaxed text-gray-400">{r.b}</p>
+              <h3 className="mb-2 text-base font-bold text-gray-900">{r.h}</h3>
+              <p className="text-sm leading-relaxed text-gray-600">{r.b}</p>
             </div>
           ))}
         </div>
@@ -392,26 +392,26 @@ export default function ClinicalStudyPage() {
 
       {/* Roles — paired cards. Inner blocks → rounded-2xl. */}
       <section className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-orange-500/30 bg-orange-500/[0.04] p-6">
-          <p className="text-xs font-mono uppercase tracking-widest text-orange-400">
+        <div className="rounded-2xl border border-orange-500/30 bg-orange-50 p-6">
+          <p className="text-xs font-mono uppercase tracking-widest text-orange-600">
             COYL provides
           </p>
           <ul className="mt-4 space-y-2.5">
             {COYL_PROVIDES.map((c) => (
-              <li key={c} className="flex gap-2 text-sm text-gray-200">
-                <span className="text-orange-400">&bull;</span>
+              <li key={c} className="flex gap-2 text-sm text-gray-800">
+                <span className="text-orange-600">&bull;</span>
                 <span>{c}</span>
               </li>
             ))}
           </ul>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6">
           <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
             Partner provides
           </p>
           <ul className="mt-4 space-y-2.5">
             {PARTNER_PROVIDES.map((p) => (
-              <li key={p} className="flex gap-2 text-sm text-gray-300">
+              <li key={p} className="flex gap-2 text-sm text-gray-700">
                 <span className="text-gray-500">&bull;</span>
                 <span>{p}</span>
               </li>
@@ -426,21 +426,21 @@ export default function ClinicalStudyPage() {
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           Timeline
         </h2>
-        <h3 className="mb-6 text-2xl font-bold text-white md:text-3xl">
+        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
           8 months from kickoff to readout.
         </h3>
         <ol className="space-y-2">
           {TIMELINE.map((t, i) => (
             <li
               key={t.phase}
-              className="flex gap-4 rounded-2xl border border-white/5 bg-black/20 p-5"
+              className="flex gap-4 rounded-2xl border border-gray-200 bg-black/20 p-5"
             >
-              <span className="font-mono text-xl font-black text-orange-400">
+              <span className="font-mono text-xl font-black text-orange-600">
                 {String(i + 1).padStart(2, '0')}
               </span>
               <div>
-                <p className="text-sm font-bold text-white">{t.phase}</p>
-                <p className="mt-1 text-sm text-gray-400">{t.body}</p>
+                <p className="text-sm font-bold text-gray-900">{t.phase}</p>
+                <p className="mt-1 text-sm text-gray-600">{t.body}</p>
               </div>
             </li>
           ))}
@@ -449,11 +449,11 @@ export default function ClinicalStudyPage() {
 
       {/* Final CTA */}
       <section className="mb-12 rounded-3xl border border-orange-500/30 bg-gradient-to-br from-orange-500/[0.08] via-orange-500/[0.03] to-transparent p-8 md:p-12">
-        <h2 className="mb-3 text-3xl font-black text-white md:text-4xl">
+        <h2 className="mb-3 text-3xl font-black text-gray-900 md:text-4xl">
           Bring the cohort.<br />
-          <span className="text-orange-400">We&rsquo;ll bring the protocol.</span>
+          <span className="text-orange-600">We&rsquo;ll bring the protocol.</span>
         </h2>
-        <p className="mb-6 max-w-2xl text-base text-gray-300">
+        <p className="mb-6 max-w-2xl text-base text-gray-700">
           One email opens it. We respond within two business days with the full protocol
           pack, draft DUA, and a kickoff call link. Co-authored publication welcome.
           De-identified data sharing under a DUA welcome.
@@ -467,13 +467,13 @@ export default function ClinicalStudyPage() {
           </Link>
           <Link
             href="/research"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-6 py-3 text-sm font-semibold text-gray-200 hover:border-orange-500/40 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-800 hover:border-orange-500/40 hover:text-gray-900"
           >
             Outcomes we already track
           </Link>
           <Link
             href="/science"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-6 py-3 text-sm font-semibold text-gray-200 hover:border-orange-500/40 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-800 hover:border-orange-500/40 hover:text-gray-900"
           >
             The underlying science
           </Link>

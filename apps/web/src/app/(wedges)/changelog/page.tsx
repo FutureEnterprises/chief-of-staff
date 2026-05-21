@@ -147,12 +147,12 @@ export default function ChangelogPage() {
         </span>
       </div>
 
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-white md:text-6xl">
+      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
         What we shipped<br />
-        <span className="text-orange-400">this week.</span>
+        <span className="text-orange-600">this week.</span>
       </h1>
 
-      <p className="mb-12 max-w-2xl text-lg text-gray-400">
+      <p className="mb-12 max-w-2xl text-lg text-gray-600">
         COYL ships every Monday. No press releases, no roadmap theater &mdash; the
         protocol pages, the precision-interrupt engine, the recovery flow,
         the GLP-1 companion. Built in public.
@@ -162,7 +162,7 @@ export default function ChangelogPage() {
         {RELEASES.map((r) => (
           <article
             key={r.date + r.title}
-            className="rounded-2xl border border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
+            className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
           >
             <p className="font-mono text-[11px] uppercase tracking-widest text-orange-500">
               {new Date(r.date).toLocaleDateString('en-US', {
@@ -171,15 +171,15 @@ export default function ChangelogPage() {
                 day: 'numeric',
               })}
             </p>
-            <h2 className="mt-2 text-xl font-bold text-white">{r.title}</h2>
-            <p className="mt-3 text-sm leading-relaxed text-gray-400">{r.body}</p>
+            <h2 className="mt-2 text-xl font-bold text-gray-900">{r.title}</h2>
+            <p className="mt-3 text-sm leading-relaxed text-gray-600">{r.body}</p>
             {r.links && r.links.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-2">
                 {r.links.map((l) => (
                   <Link
                     key={l.href}
                     href={l.href}
-                    className="inline-flex items-center gap-1 rounded-full border border-orange-500/30 bg-orange-500/[0.05] px-3 py-1 text-xs font-semibold text-orange-300 hover:bg-orange-500/[0.1]"
+                    className="inline-flex items-center gap-1 rounded-full border border-orange-500/30 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700 hover:bg-orange-500/[0.1]"
                   >
                     {l.label} &rarr;
                   </Link>
@@ -191,8 +191,8 @@ export default function ChangelogPage() {
       </div>
 
       <div className="mt-16 rounded-3xl border border-orange-500/30 bg-gradient-to-br from-orange-500/[0.05] to-transparent p-8">
-        <h2 className="mb-2 text-xl font-bold text-white">Want updates as we ship?</h2>
-        <p className="mb-5 text-sm text-gray-400">
+        <h2 className="mb-2 text-xl font-bold text-gray-900">Want updates as we ship?</h2>
+        <p className="mb-5 text-sm text-gray-600">
           One email a week. Tactics for catching your autopilot + new product drops.
           Unsubscribe anytime.
         </p>

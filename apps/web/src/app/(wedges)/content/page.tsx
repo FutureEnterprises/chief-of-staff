@@ -238,7 +238,7 @@ const CHANNELS: Channel[] = [
 
 function CopyBlock({ children }: { children: string }) {
   return (
-    <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded-lg border border-white/10 bg-black/40 p-3 text-[13px] leading-relaxed text-gray-200">
+    <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded-lg border border-gray-200 bg-gray-100 p-3 text-[13px] leading-relaxed text-gray-800">
       {children}
     </pre>
   )
@@ -253,10 +253,10 @@ export default function ContentPlaybookPage() {
           Content playbook
         </span>
       </div>
-      <h1 className="mb-4 text-4xl font-black leading-[1.05] text-white md:text-5xl">
+      <h1 className="mb-4 text-4xl font-black leading-[1.05] text-gray-900 md:text-5xl">
         The first 1000 users<br />don&rsquo;t come from ads.
       </h1>
-      <p className="mb-12 max-w-2xl text-lg text-gray-400">
+      <p className="mb-12 max-w-2xl text-lg text-gray-600">
         They come from content that names the pattern before they click. Ready-to-post
         scripts, captions, and angles, sized per channel. Copy and ship.
       </p>
@@ -267,7 +267,7 @@ export default function ContentPlaybookPage() {
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           Hook library
         </h2>
-        <p className="mb-6 max-w-2xl text-sm text-gray-400">
+        <p className="mb-6 max-w-2xl text-sm text-gray-600">
           Universal hooks that work on every platform. Open every video or post with one.
           Recognition first. Everything else comes after.
         </p>
@@ -277,7 +277,7 @@ export default function ContentPlaybookPage() {
               key={h}
               className="rounded-xl border-l-[3px] border-orange-500/50 bg-gradient-to-r from-orange-500/5 to-transparent p-4"
             >
-              <p className="text-sm font-semibold text-white">{h}</p>
+              <p className="text-sm font-semibold text-gray-900">{h}</p>
             </div>
           ))}
         </div>
@@ -288,26 +288,26 @@ export default function ContentPlaybookPage() {
         <section
           key={c.id}
           id={c.id}
-          className="mb-16 rounded-2xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent p-6 md:p-8"
+          className="mb-16 rounded-2xl border border-gray-200 bg-gradient-to-br from-white/[0.02] to-transparent p-6 md:p-8"
         >
           <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
-            <h2 className="text-2xl font-bold text-white">{c.platform}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{c.platform}</h2>
             <div className="flex flex-wrap gap-2 text-[11px] text-gray-500">
-              <span className="rounded-full border border-white/10 px-2 py-0.5">{c.format}</span>
-              <span className="rounded-full border border-white/10 px-2 py-0.5">{c.length}</span>
-              <span className="rounded-full border border-white/10 px-2 py-0.5">{c.cadence}</span>
+              <span className="rounded-full border border-gray-200 px-2 py-0.5">{c.format}</span>
+              <span className="rounded-full border border-gray-200 px-2 py-0.5">{c.length}</span>
+              <span className="rounded-full border border-gray-200 px-2 py-0.5">{c.cadence}</span>
             </div>
           </div>
-          <p className="mb-6 text-sm text-gray-400">{c.tagline}</p>
+          <p className="mb-6 text-sm text-gray-600">{c.tagline}</p>
 
           <h3 className="mb-3 text-xs font-mono uppercase tracking-widest text-orange-500">Scripts</h3>
           <div className="mb-8 space-y-5">
             {c.scripts.map((s, i) => (
               <div key={i} className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-4">
-                <p className="text-base font-bold text-white">{s.hook}</p>
+                <p className="text-base font-bold text-gray-900">{s.hook}</p>
                 <CopyBlock>{s.body}</CopyBlock>
-                <p className="mt-3 text-xs uppercase tracking-widest text-orange-400">
-                  CTA: <span className="normal-case text-gray-300">{s.cta}</span>
+                <p className="mt-3 text-xs uppercase tracking-widest text-orange-600">
+                  CTA: <span className="normal-case text-gray-700">{s.cta}</span>
                 </p>
               </div>
             ))}
@@ -316,9 +316,9 @@ export default function ContentPlaybookPage() {
           <h3 className="mb-3 text-xs font-mono uppercase tracking-widest text-orange-500">Captions</h3>
           <div className="mb-8 grid grid-cols-1 gap-2 md:grid-cols-2">
             {c.captions.map((v, i) => (
-              <div key={i} className="rounded-xl border border-white/10 bg-white/5 p-3">
+              <div key={i} className="rounded-xl border border-gray-200 bg-gray-50 p-3">
                 <p className="text-[10px] font-mono uppercase tracking-widest text-gray-500">{v.label}</p>
-                <p className="mt-1 text-sm text-gray-200">{v.text}</p>
+                <p className="mt-1 text-sm text-gray-800">{v.text}</p>
               </div>
             ))}
           </div>
@@ -326,7 +326,7 @@ export default function ContentPlaybookPage() {
           <h3 className="mb-3 text-xs font-mono uppercase tracking-widest text-orange-500">Angles</h3>
           <ul className="space-y-1.5">
             {c.angles.map((a, i) => (
-              <li key={i} className="flex gap-2 text-sm text-gray-300">
+              <li key={i} className="flex gap-2 text-sm text-gray-700">
                 <span className="text-orange-500">&bull;</span>
                 {a}
               </li>
@@ -337,23 +337,23 @@ export default function ContentPlaybookPage() {
 
       {/* Funnel + attribution footer */}
       <section className="mb-12 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-3 text-xl font-bold text-white">The funnel</h2>
-        <p className="mb-4 text-sm text-gray-300">Hook &rarr; Landing &rarr; Onboarding &rarr; First rescue &rarr; Hook (share)</p>
-        <ol className="space-y-2 text-sm text-gray-400">
+        <h2 className="mb-3 text-xl font-bold text-gray-900">The funnel</h2>
+        <p className="mb-4 text-sm text-gray-700">Hook &rarr; Landing &rarr; Onboarding &rarr; First rescue &rarr; Hook (share)</p>
+        <ol className="space-y-2 text-sm text-gray-600">
           <li>
-            <span className="font-bold text-orange-400">1. Hook</span> &mdash; one-line recognition from the library above.
+            <span className="font-bold text-orange-600">1. Hook</span> &mdash; one-line recognition from the library above.
           </li>
           <li>
-            <span className="font-bold text-orange-400">2. Landing</span> &mdash; coyl.ai/?v=a|b|c for A/B hero variant.
+            <span className="font-bold text-orange-600">2. Landing</span> &mdash; coyl.ai/?v=a|b|c for A/B hero variant.
           </li>
           <li>
-            <span className="font-bold text-orange-400">3. Onboarding</span> &mdash; opens with COYL&rsquo;s guess &mdash; &ldquo;let me guess &mdash; you fail at night?&rdquo; &mdash; holy-shit moment lands in 10s.
+            <span className="font-bold text-orange-600">3. Onboarding</span> &mdash; opens with COYL&rsquo;s guess &mdash; &ldquo;let me guess &mdash; you fail at night?&rdquo; &mdash; holy-shit moment lands in 10s.
           </li>
           <li>
-            <span className="font-bold text-orange-400">4. First rescue</span> &mdash; user hits a real interrupt within first week. Triggers callout + share moment.
+            <span className="font-bold text-orange-600">4. First rescue</span> &mdash; user hits a real interrupt within first week. Triggers callout + share moment.
           </li>
           <li>
-            <span className="font-bold text-orange-400">5. Share</span> &mdash; &ldquo;COYL just read me&rdquo; OG image lands on someone&rsquo;s feed. Loop closes.
+            <span className="font-bold text-orange-600">5. Share</span> &mdash; &ldquo;COYL just read me&rdquo; OG image lands on someone&rsquo;s feed. Loop closes.
           </li>
         </ol>
       </section>
@@ -367,7 +367,7 @@ export default function ContentPlaybookPage() {
         </Link>
         <Link
           href="/how-it-works"
-          className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200"
+          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800"
         >
           How it works
         </Link>

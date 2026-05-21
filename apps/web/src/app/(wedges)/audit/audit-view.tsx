@@ -184,11 +184,11 @@ export function AuditView() {
             Autopilot audit
           </span>
         </div>
-        <h1 className="mb-6 text-4xl font-black leading-[1.05] text-white md:text-6xl">
+        <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
           You don&rsquo;t have<br />
-          <span className="text-orange-400">a discipline problem.</span>
+          <span className="text-orange-600">a discipline problem.</span>
         </h1>
-        <p className="mb-4 max-w-2xl text-lg text-gray-400">
+        <p className="mb-4 max-w-2xl text-lg text-gray-600">
           You have three specific moments where the same script always runs. Find them in 60 seconds.
           No signup. COYL turns them into interrupt protocols built for you.
         </p>
@@ -216,10 +216,10 @@ export function AuditView() {
                 setWedge(w.id)
                 setStep(2)
               }}
-              className="group rounded-2xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent p-5 text-left transition-all hover:border-orange-500/30 hover:bg-orange-500/5"
+              className="group rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-5 text-left transition-all hover:border-orange-500/30 hover:bg-orange-500/5"
             >
-              <p className="text-base font-bold text-white group-hover:text-orange-300">{w.label}</p>
-              <p className="mt-1 text-sm text-gray-400">{w.line}</p>
+              <p className="text-base font-bold text-gray-900 group-hover:text-orange-700">{w.label}</p>
+              <p className="mt-1 text-sm text-gray-600">{w.line}</p>
             </button>
           ))}
         </div>
@@ -239,10 +239,10 @@ export function AuditView() {
                 setWindowChoice(w.id)
                 setStep(3)
               }}
-              className="group rounded-2xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent p-5 text-left transition-all hover:border-orange-500/30 hover:bg-orange-500/5"
+              className="group rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-5 text-left transition-all hover:border-orange-500/30 hover:bg-orange-500/5"
             >
-              <p className="text-base font-bold text-white group-hover:text-orange-300">{w.label}</p>
-              <p className="mt-1 text-sm text-gray-400">{w.hours}</p>
+              <p className="text-base font-bold text-gray-900 group-hover:text-orange-700">{w.label}</p>
+              <p className="mt-1 text-sm text-gray-600">{w.hours}</p>
             </button>
           ))}
         </div>
@@ -259,9 +259,9 @@ export function AuditView() {
             <button
               key={s.id}
               onClick={() => setScript(s.id)}
-              className="group rounded-2xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent p-5 text-left transition-all hover:border-orange-500/30 hover:bg-orange-500/5"
+              className="group rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-5 text-left transition-all hover:border-orange-500/30 hover:bg-orange-500/5"
             >
-              <p className="text-lg font-semibold italic text-orange-300">{s.quote}</p>
+              <p className="text-lg font-semibold italic text-orange-700">{s.quote}</p>
             </button>
           ))}
         </div>
@@ -287,14 +287,14 @@ export function AuditView() {
               result says something true about them without admitting
               failure. */}
           <div className="mb-6 rounded-3xl border border-orange-500/40 bg-gradient-to-br from-orange-500/[0.10] via-orange-500/[0.03] to-transparent p-6 md:p-8 shadow-[0_0_40px_-10px_rgba(255,102,0,0.35)]">
-            <p className="text-xs font-mono uppercase tracking-[0.28em] text-orange-400">
+            <p className="text-xs font-mono uppercase tracking-[0.28em] text-orange-600">
               You&rsquo;re a
             </p>
-            <p className="mt-2 flex items-center gap-3 text-3xl font-black leading-tight text-white md:text-4xl">
+            <p className="mt-2 flex items-center gap-3 text-3xl font-black leading-tight text-gray-900 md:text-4xl">
               <span>{archetype.emoji}</span>
               <span>{archetype.name}</span>
             </p>
-            <p className="mt-3 text-sm text-gray-300">
+            <p className="mt-3 text-sm text-gray-700">
               {archetype.prevalenceCopy}
             </p>
             <ArchetypeShareButton archetype={archetype} />
@@ -306,10 +306,10 @@ export function AuditView() {
               Your pattern
             </span>
           </div>
-          <h2 className="mb-6 text-3xl font-black leading-[1.1] text-white md:text-5xl">
+          <h2 className="mb-6 text-3xl font-black leading-[1.1] text-gray-900 md:text-5xl">
             {resultHeadline(wedge, windowChoice)}
           </h2>
-          <p className="mb-10 max-w-2xl text-lg text-gray-400">
+          <p className="mb-10 max-w-2xl text-lg text-gray-600">
             Here are the three moments COYL would fire for you. Not daily reminders.
             Surgical interrupts in the seconds before the fold.
           </p>
@@ -326,17 +326,17 @@ export function AuditView() {
                 <p className="text-xs font-mono uppercase tracking-widest text-orange-500">
                   Interrupt {i + 1}
                 </p>
-                <p className="mt-1 text-lg font-semibold text-white">{text}</p>
+                <p className="mt-1 text-lg font-semibold text-gray-900">{text}</p>
               </motion.div>
             ))}
           </div>
 
-          <div className="mb-10 rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+          <div className="mb-10 rounded-3xl border border-gray-200 bg-white p-6">
             <p className="text-sm uppercase tracking-widest text-gray-500">What you just did</p>
-            <p className="mt-2 text-base text-gray-300">
+            <p className="mt-2 text-base text-gray-700">
               In 60 seconds you did what most apps take 3 weeks of logging to do:
               identified the exact pattern that keeps running you.{' '}
-              <span className="font-bold text-white">COYL&rsquo;s job is to interrupt these, not nag you about them.</span>
+              <span className="font-bold text-gray-900">COYL&rsquo;s job is to interrupt these, not nag you about them.</span>
             </p>
           </div>
 
@@ -349,7 +349,7 @@ export function AuditView() {
             </Link>
             <button
               onClick={reset}
-              className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200 hover:border-orange-500/40 hover:text-orange-300"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
             >
               Run it again
             </button>
@@ -381,8 +381,8 @@ function StepWrap({
           Question {stepIndex} of 3
         </span>
       </div>
-      <h2 className="mb-3 text-3xl font-black leading-[1.1] text-white md:text-5xl">{title}</h2>
-      <p className="mb-10 max-w-xl text-base text-gray-400">{subtitle}</p>
+      <h2 className="mb-3 text-3xl font-black leading-[1.1] text-gray-900 md:text-5xl">{title}</h2>
+      <p className="mb-10 max-w-xl text-base text-gray-600">{subtitle}</p>
       {children}
     </motion.div>
   )
@@ -420,7 +420,7 @@ function ArchetypeShareButton({ archetype }: { archetype: { name: string; emoji:
   return (
     <button
       onClick={handleShare}
-      className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-bold text-white backdrop-blur-sm hover:bg-white/15"
+      className="mt-4 inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-xs font-bold text-gray-900 backdrop-blur-sm hover:bg-white/15"
     >
       {copied ? 'Copied' : 'Share my archetype'}
     </button>

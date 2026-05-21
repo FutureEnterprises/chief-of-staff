@@ -98,24 +98,24 @@ export default function SciencePage() {
         <span className="h-px w-8 bg-orange-500" />
         <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">Science</span>
       </div>
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-white md:text-6xl">
+      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
         Grounded in real<br />behavior science.
       </h1>
-      <p className="mb-16 max-w-2xl text-lg text-gray-400">
+      <p className="mb-16 max-w-2xl text-lg text-gray-600">
         Every engine in COYL maps to peer-reviewed research. Here&apos;s what we&apos;re built on and
         where to read the primary sources.
       </p>
 
       <div className="mb-12 space-y-8">
         {CITATIONS.map((c, i) => (
-          <section key={i} className="rounded-2xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent p-6">
+          <section key={i} className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-6">
             <p className="mb-3 text-xs font-mono text-orange-500">FINDING {String(i + 1).padStart(2, '0')}</p>
-            <h3 className="mb-3 text-lg font-bold text-white">{c.claim}</h3>
-            <p className="mb-4 text-sm text-gray-400">{c.explanation}</p>
+            <h3 className="mb-3 text-lg font-bold text-gray-900">{c.claim}</h3>
+            <p className="mb-4 text-sm text-gray-600">{c.explanation}</p>
             <ul className="space-y-1.5 text-xs">
               {c.sources.map((s) => (
                 <li key={s.url}>
-                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-orange-400 underline underline-offset-2 hover:text-orange-300">
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-orange-600 underline underline-offset-2 hover:text-orange-700">
                     {s.title}
                   </a>
                 </li>
@@ -125,8 +125,8 @@ export default function SciencePage() {
         ))}
       </div>
 
-      <section className="mb-12 rounded-3xl border border-white/10 bg-black/40 p-8 text-sm text-gray-400">
-        <h2 className="mb-3 text-lg font-bold text-white">Important: what COYL is NOT</h2>
+      <section className="mb-12 rounded-3xl border border-gray-200 bg-gray-100 p-8 text-sm text-gray-600">
+        <h2 className="mb-3 text-lg font-bold text-gray-900">Important: what COYL is NOT</h2>
         <ul className="space-y-2">
           <li>• COYL is a behavioral support tool, not medical treatment.</li>
           <li>• It is not a substitute for a doctor, therapist, dietitian, or licensed clinician.</li>

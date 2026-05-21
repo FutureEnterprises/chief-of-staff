@@ -96,12 +96,12 @@ export default function CaughtPage() {
         </span>
       </div>
 
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-white md:text-6xl">
+      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
         They caught themselves.<br />
-        <span className="text-orange-400">You can too.</span>
+        <span className="text-orange-600">You can too.</span>
       </h1>
 
-      <p className="mb-10 max-w-2xl text-lg text-gray-400">
+      <p className="mb-10 max-w-2xl text-lg text-gray-600">
         Someone you know just used COYL to stop the spiral. Not Monday. Not tomorrow.
         The exact moment they were about to fold. That&rsquo;s the whole product.
       </p>
@@ -123,28 +123,28 @@ export default function CaughtPage() {
         </Link>
         <Link
           href="/how-it-works"
-          className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200 hover:border-orange-500/40 hover:text-orange-300"
+          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
         >
           How it works
         </Link>
       </div>
 
       <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-2 text-2xl font-bold text-white">
+        <h2 className="mb-2 text-2xl font-bold text-gray-900">
           It&rsquo;s not the mistake. It&rsquo;s what you do after.
         </h2>
-        <p className="mb-8 text-sm text-gray-400">
+        <p className="mb-8 text-sm text-gray-600">
           The loop that runs every time you slip. COYL interrupts it at step 2.
         </p>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {LOOP_BEATS.map((b) => (
             <div
               key={b.n}
-              className="rounded-xl border border-orange-500/30 bg-black/40 p-5"
+              className="rounded-xl border border-orange-500/30 bg-gray-100 p-5"
             >
               <p className="text-xs font-mono text-orange-500">{b.n}</p>
-              <h3 className="mt-2 text-base font-bold text-white">{b.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-400">{b.body}</p>
+              <h3 className="mt-2 text-base font-bold text-gray-900">{b.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{b.body}</p>
             </div>
           ))}
         </div>
@@ -155,14 +155,14 @@ export default function CaughtPage() {
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           What COYL says in the moment
         </h2>
-        <h3 className="mb-6 text-2xl font-bold text-white md:text-4xl">
+        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-4xl">
           Not motivation. Pattern recognition.
         </h3>
         <ul className="space-y-3">
           {QUOTABLES.map((line) => (
             <li
               key={line}
-              className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-5 py-3 text-lg font-semibold text-white"
+              className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-5 py-3 text-lg font-semibold text-gray-900"
             >
               {line}
             </li>
@@ -171,7 +171,7 @@ export default function CaughtPage() {
       </section>
 
       <section className="mb-16">
-        <h2 className="mb-6 text-2xl font-bold text-white md:text-3xl">
+        <h2 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
           What pattern do you keep repeating?
         </h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -179,22 +179,22 @@ export default function CaughtPage() {
             <Link
               key={w.href}
               href={w.href}
-              className="group rounded-2xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent p-5 transition-all hover:border-orange-500/30 hover:bg-orange-500/5"
+              className="group rounded-2xl border border-gray-200 bg-gradient-to-br from-white/5 to-transparent p-5 transition-all hover:border-orange-500/30 hover:bg-orange-500/5"
             >
-              <p className="text-base font-bold text-white group-hover:text-orange-300">
+              <p className="text-base font-bold text-gray-900 group-hover:text-orange-700">
                 {w.label}
               </p>
-              <p className="mt-1 text-sm text-gray-400">{w.body}</p>
+              <p className="mt-1 text-sm text-gray-600">{w.body}</p>
             </Link>
           ))}
         </div>
       </section>
 
-      <section className="mb-12 rounded-3xl border border-white/10 bg-white/[0.02] p-8">
+      <section className="mb-12 rounded-3xl border border-gray-200 bg-white p-8">
         <p className="text-sm uppercase tracking-widest text-gray-500">The share you just saw</p>
-        <p className="mt-2 text-lg text-gray-300">
+        <p className="mt-2 text-lg text-gray-700">
           It wasn&rsquo;t bragging. It was proof. Someone caught themselves in the act and wanted
-          you to know you can too. <span className="font-bold text-white">Same loop. Same interrupt.</span>{' '}
+          you to know you can too. <span className="font-bold text-gray-900">Same loop. Same interrupt.</span>{' '}
           One signup away.
         </p>
       </section>
@@ -208,7 +208,7 @@ export default function CaughtPage() {
         </Link>
         <Link
           href="/science"
-          className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200 hover:border-orange-500/40 hover:text-orange-300"
+          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
         >
           See the research
         </Link>

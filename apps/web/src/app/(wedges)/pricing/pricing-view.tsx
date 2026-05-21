@@ -149,18 +149,18 @@ export function PricingView() {
         </span>
       </div>
 
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-white md:text-6xl">
+      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
         Pay for the interrupt,<br />
-        <span className="text-orange-400">not for the guilt.</span>
+        <span className="text-orange-600">not for the guilt.</span>
       </h1>
 
-      <p className="mb-10 max-w-2xl text-lg text-gray-400">
+      <p className="mb-10 max-w-2xl text-lg text-gray-600">
         Free forever to start. Upgrade when the autopilot is costing you more than $19/month.
         No 7-day trial gimmicks, no annual lock-in tricks, cancel anytime.
       </p>
 
       {/* Monthly / Annual toggle */}
-      <div className="mb-12 inline-flex rounded-full border border-white/10 bg-white/[0.02] p-1">
+      <div className="mb-12 inline-flex rounded-full border border-gray-200 bg-white p-1">
         <button
           type="button"
           onClick={() => setInterval('monthly')}
@@ -168,7 +168,7 @@ export function PricingView() {
           className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors duration-200 ${
             interval === 'monthly'
               ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_0_12px_rgba(255,102,0,0.3)]'
-              : 'text-gray-400 hover:text-white'
+              : 'text-gray-600 hover:text-gray-900'
           }`}
         >
           Monthly
@@ -180,11 +180,11 @@ export function PricingView() {
           className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors duration-200 ${
             interval === 'annual'
               ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_0_12px_rgba(255,102,0,0.3)]'
-              : 'text-gray-400 hover:text-white'
+              : 'text-gray-600 hover:text-gray-900'
           }`}
         >
           Annual
-          <span className="ml-1.5 rounded-full bg-orange-500/20 px-1.5 py-0.5 text-[10px] font-bold text-orange-300">
+          <span className="ml-1.5 rounded-full bg-orange-500/20 px-1.5 py-0.5 text-[10px] font-bold text-orange-700">
             − 22%
           </span>
         </button>
@@ -204,7 +204,7 @@ export function PricingView() {
               className={`relative flex flex-col rounded-3xl border p-6 ${
                 t.featured
                   ? 'border-orange-500/40 bg-gradient-to-br from-orange-500/[0.06] to-transparent'
-                  : 'border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent'
+                  : 'border-gray-200 bg-gradient-to-br from-white/[0.03] to-transparent'
               }`}
             >
               {t.featured && (
@@ -216,12 +216,12 @@ export function PricingView() {
               <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
                 {t.name}
               </p>
-              <p className="mt-1 mb-5 text-base font-semibold text-white">
+              <p className="mt-1 mb-5 text-base font-semibold text-gray-900">
                 {t.tagline}
               </p>
 
               <div className="mb-2 flex items-baseline gap-1">
-                <span className="text-5xl font-black text-white">${price}</span>
+                <span className="text-5xl font-black text-gray-900">${price}</span>
                 <span className="text-sm text-gray-500">/mo</span>
               </div>
               <p className="mb-6 text-xs text-gray-600">
@@ -237,7 +237,7 @@ export function PricingView() {
                 className={`mb-6 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition-all duration-200 ${
                   t.featured
                     ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_0_20px_rgba(255,102,0,0.35)] hover:shadow-[0_0_28px_rgba(255,102,0,0.5)]'
-                    : 'border border-white/10 bg-white/[0.02] text-gray-100 hover:border-orange-500/30 hover:text-white'
+                    : 'border border-gray-200 bg-white text-gray-100 hover:border-orange-500/30 hover:text-gray-900'
                 }`}
               >
                 {t.cta}
@@ -246,8 +246,8 @@ export function PricingView() {
 
               <ul className="space-y-2">
                 {t.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-gray-300">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-orange-400" />
+                  <li key={f} className="flex items-start gap-2 text-sm text-gray-700">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-orange-600" />
                     <span>{f}</span>
                   </li>
                 ))}
@@ -269,11 +269,11 @@ export function PricingView() {
       {/* Compare-the-loops belt. Per design-system-v2 §"Migration",
           inner marketing blocks use rounded-2xl; only the tier cards
           + final CTA stay at 3xl as the page anchors. */}
-      <section className="mb-20 rounded-2xl border border-white/5 bg-white/[0.02] p-8">
-        <h2 className="mb-2 text-2xl font-bold text-white">
+      <section className="mb-20 rounded-2xl border border-gray-200 bg-white p-8">
+        <h2 className="mb-2 text-2xl font-bold text-gray-900">
           What you get on every tier.
         </h2>
-        <p className="mb-6 text-sm text-gray-400">
+        <p className="mb-6 text-sm text-gray-600">
           Free is real software, not a 7-day demo. The paid tiers add depth, not gates around the basics.
         </p>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -296,11 +296,11 @@ export function PricingView() {
           ].map((b) => (
             <div
               key={b.n}
-              className="rounded-2xl border border-white/5 bg-black/30 p-5"
+              className="rounded-2xl border border-gray-200 bg-gray-50 p-5"
             >
               <p className="text-xs font-mono text-orange-500">{b.n}</p>
-              <h3 className="mt-2 text-base font-bold text-white">{b.h}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-400">{b.b}</p>
+              <h3 className="mt-2 text-base font-bold text-gray-900">{b.h}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{b.b}</p>
             </div>
           ))}
         </div>
@@ -312,25 +312,25 @@ export function PricingView() {
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           FAQ
         </h2>
-        <h3 className="mb-8 text-2xl font-bold text-white md:text-3xl">
+        <h3 className="mb-8 text-2xl font-bold text-gray-900 md:text-3xl">
           Honest answers, before you sign up.
         </h3>
         <div className="space-y-3">
           {FAQ.map((f) => (
             <details
               key={f.q}
-              className="group rounded-2xl border border-white/5 bg-white/[0.02] p-5 open:border-orange-500/20 open:bg-orange-500/[0.03]"
+              className="group rounded-2xl border border-gray-200 bg-white p-5 open:border-orange-500/20 open:bg-orange-500/[0.03]"
             >
-              <summary className="flex cursor-pointer items-center justify-between gap-3 text-base font-semibold text-white marker:hidden [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer items-center justify-between gap-3 text-base font-semibold text-gray-900 marker:hidden [&::-webkit-details-marker]:hidden">
                 <span>{f.q}</span>
                 <span
                   aria-hidden
-                  className="text-orange-400 transition-transform duration-200 group-open:rotate-45"
+                  className="text-orange-600 transition-transform duration-200 group-open:rotate-45"
                 >
                   +
                 </span>
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-gray-400">{f.a}</p>
+              <p className="mt-3 text-sm leading-relaxed text-gray-600">{f.a}</p>
             </details>
           ))}
         </div>
@@ -345,7 +345,7 @@ export function PricingView() {
         </Link>
         <Link
           href="/how-it-works"
-          className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200 hover:border-orange-500/40 hover:text-orange-300"
+          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
         >
           How it works
         </Link>

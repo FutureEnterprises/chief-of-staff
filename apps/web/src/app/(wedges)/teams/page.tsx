@@ -137,12 +137,12 @@ export default function TeamsWedgePage() {
         </span>
       </div>
 
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-white md:text-6xl">
+      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
         Your team loses 23 minutes per interrupt.<br />
-        <span className="text-orange-400">COYL fires before the tab switch.</span>
+        <span className="text-orange-600">COYL fires before the tab switch.</span>
       </h1>
 
-      <p className="mb-12 max-w-2xl text-lg text-gray-400">
+      <p className="mb-12 max-w-2xl text-lg text-gray-600">
         Knowledge workers are interrupted every 11 minutes. Recovery costs 23.
         Math says one third of every working week is spent recovering, not working.
         COYL is the relapse-prevention layer beneath your existing focus stack &mdash;
@@ -158,7 +158,7 @@ export default function TeamsWedgePage() {
         </Link>
         <Link
           href="/research"
-          className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200 hover:border-orange-500/40 hover:text-orange-300"
+          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
         >
           See research + outcomes
         </Link>
@@ -171,13 +171,13 @@ export default function TeamsWedgePage() {
         {STAT_ROWS.map((s) => (
           <div
             key={s.label}
-            className="rounded-2xl border border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
+            className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
           >
             <div className="mb-3 flex items-baseline gap-1">
-              <span className="text-5xl font-black text-orange-400">{s.n}</span>
+              <span className="text-5xl font-black text-orange-600">{s.n}</span>
               <span className="text-sm font-semibold text-gray-500">{s.unit}</span>
             </div>
-            <p className="text-sm font-semibold leading-snug text-white">{s.label}</p>
+            <p className="text-sm font-semibold leading-snug text-gray-900">{s.label}</p>
             <p className="mt-2 text-[11px] text-gray-600">{s.src}</p>
           </div>
         ))}
@@ -188,7 +188,7 @@ export default function TeamsWedgePage() {
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           Where COYL lives
         </h2>
-        <h3 className="mb-8 text-2xl font-bold text-white md:text-3xl">
+        <h3 className="mb-8 text-2xl font-bold text-gray-900 md:text-3xl">
           Three roles where the math is the most painful.
         </h3>
 
@@ -196,32 +196,32 @@ export default function TeamsWedgePage() {
           {USE_CASES.map((u) => (
             <div
               key={u.title}
-              className="rounded-2xl border border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
+              className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white/[0.03] to-transparent p-6"
             >
-              <h3 className="text-base font-bold text-white">{u.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-400">{u.body}</p>
+              <h3 className="text-base font-bold text-gray-900">{u.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{u.body}</p>
             </div>
           ))}
         </div>
       </section>
 
       <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-4 text-2xl font-bold text-white">
+        <h2 className="mb-4 text-2xl font-bold text-gray-900">
           Privacy-first by architecture, not by promise.
         </h2>
-        <ul className="space-y-3 text-base text-gray-300">
-          <li className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/[0.05] px-5 py-3">
+        <ul className="space-y-3 text-base text-gray-700">
+          <li className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-50 px-5 py-3">
             COYL never reads email, calendar, code, documents, or any work content.
           </li>
-          <li className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/[0.05] px-5 py-3">
+          <li className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-50 px-5 py-3">
             Sabotage patterns are learned from user-self-reported moments and (optionally)
             wearables. Nothing leaves the device that the user didn&rsquo;t opt in to.
           </li>
-          <li className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/[0.05] px-5 py-3">
+          <li className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-50 px-5 py-3">
             Aggregated outcome reporting is delivered to your benefits team. Individual user
             data stays with the individual user.
           </li>
-          <li className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/[0.05] px-5 py-3">
+          <li className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-50 px-5 py-3">
             SOC 2, BAA-eligible deployments available. SSO via Okta / Azure AD /
             Google Workspace.
           </li>
@@ -237,12 +237,12 @@ export default function TeamsWedgePage() {
         <PMPMCalculator />
       </div>
 
-      <section className="mb-16 rounded-3xl border border-white/10 bg-white/[0.02] p-8">
+      <section className="mb-16 rounded-3xl border border-gray-200 bg-white p-8">
         <p className="text-sm uppercase tracking-widest text-gray-500">Pilot terms</p>
-        <p className="mt-2 text-2xl font-black leading-tight text-white">
+        <p className="mt-2 text-2xl font-black leading-tight text-gray-900">
           30 days. 50&ndash;500 employees. No cost. Decision at end of pilot.
         </p>
-        <p className="mt-3 max-w-2xl text-base text-gray-400">
+        <p className="mt-3 max-w-2xl text-base text-gray-600">
           We instrument the cohort, your benefits team owns the outcome report, and we
           co-author a case study if the data justifies it. Pricing is PMPM after the pilot
           &mdash; let&rsquo;s talk numbers when the evidence is in front of us.
@@ -260,25 +260,25 @@ export default function TeamsWedgePage() {
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           The questions every benefits lead asks
         </h2>
-        <h3 className="mb-8 text-2xl font-bold text-white md:text-3xl">
+        <h3 className="mb-8 text-2xl font-bold text-gray-900 md:text-3xl">
           Honest answers, before the call.
         </h3>
         <div className="space-y-3">
           {FAQ.map((f) => (
             <details
               key={f.q}
-              className="group rounded-2xl border border-white/5 bg-white/[0.02] p-5 open:border-orange-500/20 open:bg-orange-500/[0.03]"
+              className="group rounded-2xl border border-gray-200 bg-white p-5 open:border-orange-500/20 open:bg-orange-500/[0.03]"
             >
-              <summary className="flex cursor-pointer items-center justify-between gap-3 text-base font-semibold text-white marker:hidden [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer items-center justify-between gap-3 text-base font-semibold text-gray-900 marker:hidden [&::-webkit-details-marker]:hidden">
                 <span>{f.q}</span>
                 <span
                   aria-hidden
-                  className="text-orange-400 transition-transform duration-200 group-open:rotate-45"
+                  className="text-orange-600 transition-transform duration-200 group-open:rotate-45"
                 >
                   +
                 </span>
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-gray-400">{f.a}</p>
+              <p className="mt-3 text-sm leading-relaxed text-gray-600">{f.a}</p>
             </details>
           ))}
         </div>
@@ -293,13 +293,13 @@ export default function TeamsWedgePage() {
         </Link>
         <Link
           href="/procrastination"
-          className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200 hover:border-orange-500/40 hover:text-orange-300"
+          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
         >
           The consumer wedge
         </Link>
         <Link
           href="/research"
-          className="rounded-full border border-white/10 px-6 py-3 text-sm text-gray-200 hover:border-orange-500/40 hover:text-orange-300"
+          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
         >
           Research + outcomes
         </Link>
