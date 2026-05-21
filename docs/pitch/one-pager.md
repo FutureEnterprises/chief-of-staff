@@ -39,15 +39,27 @@ patterns, workplace focus.
 | Behavioral relapse prevention category | $50B+ adjacent |
 | Telehealth platforms with active GLP-1 panels | 6+ ($1B+ each) |
 
-## Three businesses, one engine
+## Four layers, one engine — Path to $1.5–4B
 
-| Stream | Path to $100M | When |
-|---|---|---|
-| **D2C** ($19/mo Core) | 175K paid × $19 × 12 = $40M | Months 0–24 |
-| **GLP-1 PMPM** ($10/life/mo) | 250K covered × $10 × 12 = $30M | Months 6–24 |
-| **SDK** ($0.05/interrupt) | 10M events/mo × $0.05 × 12 = $6M | Months 12–24 |
+| Year | Consumer | Enterprise | API | Clinical | Total ARR | Valuation |
+|---|---|---|---|---|---|---|
+| Y1 | $5M | $0.5M | $0 | $0 | $5.5M | $77M |
+| Y2 | $18M | $5M | $1M | $0 | $24M | $384M |
+| Y3 | $38M | $20M | $6M | $1M | $65M | $1.2B |
+| Y4 | $60M | $45M | $15M | $4M | $124M | **$1.7B** |
+| Y5 | $80M | $70M | $30M | $20M | $200M | **$3.6B** |
 
-**Month 24: $80M ARR base case · $100M ARR aggressive**
+**Year 4 = $1.7B (70× on a $25M post-money Seed). Year 5 = $3.6B if
+FDA clearance lands on schedule.** Honest base case at Y4, aggressive
+at Y5. Consumer + Enterprise carry Years 1–3 as the cash floor; API
+launches Month 18 after substrate engineering; Clinical / payer is
+the Y4–5 multiplier, **never the lifeline**.
+
+The Pear Therapeutics lesson: FDA clearance + reimbursement codes
+weren't enough to save Pear when payer adoption was slower than burn.
+Series A explicitly sized at $18–22M to survive the 24–30 month dead
+zone. Consumer + enterprise floor absorbs burn even if payer
+contribution is $0.
 
 ## The moat — structural, not tactical
 
@@ -81,8 +93,24 @@ users; model re-underwritten if it misses.
 
 ## Next milestone (Series A trigger)
 
-$9M ARR · 1 GLP-1 partner live · 45% 12-month retention validated ·
-clinical study readout in hand · Series A at $80–130M post.
+$9M ARR · 1 GLP-1 partner live · 1 signed API LOI · 45% 12-month
+retention validated · RCT 12-week data in hand · Series A at $18–22M
+@ $80–130M pre — deliberately oversized for 24–30 month payer-channel
+dead zone runway.
+
+## What kills this plan (named explicitly)
+
+The risks every $4B plan has to name:
+1. Clinical study null (15–25%) — mitigated by effect-size design
+2. App Store rejection (10–15%) — recoverable in one cycle
+3. Stripe regulatory on stakes (5–10%) — Stripe Connect to 501(c)(3)
+4. Consumer retention misses 45% (30–40%) — the real silent bet
+5. Pear scenario, payer dead zone outlasts cash (25–35%) — Series A
+   sized to prevent
+6. Solo-founder ceiling at $5M ARR (50%) — first senior eng hire Month 0
+
+Naming risks pre-empts diligence objections AND signals we've
+internalized the failure modes.
 
 ---
 

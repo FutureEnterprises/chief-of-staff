@@ -309,63 +309,123 @@ confidence here gets you killed.*
 
 ---
 
-## Slide 12 — The Path to $100M
+## Slide 12 — The Path to $1.5–4B
 
-# 24 months. Two scenarios. Both real.
+# 5 years. Four layers. Compounding.
 
-|  | Month 6 | Month 12 | Month 18 | Month 24 |
-|---|---|---|---|---|
-| **Base case** | $750K | $9.2M | $36M | **$80M** |
-| Aggressive | $1.5M | $13M | $50M | **$100M** |
+| Year | Consumer | Enterprise | API | Clinical | Total ARR | Valuation |
+|---|---|---|---|---|---|---|
+| Y1 | $5M | $0.5M | $0 | $0 | **$5.5M** | $77M |
+| Y2 | $18M | $5M | $1M | $0 | **$24M** | $384M |
+| Y3 | $38M | $20M | $6M | $1M | **$65M** | $1.2B |
+| Y4 | $60M | $45M | $15M | $4M | **$124M** | $1.7B |
+| Y5 | $80M | $70M | $30M | $20M | **$200M** | $3.6B |
 
-**Base case assumes:**
-- 45% 12-month retention (recovery engine validated month 3)
-- $80 blended CAC
-- First GLP-1 partner signed Month 8, live Month 12
-- SDK first revenue Month 18
+**The structure that gets us there:**
+- Consumer + Enterprise carry Years 1–3 (the cash floor)
+- API launches at Month 18 after substrate engineering is real
+- Clinical / payer is the Year 4–5 multiplier, **never the lifeline**
 
-**Aggressive scenario requires:**
-- Viral quiz / interrupt-card hit by Month 4
-- Two GLP-1 partners by Month 12 (not one)
-- 50%+ retention (recovery engine outperforms category)
-- SDK with 3 anchor partners by Month 18
+**The silent bet (named explicitly):** the recovery engine delivers
+better-than-category retention (45%+). Measured at Month 3 of paid-
+user data, model re-underwritten if it misses.
 
-**The silent bet:** the recovery engine delivers better-than-category
-retention. We'll measure in the first 90 days of paid users and
-re-underwrite.
+**Why $4B at Year 5, not Year 4:** by Year 5 FDA clearance is real,
+payer revenue is meaningful, the multiple legitimately compresses to
+healthcare-grade 18–22×. Pushing $4B to Year 5 reads as discipline.
 
-*Speaker notes: Don't oversell the aggressive scenario. Base case +
-honest-about-the-bet is more credible. Anyone who's seen behavior-
-change-app retention math will respect this slide more than a $100M
-hockey stick.*
+*Speaker notes: Honest base case + named silent bet beats any
+hockey-stick chart. Year 4 at $1.7B is already a 70× return on a $25M
+post-money seed. Don't oversell Year 5.*
+
+---
+
+## Slide 12.5 — What Kills This Plan
+
+# We name the risks. So you don't have to.
+
+**1. Clinical study null result.** Probability: 15–25%. Mitigated by
+pre-registered SAP, effect-size-estimation design. Consumer +
+enterprise lines survive without payer.
+
+**2. App Store rejection.** Probability: 10–15% (recoverable in one
+cycle). "Behavioral support, not medical treatment" framing
+throughout. Account deletion + GDPR shipped.
+
+**3. Stripe / payment regulatory issue on stakes.** Probability:
+5–10%. Stakes is Premium-tier, GiveDirectly via Stripe Connect.
+No anti-charity until regulatory review clears.
+
+**4. Consumer retention misses 45%.** Probability: 30–40%. **This is
+the real silent bet.** Measurement gate at Month 3. If <35%, reduce
+CAC or pause paid acquisition.
+
+**5. Pear scenario — payer dead zone outlasts cash.** Probability:
+25–35%. Series A oversized to $18–22M specifically for 24–30 month
+runway through this zone. Consumer + enterprise floor absorbs burn.
+
+**6. Solo-founder ceiling at $5M ARR.** Probability: 50% if no early
+senior hire. Seed funds first senior engineer Month 0.
+
+*Speaker notes: This slide separates serious founders from pitch
+founders. Sophisticated investors know these risks exist. Naming them
+pre-empts the objection AND signals you've internalized the failure
+modes. The Pear lesson is your strongest single argument with any
+biotech-adjacent VC — they all know that story.*
 
 ---
 
 ## Slide 13 — The Ask
 
-# $4–6M Seed · 12 months · $9M ARR + 1 GLP-1 partner live
+# $4–6M Seed → $18–22M Series A → $40–60M Series B
 
-**Use of funds:**
-- $1.8M — Engineering (3 senior hires + designer)
-- $1.0M — Growth (community lead + $100K creator budget + paid acq)
-- $0.6M — BD (lead + travel + partner pilot infra)
-- $0.4M — Clinical (PI fees + IRB + manuscript)
-- $0.3M — Compliance + legal (HIPAA, BAA, DUA templates, mobile review)
-- $0.4M — Infra + tooling (Vercel, Supabase, Anthropic, Twilio, Resend)
-- $1.0M — 12-month operating buffer
+**Three tranches, each keyed to a proof point. Series A deliberately
+oversized to survive the payer-channel dead zone.**
 
-**Valuation:** $20–30M pre-money
+### Seed (now) · $4–6M @ $20–30M pre
 
-**Next milestone:** $9M ARR · 1 GLP-1 partner live · 45% retention
-validated · Series A at $80–130M post on $9M ARR
+12-month runway. Use:
+- $1.8M Engineering (3 senior hires + designer)
+- $1.0M Growth (community + creator partnerships + paid acq pilot)
+- $0.6M BD (telehealth Rx-Rolodex lead)
+- $0.4M Clinical (PI fees + IRB + manuscript)
+- $0.3M Compliance + legal
+- $0.4M Infra + tooling
+- $1.0M Operating buffer
+- $0.5M Reserved for first API partnership
 
-**Close window:** target close in 8 weeks. Want a lead with check size
-$1.5–3M; remainder closes pro-rata with strategic angels from Hims, Ro,
-Calibrate, Noom alumni.
+**Show at A:** $9M ARR · 1 GLP-1 partner live · 1 signed API LOI ·
+RCT in progress · 45% retention validated.
 
-*Speaker notes: This is the close. Don't trail off. State the ask, the
-milestone, and the close window. Then stop talking and let them
-respond.*
+### Series A · $18–22M @ $80–130M pre (Month 12–15)
+
+**The oversizing is the point.** $18–22M (not $12–15M) specifically
+to survive the 24–30 month payer-channel dead zone between RCT
+submission and payer revenue. This is the **Pear Therapeutics
+mitigation** — Pear had FDA clearance and went bankrupt because
+payer adoption was slower than burn rate.
+
+Use:
+- $6M Engineering scale (18-person team, 4 layers)
+- $4M Enterprise GTM
+- $2.5M Clinical (FDA filing + payer pre-engagement)
+- $2M API platform team
+- $2.5M Consumer paid acquisition
+- $1.5M Operating buffer through Month 30
+
+### Series B · $40–60M (Month 30–36)
+
+At $40M+ ARR, FDA filing in review, 2+ payer LOIs, API GA.
+
+**Close window:** Seed target close in 8 weeks. Lead check size
+$1.5–3M; remainder closes pro-rata with strategic angels from Hims,
+Ro, Calibrate, Noom alumni.
+
+*Speaker notes: The Series A oversize line is your strongest move
+with biotech-adjacent VCs. Lead with it. They all know the Pear
+story. "Sized to survive the dead zone" reads as discipline. Don't
+trail off — state the ask, the milestone, and the close window. Then
+stop talking.*
 
 ---
 
