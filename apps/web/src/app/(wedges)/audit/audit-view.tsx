@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
 import {
+  allFamilies,
   buildArchetype,
   buildShareUrl,
   type WedgeId,
@@ -122,7 +123,14 @@ export function AuditView() {
   }
 
   // Intro screen.
+  //
+  // Per the strategist's May 2026 audit: this page is the viral engine, not
+  // a short landing. The intro shows the six families up-front (so visitors
+  // arrive with "which one am I?" priming), plus two example share-card
+  // outputs that prove what they get on the other side. The Start button
+  // remains the single obvious next action.
   if (step === 0) {
+    const families = allFamilies()
     return (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <div className="mb-4 flex items-center gap-3">
@@ -131,22 +139,131 @@ export function AuditView() {
             Autopilot audit
           </span>
         </div>
-        <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-          You don&rsquo;t have<br />
-          <span className="text-orange-600">a discipline problem.</span>
+        <h1 className="mb-6 text-4xl font-black leading-[1.05] tracking-[-0.01em] text-gray-900 md:text-6xl">
+          Find your<br />
+          <span className="text-orange-600">autopilot family.</span>
         </h1>
-        <p className="mb-4 max-w-2xl text-lg text-gray-600">
-          You have three specific moments where the same script always runs. Find them in 60 seconds.
-          No signup. COYL turns them into interrupt protocols built for you.
+        <p className="mb-4 max-w-2xl text-xl font-semibold leading-snug text-gray-800">
+          Three questions. No signup. Your autopilot family on the other side.
         </p>
-        <p className="mb-10 text-sm text-gray-500">3 questions &middot; ~60 seconds &middot; no email needed</p>
+        <p className="mb-8 max-w-2xl text-base leading-relaxed text-gray-600">
+          The audit places you in one of six families &mdash; the named identity
+          that drives your loop &mdash; and pins your specific moment: the
+          exact wedge, window, and script the pattern runs on.
+        </p>
 
-        <button
-          onClick={() => setStep(1)}
-          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          Start the audit
-        </button>
+        {/* Six-family preview grid.
+            Non-interactive on purpose: this is "here's what you could be",
+            not "click to read". The audit determines which family is yours.
+            Visually subdued vs. the homepage version (smaller icon badge,
+            no hover lift, no link affordance, no prevalence chip). */}
+        <div className="mb-12">
+          <div className="mb-4 flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-sm bg-orange-500" />
+            <p className="text-xs font-bold uppercase tracking-[0.28em] text-orange-600">
+              The six families
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            {families.map((f) => {
+              const Icon = f.Icon
+              return (
+                <div
+                  key={f.slug}
+                  className="rounded-2xl border border-gray-200 bg-white/70 p-4"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      aria-hidden
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-50 ring-1 ring-orange-100"
+                    >
+                      <Icon className="h-4 w-4 text-orange-600" strokeWidth={2} />
+                    </span>
+                    <p className="text-sm font-black leading-tight tracking-[-0.01em] text-gray-900">
+                      {f.name}
+                    </p>
+                  </div>
+                  <p className="mt-2 text-xs leading-relaxed text-gray-600">
+                    {f.essence}
+                  </p>
+                  <p className="mt-2 font-serif text-xs italic leading-snug text-orange-700">
+                    {f.signature}
+                  </p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Example outputs.
+            Two miniature versions of the /a/[slug] share card so visitors
+            can pre-see the deliverable. "Example output" chip in the top
+            corner makes the synthetic status unambiguous. */}
+        <div className="mb-12">
+          <div className="mb-4 flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-sm bg-emerald-500" />
+            <p className="text-xs font-bold uppercase tracking-[0.28em] text-emerald-600">
+              What you get
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {[
+              {
+                familyName: 'The Deserver',
+                Icon: families.find((f) => f.slug === 'the-deserver')!.Icon,
+                signature: '"I deserve this."',
+                prevalence: '78% of you tell yourself this',
+              },
+              {
+                familyName: 'The Monday Resetter',
+                Icon: families.find((f) => f.slug === 'the-monday-resetter')!.Icon,
+                signature: '"I’ll start tomorrow."',
+                prevalence: '82% of you say "tomorrow" 3× a week',
+              },
+            ].map((ex) => {
+              const Icon = ex.Icon
+              return (
+                <div
+                  key={ex.familyName}
+                  className="relative rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-white p-5 shadow-[0_12px_30px_-12px_rgba(255,102,0,0.18)]"
+                >
+                  <span className="absolute right-3 top-3 rounded-full bg-white px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-orange-700 ring-1 ring-orange-200">
+                    Example output
+                  </span>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-600">
+                    You&rsquo;re
+                  </p>
+                  <p className="mt-1.5 flex items-center gap-2.5 text-xl font-black leading-tight tracking-[-0.01em] text-gray-900">
+                    <span
+                      aria-hidden
+                      className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-orange-100 text-orange-600 ring-1 ring-orange-200"
+                    >
+                      <Icon className="h-5 w-5" strokeWidth={2} />
+                    </span>
+                    <span>{ex.familyName}</span>
+                  </p>
+                  <p className="mt-3 font-serif text-sm italic text-orange-800">
+                    {ex.signature}
+                  </p>
+                  <p className="mt-2 text-xs text-gray-600">{ex.prevalence}.</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Start CTA. Single obvious next action. */}
+        <div>
+          <button
+            onClick={() => setStep(1)}
+            className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-7 py-3.5 text-base font-bold text-white shadow-[0_10px_28px_-6px_rgba(255,102,0,0.55),inset_0_1px_0_0_rgba(255,255,255,0.25)] transition-transform hover:scale-[1.02]"
+          >
+            Start the audit
+          </button>
+          <p className="mt-3 text-xs font-medium text-gray-500">
+            60 seconds &middot; 3 questions &middot; zero email required.
+          </p>
+        </div>
       </motion.div>
     )
   }
