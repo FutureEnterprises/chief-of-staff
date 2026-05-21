@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { PageTransition, StaggerList, StaggerItem, motion } from '@/components/motion/animations'
 import { toast } from '@/hooks/use-toast'
-import { updateUserSettings, updateGlp1Profile, updateNotificationPrefs } from '@/app/actions/settings'
+import { updateUserSettings, updateGlp1Profile, updateNotificationPrefs, updateDriveProfile } from '@/app/actions/settings'
 import { UserButton } from '@clerk/nextjs'
 import { PaywallDialog } from '@/components/paywall/paywall-dialog'
-import { Bell, Zap, User as UserIcon, Heart, Flame, Syringe, Download, Trash2, AlertTriangle } from 'lucide-react'
+import { Bell, Zap, User as UserIcon, Heart, Flame, Syringe, Download, Trash2, AlertTriangle, X } from 'lucide-react'
 import { useClerk } from '@clerk/nextjs'
 import { GiftCoylCard } from '@/components/referral/gift-card'
 
@@ -190,6 +190,14 @@ export function SettingsView({ user }: SettingsViewProps) {
             to disable, never marketing. */}
         <StaggerItem>
           <NotificationPrefsCard user={user} />
+        </StaggerItem>
+
+        {/* Drive profile + personalized replacement menu. Per
+            product-roadmap v3 §"Gap 2": the rescue AI uses this to
+            swap generic redirects for the user's pre-approved
+            replacements. Highest-leverage retention fix in the app. */}
+        <StaggerItem>
+          <DriveProfileCard user={user} />
         </StaggerItem>
 
         {/* Gift COYL — give-a-month-get-a-month referral. Placed after
@@ -563,6 +571,192 @@ function formatHour12(h: number): string {
   if (h < 12) return `${h} AM`
   if (h === 12) return '12 PM'
   return `${h - 12} PM`
+}
+
+/**
+ * <DriveProfileCard /> — the personalized replacement library.
+ *
+ * Per product-roadmap v3 §"Gap 2 — Replacement Problem":
+ * cue → routine → reward is biological. Generic "drink water + walk 5
+ * min" advice doesn't satisfy the cortisol+craving loop. The rescue
+ * AI prompts now read this profile and pick a specific
+ * pre-approved replacement instead of generic advice.
+ *
+ * UX: user picks a drive profile (COMFORT / STIMULATION / RELIEF) then
+ * curates 3–8 replacement items they actually believe in. The label is
+ * a free-text 80-char string; the drive tag binds it to a need
+ * profile; est_minutes helps the AI calibrate its suggestion to time
+ * available.
+ *
+ * Honest framing in the UI: "The trick to interrupting an autopilot
+ * script is having a SPECIFIC alternative your brain accepts. Build
+ * yours below. The rescue flow uses this list."
+ */
+function DriveProfileCard({ user }: { user: User }) {
+  const initialProfile = (user.driveProfile ?? null) as 'COMFORT' | 'STIMULATION' | 'RELIEF' | null
+  const initialMenu = (user.replacementMenu ?? []) as Array<{
+    label: string
+    drive: string
+    est_minutes?: number
+  }>
+
+  const [driveProfile, setDriveProfile] = useState<'COMFORT' | 'STIMULATION' | 'RELIEF' | null>(initialProfile)
+  const [menu, setMenu] = useState(initialMenu)
+  const [newLabel, setNewLabel] = useState('')
+  const [newDrive, setNewDrive] = useState<'COMFORT' | 'STIMULATION' | 'RELIEF'>(initialProfile ?? 'COMFORT')
+  const [newMinutes, setNewMinutes] = useState(5)
+  const [saving, setSaving] = useState(false)
+
+  async function save() {
+    setSaving(true)
+    try {
+      await updateDriveProfile({ driveProfile, replacementMenu: menu })
+      toast({ title: 'Saved', description: 'Your replacement menu is wired into rescue.' })
+    } catch {
+      toast({ title: 'Error', description: 'Failed to save replacement menu.', variant: 'destructive' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  function addItem() {
+    const clean = newLabel.trim()
+    if (!clean) return
+    if (menu.length >= 8) {
+      toast({ title: 'Maximum 8 items', description: 'Pick your top 8. More dilutes the AI signal.' })
+      return
+    }
+    setMenu([...menu, { label: clean.slice(0, 80), drive: newDrive, est_minutes: newMinutes }])
+    setNewLabel('')
+  }
+
+  function removeAt(i: number) {
+    setMenu(menu.filter((_, idx) => idx !== i))
+  }
+
+  const driveOptions: Array<{
+    value: 'COMFORT' | 'STIMULATION' | 'RELIEF'
+    label: string
+    description: string
+  }> = [
+    { value: 'COMFORT',     label: 'Comfort-seeker',     description: 'Warmth, safety, soothing.' },
+    { value: 'STIMULATION', label: 'Stimulation-seeker', description: 'Novelty, dopamine, connection.' },
+    { value: 'RELIEF',      label: 'Relief-seeker',      description: 'Boredom relief, mental break.' },
+  ]
+
+  return (
+    <GlassCard>
+      <div className="mb-4 flex items-center gap-2">
+        <Heart className="h-4 w-4 text-orange-500" />
+        <h3 className="text-base font-semibold">Replacement menu</h3>
+      </div>
+      <p className="mb-5 text-xs text-muted-foreground">
+        Generic "drink water + walk 5 min" doesn&rsquo;t satisfy the craving loop. Build your specific list of replacements you actually believe in. The rescue flow uses this menu &mdash; not generic advice.
+      </p>
+
+      <div>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          What is your autopilot usually after?
+        </p>
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+          {driveOptions.map((o) => {
+            const active = driveProfile === o.value
+            return (
+              <button
+                type="button"
+                key={o.value}
+                onClick={() => setDriveProfile(o.value)}
+                className={`rounded-xl border px-3 py-3 text-left transition-colors ${
+                  active
+                    ? 'border-orange-500/40 bg-orange-500/[0.06]'
+                    : 'border-white/10 bg-white/[0.02]'
+                }`}
+              >
+                <p className="text-sm font-semibold text-foreground">{o.label}</p>
+                <p className="mt-0.5 text-[11px] text-muted-foreground">{o.description}</p>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      <Separator className="my-5" />
+
+      <div>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          Your replacements ({menu.length}/8)
+        </p>
+        {menu.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-3 text-xs text-muted-foreground">
+            Add at least 3. The rescue AI will pick the one that fits the moment.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {menu.map((m, i) => (
+              <li
+                key={`${m.label}-${i}`}
+                className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2"
+              >
+                <span className="flex-1 text-sm text-foreground">{m.label}</span>
+                <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {m.drive} &middot; {m.est_minutes ?? 5}m
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeAt(i)}
+                  className="rounded-md p-1 text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  aria-label="Remove"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-[1fr_140px_90px_auto]">
+          <Input
+            value={newLabel}
+            onChange={(e) => setNewLabel(e.target.value)}
+            placeholder='e.g. "Make a warm drink"'
+            maxLength={80}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                addItem()
+              }
+            }}
+          />
+          <select
+            value={newDrive}
+            onChange={(e) => setNewDrive(e.target.value as 'COMFORT' | 'STIMULATION' | 'RELIEF')}
+            className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white focus:border-orange-500/40 focus:outline-none"
+          >
+            <option value="COMFORT">Comfort</option>
+            <option value="STIMULATION">Stimulation</option>
+            <option value="RELIEF">Relief</option>
+          </select>
+          <Input
+            type="number"
+            min={1}
+            max={60}
+            value={newMinutes}
+            onChange={(e) => setNewMinutes(parseInt(e.target.value || '5', 10) || 5)}
+            className="text-center"
+          />
+          <Button type="button" variant="glass" onClick={addItem}>
+            Add
+          </Button>
+        </div>
+      </div>
+
+      <div className="mt-5 flex justify-end">
+        <Button variant="brand" onClick={save} disabled={saving}>
+          {saving ? 'Saving...' : 'Save replacement menu'}
+        </Button>
+      </div>
+    </GlassCard>
+  )
 }
 
 /**

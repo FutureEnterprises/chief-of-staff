@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>COYL — Settings</title>
+    <style>
+      :root {
+        --bg: #08090a;
+        --surface: #0f1011;
+        --border: #23252a;
+        --text: #f7f8f8;
+        --muted: #8a8f98;
+        --accent: #ff6600;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 14px -apple-system, system-ui, sans-serif;
+        padding: 40px 24px;
+        min-height: 100vh;
+      }
+      .container { max-width: 540px; margin: 0 auto; }
+      h1 { font-size: 24px; font-weight: 900; letter-spacing: -0.02em; margin: 0 0 24px; }
+      h2 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: var(--accent); margin: 32px 0 12px; }
+      ul { list-style: none; padding: 0; margin: 0; }
+      li {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 10px 14px; background: var(--surface); border: 1px solid var(--border);
+        border-radius: 8px; margin-bottom: 6px; font-size: 13px;
+      }
+      button {
+        font: inherit; color: var(--muted); background: transparent; border: 0; cursor: pointer;
+        padding: 4px 8px; border-radius: 9999px;
+      }
+      button:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+      .add-row {
+        display: flex; gap: 8px; margin-top: 8px;
+      }
+      input {
+        flex: 1; padding: 10px 14px; background: var(--surface);
+        border: 1px solid var(--border); border-radius: 8px;
+        color: var(--text); font: inherit;
+      }
+      .add-btn {
+        padding: 10px 18px; background: linear-gradient(to right, var(--accent), #ff3d00);
+        color: white; font-weight: 700; border-radius: 9999px;
+      }
+      .threshold-row {
+        display: flex; gap: 8px; align-items: center;
+      }
+      .threshold-row input { max-width: 80px; text-align: center; }
+      .muted { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>COYL Extension Settings</h1>
+
+      <h2>Watchlist</h2>
+      <p class="muted">Domains that trigger the interrupt overlay when you open them frequently. Subdomains match automatically (e.g. <code>m.reddit.com</code> matches <code>reddit.com</code>).</p>
+      <ul id="watchlist"></ul>
+      <div class="add-row">
+        <input id="new-domain" placeholder="reddit.com" />
+        <button class="add-btn" id="add-domain">Add</button>
+      </div>
+
+      <h2>Threshold</h2>
+      <p class="muted">How many times you have to open a watched domain within the window before the interrupt fires.</p>
+      <div class="threshold-row">
+        <input id="threshold-count" type="number" min="1" max="50" />
+        <span>opens within</span>
+        <input id="threshold-window" type="number" min="1" max="60" />
+        <span>minutes</span>
+      </div>
+
+      <h2>Muted</h2>
+      <p class="muted">Domains you've snoozed. Expire automatically except for "forever" mutes.</p>
+      <ul id="muted"></ul>
+    </div>
+
+    <script src="options.js"></script>
+  </body>
+</html>

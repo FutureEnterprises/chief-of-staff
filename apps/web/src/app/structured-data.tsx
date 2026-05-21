@@ -23,7 +23,7 @@ export function OrganizationSchema() {
     url: 'https://coyl.ai',
     logo: 'https://coyl.ai/favicon.svg',
     description:
-      "Real-time autopilot interruption for behavior change. COYL catches the 9 PM kitchen, the doom-scroll, the post-GLP-1 regain, the workplace tab-switch — at the exact moment before you fold.",
+      "COYL is a decision-interrupt layer for human behavior — a real-time substrate that fires in the 3-second window between trigger and action. Late-night eating, the 9 PM kitchen, doom-scrolling, post-GLP-1 regain, workplace procrastination — caught before the script runs, not journaled after.",
     foundingDate: '2026',
     contactPoint: [
       {

@@ -122,3 +122,47 @@ export async function updateNotificationPrefs(data: {
 
   revalidatePath('/settings')
 }
+
+/**
+ * Update the user's drive profile + personalized replacement menu.
+ *
+ * Per product-roadmap v3 §"Gap 2 — Replacement Problem": the rescue
+ * AI uses these to swap generic "drink water + walk 5 min" advice
+ * for a specific replacement the user pre-approved. This is the
+ * highest-leverage retention fix available.
+ *
+ * The menu shape is freeform JSON to avoid migration when we add
+ * fields. Validation is bounded but loose — the AI prompt handles
+ * weird inputs gracefully.
+ */
+export async function updateDriveProfile(data: {
+  driveProfile?: 'COMFORT' | 'STIMULATION' | 'RELIEF' | null
+  replacementMenu?: Array<{ label: string; drive: string; est_minutes?: number }>
+}) {
+  const user = await requireDbUser()
+
+  const cleanMenu = Array.isArray(data.replacementMenu)
+    ? data.replacementMenu
+        .slice(0, 8) // cap at 8 items so the prompt stays scannable
+        .map((m) => ({
+          label: String(m.label ?? '').slice(0, 80),
+          drive: ['COMFORT', 'STIMULATION', 'RELIEF'].includes(m.drive) ? m.drive : 'COMFORT',
+          est_minutes:
+            typeof m.est_minutes === 'number' && m.est_minutes >= 1 && m.est_minutes <= 60
+              ? Math.round(m.est_minutes)
+              : 5,
+        }))
+        .filter((m) => m.label.length > 0)
+    : undefined
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      ...(data.driveProfile !== undefined ? { driveProfile: data.driveProfile } : {}),
+      ...(cleanMenu !== undefined ? { replacementMenu: cleanMenu } : {}),
+    },
+  })
+
+  revalidatePath('/settings')
+  revalidatePath('/rescue')
+}

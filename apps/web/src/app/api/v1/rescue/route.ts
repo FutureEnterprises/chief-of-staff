@@ -27,6 +27,7 @@ export async function POST(req: Request) {
       id: true, primaryWedge: true, excuseStyle: true, toneMode: true,
       createdAt: true, lastActiveAt: true, currentStreak: true,
       onboardingCompleted: true,
+      driveProfile: true, replacementMenu: true,
     },
   })
   if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
@@ -107,6 +108,8 @@ export async function POST(req: Request) {
     .replace('{WEDGE}', user.primaryWedge ?? 'PRODUCTIVITY')
     .replace('{EXCUSE_STYLE}', user.excuseStyle ?? 'unknown')
     .replace('{TONE_MODE}', tone)
+    .replace('{DRIVE_PROFILE}', user.driveProfile ?? 'unspecified')
+    .replace('{REPLACEMENT_MENU}', formatReplacementMenu(user.replacementMenu))
 
   const tonePrompt =
     SYSTEM_PROMPTS[`tone${toneSuffix(tone)}` as keyof typeof SYSTEM_PROMPTS] ?? ''
@@ -137,4 +140,33 @@ function toneSuffix(mode: string | null | undefined) {
     case 'BEAST': return 'Beast'
     default: return 'Mentor'
   }
+}
+
+/**
+ * Format the user's personalized replacement menu for the rescue
+ * prompt. Per product-roadmap v3 §"Gap 2 — Replacement Problem":
+ * the rescue AI suggests one item from this list instead of a
+ * generic "drink water + walk 5 min" redirect.
+ *
+ * Shape on disk (User.replacementMenu Json?):
+ *   [{ label: string, drive: 'COMFORT' | 'STIMULATION' | 'RELIEF',
+ *      est_minutes: number }]
+ *
+ * Returns the bulleted markdown the prompt expects. When the user has
+ * no replacement menu (didn't complete that onboarding step), returns
+ * a sentinel string so the prompt's fallback branch triggers.
+ */
+function formatReplacementMenu(menu: unknown): string {
+  if (!Array.isArray(menu) || menu.length === 0) {
+    return '(no personal menu — fall back to generic 10-min physical action)'
+  }
+  return menu
+    .filter((item): item is { label: string; drive: string; est_minutes?: number } =>
+      typeof item === 'object' && item !== null && typeof (item as { label?: unknown }).label === 'string',
+    )
+    .map((item) => {
+      const mins = typeof item.est_minutes === 'number' ? `${item.est_minutes} min` : ''
+      return `  - "${item.label}" — satisfies ${item.drive}${mins ? ' · ' + mins : ''}`
+    })
+    .join('\n')
 }

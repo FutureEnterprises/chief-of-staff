@@ -98,6 +98,22 @@ model User {
   // starts paying). Credits are redeemed at next Stripe checkout as a
   // 100%-off one-cycle coupon; decremented atomically when applied.
   referralCreditMonths  Int       @default(0)
+  // Drive profile + personalized replacement menu. Per product-roadmap
+  // v3 §"Gap 2 — Replacement Problem", generic "drink water + walk 5
+  // min" doesn't satisfy the cortisol+craving loop. The user picks a
+  // drive profile during onboarding (COMFORT, STIMULATION, or RELIEF)
+  // and builds a 3–5-item replacement menu they actually believe in.
+  // The rescue AI prompt injects this menu so suggestions land
+  // personalized, not generic.
+  //
+  // Shape of replacementMenu:
+  //   [
+  //     { label: "Make a warm drink", drive: "COMFORT", est_minutes: 4 },
+  //     { label: "Voice memo to Sam", drive: "STIMULATION", est_minutes: 2 },
+  //     { label: "3-min mobile chess", drive: "RELIEF", est_minutes: 3 }
+  //   ]
+  driveProfile          DriveProfile?
+  replacementMenu       Json?
   // Stripe Connect for stakes
   stripeConnectId       String?
   // Integrations
@@ -155,6 +171,19 @@ model Excuse {
   @@map("excuses")
   @@index([userId, category])
   @@index([userId, createdAt])
+}
+
+/**
+ * Drive profile — the underlying need the autopilot script is trying
+ * to satisfy. Maps to a personalized replacement menu (User.replacementMenu).
+ * Per product-roadmap v3 §"Replacement Problem": cue → routine → reward
+ * is biological; you can't remove the routine without replacing the
+ * reward. Three profiles cover ~90% of cases.
+ */
+enum DriveProfile {
+  COMFORT       // warmth, soothing, safety-seeking
+  STIMULATION   // novelty, dopamine, distraction-seeking
+  RELIEF        // boredom relief, mental break, escape
 }
 
 enum ExcuseCategory {

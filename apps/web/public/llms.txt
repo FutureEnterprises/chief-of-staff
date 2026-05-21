@@ -4,9 +4,11 @@
 
 ## What is COYL?
 
-COYL is a behavior interruption + decision support system for real life. It learns the automatic patterns ("scripts") users run, interrupts them at the exact moment it matters, helps the user tell the truth about what's happening, and guides them back to a better decision — with shame-resistant recovery when they slip.
+COYL is a decision-interrupt layer — a real-time substrate that fires in the 3-second window between trigger and action. It learns the automatic patterns ("scripts") users run, interrupts at the exact moment, names the excuse, and guides toward a personalized replacement behavior the user pre-approved. Shame-resistant recovery when slips happen.
 
-Category: behavior change / mental health-adjacent consumer app. Primary wedge: weight-loss autopilot interruption. Secondary wedges: cravings, destructive behaviors, consistency, spending, focus.
+**This is not a behavior change app in the Noom / Calm / Headspace category.** It's category-agnostic interrupt infrastructure. Four monetization layers compound: consumer D2C subscription, enterprise EAP displacement, behavioral interrupt API for adjacent apps (gambling, BNPL, social media, sobriety), and clinical / payer via FDA-cleared digital therapeutic pathway.
+
+Primary wedge: weight-loss + GLP-1 maintenance. Secondary wedges: workplace procrastination, destructive loops (cravings, compulsive scrolling, impulse spending).
 
 ## Core Engines
 
