@@ -238,8 +238,13 @@ export function AuditView() {
             <p className="text-xs font-mono uppercase tracking-[0.28em] text-orange-600">
               You&rsquo;re
             </p>
-            <p className="mt-2 flex flex-wrap items-baseline gap-3 text-4xl font-black leading-tight text-gray-900 md:text-5xl">
-              <span aria-hidden>{archetype.family.emoji}</span>
+            <p className="mt-2 flex flex-wrap items-center gap-4 text-4xl font-black leading-tight text-gray-900 md:text-5xl">
+              <span
+                aria-hidden
+                className="inline-flex h-14 w-14 flex-none items-center justify-center rounded-2xl bg-orange-100 text-orange-600 ring-1 ring-orange-200 md:h-16 md:w-16"
+              >
+                <archetype.family.Icon className="h-8 w-8 md:h-9 md:w-9" strokeWidth={2} />
+              </span>
               <span>{archetype.family.name}</span>
             </p>
             <p className="mt-3 max-w-xl text-base leading-relaxed text-gray-700">
@@ -256,7 +261,12 @@ export function AuditView() {
                 Your specific moment
               </p>
               <p className="mt-1 flex items-center gap-2 text-base font-bold text-gray-900">
-                <span aria-hidden>{archetype.specific.emoji}</span>
+                <span
+                  aria-hidden
+                  className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-orange-50 text-orange-600 ring-1 ring-orange-100"
+                >
+                  <archetype.specific.Icon className="h-5 w-5" strokeWidth={2} />
+                </span>
                 <span>{archetype.specific.name}</span>
               </p>
             </div>
@@ -367,7 +377,7 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
   const [copied, setCopied] = useState(false)
 
   const shareUrl = buildShareUrl(archetype)
-  const shareText = `${archetype.family.emoji} I'm ${archetype.family.name}. ${archetype.family.signature} Find yours:`
+  const shareText = `I'm ${archetype.family.name}. ${archetype.family.signature} Find yours:`
 
   async function handleShare() {
     if (typeof navigator !== 'undefined' && 'share' in navigator) {

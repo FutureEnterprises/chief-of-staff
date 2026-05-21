@@ -15,8 +15,8 @@ import {
  * /a/[slug] — public specific-result share page.
  *
  * The viral atom. Every shared audit result points here:
- *   /a/weight-latenight-reward → 🎁 The Deserver
- *                                  (specifically, 🌙 Night Fridge Saboteur)
+ *   /a/weight-latenight-reward → The Deserver
+ *                                  (specifically, Night Fridge Saboteur)
  *
  * Two-tier rendering per the May 2026 virality dispatch:
  *   FAMILY headlines (the meme — "I'm a Deserver" travels)
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!parsed) return { title: 'Archetype not found · COYL' }
 
   const a = buildArchetype(parsed.wedge, parsed.window, parsed.script)
-  const ogTitle = encodeURIComponent(`${a.family.emoji} ${a.family.name}`)
+  const ogTitle = encodeURIComponent(a.family.name)
   const ogKicker = encodeURIComponent('My COYL autopilot')
 
   return {
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alternates: { canonical: `/a/${slug}` },
     openGraph: {
       type: 'article',
-      title: `${a.family.emoji} I'm ${a.family.name}`,
+      title: `I'm ${a.family.name}`,
       description: `${a.family.essence} Find yours with the COYL autopilot audit.`,
       url: `https://coyl.ai/a/${slug}`,
       siteName: 'COYL',
@@ -61,13 +61,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
           url: `/api/og?title=${ogTitle}&kicker=${ogKicker}`,
           width: 1200,
           height: 630,
-          alt: `${a.family.emoji} ${a.family.name} — my COYL autopilot`,
+          alt: `${a.family.name} — my COYL autopilot`,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${a.family.emoji} I'm ${a.family.name}`,
+      title: `I'm ${a.family.name}`,
       description: `${a.family.essence} Find yours.`,
       images: [`/api/og?title=${ogTitle}&kicker=${ogKicker}`],
     },
@@ -98,8 +98,13 @@ export default async function ArchetypeSharePage({ params }: PageProps) {
           </div>
 
           <p className="font-mono text-sm uppercase tracking-widest text-gray-500">I&rsquo;m</p>
-          <h1 className="mt-3 flex flex-wrap items-baseline gap-3 text-5xl font-black leading-[1.02] text-gray-900 md:text-7xl">
-            <span aria-hidden>{a.family.emoji}</span>
+          <h1 className="mt-3 flex flex-wrap items-center gap-5 text-5xl font-black leading-[1.02] text-gray-900 md:text-7xl">
+            <span
+              aria-hidden
+              className="inline-flex h-20 w-20 flex-none items-center justify-center rounded-3xl bg-orange-100 text-orange-600 ring-1 ring-orange-200 md:h-24 md:w-24"
+            >
+              <a.family.Icon className="h-12 w-12 md:h-14 md:w-14" strokeWidth={2} />
+            </span>
             <span>{a.family.name}</span>
           </h1>
 
@@ -132,7 +137,12 @@ export default async function ArchetypeSharePage({ params }: PageProps) {
             Specifically, your moment looks like
           </p>
           <p className="mt-2 flex items-center gap-3 text-2xl font-black text-gray-900 md:text-3xl">
-            <span aria-hidden>{a.specific.emoji}</span>
+            <span
+              aria-hidden
+              className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-orange-50 text-orange-600 ring-1 ring-orange-100"
+            >
+              <a.specific.Icon className="h-6 w-6" strokeWidth={2} />
+            </span>
             <span>{a.specific.name}</span>
           </p>
 

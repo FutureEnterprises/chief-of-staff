@@ -16,7 +16,7 @@
  *              that a generic family name can't.
  *
  * The share card leads with the FAMILY and uses the SPECIFIC as
- * context: "I'm a Deserver — specifically, a 🌙 Night Fridge Saboteur."
+ * context: "I'm a Deserver — specifically, Night Fridge Saboteur."
  *
  * URL strategy:
  *   /a/{wedge}-{window}-{script}   — specific permalink (144 stable URLs)
@@ -24,7 +24,43 @@
  *
  * Both are stateless. The slug encodes the archetype fully so view
  * rendering is pure server-side computation with no DB write.
+ *
+ * ICONOGRAPHY: each family + specific carries a `LucideIcon` (Lucide
+ * React SVG component). Render-sites pull the icon and size/colour it
+ * for context. This replaced an emoji-string system whose rendering
+ * was inconsistent across OS vendors (Apple's gift box ≠ Google's ≠
+ * Windows's) and could not take brand colour or scale crisply.
  */
+
+import {
+  Moon,
+  CalendarClock,
+  Gift,
+  Layers,
+  Repeat,
+  Handshake,
+  Cookie,
+  Coffee,
+  Inbox,
+  EyeOff,
+  DoorOpen,
+  Hourglass,
+  Smartphone,
+  Armchair,
+  Loader,
+  ShoppingCart,
+  CreditCard,
+  MoonStar,
+  RotateCcw,
+  Cloud,
+  Wine,
+  Repeat2,
+  CalendarDays,
+  ArrowDownToLine,
+  Flame,
+  Target,
+  type LucideIcon,
+} from 'lucide-react'
 
 export type WedgeId = 'weight' | 'work' | 'destructive' | 'consistency' | 'spending' | 'focus'
 export type WindowId = 'morning' | 'afternoon' | 'afterwork' | 'latenight'
@@ -69,7 +105,7 @@ export const FAMILY_IDS: readonly ArchetypeFamily[] = [
 type FamilyDef = {
   slug: ArchetypeFamily
   name: string
-  emoji: string
+  Icon: LucideIcon
   essence: string
   description: string
   signature: string
@@ -80,7 +116,7 @@ const FAMILIES: Record<ArchetypeFamily, FamilyDef> = {
   'the-9pm-negotiator': {
     slug: 'the-9pm-negotiator',
     name: 'The 9 PM Negotiator',
-    emoji: '🌙',
+    Icon: Moon,
     essence: 'You bargain with yourself the moment your willpower drops.',
     description:
       'You know what you want long-term. You also know how to argue your way around it after dark. The voice in your head sounds reasonable — that\'s the trap. The negotiation always ends the same way.',
@@ -90,7 +126,7 @@ const FAMILIES: Record<ArchetypeFamily, FamilyDef> = {
   'the-monday-resetter': {
     slug: 'the-monday-resetter',
     name: 'The Monday Resetter',
-    emoji: '📅',
+    Icon: CalendarClock,
     essence: 'Tomorrow is the script. Today is the break.',
     description:
       'You\'re fluent in restart-language. Tomorrow, Monday, next month, the first of the year — your plans always begin one calendar unit ahead. The reset feels like progress; it\'s the opposite.',
@@ -100,7 +136,7 @@ const FAMILIES: Record<ArchetypeFamily, FamilyDef> = {
   'the-deserver': {
     slug: 'the-deserver',
     name: 'The Deserver',
-    emoji: '🎁',
+    Icon: Gift,
     essence: 'Reward language is your favourite trapdoor.',
     description:
       'You give yourself permission like a manager handing out comp time. "I worked hard." "I had a tough day." "I earned this." All true — and all the script you run before the same choice you already know you\'ll regret.',
@@ -110,7 +146,7 @@ const FAMILIES: Record<ArchetypeFamily, FamilyDef> = {
   'the-one-more-tabber': {
     slug: 'the-one-more-tabber',
     name: 'The One-More-Tabber',
-    emoji: '📑',
+    Icon: Layers,
     essence: 'Focus dies one tab, one scroll, one "quick check" at a time.',
     description:
       'You don\'t crash out — you drift out. The first tab is innocent. The seventh tab is a problem. The fourteenth tab is the afternoon. The pattern hides because no single click feels meaningful; the meaning is in the sequence.',
@@ -120,7 +156,7 @@ const FAMILIES: Record<ArchetypeFamily, FamilyDef> = {
   'the-spiral-extender': {
     slug: 'the-spiral-extender',
     name: 'The Spiral Extender',
-    emoji: '🔂',
+    Icon: Repeat,
     essence: 'One slip becomes the whole night.',
     description:
       'You don\'t fold once. You fold once, then use the fold as the reason to fold for the rest of the day. The "I already messed up" sentence is the actual machinery — louder, faster, and more dangerous than the original slip.',
@@ -130,7 +166,7 @@ const FAMILIES: Record<ArchetypeFamily, FamilyDef> = {
   'the-capitulator': {
     slug: 'the-capitulator',
     name: 'The Capitulator',
-    emoji: '🤝',
+    Icon: Handshake,
     essence: 'Other people\'s presence is your override switch.',
     description:
       'You can hold the line alone all week. The moment someone else is in the room, the line moves. It isn\'t weakness — it\'s a separate psychology: social context dissolves the rule that made sense in isolation.',
@@ -143,31 +179,33 @@ const FAMILIES: Record<ArchetypeFamily, FamilyDef> = {
  * SPECIFIC ARCHETYPES — the wedge × window texture
  * ─────────────────────────────────────────────────────────────────── */
 
-const SPECIFIC_TABLE: Record<string, { name: string; emoji: string }> = {
-  weight_latenight: { name: 'Night Fridge Saboteur', emoji: '🌙' },
-  weight_afterwork: { name: 'Post-Work Snacker', emoji: '🍿' },
-  weight_afternoon: { name: 'Afternoon Crash Eater', emoji: '🍪' },
-  weight_morning: { name: 'Stress Breakfast Skipper', emoji: '☕' },
-  work_morning: { name: 'Inbox Avoider', emoji: '📥' },
-  work_afternoon: { name: 'Two-PM Drifter', emoji: '🫥' },
-  work_afterwork: { name: 'End-of-Day Bailer', emoji: '🚪' },
-  work_latenight: { name: 'Promise-Tomorrow Procrastinator', emoji: '⏳' },
-  focus_morning: { name: 'Morning Tab Hopper', emoji: '📑' },
-  focus_afternoon: { name: 'Afternoon Doom-Scroller', emoji: '📱' },
-  focus_afterwork: { name: 'Evening Couch Vortex', emoji: '🛋️' },
-  focus_latenight: { name: 'Two-AM Wikipedia Spiral', emoji: '🌀' },
-  spending_morning: { name: 'Morning Cart Filler', emoji: '🛒' },
-  spending_afternoon: { name: 'Boredom Buyer', emoji: '💳' },
-  spending_afterwork: { name: 'Reward-Spend Justifier', emoji: '🎁' },
-  spending_latenight: { name: 'Late-Night Impulse Buyer', emoji: '🌃' },
-  destructive_morning: { name: 'Morning Reset Resetter', emoji: '🔁' },
-  destructive_afternoon: { name: 'Mid-Day Coper', emoji: '🌫️' },
-  destructive_afterwork: { name: 'Post-Work Numbing Loop', emoji: '🍷' },
-  destructive_latenight: { name: 'Late-Night Same-Mistake', emoji: '🔂' },
-  consistency_morning: { name: 'Monday Restart Champion', emoji: '📅' },
-  consistency_afternoon: { name: 'Afternoon Quit Artist', emoji: '🪂' },
-  consistency_afterwork: { name: 'Evening Streak-Breaker', emoji: '🔥' },
-  consistency_latenight: { name: 'Pre-Midnight Cave-In', emoji: '🌃' },
+type SpecificDef = { name: string; Icon: LucideIcon }
+
+const SPECIFIC_TABLE: Record<string, SpecificDef> = {
+  weight_latenight: { name: 'Night Fridge Saboteur', Icon: Moon },
+  weight_afterwork: { name: 'Post-Work Snacker', Icon: Cookie },
+  weight_afternoon: { name: 'Afternoon Crash Eater', Icon: Cookie },
+  weight_morning: { name: 'Stress Breakfast Skipper', Icon: Coffee },
+  work_morning: { name: 'Inbox Avoider', Icon: Inbox },
+  work_afternoon: { name: 'Two-PM Drifter', Icon: EyeOff },
+  work_afterwork: { name: 'End-of-Day Bailer', Icon: DoorOpen },
+  work_latenight: { name: 'Promise-Tomorrow Procrastinator', Icon: Hourglass },
+  focus_morning: { name: 'Morning Tab Hopper', Icon: Layers },
+  focus_afternoon: { name: 'Afternoon Doom-Scroller', Icon: Smartphone },
+  focus_afterwork: { name: 'Evening Couch Vortex', Icon: Armchair },
+  focus_latenight: { name: 'Two-AM Wikipedia Spiral', Icon: Loader },
+  spending_morning: { name: 'Morning Cart Filler', Icon: ShoppingCart },
+  spending_afternoon: { name: 'Boredom Buyer', Icon: CreditCard },
+  spending_afterwork: { name: 'Reward-Spend Justifier', Icon: Gift },
+  spending_latenight: { name: 'Late-Night Impulse Buyer', Icon: MoonStar },
+  destructive_morning: { name: 'Morning Reset Resetter', Icon: RotateCcw },
+  destructive_afternoon: { name: 'Mid-Day Coper', Icon: Cloud },
+  destructive_afterwork: { name: 'Post-Work Numbing Loop', Icon: Wine },
+  destructive_latenight: { name: 'Late-Night Same-Mistake', Icon: Repeat2 },
+  consistency_morning: { name: 'Monday Restart Champion', Icon: CalendarDays },
+  consistency_afternoon: { name: 'Afternoon Quit Artist', Icon: ArrowDownToLine },
+  consistency_afterwork: { name: 'Evening Streak-Breaker', Icon: Flame },
+  consistency_latenight: { name: 'Pre-Midnight Cave-In', Icon: MoonStar },
 }
 
 /* ───────────────────────────────────────────────────────────────────
@@ -210,10 +248,7 @@ export type Archetype = {
   family: FamilyDef
 
   // Specific texture (the wedge × window detail)
-  specific: {
-    name: string
-    emoji: string
-  }
+  specific: SpecificDef
 
   // Input echo
   wedge: WedgeId
@@ -225,7 +260,7 @@ export function buildArchetype(wedge: WedgeId, window: WindowId, script: ScriptI
   const familySlug = resolveFamily(wedge, window, script)
   const family = FAMILIES[familySlug]
   const key = `${wedge}_${window}`
-  const specific = SPECIFIC_TABLE[key] ?? { name: 'Autopilot Operator', emoji: '🎯' }
+  const specific: SpecificDef = SPECIFIC_TABLE[key] ?? { name: 'Autopilot Operator', Icon: Target }
 
   return {
     family,

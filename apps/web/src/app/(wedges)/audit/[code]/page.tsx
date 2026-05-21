@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!family) return { title: 'Archetype not found · COYL' }
 
   const f = getFamily(family)
-  const ogTitle = encodeURIComponent(`${f.emoji} ${f.name}`)
+  const ogTitle = encodeURIComponent(f.name)
   const ogKicker = encodeURIComponent('A COYL autopilot family')
 
   return {
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alternates: { canonical: `/audit/${family}` },
     openGraph: {
       type: 'article',
-      title: `${f.emoji} ${f.name}`,
+      title: f.name,
       description: f.essence,
       url: `https://coyl.ai/audit/${family}`,
       siteName: 'COYL',
@@ -62,13 +62,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
           url: `/api/og?title=${ogTitle}&kicker=${ogKicker}`,
           width: 1200,
           height: 630,
-          alt: `${f.emoji} ${f.name} — COYL autopilot family`,
+          alt: `${f.name} — COYL autopilot family`,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${f.emoji} ${f.name}`,
+      title: f.name,
       description: f.essence,
       images: [`/api/og?title=${ogTitle}&kicker=${ogKicker}`],
     },
@@ -104,8 +104,13 @@ export default async function FamilyExplainerPage({ params }: PageProps) {
             </span>
           </div>
 
-          <h1 className="flex flex-wrap items-baseline gap-4 text-5xl font-black leading-[1.02] text-gray-900 md:text-7xl">
-            <span aria-hidden>{f.emoji}</span>
+          <h1 className="flex flex-wrap items-center gap-5 text-5xl font-black leading-[1.02] text-gray-900 md:text-7xl">
+            <span
+              aria-hidden
+              className="inline-flex h-20 w-20 flex-none items-center justify-center rounded-3xl bg-orange-100 text-orange-600 ring-1 ring-orange-200 md:h-24 md:w-24"
+            >
+              <f.Icon className="h-14 w-14 md:h-16 md:w-16" strokeWidth={2} />
+            </span>
             <span>{f.name}</span>
           </h1>
 
@@ -188,8 +193,13 @@ export default async function FamilyExplainerPage({ params }: PageProps) {
                 href={`/audit/${other.slug}`}
                 className="group rounded-2xl border border-gray-200 bg-white p-5 transition-colors hover:border-orange-300 hover:bg-orange-50"
               >
-                <p className="flex items-center gap-2 text-base font-bold text-gray-900 group-hover:text-orange-700">
-                  <span aria-hidden>{other.emoji}</span>
+                <p className="flex items-center gap-3 text-base font-bold text-gray-900 group-hover:text-orange-700">
+                  <span
+                    aria-hidden
+                    className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-orange-50 text-orange-600 ring-1 ring-orange-100 group-hover:bg-orange-100"
+                  >
+                    <other.Icon className="h-5 w-5" strokeWidth={2} />
+                  </span>
                   <span>{other.name}</span>
                 </p>
                 <p className="mt-1 text-sm leading-snug text-gray-600">
