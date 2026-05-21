@@ -13,6 +13,7 @@ import { UserButton } from '@clerk/nextjs'
 import { PaywallDialog } from '@/components/paywall/paywall-dialog'
 import { Bell, Zap, User as UserIcon, Heart, Flame, Syringe, Download, Trash2, AlertTriangle } from 'lucide-react'
 import { useClerk } from '@clerk/nextjs'
+import { GiftCoylCard } from '@/components/referral/gift-card'
 
 interface SettingsViewProps {
   user: User
@@ -189,6 +190,14 @@ export function SettingsView({ user }: SettingsViewProps) {
             to disable, never marketing. */}
         <StaggerItem>
           <NotificationPrefsCard user={user} />
+        </StaggerItem>
+
+        {/* Gift COYL — give-a-month-get-a-month referral. Placed after
+            notification prefs (consent-shaped surface) and before the
+            GLP-1 card (profile data) so the share moment lands near
+            the value-prop moment in scroll order. */}
+        <StaggerItem>
+          <GiftCoylCard />
         </StaggerItem>
 
         {/* GLP-1 companion profile — feeds the day-3 interrupt cron and

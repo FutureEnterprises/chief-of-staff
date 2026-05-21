@@ -1,48 +1,29 @@
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
-import { randomBytes } from 'crypto'
+import { getReferralStats } from '@/lib/referrals'
 
-function makeCode(): string {
-  return randomBytes(4).toString('hex').toUpperCase()
-}
-
-async function ensureReferralCode(userId: string): Promise<string> {
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { referralCode: true } })
-  if (user?.referralCode) return user.referralCode
-
-  // Retry if collision
-  for (let i = 0; i < 5; i++) {
-    const code = makeCode()
-    try {
-      await prisma.user.update({ where: { id: userId }, data: { referralCode: code } })
-      return code
-    } catch {
-      // collision, retry
-    }
-  }
-  throw new Error('Failed to generate referral code')
-}
-
+/**
+ * GET /api/v1/referrals
+ *
+ * Returns the authenticated user's referral code, share URL, and stats.
+ * Uses the shared lib/referrals helper so the Crockford-code format and
+ * the /r/[code] share URL stay aligned with the cookie-based redirect
+ * route. Older hex-format codes from the previous implementation are
+ * preserved on existing users — the redirect handler accepts any code
+ * string.
+ */
 export async function GET() {
   const { userId: clerkId } = await auth()
   if (!clerkId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
-  const user = await prisma.user.findUnique({ where: { clerkId }, select: { id: true, referralCode: true } })
+
+  const user = await prisma.user.findUnique({
+    where: { clerkId },
+    select: { id: true },
+  })
   if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
 
-  const code = user.referralCode ?? (await ensureReferralCode(user.id))
-
-  const [made, converted] = await Promise.all([
-    prisma.referral.count({ where: { referrerId: user.id } }),
-    prisma.referral.count({ where: { referrerId: user.id, converted: true } }),
-  ])
-
-  const shareUrl = `https://coyl.ai/?ref=${code}`
-
-  return Response.json({
-    code,
-    shareUrl,
-    stats: { sent: made, converted, creditsEarnedCents: converted * 1000 },
-  })
+  const stats = await getReferralStats(user.id)
+  return Response.json(stats)
 }
 
 /**

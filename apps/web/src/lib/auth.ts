@@ -1,6 +1,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
 import type { User } from '@repo/database'
+import { claimReferralFromCookie } from '@/lib/referrals'
 
 export async function getCurrentDbUser(): Promise<User | null> {
   const { userId } = await auth()
@@ -32,7 +33,7 @@ export async function ensureUserExists(): Promise<User> {
   const avatarUrl = clerkUser.imageUrl ?? null
 
   try {
-    return await prisma.user.upsert({
+    const user = await prisma.user.upsert({
       where: { clerkId: clerkUser.id },
       update: { email, name, avatarUrl },
       create: {
@@ -42,6 +43,19 @@ export async function ensureUserExists(): Promise<User> {
         avatarUrl,
       },
     })
+
+    // Attempt to attribute this signup to a referrer if there's a
+    // pending `coyl_ref` cookie. Idempotent — re-running on an
+    // already-attributed user is a no-op. Failures here MUST NOT
+    // break signup, so we swallow and log only.
+    await claimReferralFromCookie(user.id, user.email).catch((err) => {
+      console.warn('claimReferralFromCookie failed (non-fatal)', {
+        userId: user.id,
+        err: err instanceof Error ? err.message : 'unknown',
+      })
+    })
+
+    return user
   } catch (err) {
     const e = err as {
       message?: string

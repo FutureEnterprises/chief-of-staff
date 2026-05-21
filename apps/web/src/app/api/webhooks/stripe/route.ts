@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import Stripe from 'stripe'
+import { markReferralConverted } from '@/lib/referrals'
 
 type PaidTier = 'CORE' | 'PLUS' | 'PREMIUM'
 
@@ -163,33 +164,19 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
     }),
   ])
 
-  // Referral conversion — credit both sides once, only on real upgrade (not trial)
+  // Referral conversion — flip the Referral row to converted, grant +1
+  // month credit to BOTH referrer and referred (redeemed at next Stripe
+  // checkout as a 100%-off coupon — see lib/referrals.markReferralConverted
+  // and apps/web/src/app/api/stripe/checkout/route.ts). Only fires on
+  // real upgrade, not on a free trial start.
   if (!subscription.trial_end) {
-    await creditReferralOnConversion(userId).catch(() => {})
+    await markReferralConverted(userId).catch((err) => {
+      console.warn('markReferralConverted failed (non-fatal)', {
+        userId,
+        err: err instanceof Error ? err.message : 'unknown',
+      })
+    })
   }
-}
-
-async function creditReferralOnConversion(userId: string): Promise<void> {
-  const referral = await prisma.referral.findFirst({
-    where: { referredId: userId, converted: false },
-  })
-  if (!referral) return
-
-  const CREDIT_CENTS = 1000 // $10 credit both sides
-  await prisma.$transaction([
-    prisma.referral.update({
-      where: { id: referral.id },
-      data: {
-        converted: true,
-        convertedAt: new Date(),
-        referrerCredit: CREDIT_CENTS,
-        referredCredit: CREDIT_CENTS,
-      },
-    }),
-    prisma.productivityEvent.create({
-      data: { userId: referral.referrerId, eventType: 'REFERRAL_CONVERTED', eventValue: userId },
-    }),
-  ])
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {

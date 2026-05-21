@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
+import { PMPMCalculator } from '@/components/teams/pmpm-calculator'
 
 export const metadata: Metadata = {
   title: 'COYL for teams — workplace productivity, the relapse-prevention layer',
@@ -226,6 +227,15 @@ export default function TeamsWedgePage() {
           </li>
         </ul>
       </section>
+
+      {/* PMPM calculator — the "no contact us" pricing transparency
+          surface. Benefits buyers want to model cost before talking to
+          sales; this gets them to the proposal request with a number
+          already in hand. Placed before pilot-terms so the cost
+          conversation happens before the pilot ask. */}
+      <div className="mb-16">
+        <PMPMCalculator />
+      </div>
 
       <section className="mb-16 rounded-3xl border border-white/10 bg-white/[0.02] p-8">
         <p className="text-sm uppercase tracking-widest text-gray-500">Pilot terms</p>

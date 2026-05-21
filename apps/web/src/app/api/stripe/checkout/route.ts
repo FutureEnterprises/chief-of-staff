@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
 import Stripe from 'stripe'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { mintReferralCoupon, consumeReferralCredit } from '@/lib/referrals'
 
 export async function POST(req: Request) {
   const stripeKey = process.env.STRIPE_SECRET_KEY
@@ -29,6 +30,26 @@ export async function POST(req: Request) {
     include: { billingSubscription: true },
   })
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
+
+  // Redeem one referral credit month, if the user has any. Mints a
+  // 100%-off, single-cycle Stripe coupon and attaches it to this
+  // checkout. Atomic: consumeReferralCredit decrements only if the
+  // counter is > 0, so two parallel checkouts can't double-spend.
+  let referralCouponId: string | null = null
+  if (user.referralCreditMonths > 0) {
+    const consumed = await consumeReferralCredit(user.id)
+    if (consumed) {
+      referralCouponId = await mintReferralCoupon(stripe, user.id)
+      if (!referralCouponId) {
+        // Coupon mint failed — refund the credit so the user isn't
+        // out a month.
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { referralCreditMonths: { increment: 1 } },
+        }).catch(() => {})
+      }
+    }
+  }
 
   const rl = await checkRateLimit('checkout', user.id)
   if (rl.limited) {
@@ -69,10 +90,16 @@ export async function POST(req: Request) {
       trial_period_days: interval === 'annual' ? 7 : undefined,
       metadata: { userId: user.id },
     },
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings?upgraded=true`,
+    // If a referral credit was redeemed, attach the 100%-off coupon
+    // to the subscription itself (applies to the first billing cycle).
+    // Mutually exclusive with allow_promotion_codes; users on a referral
+    // credit can't stack a second promo code on top.
+    ...(referralCouponId
+      ? { discounts: [{ coupon: referralCouponId }] }
+      : { allow_promotion_codes: true }),
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings?upgraded=true${referralCouponId ? '&referral_credit=1' : ''}`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings`,
-    allow_promotion_codes: true,
-    metadata: { userId: user.id },
+    metadata: { userId: user.id, ...(referralCouponId ? { referralCouponId } : {}) },
   })
 
   // Log the paywall event

@@ -93,6 +93,11 @@ model User {
   // Referral / growth
   referralCode          String?   @unique
   referredByUserId      String?
+  // Pending referral credit, in whole months. Each successful referral
+  // grants +1 to both referrer and referred (when the referred user
+  // starts paying). Credits are redeemed at next Stripe checkout as a
+  // 100%-off one-cycle coupon; decremented atomically when applied.
+  referralCreditMonths  Int       @default(0)
   // Stripe Connect for stakes
   stripeConnectId       String?
   // Integrations
