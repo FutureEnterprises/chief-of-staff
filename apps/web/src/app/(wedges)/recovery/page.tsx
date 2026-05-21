@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { SafetyBanner } from '@/components/safety/safety-banner'
 
 export const metadata: Metadata = {
   title: 'Recovery — built for when you fall off',
@@ -76,6 +77,8 @@ export default function RecoveryPage() {
           That&apos;s the measurement that aligns product value with user value.
         </p>
       </section>
+
+      <SafetyBanner variant="inline" />
 
       <Link href="/sign-up" className="inline-block rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white">
         Start anyway

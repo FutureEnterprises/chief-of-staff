@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
+import { SafetyBanner } from '@/components/safety/safety-banner'
 
 export const metadata: Metadata = {
   title: 'Manifesto — AI has never met human behavior before',
@@ -235,11 +236,7 @@ export default function ManifestoPage() {
             </div>
           </div>
 
-          <p className="text-xs italic text-gray-500">
-            Behavioral support — not medical treatment. If you are in
-            crisis or need clinical care, please reach out to a licensed
-            professional or call 988 (US) for immediate help.
-          </p>
+          <SafetyBanner variant="inline" />
         </section>
 
         {/* BEAT 5 — the category sentence */}
