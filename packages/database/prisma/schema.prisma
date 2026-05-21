@@ -1013,3 +1013,66 @@ model SmsSignup {
   @@index([createdAt])
   @@map("sms_signups")
 }
+
+// ============================================================
+// MARKETING AUTOMATION — Phase 2 (approval queue) + Phase 3 (adapters)
+// See docs/marketing/automation-plan.md
+// ============================================================
+
+/**
+ * MarketingPost — a draft / approved / posted marketing artifact.
+ *
+ * Drafts are generated via apps/web/src/lib/marketing/templates.ts
+ * (composePrompt) and persisted here so the founder can edit, approve,
+ * and (eventually) auto-post via Phase-3 platform adapters.
+ *
+ * Statuses move in roughly this order:
+ *   DRAFT → APPROVED → POSTED
+ *   DRAFT → REJECTED (terminal)
+ *   APPROVED → ERRORED (auto-post failure; can flip back to APPROVED)
+ *
+ * finalBody is the human-edited version of draftBody. When null, the
+ * draftBody is what gets posted. approvedBy stores the Clerk userId of
+ * whoever flipped the post to APPROVED (single-admin model for v1).
+ */
+model MarketingPost {
+  id              String              @id @default(cuid())
+  platform        MarketingPlatform
+  archetype       String?             // family slug or "category-launch" / "why-now" / "product-update"
+  topic           String              @db.Text
+  draftBody       String              @db.Text
+  finalBody       String?             @db.Text
+  status          MarketingPostStatus @default(DRAFT)
+  approvedBy      String?             // Clerk userId of the approver
+  postedAt        DateTime?
+  postedUrl       String?
+  rejectionReason String?             @db.Text
+  generatedAt     DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  model           String              @default("sonnet") // "sonnet" | "haiku"
+
+  @@index([status, platform])
+  @@index([archetype])
+  @@index([generatedAt])
+  @@map("marketing_posts")
+}
+
+enum MarketingPlatform {
+  REDDIT
+  TWITTER_THREAD
+  TWITTER_SINGLE
+  THREADS
+  LINKEDIN
+  INDIEHACKERS
+  PRODUCTHUNT
+  HACKERNEWS
+  NEWSLETTER
+}
+
+enum MarketingPostStatus {
+  DRAFT
+  APPROVED
+  REJECTED
+  POSTED
+  ERRORED
+}
