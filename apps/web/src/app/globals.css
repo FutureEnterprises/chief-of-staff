@@ -78,27 +78,33 @@
   }
 
   .dark {
-    --background: 0 0% 4%;
+    /* Warm-toned dark palette — every value carries hue 24-35 (amber
+       undertone) instead of the prior cool neutral (hue 0). Matches the
+       hardcoded body bg #0e0d0b on the (app) shell and prevents shadcn
+       Card / Popover / Skeleton / Input / Dialog primitives from
+       rendering as cool-grey panels on the warm canvas (the "grey on
+       black" failure mode the founder flagged on /patterns + /projects). */
+    --background: 24 12% 5%;            /* ≈ #0e0c0a — body */
     --foreground: 40 20% 95%;
-    --card: 0 0% 7%;
+    --card: 28 10% 8%;                  /* ≈ #16130f — elevated card */
     --card-foreground: 40 20% 95%;
-    --popover: 0 0% 7%;
+    --popover: 28 10% 8%;
     --popover-foreground: 40 20% 95%;
     --primary: 40 20% 95%;
-    --primary-foreground: 0 0% 7%;
-    --secondary: 0 0% 12%;
+    --primary-foreground: 28 10% 8%;
+    --secondary: 28 8% 13%;             /* ≈ #221f1b — chip/pill */
     --secondary-foreground: 40 20% 95%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 55%;
-    --accent: 24 100% 50%;
+    --muted: 28 8% 13%;
+    --muted-foreground: 35 8% 55%;      /* warm gray for muted text */
+    --accent: 24 100% 50%;              /* signature orange */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 24 10% 14%;
-    --input: 24 10% 14%;
+    --border: 28 10% 14%;               /* warm hairline */
+    --input: 28 10% 14%;
     --ring: 24 100% 50%;
-    --sidebar: 0 0% 5%;
-    --sidebar-border: 24 8% 12%;
+    --sidebar: 28 10% 6%;               /* matches hardcoded #100e0a */
+    --sidebar-border: 28 8% 12%;
 
     --glass-bg: rgba(20, 20, 20, 0.8);
     --glass-border: rgba(255, 102, 0, 0.08);
