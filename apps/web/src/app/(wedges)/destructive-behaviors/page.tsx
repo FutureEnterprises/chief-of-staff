@@ -101,7 +101,7 @@ export default function AutopilotLoopsPage() {
             body: 'The tab you reopened mid-deep-work. The app you launched without deciding to. COYL catches the reach, not the click.',
           },
           {
-            title: 'Sugar and binge cycles',
+            title: 'Sugar craving loops',
             body: 'The craving, the permission story, the collapse. Interrupt the permission story.',
           },
           {

@@ -139,7 +139,7 @@ const CHANNELS: Channel[] = [
   {
     id: 'reddit',
     platform: 'Reddit',
-    tagline: 'Long-form. Vulnerable. Subreddits: r/loseit, r/GetDisciplined, r/stopdrinking, r/nosurf.',
+    tagline: 'Long-form. Vulnerable. Subreddits: r/loseit, r/GetDisciplined, r/nosurf, r/decidingtobebetter.',
     format: 'Story or review post. No hard sell.',
     length: '300\u2013600 words',
     cadence: '2\u20133/week across subs',
@@ -165,8 +165,8 @@ const CHANNELS: Channel[] = [
     angles: [
       'r/loseit \u2014 frame as "the thing that finally broke my night pattern."',
       'r/GetDisciplined \u2014 frame as "willpower is a finite resource; this accounts for that."',
-      'r/stopdrinking \u2014 frame as "urge-surfing assistant, not another tracker." (Use respectful voice; abstain from sales pitch, rely on community rules.)',
       'r/nosurf \u2014 frame as "an interrupt that catches me mid-scroll."',
+      'r/decidingtobebetter \u2014 frame as "the follow-through tool I wish I\'d had a year ago."',
     ],
   },
   {

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { CalendarClock, Clock, Layers, MessageSquareQuote } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Autopilot map — your danger windows, visualized',
@@ -44,11 +45,165 @@ export default function PatternsMarketingPage() {
         Your danger windows,<br />
         <span className="text-orange-600">visualized.</span>
       </h1>
-      <p className="mb-16 max-w-2xl text-lg text-gray-600">
+      <p className="mb-12 max-w-2xl text-lg text-gray-600">
         The exact hours your script fires. The excuses you forget you use. The chains
         you keep running. COYL maps the autopilot so it stops being invisible &mdash;
         and so it can be caught.
       </p>
+
+      {/* Share-card machine — Spotify Wrapped for self-sabotage. Screenshot-able
+          mini-posters that surface a user's autopilot signature in one frame.    */}
+      <section className="mb-16">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-widest text-orange-500">
+              Your autopilot, on a card
+            </p>
+            <h2 className="mt-1 text-2xl font-bold text-gray-900 md:text-3xl">
+              Spotify Wrapped for self-sabotage.
+            </h2>
+          </div>
+          <p className="max-w-md text-sm text-gray-600">
+            Finish the audit and COYL prints your pattern signature on cards built
+            for the camera roll. Examples below.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Card 1 — Danger window */}
+          <div className="relative flex aspect-[280/320] flex-col justify-between overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-white p-6 shadow-[0_24px_60px_-12px_rgba(255,102,0,0.18)]">
+            <div className="flex items-start justify-between">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500/10 text-orange-600">
+                <Clock className="h-4 w-4" strokeWidth={2.25} />
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-orange-500/80">
+                COYL / Wrapped
+              </span>
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+                My danger window
+              </p>
+              <p className="mt-2 text-5xl font-black leading-none tracking-tight text-gray-900">
+                9:08 <span className="text-orange-500">PM</span>
+              </p>
+              <p className="mt-3 text-xs text-gray-600">
+                Tue–Thu spike. Always after dinner. Always alone.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 2 — Top excuse */}
+          <div className="relative flex aspect-[280/320] flex-col justify-between overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-white p-6 shadow-[0_24px_60px_-12px_rgba(255,102,0,0.18)]">
+            <div className="flex items-start justify-between">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500/10 text-orange-600">
+                <MessageSquareQuote className="h-4 w-4" strokeWidth={2.25} />
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-orange-500/80">
+                COYL / Wrapped
+              </span>
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+                My excuse
+              </p>
+              <div className="mt-2 flex items-start gap-1">
+                <svg
+                  aria-hidden
+                  viewBox="0 0 24 24"
+                  className="-mt-1 h-7 w-7 flex-shrink-0 text-orange-400"
+                  fill="currentColor"
+                >
+                  <path d="M9 7H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2v1a3 3 0 0 1-3 3v2a5 5 0 0 0 5-5V9a2 2 0 0 0 0-2zm10 0h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2v1a3 3 0 0 1-3 3v2a5 5 0 0 0 5-5V9a2 2 0 0 0 0-2z" />
+                </svg>
+                <p className="text-2xl font-black leading-tight text-gray-900">
+                  I deserve this.
+                </p>
+                <svg
+                  aria-hidden
+                  viewBox="0 0 24 24"
+                  className="-mt-1 h-7 w-7 flex-shrink-0 rotate-180 text-orange-400"
+                  fill="currentColor"
+                >
+                  <path d="M9 7H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2v1a3 3 0 0 1-3 3v2a5 5 0 0 0 5-5V9a2 2 0 0 0 0-2zm10 0h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2v1a3 3 0 0 1-3 3v2a5 5 0 0 0 5-5V9a2 2 0 0 0 0-2z" />
+                </svg>
+              </div>
+              <p className="mt-3 text-xs text-gray-600">
+                Said 14&times; this month. Category: Reward.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 3 — Archetype */}
+          <div className="relative flex aspect-[280/320] flex-col justify-between overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-white p-6 shadow-[0_24px_60px_-12px_rgba(255,102,0,0.18)]">
+            <div className="flex items-start justify-between">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500/10 text-orange-600">
+                <CalendarClock className="h-4 w-4" strokeWidth={2.25} />
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-orange-500/80">
+                COYL / Wrapped
+              </span>
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+                My archetype
+              </p>
+              <p className="mt-2 text-3xl font-black leading-tight tracking-tight text-gray-900">
+                Monday
+                <br />
+                <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+                  Resetter
+                </span>
+              </p>
+              <p className="mt-3 text-xs text-gray-600">
+                Lives for the clean slate. Hates the Thursday wobble.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 4 — Pattern week */}
+          <div className="relative flex aspect-[280/320] flex-col justify-between overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-white p-6 shadow-[0_24px_60px_-12px_rgba(255,102,0,0.18)]">
+            <div className="flex items-start justify-between">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500/10 text-orange-600">
+                <Layers className="h-4 w-4" strokeWidth={2.25} />
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-orange-500/80">
+                COYL / Wrapped
+              </span>
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+                My pattern week
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {['Tue', 'Thu', 'Sun'].map((d) => (
+                  <span
+                    key={d}
+                    className="rounded-full border border-orange-300 bg-white px-3 py-1.5 text-sm font-bold text-orange-600 shadow-[0_2px_8px_-4px_rgba(255,102,0,0.4)]"
+                  >
+                    {d}
+                  </span>
+                ))}
+              </div>
+              <p className="mt-4 text-xs text-gray-600">
+                3 of 7 nights run the same script. COYL stands in the doorway.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <Link
+            href="/audit"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_8px_24px_-8px_rgba(255,102,0,0.6)]"
+          >
+            Generate yours &rarr;
+          </Link>
+          <p className="text-xs text-gray-500">
+            ~3 minutes. No signup to see your cards.
+          </p>
+        </div>
+      </section>
 
       <section className="mb-12 grid grid-cols-1 gap-4 md:grid-cols-2">
         {[

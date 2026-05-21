@@ -55,6 +55,7 @@ type Release = {
   date: string // ISO YYYY-MM-DD
   title: string
   body: string
+  forYou: string // plain-English user-facing translation of the change
   links?: Array<{ label: string; href: string }>
 }
 
@@ -65,6 +66,8 @@ const RELEASES: Release[] = [
     title: 'Real-time intervention surface on /today',
     body:
       "When you're inside a known danger window right now, /today turns into a live intervention banner instead of a passive dashboard. Same matching logic the precision-interrupt cron uses for push notifications, surfaced server-side so web-only users see the moment too. Also shipped: rescue deep-link handling, consent-architecture feedback bar (helpful / not the moment), and a /changelog page so the build cadence is visible.",
+    forYou:
+      "Open /today during your danger hours and you'll see a live interrupt banner — not just yesterday's stats. The web now catches you in the moment, not after.",
     links: [
       { label: 'Open /today', href: '/today' },
       { label: 'Rescue', href: '/rescue' },
@@ -75,6 +78,8 @@ const RELEASES: Release[] = [
     title: 'Clinical study protocol — open for partner enrollment',
     body:
       "Published a 12-week IRB-friendly behavioral RCT protocol testing whether real-time pattern interrupt during GLP-1 maintenance reduces weight regain at 90 days post-discontinuation. N=80, randomized 1:1, minimal-risk expedited review pathway. Telehealth platforms and obesity-medicine clinics can enroll a cohort. Repo also includes the IRB submission narrative and four partner-outreach templates.",
+    forYou:
+      "If your GLP-1 clinic asks whether COYL is studied, point them here — there's a real trial protocol they can join.",
     links: [
       { label: 'See the protocol', href: '/clinical-study' },
       { label: 'Research overview', href: '/research' },
@@ -85,6 +90,8 @@ const RELEASES: Release[] = [
     title: 'Stripe tier-mapping fix + four-tier checkout',
     body:
       "Webhook was hardcoding planType: 'PRO' on every successful checkout, regardless of which tier the user purchased — Plus customers paying $29/mo were getting Core features. Added price-ID-to-tier mapping in handleCheckoutCompleted and handleSubscriptionUpdated. Six Stripe live price IDs (CORE/PLUS/PREMIUM × M/A) wired and documented in .env.example.",
+    forYou:
+      "If you paid for Plus or Premium and didn't see the features unlock — that's fixed. You'll get the tier you actually paid for now.",
     links: [{ label: 'Pricing', href: '/pricing' }],
   },
   {
@@ -92,12 +99,16 @@ const RELEASES: Release[] = [
     title: 'SEO + social: dynamic OG images on every page',
     body:
       "Every shared link previously fell back to favicon — Twitter, LinkedIn, iMessage, Slack, Discord all rendered a tiny icon. Now 9 pages render 1200x630 branded cards via /api/og at the edge. Root metadata refreshed away from the stale 'commitment engine' framing toward autopilot interruption + GLP-1 + Noom-alternative keywords. Structured data refreshed: added the missing Premium tier, contact points, and 10 SERP-intent FAQ entries.",
+    forYou:
+      "Share a COYL link in iMessage or Slack and it now shows a real preview card — not a tiny broken icon.",
   },
   {
     date: '2026-05-11',
     title: 'Workplace + procrastination vertical, in full',
     body:
       "Three-leg wedge architecture: weight + GLP-1 (consumer), workplace + focus (consumer + employer B2B), destructive patterns (consumer). Built /procrastination as a co-equal vertical and /teams as the employer-facing B2B surface with PMPM pricing language.",
+    forYou:
+      "COYL isn't just for weight. If your loop is procrastination or follow-through at work, those have their own pages now.",
     links: [
       { label: 'Procrastination', href: '/procrastination' },
       { label: 'For teams', href: '/teams' },
@@ -108,6 +119,8 @@ const RELEASES: Release[] = [
     title: 'GLP-1 companion: day-3 interrupt + onboarding step',
     body:
       "Hourly cron fires push to users on day-3-after-injection-weekday at their local 5-9pm window — the discontinuation-relevant moment when appetite suppression starts wearing off. Onboarding picks up drug name and injection weekday; settings tile lets users update or end the protocol. Closes the GLP-1 funnel end-to-end.",
+    forYou:
+      "On GLP-1? Tell COYL your injection day and you'll get a nudge on day 3 — the exact evening the cravings tend to come back.",
     links: [{ label: 'GLP-1 wedge', href: '/glp1' }],
   },
   {
@@ -115,18 +128,24 @@ const RELEASES: Release[] = [
     title: 'Recovery Mode UI on /today',
     body:
       "When a user logs a slip, /today flips into Recovery Mode for 24h: emerald banner, 'You slipped. Good. Now we stop the damage.' framing, link to build the recovery plan. Streak stays preserved — no Monday reset. Brand promise: no shame, continue.",
+    forYou:
+      "Log a slip and the app stops the bleeding instead of resetting your streak to zero. No Monday-reset shame.",
   },
   {
     date: '2026-05-08',
     title: 'Account deletion + data export',
     body:
       "Apple App Store guideline 5.1.1(v) and GDPR Article 17 compliance: full account deletion with active-subscription guard (409 if still subscribed), plus one-tap JSON data export of profile + commitments + slips + decisions + events from /settings. 365-day cap.",
+    forYou:
+      "You can now delete your account or export every piece of your data with one tap from Settings — your data, your call.",
   },
   {
     date: '2026-05-07',
     title: 'Heuristic danger-window learner',
     body:
       "Daily cron at 03:00 UTC computes a (day x hour) histogram from each user's slip history and updates their active danger windows. HealthKit signals (steps, sleep, heart rate, active calories) feed into the correlation step as risk-context weighting.",
+    forYou:
+      "The longer you use COYL, the sharper it gets at predicting your danger hours — it learns the days and times your script fires.",
   },
 ]
 
@@ -173,6 +192,10 @@ export default function ChangelogPage() {
             </p>
             <h2 className="mt-2 text-xl font-bold text-gray-900">{r.title}</h2>
             <p className="mt-3 text-sm leading-relaxed text-gray-600">{r.body}</p>
+            <p className="mt-3 rounded-lg border-l-[3px] border-orange-500 bg-orange-50 px-3 py-2 text-sm font-medium text-gray-800">
+              <span className="font-bold text-orange-600">&rarr; For you:</span>{' '}
+              {r.forYou}
+            </p>
             {r.links && r.links.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-2">
                 {r.links.map((l) => (

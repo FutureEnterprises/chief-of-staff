@@ -56,7 +56,7 @@ function WeightLossContent() {
     { title: 'Late-night kitchen autopilot', body: 'You\'re not hungry. You\'re on autopilot. COYL fires at 9 PM.' },
     { title: 'Weekend collapse', body: 'Friday night leaks into Saturday leaks into Sunday. One interruption resets the loop.' },
     { title: 'Delivery-app autopilot', body: 'Your thumb opens the app before you decide. COYL catches the impulse.' },
-    { title: '"I already blew it" spiral', body: 'One bad meal doesn\'t wreck the week. The story after it does. COYL rewrites the story tonight.' },
+    { title: '"I already blew it" spiral', body: 'One bad meal doesn\'t wreck the week. The story after it does. COYL interrupts the story tonight.' },
     { title: 'Skipped weigh-ins', body: 'Avoidance is a behavior. COYL names it and gets you back to data.' },
     { title: 'Stress-triggered overeating', body: 'The emotion is real. The script you run with it is optional. COYL makes it visible.' },
   ]
