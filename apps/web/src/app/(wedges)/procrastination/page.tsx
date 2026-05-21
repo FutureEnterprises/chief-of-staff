@@ -3,9 +3,9 @@ import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
 
 export const metadata: Metadata = {
-  title: 'COYL for procrastination — catch the tab switch before it costs the day',
+  title: "COYL for procrastination — you don't need another to-do list. You need the moment caught.",
   description:
-    "You don't have a focus problem. You have a 30-second tab-switch problem that compounds into a lost day. COYL fires the moment you reach for the doom scroll — not after you've already lost two hours.",
+    "Productivity tools organize intentions. COYL interrupts avoidance. Fires the moment you reach for the doom scroll — not after the deep-work block is dead.",
   keywords: [
     'procrastination app',
     'stop procrastinating',
@@ -18,13 +18,13 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/procrastination' },
   openGraph: {
-    title: 'COYL for procrastination — catch the tab switch before it costs the day',
+    title: "You don't need another to-do list. You need the moment caught.",
     description:
-      "30-second tab-switches compound into lost days. COYL fires the moment you reach.",
+      "Productivity tools organize intentions. COYL interrupts avoidance.",
     url: 'https://coyl.ai/procrastination',
     images: [
       {
-        url: '/api/og?title=Catch+the+tab+switch+before+it+costs+the+day.&kicker=Procrastination',
+        url: '/api/og?title=You+don%27t+need+another+to-do+list.+You+need+the+moment+caught.&kicker=Procrastination',
         width: 1200,
         height: 630,
       },
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'COYL for procrastination — catch the tab switch before it costs the day',
-    description: '30-second tab-switches compound into lost days. COYL fires the moment you reach.',
-    images: ['/api/og?title=Catch+the+tab+switch+before+it+costs+the+day.&kicker=Procrastination'],
+    title: "You don't need another to-do list. You need the moment caught.",
+    description: 'Productivity tools organize intentions. COYL interrupts avoidance.',
+    images: ['/api/og?title=You+don%27t+need+another+to-do+list.+You+need+the+moment+caught.&kicker=Procrastination'],
   },
 }
 
@@ -117,14 +117,14 @@ export default function ProcrastinationWedgePage() {
       </div>
 
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        You don&rsquo;t have a focus problem.<br />
-        <span className="text-orange-600">You have a 30-second tab-switch problem.</span>
+        You don&rsquo;t need another to-do list.<br />
+        <span className="text-orange-600">You need the moment caught.</span>
       </h1>
 
       <p className="mb-12 max-w-2xl text-lg text-gray-600">
-        The tab switch happens in half a second. The recovery from it costs 23 minutes &mdash;
-        if you ever actually recover. COYL fires before the gesture completes, not after the
-        deep-work block is already dead.
+        Productivity tools organize intentions. COYL interrupts avoidance.
+        The tab switch takes half a second. Recovery costs 23 minutes &mdash; if you ever
+        actually recover. COYL fires before the gesture completes.
       </p>
 
       <div className="mb-16 flex flex-wrap gap-3">

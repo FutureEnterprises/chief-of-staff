@@ -3,9 +3,9 @@ import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
 
 export const metadata: Metadata = {
-  title: 'COYL for work \u2014 catch the follow-ups that kill deals',
+  title: "COYL for work \u2014 productivity isn't the problem. Follow-through is.",
   description:
-    "You don't fail at work. You fail when you don't follow up. COYL catches the email you didn't send, the meeting you didn't close out, the follow-up you let slip \u2014 before it costs a deal.",
+    "The email you said you'd send. The meeting you didn't close out. The follow-up you let slip. COYL catches the moment the commitment drops, not after the deal is gone.",
   keywords: [
     'sales follow up tool',
     'follow through at work',
@@ -17,13 +17,13 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/work' },
   openGraph: {
-    title: 'COYL for work \u2014 catch the follow-ups that kill deals',
+    title: "Productivity isn't the problem. Follow-through is.",
     description:
-      "You don't fail at work. You fail when you don't follow up. COYL catches the commitment before it drops.",
+      "COYL catches the moment the commitment drops, not after the deal is gone.",
     url: 'https://coyl.ai/work',
     images: [
       {
-        url: '/api/og?title=Catch+the+follow-ups+that+kill+deals.&kicker=Work',
+        url: '/api/og?title=Productivity+isn%27t+the+problem.+Follow-through+is.&kicker=Work',
         width: 1200,
         height: 630,
       },
@@ -31,9 +31,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'COYL for work \u2014 catch the follow-ups that kill deals',
-    description: "You don't fail at work. You fail when you don't follow up.",
-    images: ['/api/og?title=Catch+the+follow-ups+that+kill+deals.&kicker=Work'],
+    title: "Productivity isn't the problem. Follow-through is.",
+    description: "COYL catches the moment the commitment drops, not after the deal is gone.",
+    images: ['/api/og?title=Productivity+isn%27t+the+problem.+Follow-through+is.&kicker=Work'],
   },
 }
 
@@ -99,14 +99,13 @@ export default function WorkWedgePage() {
         </span>
       </div>
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        You don&apos;t fail at work.<br />
-        <span className="text-orange-600">You fail when you don&rsquo;t follow up.</span>
+        Productivity isn&apos;t the problem.<br />
+        <span className="text-orange-600">Follow-through is.</span>
       </h1>
       <p className="mb-12 max-w-2xl text-lg text-gray-600">
-        Most work misses aren&rsquo;t about competence. They&rsquo;re about follow-through.
-        The email you didn&rsquo;t send. The meeting you didn&rsquo;t close out. The task you
-        promised and let slip. COYL catches those moments &mdash; before they become
-        missed deals or dropped balls.
+        The email you said you&rsquo;d send. The meeting you didn&rsquo;t close out.
+        The follow-up you let slip. COYL catches the moment the commitment drops &mdash;
+        not the post-mortem after the deal is gone.
       </p>
 
       <section className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">

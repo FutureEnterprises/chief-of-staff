@@ -4,9 +4,9 @@ import { BreadcrumbSchema } from '@/app/structured-data'
 import { AutopilotDemoCard } from '@/components/landing/autopilot-demo-card'
 
 export const metadata: Metadata = {
-  title: 'They caught themselves. You can too. \u2014 COYL',
+  title: 'Your real-life COYL moments \u2014 share, watch, recognize',
   description:
-    "Someone you know just broke the loop. COYL is the system that catches you right before you fold \u2014 the 9pm kitchen, the email you didn't send, the promise you were about to drop. Start catching yours.",
+    "Someone you know just caught themselves in the act. The 9pm kitchen, the email they didn't send, the loop they were about to run. Real moments, caught in real life. Start catching yours.",
   keywords: [
     'stop the spiral',
     'slip recovery',
@@ -18,16 +18,16 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/caught' },
   openGraph: {
-    title: 'They caught themselves. You can too.',
+    title: 'Your real-life COYL moments',
     description:
-      "Someone you know just broke the loop. COYL catches you right before you fold. Start catching yours.",
+      "Someone you know just caught themselves in the act. Start catching yours.",
     url: 'https://coyl.ai/caught',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'They caught themselves. You can too.',
-    description: "Someone you know just broke the loop. COYL catches you right before you fold.",
+    title: 'Your real-life COYL moments',
+    description: "Someone you know just caught themselves in the act. Start catching yours.",
   },
 }
 
@@ -97,13 +97,13 @@ export default function CaughtPage() {
       </div>
 
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        They caught themselves.<br />
-        <span className="text-orange-600">You can too.</span>
+        Real-life COYL moments.<br />
+        <span className="text-orange-600">Someone you know just caught one.</span>
       </h1>
 
       <p className="mb-10 max-w-2xl text-lg text-gray-600">
-        Someone you know just used COYL to stop the spiral. Not Monday. Not tomorrow.
-        The exact moment they were about to fold. That&rsquo;s the whole product.
+        Not Monday. Not tomorrow. The exact moment they were about to run the loop.
+        COYL caught it. They shared it. Now you can catch yours.
       </p>
 
       {/* Demo card — the "wow in 1 second" screenshot. Shared-link visitors

@@ -3,9 +3,9 @@ import Link from 'next/link'
 import { CoreLoop } from '@/components/landing/core-loop'
 
 export const metadata: Metadata = {
-  title: 'How COYL works — detect, interrupt, recover',
+  title: 'How COYL works — the behavioral interface between AI and real life',
   description:
-    "Three-step loop: detect the autopilot script you keep running, interrupt at the moment of drift (not the next morning), recover before one slip becomes a week. The mechanism behind every COYL surface.",
+    "Detect the script. Interrupt the moment. Recover before the spiral. The three-step loop behind every COYL surface — the layer that catches you in real life, not the next morning.",
   keywords: [
     'how coyl works',
     'autopilot interruption mechanism',
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'How COYL works — detect, interrupt, recover',
     description:
-      "Detect the autopilot script. Interrupt at the moment of drift. Recover before one slip becomes a week.",
+      "The behavioral interface between AI and real life. Detect the script. Interrupt the moment. Recover before the spiral.",
     url: 'https://coyl.ai/how-it-works',
     images: [
       {
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'How COYL works — detect, interrupt, recover',
-    description: 'Detect the autopilot script. Interrupt at drift. Recover before one slip becomes a week.',
+    description: 'The behavioral interface between AI and real life. Detect, interrupt, recover.',
     images: ['/api/og?title=Detect.+Interrupt.+Recover.&kicker=How+it+works'],
   },
 }
@@ -48,8 +48,8 @@ export default function HowItWorksPage() {
         Detect the script.<br />Interrupt the moment.<br />Recover before the spiral.
       </h1>
       <p className="mb-16 max-w-2xl text-lg text-gray-600">
-        COYL is a behavior interruption and decision support system. It learns where your
-        autopilot takes over, fires in the exact moments it matters, and keeps one bad
+        COYL is the behavioral interface between AI and real life. It learns where your
+        autopilot takes over, catches you in the moments that matter, and keeps one bad
         decision from becoming a bad week.
       </p>
 

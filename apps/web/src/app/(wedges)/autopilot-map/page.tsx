@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Autopilot map — see how you keep getting in your own way',
-  description: 'COYL remembers the excuses you forget. Your danger windows, your failure chains, your recovery speed. The script you keep running, made visible.',
+  title: 'Autopilot map — your danger windows, visualized',
+  description: 'The exact hours your script fires. The excuses you forget you use. The chains you keep running. COYL maps the autopilot so it stops being invisible.',
   keywords: [
     'autopilot map',
     'behavior pattern visualization',
@@ -14,12 +14,12 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/autopilot-map' },
   openGraph: {
-    title: 'Autopilot map — see how you keep getting in your own way',
-    description: 'COYL remembers the excuses you forget. Visible truth.',
+    title: 'Autopilot map — your danger windows, visualized',
+    description: 'The exact hours your script fires. The excuses you forget you use. The chains you keep running.',
     url: 'https://coyl.ai/autopilot-map',
     images: [
       {
-        url: '/api/og?title=It+remembers+the+excuses+you+forget+you+use.&kicker=Autopilot+map',
+        url: '/api/og?title=Your+danger+windows%2C+visualized.&kicker=Autopilot+map',
         width: 1200,
         height: 630,
       },
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Autopilot map — see how you keep getting in your own way',
-    description: 'COYL remembers the excuses you forget.',
-    images: ['/api/og?title=It+remembers+the+excuses+you+forget+you+use.&kicker=Autopilot+map'],
+    title: 'Autopilot map — your danger windows, visualized',
+    description: 'The exact hours your script fires. The excuses you forget you use.',
+    images: ['/api/og?title=Your+danger+windows%2C+visualized.&kicker=Autopilot+map'],
   },
 }
 
@@ -41,11 +41,13 @@ export default function PatternsMarketingPage() {
         <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">Patterns</span>
       </div>
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        It remembers the excuses<br />you forget you use.
+        Your danger windows,<br />
+        <span className="text-orange-600">visualized.</span>
       </h1>
       <p className="mb-16 max-w-2xl text-lg text-gray-600">
-        &ldquo;I&apos;ll start tomorrow&rdquo; — 9 times in 3 weeks. That&apos;s not a plan. That&apos;s your
-        avoidance phrase. COYL shows you.
+        The exact hours your script fires. The excuses you forget you use. The chains
+        you keep running. COYL maps the autopilot so it stops being invisible &mdash;
+        and so it can be caught.
       </p>
 
       <section className="mb-12 grid grid-cols-1 gap-4 md:grid-cols-2">

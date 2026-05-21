@@ -3,9 +3,9 @@ import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
 
 export const metadata: Metadata = {
-  title: 'COYL for weight loss \u2014 stop the 9 PM kitchen moment',
+  title: 'COYL for weight loss \u2014 weight loss doesn\u2019t fail at lunch. It fails at 9 PM.',
   description:
-    "Most diets don't fail at lunch. They fail at 9 PM. COYL catches the exact moment the weight-loss script breaks \u2014 late-night eating, weekend spirals, 'I already blew it' collapses.",
+    "Diets fail in the autopilot moment, not the meal plan. COYL catches the 9 PM kitchen, the weekend drift, the 'I already blew it' loop \u2014 the moments calories and macros never see.",
   keywords: [
     'weight loss app',
     'stop binge eating',
@@ -17,13 +17,13 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/weight-loss' },
   openGraph: {
-    title: 'COYL for weight loss \u2014 stop the 9 PM kitchen moment',
+    title: 'Weight loss doesn\u2019t fail at lunch. It fails at 9 PM.',
     description:
-      "Most diets don't fail at lunch. They fail at 9 PM. COYL catches the exact moment the weight-loss script breaks.",
+      "Diets fail in the autopilot moment, not the meal plan. COYL catches the 9 PM kitchen, the weekend drift, the 'I already blew it' loop.",
     url: 'https://coyl.ai/weight-loss',
     images: [
       {
-        url: '/api/og?title=Diets+don%27t+fail+at+lunch.+They+fail+at+9+PM.&kicker=Weight+loss',
+        url: '/api/og?title=Weight+loss+doesn%27t+fail+at+lunch.+It+fails+at+9+PM.&kicker=Weight+loss',
         width: 1200,
         height: 630,
       },
@@ -31,9 +31,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'COYL for weight loss \u2014 stop the 9 PM kitchen moment',
-    description: "Diets don't fail at lunch. They fail at 9 PM. COYL catches the exact moment.",
-    images: ['/api/og?title=Diets+don%27t+fail+at+lunch.+They+fail+at+9+PM.&kicker=Weight+loss'],
+    title: 'Weight loss doesn\u2019t fail at lunch. It fails at 9 PM.',
+    description: "Diets fail in the autopilot moment, not the meal plan. COYL catches the script.",
+    images: ['/api/og?title=Weight+loss+doesn%27t+fail+at+lunch.+It+fails+at+9+PM.&kicker=Weight+loss'],
   },
 }
 
@@ -68,13 +68,13 @@ function WeightLossContent() {
         <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">Weight loss</span>
       </div>
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Weight loss isn&apos;t lost in one meal.<br />
-        <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">It&apos;s lost in the script after it.</span>
+        Weight loss doesn&apos;t fail at lunch.<br />
+        <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">It fails at 9 PM.</span>
       </h1>
       <p className="mb-16 max-w-2xl text-lg text-gray-600">
-        COYL doesn&apos;t count calories first. It interrupts the automatic patterns that make
-        regular people fail — late-night eating, weekend collapse, and the &ldquo;I already blew it&rdquo;
-        spiral that turns one slip into a week of damage.
+        The autopilot runs after the meal plan ends &mdash; late-night kitchen, weekend
+        drift, the &ldquo;I already blew it&rdquo; loop. COYL catches the script the second
+        it fires, not the next morning when the damage is already done.
       </p>
 
       <section className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">

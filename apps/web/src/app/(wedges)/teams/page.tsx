@@ -4,9 +4,9 @@ import { BreadcrumbSchema } from '@/app/structured-data'
 import { PMPMCalculator } from '@/components/teams/pmpm-calculator'
 
 export const metadata: Metadata = {
-  title: 'COYL for teams — workplace productivity, the relapse-prevention layer',
+  title: 'COYL for teams — the 23-minute interrupt cost, caught at the source',
   description:
-    "Your team loses 23 minutes per interrupt. The cost compounds into a third of every knowledge-worker week. COYL fires before the tab switch, not after the deep-work block is dead. PMPM pricing for employers + benefits programs.",
+    "Your team isn't undertrained. They're getting interrupted every 11 minutes and losing 23 to recovery. COYL catches the moment before the tab switch. PMPM pricing for employers and benefits programs.",
   keywords: [
     'workplace productivity app',
     'employee focus tool',
@@ -19,13 +19,13 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/teams' },
   openGraph: {
-    title: 'COYL for teams — workplace productivity, in full',
+    title: 'COYL for teams — the 23-minute interrupt cost, caught at the source',
     description:
-      '23 minutes per interrupt. COYL fires before the tab switch. PMPM pricing for employers.',
+      'Interrupted every 11 minutes. 23 minutes to recover. COYL catches the moment before the tab switch. PMPM pricing for employers.',
     url: 'https://coyl.ai/teams',
     images: [
       {
-        url: '/api/og?title=23+minutes+per+interrupt.+We+fire+before+the+tab+switch.&kicker=For+teams',
+        url: '/api/og?title=11+minutes+between+interrupts.+23+minutes+to+recover.&kicker=For+teams',
         width: 1200,
         height: 630,
       },
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'COYL for teams — workplace productivity, in full',
-    description: '23 minutes per interrupt. COYL fires before the tab switch. PMPM pricing for employers.',
-    images: ['/api/og?title=23+minutes+per+interrupt.+We+fire+before+the+tab+switch.&kicker=For+teams'],
+    title: 'COYL for teams — the 23-minute interrupt cost, caught at the source',
+    description: 'Interrupted every 11 minutes. 23 to recover. COYL catches the moment. PMPM for employers.',
+    images: ['/api/og?title=11+minutes+between+interrupts.+23+minutes+to+recover.&kicker=For+teams'],
   },
 }
 
@@ -138,15 +138,15 @@ export default function TeamsWedgePage() {
       </div>
 
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Your team loses 23 minutes per interrupt.<br />
-        <span className="text-orange-600">COYL fires before the tab switch.</span>
+        Interrupted every 11 minutes.<br />
+        <span className="text-orange-600">23 minutes to recover.</span>
       </h1>
 
       <p className="mb-12 max-w-2xl text-lg text-gray-600">
-        Knowledge workers are interrupted every 11 minutes. Recovery costs 23.
-        Math says one third of every working week is spent recovering, not working.
-        COYL is the relapse-prevention layer beneath your existing focus stack &mdash;
-        deployed as a benefit, billed PMPM, no integration with your work content required.
+        A third of every knowledge-worker week is spent recovering, not working.
+        COYL catches the moment before the tab switch &mdash; the behavioral layer
+        underneath your focus stack. Deployed as a benefit, billed PMPM, no integration
+        with work content required.
       </p>
 
       <div className="mb-16 flex flex-wrap gap-3">

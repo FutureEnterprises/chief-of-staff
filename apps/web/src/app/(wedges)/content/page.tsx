@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Content playbook — COYL',
+  title: 'Writing — behavior, AI, and habit — COYL',
   description:
-    'Ready-to-post content hooks, scripts, and angles for TikTok, Reels, Reddit, and X. Built from the COYL voice.',
+    'Long-form on the behavioral interface between AI and real life. The pattern interrupt thesis, the autopilot loop, the moments behind every habit. Plus ready-to-post hooks and scripts in the COYL voice.',
 }
 
 /**
@@ -250,15 +250,16 @@ export default function ContentPlaybookPage() {
       <div className="mb-4 flex items-center gap-3">
         <span className="h-px w-8 bg-orange-500" />
         <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
-          Content playbook
+          Writing
         </span>
       </div>
       <h1 className="mb-4 text-4xl font-black leading-[1.05] text-gray-900 md:text-5xl">
-        The first 1000 users<br />don&rsquo;t come from ads.
+        On behavior, AI,<br />and the loop you keep running.
       </h1>
       <p className="mb-12 max-w-2xl text-lg text-gray-600">
-        They come from content that names the pattern before they click. Ready-to-post
-        scripts, captions, and angles, sized per channel. Copy and ship.
+        Long-form notes on the behavioral interface between AI and real life. Below:
+        the hook library and channel-sized scripts that name the pattern before the
+        click. Copy and ship.
       </p>
 
       {/* Hooks library \u2014 the recognition-first one-liners */}

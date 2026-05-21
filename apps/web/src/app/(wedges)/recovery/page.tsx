@@ -3,8 +3,8 @@ import Link from 'next/link'
 import { SafetyBanner } from '@/components/safety/safety-banner'
 
 export const metadata: Metadata = {
-  title: 'Recovery — built for when you fall off',
-  description: 'Most apps punish you when you slip. COYL catches you, stabilizes you, and gets you moving again — tonight, not next Monday. Same-night recovery, 1-day grace on streaks, shame-resistant re-entry.',
+  title: 'Recovery — same-night re-entry. No spiral. No restart.',
+  description: 'COYL catches you tonight, not next Monday. The slip is data, not damage. Same-night re-entry, 1-day grace on streaks, no Monday reset, no shame loop.',
   keywords: [
     'recovery from slip app',
     'shame-resistant behavior change',
@@ -14,12 +14,12 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/recovery' },
   openGraph: {
-    title: 'Recovery — built for when you fall off',
-    description: 'Most apps punish you when you slip. COYL catches you, stabilizes you, and gets you moving again.',
+    title: 'Recovery — same-night re-entry. No spiral. No restart.',
+    description: 'COYL catches you tonight, not next Monday. The slip is data, not damage.',
     url: 'https://coyl.ai/recovery',
     images: [
       {
-        url: '/api/og?title=Built+for+bad+days.+Not+perfect+users.&kicker=Recovery+engine',
+        url: '/api/og?title=Same-night+re-entry.+No+spiral.+No+restart.&kicker=Recovery+engine',
         width: 1200,
         height: 630,
       },
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Recovery — built for when you fall off',
-    description: 'Same-night recovery. No Monday reset. 1-day grace on streaks.',
-    images: ['/api/og?title=Built+for+bad+days.+Not+perfect+users.&kicker=Recovery+engine'],
+    title: 'Recovery — same-night re-entry. No spiral. No restart.',
+    description: 'Same-night re-entry. No Monday reset. 1-day grace on streaks.',
+    images: ['/api/og?title=Same-night+re-entry.+No+spiral.+No+restart.&kicker=Recovery+engine'],
   },
 }
 
@@ -41,12 +41,13 @@ export default function RecoveryPage() {
         <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">Recovery</span>
       </div>
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Built for bad days.<br />Not perfect users.
+        Same-night re-entry.<br />
+        <span className="text-orange-600">No spiral. No restart.</span>
       </h1>
       <p className="mb-16 max-w-2xl text-lg text-gray-600">
-        Most apps ghost you when you slip. Or worse — they reset your streak and make you
-        feel like you have to start over. COYL is built for the opposite: catch you fast,
-        stabilize you, keep you moving.
+        COYL catches you tonight, not next Monday. The slip is data, not damage.
+        Same-night stabilizing actions, 1-day grace on the streak, no Monday reset,
+        no shame loop. You resume the loop you were already running.
       </p>
 
       <section className="mb-12 grid grid-cols-1 gap-5 md:grid-cols-2">

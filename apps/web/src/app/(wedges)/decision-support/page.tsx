@@ -2,18 +2,18 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'COYL decision engine \u2014 cut through your own rationalization',
+  title: 'COYL decision engine \u2014 real-time guidance at the 3-second window',
   description:
-    "When your autopilot is about to decide for you, COYL cuts through. Structured decisions: best move, cost of the worse one, the excuse you're using, smallest next step. Under 120 words, no therapy voice.",
+    "The 3 seconds between the impulse and the action \u2014 that's where the decision actually happens. COYL gives you the structured answer right there. Best move, cost of the worse one, the excuse you're using, the smallest next step.",
   alternates: { canonical: '/decision-support' },
   openGraph: {
-    title: 'COYL decision engine',
+    title: 'Real-time guidance at the 3-second window',
     description:
-      "Structured decisions. Best move, cost of the worse one, the excuse you're using, smallest next step.",
+      "The 3 seconds between the impulse and the action \u2014 that's where the decision actually happens. COYL is there.",
     url: 'https://coyl.ai/decision-support',
     images: [
       {
-        url: '/api/og?title=Cut+through+your+own+rationalization.&kicker=Decision+engine',
+        url: '/api/og?title=Real-time+guidance+at+the+3-second+window.&kicker=Decision+engine',
         width: 1200,
         height: 630,
       },
@@ -21,9 +21,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'COYL decision engine',
-    description: "Structured decisions. Best move, cost of the worse one, the excuse, the next step.",
-    images: ['/api/og?title=Cut+through+your+own+rationalization.&kicker=Decision+engine'],
+    title: 'Real-time guidance at the 3-second window',
+    description: "The 3 seconds between the impulse and the action. COYL is there.",
+    images: ['/api/og?title=Real-time+guidance+at+the+3-second+window.&kicker=Decision+engine'],
   },
 }
 
@@ -35,11 +35,13 @@ export default function DecisionSupportPage() {
         <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">Decision support</span>
       </div>
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        When you don&apos;t trust your own<br />judgment in the moment.
+        Real-time guidance<br />
+        <span className="text-orange-600">at the 3-second window.</span>
       </h1>
       <p className="mb-16 max-w-2xl text-lg text-gray-600">
-        Ask COYL any live decision — should I eat this, skip today, send this text, buy this,
-        walk away? You get a structured answer in seconds.
+        The 3 seconds between the impulse and the action &mdash; that&rsquo;s where the
+        decision actually happens. Ask COYL anything live: eat this, skip today, send
+        this text, walk away. Structured answer, no therapy voice, in seconds.
       </p>
 
       <section className="mb-16 rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-transparent p-8">

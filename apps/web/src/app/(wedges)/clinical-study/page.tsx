@@ -3,9 +3,9 @@ import Link from 'next/link'
 import { BreadcrumbSchema, MedicalStudySchema } from '@/app/structured-data'
 
 export const metadata: Metadata = {
-  title: 'Clinical study — 12-week GLP-1 maintenance protocol — COYL',
+  title: 'Clinical study — study-ready. Partner-ready. No patients enrolled yet.',
   description:
-    'Open for partner enrollment. 12-week, randomized, minimal-risk behavioral study testing whether real-time pattern interrupt reduces weight regain after GLP-1 discontinuation. Protocol drafted, IRB pathway mapped, recruitment target N=80.',
+    "12-week randomized behavioral protocol on whether real-time pattern interrupt reduces weight regain after GLP-1 discontinuation. Protocol drafted, IRB pathway mapped, partners welcome. N=80 target, no enrolled patients yet — open for partner enrollment.",
   keywords: [
     'glp-1 weight regain study',
     'clinical study coyl',
@@ -15,13 +15,13 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/clinical-study' },
   openGraph: {
-    title: 'COYL Clinical Study — Open for partner enrollment',
+    title: 'Clinical study — study-ready. Partner-ready. No patients enrolled yet.',
     description:
-      '12-week randomized study on GLP-1 weight regain. Protocol drafted. IRB pathway mapped. Looking for telehealth prescribers and clinics with a GLP-1 cohort.',
+      "12-week randomized protocol on GLP-1 weight regain. Drafted and partner-ready. Open for partner enrollment.",
     url: 'https://coyl.ai/clinical-study',
     images: [
       {
-        url: '/api/og?title=12+weeks.+80+patients.+One+question+worth+answering.&kicker=Clinical+study',
+        url: '/api/og?title=Study-ready.+Partner-ready.+No+patients+enrolled+yet.&kicker=Clinical+study',
         width: 1200,
         height: 630,
       },
@@ -29,9 +29,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'COYL Clinical Study — Open for partner enrollment',
-    description: '12-week randomized study on GLP-1 weight regain. Protocol drafted. IRB pathway mapped.',
-    images: ['/api/og?title=12+weeks.+80+patients.+One+question+worth+answering.&kicker=Clinical+study'],
+    title: 'Clinical study — study-ready. Partner-ready. No patients enrolled yet.',
+    description: "12-week randomized protocol on GLP-1 weight regain. Drafted and partner-ready.",
+    images: ['/api/og?title=Study-ready.+Partner-ready.+No+patients+enrolled+yet.&kicker=Clinical+study'],
   },
 }
 
@@ -184,15 +184,15 @@ export default function ClinicalStudyPage() {
       </div>
 
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        12 weeks. 80 patients.<br />
-        <span className="text-orange-600">One question worth answering.</span>
+        Study-ready. Partner-ready.<br />
+        <span className="text-orange-600">No patients enrolled yet.</span>
       </h1>
 
       <p className="mb-10 max-w-2xl text-lg text-gray-600">
-        Does real-time pattern interrupt during GLP-1 maintenance reduce weight regain
-        after the prescription ends? The protocol is drafted. The IRB pathway is mapped.
-        We&rsquo;re looking for telehealth prescribers, obesity-medicine clinics, and
-        research labs with a GLP-1 cohort to run it with us.
+        12-week randomized protocol on whether real-time pattern interrupt during GLP-1
+        maintenance reduces weight regain after discontinuation. Protocol drafted,
+        IRB pathway mapped, N=80 target. We&rsquo;re looking for telehealth prescribers,
+        obesity-medicine clinics, and research labs to run it with us.
       </p>
 
       {/* Status row — replaces the typical "trust badge" cluster.

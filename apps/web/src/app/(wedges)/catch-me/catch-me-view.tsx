@@ -108,14 +108,14 @@ export function CatchMeView() {
       </div>
 
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Want this<br />
-        to catch you<br />
-        <span className="text-orange-600">tonight at 9pm?</span>
+        Catch yourself<br />
+        before you do it again.<br />
+        <span className="text-orange-600">Tonight at 9.</span>
       </h1>
 
       <p className="mb-10 max-w-md text-lg text-gray-600">
-        That&rsquo;s the moment your autopilot usually runs. We&rsquo;ll text you
-        then &mdash; one message, one tap, the script doesn&rsquo;t get to write the night.
+        9pm is when the script usually runs. One question, one text, one tap &mdash;
+        the autopilot doesn&rsquo;t get to write the night.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">

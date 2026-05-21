@@ -3,9 +3,9 @@ import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
 
 export const metadata: Metadata = {
-  title: 'COYL for GLP-1 \u2014 what the drug can\u2019t do, we do',
+  title: 'COYL for GLP-1 \u2014 the shot quiets hunger. COYL catches the script.',
   description:
-    "Ozempic. Wegovy. Mounjaro. The drug suppresses appetite. It doesn't catch the autopilot that got you here in the first place. COYL catches the 9pm kitchen, the stress-eat, the \u2018I deserve this\u2019 \u2014 the patterns the drug never touches.",
+    "Built for the moments medication doesn't touch \u2014 rebound windows, emotional eating, routine drift, fear of regain. Ozempic, Wegovy, Mounjaro suppress appetite. COYL catches the autopilot the drug never reaches.",
   keywords: [
     'ozempic companion',
     'wegovy app',
@@ -18,13 +18,13 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/glp1' },
   openGraph: {
-    title: 'COYL for GLP-1 \u2014 what the drug can\u2019t do, we do',
+    title: 'The shot quiets hunger. COYL catches the script.',
     description:
-      "The drug suppresses appetite. COYL catches the autopilot. Built for Ozempic, Wegovy, Mounjaro users who want the weight to stay off.",
+      "Built for the moments medication doesn't touch \u2014 rebound windows, emotional eating, routine drift, fear of regain.",
     url: 'https://coyl.ai/glp1',
     images: [
       {
-        url: '/api/og?title=What+the+drug+can%27t+do%2C+we+do.&kicker=GLP-1+companion',
+        url: '/api/og?title=The+shot+quiets+hunger.+COYL+catches+the+script.&kicker=GLP-1+companion',
         width: 1200,
         height: 630,
       },
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'COYL for GLP-1 \u2014 what the drug can\u2019t do, we do',
-    description: 'For Ozempic, Wegovy, Mounjaro users who want the weight to stay off.',
-    images: ['/api/og?title=What+the+drug+can%27t+do%2C+we+do.&kicker=GLP-1+companion'],
+    title: 'The shot quiets hunger. COYL catches the script.',
+    description: "Built for the moments medication doesn't touch \u2014 rebound, emotional eating, drift, fear of regain.",
+    images: ['/api/og?title=The+shot+quiets+hunger.+COYL+catches+the+script.&kicker=GLP-1+companion'],
   },
 }
 
@@ -101,14 +101,14 @@ export default function GLP1Page() {
       </div>
 
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        The drug suppresses appetite.<br />
-        <span className="text-orange-600">COYL catches the autopilot.</span>
+        The shot quiets hunger.<br />
+        <span className="text-orange-600">COYL catches the script.</span>
       </h1>
 
       <p className="mb-10 max-w-2xl text-lg text-gray-600">
-        Ozempic, Wegovy, Mounjaro. Brilliant drugs. They quiet the hunger.
-        They don&rsquo;t touch the 9pm kitchen, the stress-eat, the &ldquo;I deserve this.&rdquo;
-        Those scripts are still running. COYL catches them at the exact moment they fire.
+        Built for the moments medication doesn&rsquo;t touch &mdash; rebound windows,
+        emotional eating, routine drift, fear of regain. The drug quiets the hunger.
+        The autopilot is still there. COYL catches it the second it fires.
       </p>
 
       <div className="mb-16 flex flex-wrap gap-3">

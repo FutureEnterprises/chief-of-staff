@@ -148,14 +148,14 @@ export default function ChangelogPage() {
       </div>
 
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        What we shipped<br />
-        <span className="text-orange-600">this week.</span>
+        Built in public.<br />
+        <span className="text-orange-600">Shipped this week.</span>
       </h1>
 
       <p className="mb-12 max-w-2xl text-lg text-gray-600">
-        COYL ships every Monday. No press releases, no roadmap theater &mdash; the
-        protocol pages, the precision-interrupt engine, the recovery flow,
-        the GLP-1 companion. Built in public.
+        COYL ships every Monday. No press releases, no roadmap theater &mdash;
+        the behavioral interface between AI and real life, built one piece at a time.
+        Latest releases and what they unlock below.
       </p>
 
       <div className="space-y-8">

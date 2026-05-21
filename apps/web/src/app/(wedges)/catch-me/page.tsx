@@ -2,17 +2,17 @@ import type { Metadata } from 'next'
 import { CatchMeView } from './catch-me-view'
 
 export const metadata: Metadata = {
-  title: "Catch me tonight — COYL",
+  title: "Catch yourself tonight at 9 — COYL",
   description:
-    "TikTok found you. We'll text you at 9pm — the moment your autopilot usually runs. One tap, no app install required.",
+    "One question, one text. We catch you at the exact moment the script usually runs — 9pm, your autopilot, no app install required.",
   alternates: { canonical: '/catch-me' },
   openGraph: {
-    title: "Catch me tonight — COYL",
-    description: "One tap. We text you at 9pm so the autopilot doesn't.",
+    title: "Catch yourself tonight at 9 — COYL",
+    description: "One question. One text at 9pm. The script doesn't get to write the night.",
     url: 'https://coyl.ai/catch-me',
     images: [
       {
-        url: '/api/og?title=Catch+me+tonight+at+9pm.&kicker=Funnel',
+        url: '/api/og?title=Catch+yourself+tonight+at+9.&kicker=Funnel',
         width: 1200,
         height: 630,
       },
@@ -20,9 +20,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Catch me tonight — COYL",
-    description: "We text you at 9pm so the autopilot doesn't.",
-    images: ['/api/og?title=Catch+me+tonight+at+9pm.&kicker=Funnel'],
+    title: "Catch yourself tonight at 9 — COYL",
+    description: "One question. One text at 9pm. The script doesn't get to write the night.",
+    images: ['/api/og?title=Catch+yourself+tonight+at+9.&kicker=Funnel'],
   },
 }
 

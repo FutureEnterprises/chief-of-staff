@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'The science behind COYL — peer-reviewed behavioral research',
+  title: 'Science — the behavioral mechanism behind COYL',
   description:
-    'Grounded in peer-reviewed behavioral research: habit automaticity, dietary lapse triggers, just-in-time adaptive interventions (JITAI), relapse prevention, and implementation intentions. Every claim cited to a primary source.',
+    'Pattern interrupts. JITAI. Dual-process theory. Habit automaticity. Implementation intentions. The behavioral mechanism behind catching yourself in real life, every claim cited to a primary source.',
   keywords: [
     'jitai research',
     'behavior change science',
@@ -16,13 +16,13 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/science' },
   openGraph: {
-    title: 'The science behind COYL — peer-reviewed behavioral research',
+    title: 'The behavioral mechanism behind COYL',
     description:
-      'Habit automaticity. Dietary lapse triggers. JITAI. Relapse prevention. Implementation intentions. Every claim cited.',
+      'Pattern interrupts. JITAI. Dual-process. Every claim cited.',
     url: 'https://coyl.ai/science',
     images: [
       {
-        url: '/api/og?title=Grounded+in+real+behavior+science.&kicker=The+science',
+        url: '/api/og?title=The+behavioral+mechanism+behind+COYL.&kicker=The+science',
         width: 1200,
         height: 630,
       },
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'The science behind COYL',
-    description: 'Every claim cited to peer-reviewed behavioral research. JITAI, habit automaticity, relapse prevention.',
-    images: ['/api/og?title=Grounded+in+real+behavior+science.&kicker=The+science'],
+    title: 'The behavioral mechanism behind COYL',
+    description: 'Pattern interrupts. JITAI. Dual-process. Every claim cited.',
+    images: ['/api/og?title=The+behavioral+mechanism+behind+COYL.&kicker=The+science'],
   },
 }
 
@@ -99,11 +99,13 @@ export default function SciencePage() {
         <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">Science</span>
       </div>
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Grounded in real<br />behavior science.
+        The behavioral mechanism<br />
+        <span className="text-orange-600">behind COYL.</span>
       </h1>
       <p className="mb-16 max-w-2xl text-lg text-gray-600">
-        Every engine in COYL maps to peer-reviewed research. Here&apos;s what we&apos;re built on and
-        where to read the primary sources.
+        Pattern interrupts. Just-in-time adaptive interventions (JITAI). Dual-process
+        theory. Habit automaticity. Implementation intentions. Every claim cited to a
+        primary source &mdash; the science behind catching yourself in real life.
       </p>
 
       <div className="mb-12 space-y-8">

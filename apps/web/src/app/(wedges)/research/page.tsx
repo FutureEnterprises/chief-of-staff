@@ -3,9 +3,9 @@ import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
 
 export const metadata: Metadata = {
-  title: 'Research — outcomes & clinical partnerships — COYL',
+  title: 'Research — outcomes we measure, things we’ll publish — COYL',
   description:
-    'What COYL measures, what we publish, and how clinics, telehealth providers, and payers can study real-time pattern interrupt for relapse prevention. Behavioral support, not medical treatment.',
+    "The outcomes we track today, the studies we'll publish next. Clinics, telehealth providers, and payers can study real-time pattern interrupt with us. Behavioral support, not medical treatment.",
   keywords: [
     'coyl outcomes',
     'autopilot interruption research',
@@ -15,13 +15,13 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/research' },
   openGraph: {
-    title: 'COYL Research & Outcomes',
+    title: 'Outcomes we measure. Things we’ll publish.',
     description:
-      'What we measure, what we publish, and how to study real-time pattern interrupt with us.',
+      "The outcomes we track today, the studies we'll publish next.",
     url: 'https://coyl.ai/research',
     images: [
       {
-        url: '/api/og?title=What+we+measure.+What+we+publish.&kicker=Research+%26+Outcomes',
+        url: '/api/og?title=Outcomes+we+measure.+Things+we%27ll+publish.&kicker=Research+%26+Outcomes',
         width: 1200,
         height: 630,
       },
@@ -29,9 +29,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'COYL Research & Outcomes',
-    description: 'What we measure, what we publish, and how to study real-time pattern interrupt with us.',
-    images: ['/api/og?title=What+we+measure.+What+we+publish.&kicker=Research+%26+Outcomes'],
+    title: 'Outcomes we measure. Things we’ll publish.',
+    description: "The outcomes we track today, the studies we'll publish next.",
+    images: ['/api/og?title=Outcomes+we+measure.+Things+we%27ll+publish.&kicker=Research+%26+Outcomes'],
   },
 }
 
@@ -134,15 +134,15 @@ export default function ResearchPage() {
       </div>
 
       <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        We measure the moment.<br />
-        <span className="text-orange-600">Then we publish what works.</span>
+        Outcomes we measure.<br />
+        <span className="text-orange-600">Things we&rsquo;ll publish.</span>
       </h1>
 
       <p className="mb-10 max-w-2xl text-lg text-gray-600">
-        Most behavior-change apps measure engagement (app opens, sessions, content consumed).
-        COYL measures the only thing that matters: did the user catch themselves before
-        the autopilot completed? Here&rsquo;s what we track, what we publish, and how we
-        want to study it with you.
+        Most behavior-change apps measure engagement &mdash; app opens, sessions, content
+        consumed. COYL measures the only thing that matters: did the user catch themselves
+        before the loop completed? Here&rsquo;s what we track today, what we&rsquo;ll
+        publish next, and how to study it with us.
       </p>
 
       <div className="mb-16 flex flex-wrap gap-3">
