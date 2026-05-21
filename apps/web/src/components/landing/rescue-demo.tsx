@@ -260,8 +260,15 @@ export function RescueDemo() {
           </div>
         </div>
 
-        {/* Response panel */}
-        <div className="md:col-span-7">
+        {/* Response panel.
+            Min-height reservation lives on this WRAPPER (not the inner
+            states) so the section's overall height stays stable as the
+            user clicks a trigger and the AI script streams in. Without
+            this, content grows from ~80px (empty) to ~900px (fully
+            streamed) and pushes every section below down — visible as
+            an unsettling layout jump. Reserving the height upfront
+            means streaming tokens fill within a fixed window. */}
+        <div className="md:col-span-7 min-h-[560px] md:min-h-[720px]">
           <AnimatePresence mode="wait">
             {!selected && (
               <motion.div
@@ -269,7 +276,7 @@ export function RescueDemo() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex h-full min-h-[360px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 p-8 text-center"
+                className="flex h-full min-h-[560px] md:min-h-[720px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 p-8 text-center"
               >
                 <p className="text-sm text-gray-500">
                   <span className="hidden md:inline">&larr; Pick one.</span>
