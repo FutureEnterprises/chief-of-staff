@@ -53,13 +53,13 @@ export function WhatItCatches() {
         transition={{ duration: 0.55 }}
         className="mb-12 max-w-3xl"
       >
-        <p className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
-          <span className="h-px w-8 bg-orange-500" />
+        <p className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-600">
+          <span className="h-px w-8 bg-orange-600" />
           What it catches
         </p>
-        <h2 className="text-4xl font-black leading-[1.05] tracking-tight text-white md:text-5xl">
+        <h2 className="text-4xl font-black leading-[1.05] tracking-tight text-gray-900 md:text-5xl">
           Whatever you keep doing<br />
-          <span className="text-orange-400">that you don&rsquo;t mean to.</span>
+          <span className="text-orange-600">that you don&rsquo;t mean to.</span>
         </h2>
       </motion.div>
 
@@ -73,16 +73,16 @@ export function WhatItCatches() {
           >
             <Link
               href={w.href}
-              className="group block h-full rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.03] to-transparent p-6 transition-all hover:border-orange-500/40 hover:bg-white/[0.05]"
+              className="group block h-full rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:border-orange-500/40 hover:shadow-[0_8px_30px_-12px_rgba(255,102,0,0.18)]"
             >
-              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-600">
                 {w.eyebrow}
               </p>
-              <p className="mt-3 text-xl font-black leading-tight text-white">
+              <p className="mt-3 text-xl font-black leading-tight text-gray-900">
                 {w.title}
               </p>
-              <p className="mt-3 text-sm leading-relaxed text-gray-400">{w.body}</p>
-              <p className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-orange-400 transition-transform group-hover:translate-x-0.5">
+              <p className="mt-3 text-sm leading-relaxed text-gray-600">{w.body}</p>
+              <p className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-orange-600 transition-transform group-hover:translate-x-0.5">
                 {w.cta} <span aria-hidden>&rarr;</span>
               </p>
             </Link>
@@ -95,12 +95,12 @@ export function WhatItCatches() {
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ delay: 0.4, duration: 0.5 }}
-        className="mt-10 text-sm text-gray-500"
+        className="mt-10 text-sm text-gray-600"
       >
         Or anything you keep sabotaging.{' '}
         <Link
           href="/how-it-works"
-          className="text-orange-400 underline-offset-4 hover:underline"
+          className="text-orange-600 underline-offset-4 hover:underline"
         >
           The mechanic is the same
         </Link>

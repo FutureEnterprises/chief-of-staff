@@ -204,14 +204,14 @@ export function RescueDemo() {
         transition={{ duration: 0.6 }}
         className="mb-10"
       >
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
+        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-600">
           <span className="h-2 w-2 rounded-sm bg-orange-500" />
           Try it now
         </h2>
-        <h3 className="text-3xl font-bold tracking-tight text-white md:text-5xl">
+        <h3 className="text-3xl font-bold tracking-tight text-gray-900 md:text-5xl">
           Try your moment.
         </h3>
-        <p className="mt-4 max-w-xl text-sm text-gray-400">
+        <p className="mt-4 max-w-xl text-sm text-gray-600">
           Tap the one that&apos;s you. Watch what COYL says.
         </p>
       </motion.div>
@@ -235,20 +235,20 @@ export function RescueDemo() {
                   className={`group flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all ${
                     isSelected
                       ? 'border-orange-500 bg-orange-500/10 shadow-[0_0_24px_rgba(255,102,0,0.22)]'
-                      : 'border-white/10 bg-white/5 hover:border-orange-500/30 hover:bg-white/10'
+                      : 'border-gray-200 bg-gray-50 hover:border-orange-500/30 hover:bg-gray-100'
                   }`}
                 >
                   <div
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${
                       isSelected
-                        ? 'border-orange-500/50 bg-orange-500/15 text-orange-400'
-                        : 'border-white/10 bg-white/5 text-gray-400 group-hover:text-orange-400'
+                        ? 'border-orange-500/50 bg-orange-500/15 text-orange-600'
+                        : 'border-gray-200 bg-gray-50 text-gray-600 group-hover:text-orange-600'
                     }`}
                   >
                     <Icon className="h-5 w-5" strokeWidth={1.75} />
                   </div>
                   <div className="min-w-0 flex-1 pt-0.5">
-                    <p className="text-sm font-semibold text-white">{t.title}</p>
+                    <p className="text-sm font-semibold text-gray-900">{t.title}</p>
                     <p className="mt-0.5 text-xs text-gray-500">{t.sub}</p>
                     <p className="mt-1 text-[10px] font-mono uppercase tracking-widest text-gray-600">
                       {t.wedge}
@@ -276,7 +276,7 @@ export function RescueDemo() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex h-full min-h-[560px] md:min-h-[720px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 p-8 text-center"
+                className="flex h-full min-h-[560px] md:min-h-[720px] flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 p-8 text-center"
               >
                 <p className="text-sm text-gray-500">
                   <span className="hidden md:inline">&larr; Pick one.</span>
@@ -296,15 +296,15 @@ export function RescueDemo() {
                 className="space-y-3"
               >
                 <div className="flex items-start gap-3 rounded-xl border border-orange-500/20 bg-orange-500/5 p-3">
-                  <selected.icon className="h-4 w-4 shrink-0 text-orange-400" strokeWidth={1.75} />
+                  <selected.icon className="h-4 w-4 shrink-0 text-orange-600" strokeWidth={1.75} />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-white">{selected.title}</p>
-                    <p className="text-xs text-gray-400">{selected.sub}</p>
+                    <p className="text-sm font-semibold text-gray-900">{selected.title}</p>
+                    <p className="text-xs text-gray-600">{selected.sub}</p>
                   </div>
                 </div>
 
                 {streaming && !response && (
-                  <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-4">
+                  <div className="flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-4">
                     {[0, 0.15, 0.3].map((d, i) => (
                       <motion.span
                         key={i}
@@ -313,7 +313,7 @@ export function RescueDemo() {
                         className="h-1.5 w-1.5 rounded-full bg-orange-500"
                       />
                     ))}
-                    <span className="ml-1 text-xs text-gray-400">COYL is responding&hellip;</span>
+                    <span className="ml-1 text-xs text-gray-600">COYL is responding&hellip;</span>
                   </div>
                 )}
 
@@ -322,7 +322,7 @@ export function RescueDemo() {
                 {response && !streaming && (
                   <Link
                     href={`/sign-up?ref=demo&t=${selected.key}`}
-                    className="flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 p-4 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-transform hover:scale-[1.01]"
+                    className="flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 p-4 text-sm font-bold text-gray-900 shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-transform hover:scale-[1.01]"
                   >
                     <span>Want this at the real moment &mdash; not on a landing page?</span>
                     <ArrowRight className="h-4 w-4 shrink-0" />

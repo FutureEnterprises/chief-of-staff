@@ -55,13 +55,13 @@ export function PricingSnapshot() {
         transition={{ duration: 0.55 }}
         className="mb-12 max-w-3xl"
       >
-        <p className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
-          <span className="h-px w-8 bg-orange-500" />
+        <p className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-600">
+          <span className="h-px w-8 bg-orange-600" />
           Pricing
         </p>
-        <h2 className="text-4xl font-black leading-[1.05] tracking-tight text-white md:text-5xl">
+        <h2 className="text-4xl font-black leading-[1.05] tracking-tight text-gray-900 md:text-5xl">
           Free to start.<br />
-          <span className="text-orange-400">$19 when you mean it.</span>
+          <span className="text-orange-600">$19 when you mean it.</span>
         </h2>
       </motion.div>
 
@@ -74,18 +74,18 @@ export function PricingSnapshot() {
             transition={{ delay: 0.1 + i * 0.06, duration: 0.5 }}
             className={`rounded-2xl border p-5 ${
               t.featured
-                ? 'border-orange-500/40 bg-orange-500/[0.06]'
-                : 'border-white/10 bg-white/[0.02]'
+                ? 'border-orange-300 bg-orange-50'
+                : 'border-gray-200 bg-white'
             }`}
           >
             <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-gray-500">
               {t.name}
             </p>
             <p className="mt-3 flex items-baseline gap-1">
-              <span className="text-3xl font-black text-white tabular-nums">{t.price}</span>
+              <span className="text-3xl font-black text-gray-900 tabular-nums">{t.price}</span>
               <span className="text-xs text-gray-500">{t.cadence}</span>
             </p>
-            <p className="mt-3 text-xs text-gray-400">{t.hook}</p>
+            <p className="mt-3 text-xs text-gray-600">{t.hook}</p>
           </motion.div>
         ))}
       </div>
@@ -98,12 +98,12 @@ export function PricingSnapshot() {
       >
         <Link
           href="/pricing"
-          className="inline-flex items-center gap-1 text-sm font-semibold text-orange-400 underline-offset-4 hover:underline"
+          className="inline-flex items-center gap-1 text-sm font-semibold text-orange-600 underline-offset-4 hover:underline"
         >
           Full pricing &rarr;
         </Link>
-        <span className="text-gray-600">&middot;</span>
-        <p className="text-sm text-gray-500">
+        <span className="text-gray-400">&middot;</span>
+        <p className="text-sm text-gray-600">
           Annual saves 22%. Cancel anytime. No card for Free.
         </p>
       </motion.div>

@@ -35,7 +35,7 @@ const COPY: Record<Variant, {
       <>
         It&apos;s not the mistake.<br />
         It&apos;s{' '}
-        <span className="border-b-2 border-orange-500 text-orange-400" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
+        <span className="border-b-2 border-orange-500 text-orange-600" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
           what you do after
         </span>.
       </>
@@ -49,7 +49,7 @@ const COPY: Record<Variant, {
     headline: (
       <>
         Why do you keep<br />
-        <span className="border-b-2 border-orange-500 text-orange-400" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
+        <span className="border-b-2 border-orange-500 text-orange-600" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
           doing this?
         </span>
       </>
@@ -68,7 +68,7 @@ const COPY: Record<Variant, {
         Weight loss doesn&apos;t fail at lunch.
         <br />
         It fails{' '}
-        <span className="border-b-2 border-orange-500 text-orange-400" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
+        <span className="border-b-2 border-orange-500 text-orange-600" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
           at 9 PM
         </span>.
       </>
@@ -93,13 +93,13 @@ export function HeroVariants({ variant }: { variant: Variant }) {
             className="mb-6 flex items-center gap-3"
           >
             <div className="h-px w-8 bg-orange-500" />
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500" style={{ textShadow: '0 0 20px rgba(255, 102, 0, 0.4)' }}>
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-600" style={{ textShadow: '0 0 20px rgba(255, 102, 0, 0.4)' }}>
               {copy.label}
             </span>
           </motion.div>
 
           {/* COYL wordmark */}
-          <h1 className="text-[clamp(4rem,15vw,8rem)] font-black uppercase leading-[0.85] tracking-[-0.04em] text-white">
+          <h1 className="text-[clamp(4rem,15vw,8rem)] font-black uppercase leading-[0.85] tracking-[-0.04em] text-gray-900">
             {words.map((w, i) => (
               <motion.span
                 key={w.highlight}
@@ -110,7 +110,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
                 className="block transition-transform duration-500 hover:translate-x-4"
                 style={{ marginLeft: w.indent }}
               >
-                <span className="text-orange-500">{w.highlight}</span>
+                <span className="text-orange-600">{w.highlight}</span>
                 {w.rest}
               </motion.span>
             ))}
@@ -121,7 +121,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.7 }}
-            className="mt-8 max-w-xl text-2xl font-black leading-tight tracking-tight text-white sm:text-3xl"
+            className="mt-8 max-w-xl text-2xl font-black leading-tight tracking-tight text-gray-900 sm:text-3xl"
           >
             {copy.headline}
           </motion.h2>
@@ -131,7 +131,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.95, duration: 0.7 }}
-            className="mt-4 max-w-xl text-base text-gray-400 sm:text-lg"
+            className="mt-4 max-w-xl text-base text-gray-600 sm:text-lg"
           >
             {copy.subhead}
           </motion.p>
@@ -145,7 +145,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
           >
             <Link
               href={`/sign-up?v=${variant}`}
-              className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-orange-600 to-red-600 px-8 py-4 text-lg font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(255,102,0,0.5)]"
+              className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-orange-600 to-red-600 px-8 py-4 text-lg font-bold text-gray-900 shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(255,102,0,0.5)]"
             >
               <span className="relative z-10">Start free</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="relative z-10">
@@ -154,7 +154,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
             </Link>
             <Link
               href="/pricing"
-              className="group flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-8 py-4 text-lg font-semibold text-white transition-colors hover:border-orange-500/40 hover:bg-white/10"
+              className="group flex items-center gap-2 rounded-full border border-gray-300 bg-white px-8 py-4 text-lg font-semibold text-gray-900 transition-colors hover:border-orange-500/40 hover:bg-gray-50"
             >
               See pricing
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:translate-x-0.5">
@@ -189,7 +189,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
             Or take the{' '}
             <Link
               href="/audit"
-              className="font-semibold text-orange-400 underline-offset-4 hover:text-orange-300 hover:underline"
+              className="font-semibold text-orange-600 underline-offset-4 hover:text-orange-700 hover:underline"
             >
               60-second autopilot audit
             </Link>{' '}
@@ -207,7 +207,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
           <motion.div
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 6, ease: 'easeInOut', repeat: Infinity }}
-            className="relative overflow-hidden rounded-2xl border border-white/5 p-6 shadow-2xl"
+            className="relative overflow-hidden rounded-2xl border border-gray-200 p-6 shadow-2xl"
             style={{
               background: 'linear-gradient(145deg, rgba(30,30,30,0.6), rgba(15,15,15,0.8))',
               backdropFilter: 'blur(12px)',
@@ -218,14 +218,14 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               backgroundSize: '100% 4px',
             }} />
 
-            <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-4">
+            <div className="mb-4 flex items-center justify-between border-b border-gray-200 pb-4">
               <div className="flex items-center gap-2">
                 <motion.div
                   animate={{ opacity: [1, 0.4, 1] }}
                   transition={{ duration: 1.4, repeat: Infinity }}
                   className="h-3 w-3 rounded-full bg-red-500"
                 />
-                <span className="text-sm font-bold uppercase tracking-wider text-white">Autopilot detected</span>
+                <span className="text-sm font-bold uppercase tracking-wider text-gray-900">Autopilot detected</span>
               </div>
               <span className="font-mono text-xs text-gray-500">9:12 PM</span>
             </div>
@@ -235,10 +235,10 @@ export function HeroVariants({ variant }: { variant: Variant }) {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.2 }}
-                className="rounded-lg border border-white/5 bg-black/40 p-3"
+                className="rounded-lg border border-gray-200 bg-gray-100 p-3"
               >
                 <p className="mb-1 text-[11px] font-mono uppercase tracking-wider text-gray-500">You</p>
-                <p className="text-sm text-white">Opened the fridge. Again.</p>
+                <p className="text-sm text-gray-900">Opened the fridge. Again.</p>
               </motion.div>
 
               <motion.div
@@ -247,11 +247,11 @@ export function HeroVariants({ variant }: { variant: Variant }) {
                 transition={{ delay: 1.6 }}
                 className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-3"
               >
-                <p className="mb-1 text-[11px] font-mono uppercase tracking-wider text-orange-500">COYL</p>
+                <p className="mb-1 text-[11px] font-mono uppercase tracking-wider text-orange-600">COYL</p>
                 <p className="text-sm leading-relaxed text-orange-100">
                   You&apos;re not hungry. You&apos;re doing it again.
                   <br />
-                  Close the fridge. Walk 5 minutes. <span className="font-bold text-orange-400">Then</span> decide.
+                  Close the fridge. Walk 5 minutes. <span className="font-bold text-orange-600">Then</span> decide.
                 </p>
               </motion.div>
 

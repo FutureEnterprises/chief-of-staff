@@ -50,7 +50,7 @@ export function LandingFooter() {
   ]
 
   return (
-    <footer className="relative z-10 border-t border-white/5 bg-[#0a0a0a] pb-8 pt-16">
+    <footer className="relative z-10 border-t border-gray-200 bg-[#fafaf7] pb-8 pt-16">
       <div className="mx-auto max-w-7xl px-6 md:px-12">
         {/* Newsletter capture — every bouncing visitor is a free lead we
             otherwise lose. Footer placement gets the visitor who scrolled
@@ -75,13 +75,13 @@ export function LandingFooter() {
           <FooterColumn title="Account" links={legal} />
         </div>
 
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/5 pt-6 md:flex-row md:items-center">
+        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-gray-200 pt-6 md:flex-row md:items-center">
           <span className="text-xs text-gray-600">
             &copy; {new Date().getFullYear()} COYL &middot; Stop the script before it runs your life.
           </span>
           <Link
             href="/sign-up?ref=footer"
-            className="text-xs font-bold text-orange-400 transition-colors hover:text-orange-300"
+            className="text-xs font-bold text-orange-600 transition-colors hover:text-orange-700"
           >
             Start free &rarr;
           </Link>
@@ -100,7 +100,7 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <p className="mb-3 font-mono text-[10px] font-bold uppercase tracking-widest text-orange-500">
+      <p className="mb-3 font-mono text-[10px] font-bold uppercase tracking-widest text-orange-600">
         {title}
       </p>
       <ul className="space-y-2">
@@ -108,7 +108,7 @@ function FooterColumn({
           <li key={l.href}>
             <Link
               href={l.href}
-              className="text-sm text-gray-400 transition-colors hover:text-white"
+              className="text-sm text-gray-600 transition-colors hover:text-gray-900"
             >
               {l.label}
             </Link>

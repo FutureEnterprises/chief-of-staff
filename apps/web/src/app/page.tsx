@@ -2,7 +2,6 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { SoftwareApplicationSchema, FAQSchema } from './structured-data'
-import { CrystalBackground } from '@/components/landing/crystal-bg'
 import { GlassNav } from '@/components/landing/glass-nav'
 import { HeroVariants } from '@/components/landing/hero-variants'
 import { RescueDemo } from '@/components/landing/rescue-demo'
@@ -84,11 +83,11 @@ export default async function HomePage({
   const variant = await pickVariant(params?.v)
 
   return (
-    <CrystalBackground>
+    <>
       <SoftwareApplicationSchema />
       <FAQSchema />
       <VariantCookieSetter variant={variant} />
-      <div className="relative min-h-screen text-white selection:bg-orange-500 selection:text-white">
+      <div className="relative min-h-screen bg-[#fafaf7] text-gray-900 selection:bg-orange-500 selection:text-white">
         <GlassNav />
 
         <main className="relative z-10">
@@ -121,7 +120,7 @@ export default async function HomePage({
 
         <LandingFooter />
       </div>
-    </CrystalBackground>
+    </>
   )
 }
 

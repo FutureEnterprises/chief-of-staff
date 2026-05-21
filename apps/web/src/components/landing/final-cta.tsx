@@ -14,7 +14,7 @@ export function FinalCta() {
         initial={{ opacity: 0, y: 20 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6 }}
-        className="text-4xl font-black leading-tight tracking-tight text-white md:text-6xl"
+        className="text-4xl font-black leading-tight tracking-tight text-gray-900 md:text-6xl"
       >
         If one moment keeps{' '}
         <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
@@ -32,7 +32,7 @@ export function FinalCta() {
       >
         <Link
           href="/sign-up"
-          className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-10 py-4 text-lg font-bold text-white shadow-[0_0_30px_rgba(255,102,0,0.4)] transition-all hover:scale-[1.02] hover:shadow-[0_0_50px_rgba(255,102,0,0.6)]"
+          className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-10 py-4 text-lg font-bold text-gray-900 shadow-[0_0_30px_rgba(255,102,0,0.4)] transition-all hover:scale-[1.02] hover:shadow-[0_0_50px_rgba(255,102,0,0.6)]"
         >
           Start free
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition-transform group-hover:translate-x-1">
