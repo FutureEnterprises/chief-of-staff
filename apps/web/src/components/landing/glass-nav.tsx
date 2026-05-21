@@ -20,8 +20,12 @@ import { CoylLogo } from '@/components/brand/logo'
  *
  *   Product           (dropdown)  → How it works, Autopilot map, Decision
  *                                   support, Recovery engine, Audit (tool)
- *   Use cases         (dropdown)  → GLP-1, Weight loss, Procrastination,
- *                                   Destructive loops, Work, Catch me tonight
+ *   Patterns          (dropdown)  → GLP-1, Weight loss, Procrastination,
+ *                                   Recurring loops, Work, Catch me tonight
+ *                                   (the "Patterns COYL Catches" library —
+ *                                   strategist's mandate: do NOT call them
+ *                                   "use cases", "solutions", or
+ *                                   "treatment areas". They are patterns.)
  *   For teams         (link)      → /teams
  *   Research          (dropdown)  → Clinical study, The science,
  *                                   Research + outcomes, Content
@@ -54,7 +58,7 @@ const USE_CASES: DropdownLink[] = [
   { label: 'GLP-1 companion', href: '/glp1', description: 'For the moments medication does not touch.' },
   { label: 'Weight loss', href: '/weight-loss', description: 'The 9 PM kitchen, not the diet plan.' },
   { label: 'Procrastination + focus', href: '/procrastination', description: 'The tab switch, before it wins.' },
-  { label: 'Destructive loops', href: '/destructive-behaviors', description: 'Recurring loops — not clinical crisis.' },
+  { label: 'Recurring loops', href: '/destructive-behaviors', description: 'Autopilot patterns you keep returning to — not clinical crisis.' },
   { label: 'Work follow-through', href: '/work', description: 'The shower-thought that derails the deep-work block.' },
   { label: 'Caught moments', href: '/caught', description: 'Shareable archetype cards.' },
 ]
@@ -122,8 +126,8 @@ export function GlassNav() {
             onEnter={() => setOpen('product')}
           />
           <DropdownTrigger
-            label="Use cases"
-            id="use-cases"
+            label="Patterns"
+            id="patterns"
             open={open === 'use-cases'}
             onToggle={() => setOpen(open === 'use-cases' ? null : 'use-cases')}
             onEnter={() => setOpen('use-cases')}
@@ -290,7 +294,7 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
 
       <div className="h-[calc(100vh-72px)] overflow-y-auto px-6 pb-12 pt-8">
         <MobileSection title="Product" links={PRODUCT} onClose={onClose} />
-        <MobileSection title="Use cases" links={USE_CASES} onClose={onClose} />
+        <MobileSection title="Patterns COYL catches" links={USE_CASES} onClose={onClose} />
         <div className="mt-8 border-t border-gray-200 pt-8">
           <Link
             href="/teams"

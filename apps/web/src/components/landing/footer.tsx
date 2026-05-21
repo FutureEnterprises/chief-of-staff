@@ -17,7 +17,7 @@ import { NewsletterSignup } from '@/components/newsletter/signup'
  */
 export function LandingFooter() {
   // Three-leg wedge balance per the May 2026 ultrathink: weight + work
-  // + destructive get equal surface in the footer. Procrastination is
+  // + recurring-loops get equal surface in the footer. Procrastination is
   // the workplace consumer lead, /teams is the workplace B2B lead,
   // /work is the follow-through niche. All three first-class wedges so
   // visitors see "any compulsive behavior" not "weight loss with extras."
@@ -39,7 +39,7 @@ export function LandingFooter() {
     { label: 'Clinical study', href: '/clinical-study' },
     { label: 'The science', href: '/science' },
     { label: 'Decision support', href: '/decision-support' },
-    { label: 'Destructive patterns', href: '/destructive-behaviors' },
+    { label: 'Recurring loops', href: '/destructive-behaviors' },
     { label: 'Autopilot map', href: '/autopilot-map' },
     { label: 'Changelog', href: '/changelog' },
     { label: 'Content playbook', href: '/content' },

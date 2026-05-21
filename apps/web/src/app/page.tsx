@@ -7,9 +7,11 @@ import { HeroVariants } from '@/components/landing/hero-variants'
 import { RescueDemo } from '@/components/landing/rescue-demo'
 import { WhatItCatches } from '@/components/landing/what-it-catches'
 import { YouArePatterned } from '@/components/landing/you-are-patterned'
+import { ArchetypesStrip } from '@/components/landing/archetypes-strip'
+import { WhyNow } from '@/components/landing/why-now'
+import { SafetyBanner } from '@/components/safety/safety-banner'
 import { HowItWorksStrip } from '@/components/landing/how-it-works-strip'
 import { ProofStrip } from '@/components/landing/proof-strip'
-import { PricingSnapshot } from '@/components/landing/pricing-snapshot'
 import { PartnersStrip } from '@/components/landing/partners-strip'
 import { FinalCta } from '@/components/landing/final-cta'
 import { LandingFooter } from '@/components/landing/footer'
@@ -92,35 +94,55 @@ export default async function HomePage({
         <GlassNav />
 
         <main className="relative z-10">
-          {/* 1. Hero — the one line + animated letters */}
+          {/* HOMEPAGE v6 — 10-beat category-launch flow per the May 2026
+              virality dispatch. Order reflects: myth first, mechanism
+              second, viral surface third (archetypes), category arrival
+              fourth (why now), use cases fifth (patterns), proof + safety
+              sixth, audit CTA last. Pricing is intentionally NOT on the
+              homepage — strategist's rule: "do not lead with pricing." */}
+
+          {/* 1. Hero — AI for the moment before behavior happens. */}
           <HeroVariants variant={variant} />
 
-          {/* 2. Try it now — the product moment, mid-fold */}
+          {/* 2. The premise — most human failure is predictable.
+              "You are not random. You are patterned." */}
+          <YouArePatterned />
+
+          {/* 3 + 4. How COYL works — learns the loops, then intervenes.
+              The mechanism in detect / interrupt / recover form. */}
+          <HowItWorksStrip />
+
+          {/* 5. Try it now — real examples. The interactive rescue demo
+              proves the mechanism without a signup. */}
           <div id="try-it">
             <RescueDemo />
           </div>
 
-          {/* 3. The premise — "You are not random. You are patterned."
-              Myth-first beat per the May 2026 virality dispatch — ladders
-              the demo into the category claim before naming the use cases. */}
-          <YouArePatterned />
+          {/* 6. The six families — the viral surface. People recognise
+              themselves here BEFORE taking the audit; the audit confirms. */}
+          <ArchetypesStrip />
 
-          {/* 4. What it catches — three wedges, one band */}
+          {/* 7. Why now — three pillars of category arrival. The
+              press-grade "AI is leaving the prompt box" framing. */}
+          <WhyNow />
+
+          {/* 8. Patterns COYL catches — the breadth band. Renamed from
+              "Use cases" per strategist: this is a pattern library, not
+              a solutions catalog. */}
           <WhatItCatches />
 
-          {/* 4. How it works — detect / interrupt / recover */}
-          <HowItWorksStrip />
-
-          {/* 5. The proof — comparison + clinical + recovery */}
+          {/* 9. Proof + safety — research outcomes + the safety frame.
+              Behavioral support, not medical treatment. */}
           <ProofStrip />
+          <div className="mx-auto max-w-5xl px-6 pb-16 md:px-12">
+            <SafetyBanner variant="inline" />
+          </div>
 
-          {/* 6. Pricing snapshot — 4 tiers, route to /pricing */}
-          <PricingSnapshot />
-
-          {/* 7. For partners — B2B trust strip */}
+          {/* For partners — B2B trust strip, sits just before final CTA. */}
           <PartnersStrip />
 
-          {/* 8. Final CTA */}
+          {/* 10. Final CTA — the audit. Strategist's mandate: the
+              homepage ends pointing at the audit, not the signup. */}
           <FinalCta />
         </main>
 

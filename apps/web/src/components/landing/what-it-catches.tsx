@@ -37,11 +37,11 @@ export function WhatItCatches() {
       cta: 'Procrastination',
     },
     {
-      eyebrow: 'DESTRUCTIVE LOOPS',
+      eyebrow: 'RECURRING LOOPS',
       title: '"Just this once."',
-      body: 'The drink. The scroll. The compulsive checking. The same exact decision, every time.',
+      body: 'The scroll. The checking. The same exact decision at the same exact time. Behavioral support — not clinical crisis.',
       href: '/destructive-behaviors',
-      cta: 'Destructive patterns',
+      cta: 'Recurring loops',
     },
   ]
 
@@ -55,7 +55,7 @@ export function WhatItCatches() {
       >
         <p className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-600">
           <span className="h-px w-8 bg-orange-600" />
-          What it catches
+          Patterns COYL catches
         </p>
         <h2 className="text-4xl font-black leading-[1.05] tracking-tight text-gray-900 md:text-5xl">
           Whatever you keep doing<br />

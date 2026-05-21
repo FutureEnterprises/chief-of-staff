@@ -228,22 +228,38 @@ export function AuditView() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {/* Archetype card — the shareable atom. Per the viral
-              mechanics playbook §2, this is the MBTI-of-self-sabotage
-              moment. People share personality results because the
-              result says something true about them without admitting
-              failure. */}
-          <div className="mb-6 rounded-3xl border border-orange-500/40 bg-gradient-to-br from-orange-500/[0.10] via-orange-500/[0.03] to-transparent p-6 md:p-8 shadow-[0_0_40px_-10px_rgba(255,102,0,0.35)]">
+          {/* Archetype card — two-tier: FAMILY headlines (the meme),
+              SPECIFIC is the texture (the moment). Per the May 2026
+              virality dispatch: people share family identity ("I'm a
+              Deserver") more than they share situational labels. The
+              family is the screenshot atom; the specific is the
+              context that proves the result is real. */}
+          <div className="mb-6 rounded-3xl border border-orange-300 bg-gradient-to-br from-orange-50 via-white to-white p-6 shadow-[0_24px_60px_-12px_rgba(255,102,0,0.18)] md:p-8">
             <p className="text-xs font-mono uppercase tracking-[0.28em] text-orange-600">
-              You&rsquo;re a
+              You&rsquo;re
             </p>
-            <p className="mt-2 flex items-center gap-3 text-3xl font-black leading-tight text-gray-900 md:text-4xl">
-              <span>{archetype.emoji}</span>
-              <span>{archetype.name}</span>
+            <p className="mt-2 flex flex-wrap items-baseline gap-3 text-4xl font-black leading-tight text-gray-900 md:text-5xl">
+              <span aria-hidden>{archetype.family.emoji}</span>
+              <span>{archetype.family.name}</span>
             </p>
-            <p className="mt-3 text-sm text-gray-700">
-              {archetype.prevalenceCopy}
+            <p className="mt-3 max-w-xl text-base leading-relaxed text-gray-700">
+              {archetype.family.essence}
             </p>
+            <p className="mt-4 font-mono text-sm italic text-orange-700">
+              Signature script: {archetype.family.signature}
+            </p>
+            <p className="mt-3 text-sm text-gray-600">
+              {archetype.family.prevalenceCopy}
+            </p>
+            <div className="mt-5 rounded-2xl border border-gray-200 bg-white p-4">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-gray-500">
+                Your specific moment
+              </p>
+              <p className="mt-1 flex items-center gap-2 text-base font-bold text-gray-900">
+                <span aria-hidden>{archetype.specific.emoji}</span>
+                <span>{archetype.specific.name}</span>
+              </p>
+            </div>
             <ArchetypeShareButton archetype={archetype} />
           </div>
 
@@ -351,13 +367,13 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
   const [copied, setCopied] = useState(false)
 
   const shareUrl = buildShareUrl(archetype)
-  const shareText = `${archetype.emoji} I'm a ${archetype.name}. ${archetype.prevalenceCopy} Find yours:`
+  const shareText = `${archetype.family.emoji} I'm ${archetype.family.name}. ${archetype.family.signature} Find yours:`
 
   async function handleShare() {
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
         await navigator.share({
-          title: `COYL · I'm a ${archetype.name}`,
+          title: `COYL · I'm ${archetype.family.name}`,
           text: shareText,
           url: shareUrl,
         })
