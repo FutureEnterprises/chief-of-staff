@@ -7,7 +7,16 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "prebuild": "expo prebuild"
+    "prebuild": "expo prebuild",
+    "preflight": "node scripts/preflight.js",
+    "preflight:ios": "node scripts/preflight.js --platform ios --for submit",
+    "preflight:android": "node scripts/preflight.js --platform android --for submit",
+    "build:ios": "node scripts/preflight.js --platform ios --for build && eas build --platform ios --profile production",
+    "build:android": "node scripts/preflight.js --platform android --for build && eas build --platform android --profile production",
+    "build:all": "node scripts/preflight.js --platform all --for build && eas build --platform all --profile production",
+    "submit:ios": "node scripts/preflight.js --platform ios --for submit && eas submit --platform ios --profile production",
+    "submit:android": "node scripts/preflight.js --platform android --for submit && eas submit --platform android --profile production",
+    "submit:all": "node scripts/preflight.js --platform all --for submit && eas submit --platform all --profile production"
   },
   "dependencies": {
     "@babel/runtime": "^7.29.2",
