@@ -153,6 +153,56 @@ export default async function ArchetypeSharePage({ params }: PageProps) {
           </div>
         </div>
 
+        {/* AUTOPILOT REPORT CARD — the comprehensive "Spotify Wrapped"
+            style readout. Per the $6B strategy memo (30-day checklist
+            item 01): "Ship the shareable Autopilot Report card. One tap.
+            Works without login. Beautiful design." This block elevates
+            the share atom from "your archetype" to "your full report":
+            peak hour, weekly frequency, signature script, recovery
+            starting score. Stateless — derived directly from slug. */}
+        <section className="mt-12 space-y-10 border-t border-orange-500 pt-12">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-12 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Autopilot report · public card
+            </span>
+          </div>
+
+          <h2 className="font-serif text-4xl font-normal leading-[1.02] tracking-[-0.02em] text-gray-900 md:text-6xl">
+            The shape of <span className="italic text-orange-600">your script.</span>
+          </h2>
+
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+            <ReportTile
+              label="Peak danger hour"
+              value={PEAK_HOUR[a.window]}
+              caption="Window midpoint"
+            />
+            <ReportTile
+              label="Weekly frequency"
+              value={WEEKLY_FREQ[a.script]}
+              caption="Avg fires / week"
+            />
+            <ReportTile
+              label="Signature script"
+              value={a.family.signature}
+              caption="What you tell yourself"
+            />
+            <ReportTile
+              label="Self-trust start"
+              value={SELF_TRUST_START[a.script]}
+              caption="Baseline / 100"
+            />
+          </div>
+
+          <p className="max-w-2xl text-sm leading-[1.7] text-gray-600">
+            This report card is yours. No login. No email. Screenshot it,
+            send the link, post it on{' '}
+            <span className="font-serif italic">@coyl</span> — every share
+            is a friend finding their own.
+          </p>
+        </section>
+
         {/* CONVERSION — Find your own archetype */}
         <section className="mt-12">
           <h2 className="text-3xl font-black leading-tight text-gray-900 md:text-5xl">
@@ -257,4 +307,64 @@ const SCRIPT_LABEL: Record<ScriptId, string> = {
   minimize: '"One time won\'t matter."',
   exhaustion: '"I\'m too tired tonight."',
   social: '"I couldn\'t say no."',
+}
+
+/* ───────────────────────────────────────────────────────────────────
+ * AUTOPILOT REPORT CARD — derived data
+ *
+ * The four headline metrics on the public report card. Stateless,
+ * derived purely from (window × script) — no DB read. The user's
+ * specific peak hour is the window midpoint; the weekly frequency is
+ * keyed off the family's prevalence anchor; the self-trust starting
+ * score is a baseline that nudges up with real interrupts logged once
+ * the user signs up.
+ * ─────────────────────────────────────────────────────────────────── */
+
+function ReportTile({
+  label,
+  value,
+  caption,
+}: {
+  label: string
+  value: string
+  caption: string
+}) {
+  return (
+    <div className="border-t border-gray-200 pt-5">
+      <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+        {label}
+      </p>
+      <p className="mt-3 font-serif text-2xl font-normal leading-[1.1] tracking-[-0.01em] text-gray-900 md:text-3xl">
+        {value}
+      </p>
+      <p className="mt-2 text-[11px] uppercase tracking-widest text-gray-500">
+        {caption}
+      </p>
+    </div>
+  )
+}
+
+const PEAK_HOUR: Record<WindowId, string> = {
+  morning: '9:30 AM',
+  afternoon: '2:30 PM',
+  afterwork: '7:30 PM',
+  latenight: '10:30 PM',
+}
+
+const WEEKLY_FREQ: Record<ScriptId, string> = {
+  reward: '4.2×',
+  delay: '5.8×',
+  collapse: '3.1×',
+  minimize: '4.6×',
+  exhaustion: '3.4×',
+  social: '2.7×',
+}
+
+const SELF_TRUST_START: Record<ScriptId, string> = {
+  reward: '34',
+  delay: '28',
+  collapse: '22',
+  minimize: '36',
+  exhaustion: '31',
+  social: '39',
 }

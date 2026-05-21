@@ -127,6 +127,52 @@ export default function WorkWedgePage() {
           </p>
         </header>
 
+        {/* ENTERPRISE B2B BAND — per the $6B strategy memo Fix 02:
+            /work is the Salesforce / Microsoft Viva / Agentforce thesis
+            in plain sight. It was previously a buried wedge; the memo's
+            audit said it needs an enterprise-grade CTA as prominent as
+            the consumer one. This top band reframes the page so an HR
+            director, RevOps lead, or M&A team reading the URL sees the
+            commercial pitch above the fold. */}
+        <section className="rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-white p-8 md:p-12">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Enterprise · For teams + sales orgs
+            </span>
+          </div>
+          <h2 className="mt-6 font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            The behavioral interrupt layer{' '}
+            <span className="italic text-orange-600">your stack is missing.</span>
+          </h2>
+          <p className="mt-6 max-w-2xl text-lg leading-[1.7] text-gray-700">
+            Viva, Copilot, Agentforce, and every productivity tool you
+            own can analyze what already happened. COYL fires at the
+            three-second window before the follow-up gets dropped, the
+            doc gets closed, the email gets ghosted. We ship as a Slack
+            + Teams + Edge extension, or as an embeddable API for your
+            existing platform. PMPM pricing, SSO via Okta / Azure AD /
+            Google Workspace, SOC 2 in progress.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <a
+              href="mailto:enterprise@coyl.ai?subject=Pilot%20%E2%80%94%20%5Bcompany%5D&body=Hi%20COYL%20team%2C%0A%0AWe%E2%80%99re%20interested%20in%20a%2030-day%20pilot.%0A%0ACompany%3A%20%0AHeadcount%3A%20%0AExisting%20stack%3A%20%0APreferred%20kickoff%3A%20%0A%0AThanks%2C"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+            >
+              Start a 30-day pilot →
+            </a>
+            <Link
+              href="/teams"
+              className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              PMPM pricing + proposal pack
+            </Link>
+            <span className="text-xs uppercase tracking-widest text-gray-500">
+              Microsoft Viva partner application in flight
+            </span>
+          </div>
+        </section>
+
         {/* Excuses gallery — "you said / what really happened" pairs as editorial columns */}
         <section className="grid grid-cols-1 gap-10 md:grid-cols-2">
           {WORK_MOMENTS.map((m, i) => (

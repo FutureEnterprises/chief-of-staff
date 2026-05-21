@@ -194,6 +194,22 @@ export function HeroVariants({ variant }: { variant: Variant }) {
             {copy.subhead}
           </motion.p>
 
+          {/* Acquisition-positioning add-line — per the $6B strategy memo
+              Fix 01: the consumer hero ("AI for the moment before behavior
+              happens") undersells the platform. Acquirers + partners need
+              to read COYL as embeddable infrastructure, not a consumer
+              app. This single line elevates the multiple in BD rooms
+              without compromising the consumer-facing top half. */}
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85, duration: 0.6 }}
+            className="mt-5 max-w-xl border-l-2 border-orange-500 pl-4 font-serif text-lg italic leading-[1.45] text-gray-700 sm:text-xl"
+          >
+            The behavioral interrupt layer. For any platform. Any autopilot
+            script. Any human.
+          </motion.p>
+
           {/* CTAs — flipped per the May 2026 category-launch brief:
               the audit (lowest-friction, viral archetype reveal) is now
               primary; "See how it works" is the inspection path; signup
