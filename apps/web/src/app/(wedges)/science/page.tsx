@@ -78,7 +78,8 @@ const CITATIONS: Citation[] = [
     claim: 'Implementation intentions ("if-then" plans) help translate intention into action under temptation.',
     explanation: 'Every commitment in COYL is structured as a specific, trackable rule — and every rescue flow is an if-then plan for a known failure moment.',
     sources: [
-      { title: 'Meta-analysis of planning and implementation intentions (2024)', url: 'https://www.researchgate.net/publication/378870694_The_When_and_How_of_Planning_Meta-Analysis_of_the_Scope_and_Components_of_Implementation_Intentions_in_642_Tests' },
+      { title: 'Gollwitzer, P. M. (1999). Implementation intentions: Strong effects of simple plans. American Psychologist, 54(7), 493–503.', url: 'https://psycnet.apa.org/doi/10.1037/0003-066X.54.7.493' },
+      { title: 'Nahum-Shani, I. et al. (2018). Just-in-Time Adaptive Interventions (JITAIs) in Mobile Health. Annals of Behavioral Medicine, 52(6), 446–462.', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6082242/' },
     ],
   },
   {
@@ -136,6 +137,10 @@ export default function SciencePage() {
           <li>• Our AI provides general behavioral support, not personalized medical, psychological, or nutritional advice.</li>
         </ul>
       </section>
+
+      <blockquote className="mb-8 max-w-2xl rounded-2xl border-l-4 border-orange-500 bg-orange-50 px-5 py-3 italic text-gray-900">
+        COYL is built from known behavioral science. The new invention is timing, interface, and intervention delivery.
+      </blockquote>
 
       <Link href="/sign-up" className="inline-block rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white">
         Start your anti-autopilot map

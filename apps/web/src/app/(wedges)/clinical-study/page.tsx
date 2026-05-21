@@ -71,7 +71,7 @@ export const metadata: Metadata = {
 
 const STATUS = [
   { label: 'Protocol', value: 'Drafted v0.9' },
-  { label: 'IRB pathway', value: 'Minimal-risk expedited (Cat. 7)' },
+  { label: 'IRB pathway', value: 'Designed for minimal-risk expedited review (Cat. 7)' },
   { label: 'Sample size', value: 'N = 80 (1:1 randomized)' },
   { label: 'Duration', value: '12 weeks active + 90d follow-up' },
   { label: 'Status', value: 'Open for partner enrollment' },
@@ -133,7 +133,7 @@ const TIMELINE = [
 const RISK = [
   {
     h: 'Risk profile',
-    b: 'Minimal-risk behavioral study. No medical intervention, no medication change, no PHI collected without explicit consent. Falls under expedited IRB review category 7 (research on individual or group characteristics or behavior).',
+    b: 'Designed as a minimal-risk behavioral study. No medical intervention, no medication change, no PHI collected without explicit consent. Structured for expedited IRB review category 7 (research on individual or group characteristics or behavior), pending board determination.',
   },
   {
     h: 'Privacy & data',
@@ -239,8 +239,9 @@ export default function ClinicalStudyPage() {
         </h3>
         <p className="mb-8 max-w-3xl text-base leading-relaxed text-gray-600">
           Published discontinuation literature shows ~two-thirds of weight loss returns within
-          a year of stopping a GLP-1, with the largest regain occurring in the first 90 days.
-          The drug suppressed the hunger signal, but it never touched the late-night
+          a year of stopping a GLP-1 (Wilding et al., 2022 &mdash; STEP 1 extension, NEJM /
+          Diabetes, Obesity and Metabolism), with the largest regain occurring in the first
+          90 days. The drug suppressed the hunger signal, but it never touched the late-night
           kitchen loop, the stress-eat reflex, or the &ldquo;I deserve this&rdquo; script.
           When the suppression lifts, the script is right where the user left it.
         </p>
@@ -375,7 +376,7 @@ export default function ClinicalStudyPage() {
           IRB &amp; data handling
         </h2>
         <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
-          Minimal risk. Expedited pathway. Partner-ready DUA.
+          Designed for minimal risk. Expedited pathway intended. Partner-ready DUA.
         </h3>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {RISK.map((r) => (

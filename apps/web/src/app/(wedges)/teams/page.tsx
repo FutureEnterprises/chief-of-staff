@@ -108,7 +108,7 @@ const FAQ = [
   },
   {
     q: 'What does success look like?',
-    a: 'For most teams: a 15–25% reduction in self-reported "I lost the morning" episodes within the first 60 days, and a measurable lift in deep-work hours per week. We co-design the metric with you.',
+    a: 'Pilot programs are designed to test for 15–25% reduction in self-reported "lost-morning" episodes within 60 days, and a measurable lift in deep-work hours per week. These are pilot hypotheses, not guaranteed outcomes — we co-design the metric with you.',
   },
   {
     q: 'How is this different from the focus apps employees already use?',

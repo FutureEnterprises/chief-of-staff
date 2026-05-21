@@ -68,9 +68,9 @@ const DRUG_GAPS = [
     body: 'Cortisol spike at 3pm and you reach anyway. Not because of hunger. Because of pattern. COYL interrupts before the reach.',
   },
   {
-    drug: 'Drops weight 15\u201320%',
-    gap: 'Doesn\u2019t teach you what to do when it\u2019s gone',
-    body: 'GLP-1 maintenance failure rate is the story nobody talks about. The drug ends. The autopilot comes back. COYL trains the interrupt you\u2019ll need when the prescription stops.',
+    drug: 'GLP-1 medications produce roughly 15\u201320% body-weight loss in published clinical trials (STEP 1 trial, Wilding et al., NEJM 2021)',
+    gap: 'Medication can quiet appetite. It does not automatically retrain the late-night script.',
+    body: 'The maintenance failure rate is the story nobody talks about. The drug ends. The autopilot comes back. COYL trains the interrupt you\u2019ll need when the prescription stops.',
   },
 ]
 

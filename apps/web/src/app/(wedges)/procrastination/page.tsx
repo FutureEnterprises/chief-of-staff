@@ -121,10 +121,13 @@ export default function ProcrastinationWedgePage() {
         <span className="text-orange-600">You need the moment caught.</span>
       </h1>
 
-      <p className="mb-12 max-w-2xl text-lg text-gray-600">
+      <p className="mb-3 max-w-2xl text-lg text-gray-600">
         Productivity tools organize intentions. COYL interrupts avoidance.
         The tab switch takes half a second. Recovery costs 23 minutes &mdash; if you ever
         actually recover. COYL fires before the gesture completes.
+      </p>
+      <p className="mb-12 max-w-2xl text-xs text-gray-500">
+        23-minute recovery cost: Mark et al., 2008 &mdash; <em>The cost of interrupted work</em>, UC Irvine.
       </p>
 
       <div className="mb-16 flex flex-wrap gap-3">
@@ -216,6 +219,9 @@ export default function ProcrastinationWedgePage() {
           The average focus session is destroyed every 11 minutes. The recovery cost is 23.
           Multiply by your headcount. COYL embeds in the workflow as the interrupt your team
           actually wants. Outcome reporting available.
+        </p>
+        <p className="mt-2 text-xs text-gray-500">
+          11-minute interruption cadence: Microsoft Work Trend Index, 2023. 23-minute recovery cost: Mark et al., 2008 (UC Irvine).
         </p>
         <Link
           href="/research"

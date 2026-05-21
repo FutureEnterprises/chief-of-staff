@@ -47,10 +47,24 @@ const letterVariants = {
   }),
 } satisfies Record<string, unknown>
 
-const words = [
-  { highlight: 'CO', rest: 'ntrol', indent: 0 },
-  { highlight: 'Y', rest: 'our', indent: 48 },
-  { highlight: 'L', rest: 'ife', indent: 96 },
+/**
+ * COYL letterform — four standalone letters, no acronym lore.
+ *
+ * The earlier version spelled out "COntrol/Your/Life" with the
+ * highlight letters carrying the acronym. The strategist's May 2026
+ * audit was emphatic: the COYL acronym sounds like a motivational app
+ * and undercuts the category-defining AI positioning everywhere else
+ * on the site. "Your brand should not explain COYL as an acronym. It
+ * should make COYL a verb." So we drop the explanation; the letters
+ * are the wordmark and that's enough.
+ *
+ * The Y stays orange (visual anchor) — same as the footer wordmark.
+ */
+const LETTERS: Array<{ char: string; accent: boolean }> = [
+  { char: 'C', accent: false },
+  { char: 'O', accent: false },
+  { char: 'Y', accent: true },
+  { char: 'L', accent: false },
 ]
 
 type Variant = 'a' | 'b' | 'c'
@@ -136,20 +150,20 @@ export function HeroVariants({ variant }: { variant: Variant }) {
             </span>
           </motion.div>
 
-          {/* COYL wordmark — tighter tracking + leading + faster stagger */}
-          <h1 className="text-[clamp(4rem,15vw,8rem)] font-black uppercase leading-[0.82] tracking-[-0.06em] text-gray-900">
-            {words.map((w, i) => (
+          {/* COYL wordmark — four standalone letters, no acronym lore.
+              C-O-Y-L set as a single horizontal phrase; the Y carries
+              the orange accent (same as the footer wordmark). */}
+          <h1 className="flex items-baseline gap-[0.06em] text-[clamp(4rem,15vw,8rem)] font-black uppercase leading-[0.82] tracking-[-0.06em] text-gray-900">
+            {LETTERS.map((l, i) => (
               <motion.span
-                key={w.highlight}
+                key={`${l.char}-${i}`}
                 custom={i}
                 initial="hidden"
                 animate="visible"
                 variants={letterVariants}
-                className="block transition-transform duration-500 hover:translate-x-4"
-                style={{ marginLeft: w.indent }}
+                className={l.accent ? 'text-orange-600' : ''}
               >
-                <span className="text-orange-600">{w.highlight}</span>
-                {w.rest}
+                {l.char}
               </motion.span>
             ))}
           </h1>
@@ -199,7 +213,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               href="/how-it-works"
               className="group flex items-center gap-2 rounded-full border border-gray-300 bg-white px-8 py-4 text-lg font-semibold text-gray-900 transition-all hover:border-orange-400 hover:bg-white hover:shadow-[0_0_0_4px_rgba(255,102,0,0.08)]"
             >
-              See how it works
+              See the 3-second window
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:translate-x-0.5">
                 <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>

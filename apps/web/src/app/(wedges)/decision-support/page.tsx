@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { SafetyBanner } from '@/components/safety/safety-banner'
 
 export const metadata: Metadata = {
   title: 'COYL decision engine \u2014 real-time guidance at the 3-second window',
@@ -30,6 +31,7 @@ export const metadata: Metadata = {
 export default function DecisionSupportPage() {
   return (
     <>
+      <SafetyBanner variant="inline" />
       <div className="mb-4 flex items-center gap-3">
         <span className="h-px w-8 bg-orange-500" />
         <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">Decision support</span>
@@ -62,10 +64,10 @@ export default function DecisionSupportPage() {
             'Should I eat this?',
             'Should I skip the workout?',
             'Should I order takeout?',
-            'Should I drink tonight?',
+            'Should I send the follow-up?',
             'Should I buy this?',
             'Should I send this text?',
-            'Is this a craving or real hunger?',
+            'Should I close my laptop?',
             'Should I keep scrolling?',
           ].map((p) => (
             <div key={p} className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
