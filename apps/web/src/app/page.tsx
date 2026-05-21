@@ -6,6 +6,7 @@ import { GlassNav } from '@/components/landing/glass-nav'
 import { HeroVariants } from '@/components/landing/hero-variants'
 import { RescueDemo } from '@/components/landing/rescue-demo'
 import { WhatItCatches } from '@/components/landing/what-it-catches'
+import { YouArePatterned } from '@/components/landing/you-are-patterned'
 import { HowItWorksStrip } from '@/components/landing/how-it-works-strip'
 import { ProofStrip } from '@/components/landing/proof-strip'
 import { PricingSnapshot } from '@/components/landing/pricing-snapshot'
@@ -99,7 +100,12 @@ export default async function HomePage({
             <RescueDemo />
           </div>
 
-          {/* 3. What it catches — three wedges, one band */}
+          {/* 3. The premise — "You are not random. You are patterned."
+              Myth-first beat per the May 2026 virality dispatch — ladders
+              the demo into the category claim before naming the use cases. */}
+          <YouArePatterned />
+
+          {/* 4. What it catches — three wedges, one band */}
           <WhatItCatches />
 
           {/* 4. How it works — detect / interrupt / recover */}

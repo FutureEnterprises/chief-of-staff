@@ -22,16 +22,19 @@ export function LandingFooter() {
   // /work is the follow-through niche. All three first-class wedges so
   // visitors see "any compulsive behavior" not "weight loss with extras."
   const product = [
+    { label: 'Manifesto', href: '/manifesto' },
     { label: 'How it works', href: '/how-it-works' },
+    { label: 'Autopilot audit', href: '/audit' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Procrastination + focus', href: '/procrastination' },
-    { label: 'For teams (employer)', href: '/teams' },
     { label: 'GLP-1 companion', href: '/glp1' },
     { label: 'Weight loss', href: '/weight-loss' },
     { label: 'Work follow-through', href: '/work' },
+    { label: 'For teams (employer)', href: '/teams' },
   ]
 
   const partners = [
+    { label: 'Press kit', href: '/press' },
     { label: 'Research + outcomes', href: '/research' },
     { label: 'Clinical study', href: '/clinical-study' },
     { label: 'The science', href: '/science' },
@@ -63,7 +66,7 @@ export function LandingFooter() {
           <div className="col-span-2 flex flex-col md:col-span-1">
             <CoylLogo size="sm" theme="dark" />
             <p className="mt-3 max-w-[14rem] text-xs leading-relaxed text-gray-500">
-              The pattern-interrupt AI for people who already know what to do.
+              The missing behavioral interface between AI and real life.
             </p>
             <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-gray-600">
               Behavioral support · Not medical treatment

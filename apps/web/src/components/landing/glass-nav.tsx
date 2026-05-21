@@ -41,11 +41,12 @@ type DropdownLink = {
 type DropdownKey = 'product' | 'use-cases' | 'research' | null
 
 const PRODUCT: DropdownLink[] = [
+  { label: 'Manifesto', href: '/manifesto', description: 'AI has never met human behavior before. Read the category claim.' },
   { label: 'How it works', href: '/how-it-works', description: 'Detect, interrupt, recover — the three-step loop.' },
+  { label: 'Autopilot audit', href: '/audit', description: '60 seconds. Find your archetype. Share the card.' },
   { label: 'Autopilot map', href: '/autopilot-map', description: 'Your danger windows visualised over the week.' },
   { label: 'Decision support', href: '/decision-support', description: 'Real-time guidance at the 3-second window.' },
   { label: 'Recovery engine', href: '/recovery', description: 'Same-night re-entry. No spiral. No restart.' },
-  { label: 'Autopilot audit', href: '/audit', description: '60 seconds. Find your archetype. Share the card.' },
   { label: 'Catch me tonight', href: '/catch-me', description: 'One SMS at 9 PM — the moment, caught.' },
 ]
 
@@ -62,6 +63,7 @@ const RESEARCH: DropdownLink[] = [
   { label: 'The science', href: '/science', description: 'Pattern interrupts, JITAI, recovery psychology.' },
   { label: 'Clinical study', href: '/clinical-study', description: 'Study-readiness package — protocol drafted.' },
   { label: 'Research + outcomes', href: '/research', description: 'What we measure, what we will publish.' },
+  { label: 'Press', href: '/press', description: 'AI is leaving the prompt box — for journalists.' },
   { label: 'Content playbook', href: '/content', description: 'Long-form writing on behavior, AI, and habit.' },
   { label: 'Changelog', href: '/changelog', description: 'What shipped, what is shipping next.' },
 ]
