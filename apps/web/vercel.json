@@ -56,6 +56,10 @@
     {
       "path": "/api/cron/scheduled-interrupts",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/autopilot-map-monthly",
+      "schedule": "0 10 1 * *"
     }
   ]
 }
