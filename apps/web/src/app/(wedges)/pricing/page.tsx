@@ -4,24 +4,22 @@ import { PricingView } from './pricing-view'
 export const metadata: Metadata = {
   title: 'Pricing — COYL',
   description:
-    'Free audit + 1 behavior loop to start. Core $9.99/mo for the full rescue + recovery engine. GLP-1 Companion $19.99/mo for weight maintenance + rebound coverage. Clinics + employers $5–$15 PMPM.',
+    'Free audit + archetype card + 3 interrupts a week. Core $12/mo (or $99/yr as a commitment) for everything. Teams + clinics on PMPM.',
   keywords: [
     'coyl pricing',
     'autopilot interruption pricing',
     'behavior change app cost',
-    'glp-1 companion app price',
-    'glp-1 maintenance pricing',
     'noom alternative pricing',
   ],
   alternates: { canonical: '/pricing' },
   openGraph: {
     title: 'Pricing — COYL',
     description:
-      'Free audit to start. $9.99/mo for the interrupt + recovery engine. $19.99/mo for GLP-1 maintenance + rebound coverage.',
+      'Free to start. $12/mo for everything. $99/year as a commitment to yourself.',
     url: 'https://coyl.ai/pricing',
     images: [
       {
-        url: '/api/og?title=Pay+for+the+interrupt%2C+not+for+the+guilt.&kicker=Pricing',
+        url: '/api/og?title=Less+than+one+bad+night.&kicker=Pricing',
         width: 1200,
         height: 630,
       },
@@ -30,8 +28,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Pricing — COYL',
-    description: 'Free audit. $9.99/mo Core. $19.99/mo GLP-1 Companion. $5–$15 PMPM for clinics + employers.',
-    images: ['/api/og?title=Pay+for+the+interrupt%2C+not+for+the+guilt.&kicker=Pricing'],
+    description: 'Free + Core $12/mo. Annual $99 as a commitment device. PMPM for teams + clinics.',
+    images: ['/api/og?title=Less+than+one+bad+night.&kicker=Pricing'],
   },
 }
 

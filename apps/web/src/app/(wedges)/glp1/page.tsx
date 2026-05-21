@@ -187,6 +187,67 @@ export default function GLP1Page() {
         </p>
       </section>
 
+      {/*
+        GLP-1 Plus — the page-native upsell. The main /pricing collapsed to a
+        single $12 Core tier; GLP-1 traffic still pays the higher number because
+        the stakes (medical + aesthetic) sustain higher willingness-to-pay, but
+        the decision is surfaced ONLY to readers who self-selected onto /glp1.
+        Editorial treatment, hairline rule, no new accent color.
+      */}
+      <section className="mb-16 border-t border-orange-500 pt-12">
+        <div className="mb-3 flex items-center gap-3">
+          <span className="h-px w-8 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            GLP-1 Plus &mdash; the upgrade
+          </span>
+        </div>
+        <h2 className="mb-6 max-w-3xl font-serif text-4xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+          For users on or coming off the drug,<br />
+          <span className="italic text-orange-600">there&rsquo;s a sharper version.</span>
+        </h2>
+        <p className="mb-10 max-w-2xl text-lg leading-[1.65] text-gray-700">
+          GLP-1 Plus adds rebound-window protocol + clinician summary export +
+          post-taper relapse-prevention plan. For users on or coming off the
+          drug.
+        </p>
+
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-[1fr_auto] md:items-end">
+          <ul className="space-y-3">
+            {[
+              'Rebound-window protocol — interrupts trained while the drug is suppressing appetite, ready when it stops',
+              'Clinician summary export — share your pattern data with your prescriber in one tap',
+              'Post-taper relapse-prevention plan — the 90-day plan for the day the prescription ends',
+              'Everything in Core',
+            ].map((f) => (
+              <li key={f} className="flex items-start gap-2 text-base text-gray-700">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500" aria-hidden />
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="border-l-0 md:border-l md:border-gray-200 md:pl-10">
+            <div className="flex items-baseline gap-2">
+              <span className="font-serif text-6xl font-normal tracking-[-0.03em] text-gray-900 tabular-nums">
+                $19.99
+              </span>
+              <span className="text-sm text-gray-600">/mo</span>
+            </div>
+            <p className="mt-3 max-w-xs text-sm leading-[1.55] text-gray-600">
+              Or commit annually. Cancel anytime &mdash; we don&rsquo;t make
+              you call to leave.
+            </p>
+            <Link
+              href="/sign-up?ref=glp1-plus"
+              className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+            >
+              Start GLP-1 Plus
+              <span aria-hidden>&rarr;</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="mb-12 rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-500">
         <p>
           <span className="font-bold text-gray-700">Not medical advice.</span> COYL is

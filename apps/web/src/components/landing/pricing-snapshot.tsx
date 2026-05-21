@@ -1,14 +1,16 @@
 'use client'
 
 /**
- * LUXURY EDITORIAL OVERHAUL — May 2026
- * Refero references applied:
- *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): editorial pricing snapshot,
- *     refined serif H2 + numbers set in serif as the price-display face.
- *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): tier names in serif, hairline
- *     borders, the highlighted tier earns a single thin accent rule.
- *   - c763837b-8389-4246-a070-87ff79e8ae0b (Cluely): calm grid, generous breathing
- *     between tier columns.
+ * LUXURY EDITORIAL — May 2026 blueprint collapse.
+ *
+ * The homepage snapshot now mirrors the single-tier collapse on /pricing:
+ * two tiers only (Free, Core $12). The prior four-tier band (Free/Core/GLP-1/Teams)
+ * was strategy-shopping disguised as transparency — it gave the visitor four
+ * decisions when they needed one.
+ *
+ * Pull-line: "less than one bad night" — it reframes the $12 as
+ * comparative, not absolute. The bad night you already bought once this
+ * month cost more than the year of the interrupt.
  */
 
 import Link from 'next/link'
@@ -16,15 +18,11 @@ import { motion, useInView } from 'motion/react'
 import { useRef } from 'react'
 
 /**
- * <PricingSnapshot /> — the four tiers in one tight band.
+ * <PricingSnapshot /> — the two consumer tiers in one tight editorial band.
  *
- * Per the Refero synthesis (Linear, Vercel, Pipe): the homepage shows
- * pricing as a SNAPSHOT — names + numbers — and links to /pricing for
- * the full comparison. Full feature matrix on the homepage dilutes the
- * conversion path; this snapshot answers "is this affordable?" in one
- * scan and routes ready-to-buy visitors to the dedicated page.
- *
- * No toggle, no feature lists, no FAQ — those live at /pricing.
+ * No toggle, no feature lists, no FAQ — those live at /pricing. The job
+ * of the snapshot is to answer "is this affordable?" in one scan and
+ * route the ready-to-buy visitor to the dedicated page.
  */
 export function PricingSnapshot() {
   const ref = useRef<HTMLDivElement>(null)
@@ -35,26 +33,14 @@ export function PricingSnapshot() {
       name: 'Free',
       price: '$0',
       cadence: 'forever',
-      hook: 'Audit + 1 behavior loop.',
+      hook: 'Audit + archetype + 3 interrupts a week.',
     },
     {
       name: 'Core',
-      price: '$9.99',
+      price: '$12',
       cadence: '/mo',
-      hook: 'Interrupt. Recover. Repeat.',
-    },
-    {
-      name: 'GLP-1',
-      price: '$19.99',
-      cadence: '/mo',
-      hook: 'Weight maintenance + rebound coverage.',
+      hook: 'Everything. Cancel anytime.',
       featured: true,
-    },
-    {
-      name: 'Teams',
-      price: '$5–$15',
-      cadence: '/PMPM',
-      hook: 'Clinics + employers.',
     },
   ]
 
@@ -73,12 +59,16 @@ export function PricingSnapshot() {
           </span>
         </div>
         <h2 className="font-serif text-5xl font-normal leading-[1.02] tracking-[-0.02em] text-gray-900 md:text-6xl">
-          Free audit to start.<br />
-          <span className="italic text-orange-600">$9.99 when you mean it.</span>
+          Free to try.<br />
+          <span className="italic text-orange-600">Less than one bad night.</span>
         </h2>
+        <p className="mt-6 max-w-xl text-base leading-[1.65] text-gray-600">
+          One paid tier. $12 a month, or $99 a year as a commitment to yourself.
+          That’s the whole price page.
+        </p>
       </motion.div>
 
-      <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2">
         {tiers.map((t, i) => (
           <motion.div
             key={t.name}
@@ -93,10 +83,10 @@ export function PricingSnapshot() {
               {t.name}
             </p>
             <p className="mt-6 flex items-baseline gap-1">
-              <span className="font-serif text-4xl font-normal tracking-[-0.02em] text-gray-900 tabular-nums">{t.price}</span>
+              <span className="font-serif text-5xl font-normal tracking-[-0.02em] text-gray-900 tabular-nums">{t.price}</span>
               <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{t.cadence}</span>
             </p>
-            <p className="mt-4 text-sm leading-[1.6] text-gray-600">{t.hook}</p>
+            <p className="mt-4 max-w-sm text-sm leading-[1.6] text-gray-600">{t.hook}</p>
           </motion.div>
         ))}
       </div>
@@ -115,7 +105,7 @@ export function PricingSnapshot() {
         </Link>
         <span className="text-gray-400">&middot;</span>
         <p className="text-sm text-gray-600">
-          Annual saves ~17%. Cancel anytime. No card for Free.
+          Annual $99 — commit to the year. Cancel monthly anytime. No card for Free.
         </p>
       </motion.div>
     </section>
