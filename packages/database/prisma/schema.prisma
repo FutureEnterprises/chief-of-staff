@@ -1076,3 +1076,45 @@ enum MarketingPostStatus {
   POSTED
   ERRORED
 }
+
+// ============================================================
+// SCHEDULED INTERRUPTS — first-hour felt-interrupt funnel
+//
+// Per the May 2026 product blueprint: the highest-leverage product
+// change is "90-second onboarding with first-hour scheduled interrupt."
+// Anonymous audit-takers leave with a real interrupt locked into their
+// predicted danger window for tonight (or tomorrow if the window has
+// already passed). The cron at /api/cron/scheduled-interrupts walks
+// PENDING rows whose scheduledFor <= now and fires SMS + email.
+//
+// Distinct from Reminder (signed-in users only, task-scoped) and
+// SmsSignup (one-shot intro from /catch-me — no archetype payload).
+// This row owns the full script the audit produced, so the interrupt
+// that lands is the exact wedge/window/script the user just identified.
+// ============================================================
+
+model ScheduledInterrupt {
+  id              String   @id @default(cuid())
+  phoneNumber     String?
+  email           String?
+  archetypeFamily String   // family slug, e.g. "the-9pm-negotiator"
+  wedge           String
+  window          String
+  script          String
+  scheduledFor    DateTime
+  timezone        String
+  status          ScheduledInterruptStatus @default(PENDING)
+  sentAt          DateTime?
+  errorMessage    String?
+  createdAt       DateTime @default(now())
+
+  @@map("scheduled_interrupts")
+  @@index([status, scheduledFor])
+}
+
+enum ScheduledInterruptStatus {
+  PENDING
+  SENT
+  FAILED
+  CANCELED
+}

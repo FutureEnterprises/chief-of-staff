@@ -52,6 +52,10 @@
     {
       "path": "/api/cron/glp1-day3-interrupt",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/scheduled-interrupts",
+      "schedule": "* * * * *"
     }
   ]
 }

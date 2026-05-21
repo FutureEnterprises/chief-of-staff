@@ -426,26 +426,229 @@ export function AuditView() {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/sign-up?ref=audit"
-              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-            >
-              Build my interrupt protocol
-            </Link>
-            <button
-              onClick={reset}
-              className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
-            >
-              Run it again
-            </button>
-          </div>
+          {/* First-hour interrupt scheduler — the retention engine.
+              Per the May 2026 product blueprint, this replaces the
+              "go to /sign-up" deferred-value path. The visitor leaves
+              with a felt interrupt locked in for tonight. */}
+          <ScheduleInterruptBlock archetype={archetype} onReset={reset} />
         </motion.div>
       </AnimatePresence>
     )
   }
 
   return null
+}
+
+/**
+ * ScheduleInterruptBlock — three-state inline section that turns the
+ * audit's "Build my interrupt protocol" CTA into a captured interrupt
+ * scheduled for tonight (or tomorrow). States:
+ *
+ *   idle       — primary CTA + "Run it again"
+ *   capturing  — phone OR email + auto-detected timezone
+ *   confirmed  — warm "Tonight at 9:30 PM" card + sign-up upsell
+ */
+function ScheduleInterruptBlock({
+  archetype,
+  onReset,
+}: {
+  archetype: Archetype
+  onReset: () => void
+}) {
+  const [mode, setMode] = useState<'idle' | 'capturing' | 'confirmed'>('idle')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [scheduledForLocal, setScheduledForLocal] = useState<string | null>(null)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setErrorMessage(null)
+
+    const trimmedPhone = phone.trim()
+    const trimmedEmail = email.trim()
+    if (!trimmedPhone && !trimmedEmail) {
+      setErrorMessage('Add a phone or email so we can land the interrupt.')
+      return
+    }
+
+    const timezone =
+      typeof Intl !== 'undefined'
+        ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York'
+        : 'America/New_York'
+
+    setSubmitting(true)
+    try {
+      const res = await fetch('/api/v1/audit/schedule', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          phoneNumber: trimmedPhone || undefined,
+          email: trimmedEmail || undefined,
+          archetypeFamily: archetype.family.slug,
+          wedge: archetype.wedge,
+          window: archetype.window,
+          script: archetype.script,
+          timezone,
+        }),
+      })
+      if (!res.ok) {
+        const detail = await res.json().catch(() => ({}))
+        setErrorMessage(
+          typeof detail?.error === 'string'
+            ? detail.error
+            : 'Could not lock that in. Try again?',
+        )
+        setSubmitting(false)
+        return
+      }
+      const json = (await res.json()) as { scheduledForLocal: string }
+      setScheduledForLocal(json.scheduledForLocal)
+      setMode('confirmed')
+    } catch {
+      setErrorMessage('Network hiccup. Try once more.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (mode === 'confirmed' && scheduledForLocal) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-3xl border border-emerald-300 bg-gradient-to-br from-emerald-50 via-white to-white p-6 shadow-[0_24px_60px_-12px_rgba(16,185,129,0.18)] md:p-8"
+      >
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-emerald-700 ring-1 ring-emerald-300">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Locked in
+          </span>
+        </div>
+        <p className="mt-4 text-3xl font-black leading-tight text-gray-900 md:text-4xl">
+          {scheduledForLocal}.
+        </p>
+        <p className="mt-3 max-w-xl text-base leading-relaxed text-gray-700">
+          We&rsquo;ll land the interrupt at the exact moment your autopilot
+          usually runs. Your script tonight:
+        </p>
+        <p className="mt-3 font-serif text-lg italic text-orange-700">
+          {archetype.family.signature}
+        </p>
+        <p className="mt-2 text-sm text-gray-600">
+          Pause. Walk five minutes. Decide after.
+        </p>
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <Link
+            href="/sign-up?ref=audit"
+            className="text-sm font-semibold text-orange-700 underline-offset-4 hover:underline"
+          >
+            Want the full system? Sign up &rarr;
+          </Link>
+          <button
+            onClick={onReset}
+            className="rounded-full border border-gray-200 px-5 py-2 text-sm text-gray-700 hover:border-orange-500/40 hover:text-orange-700"
+          >
+            Run it again
+          </button>
+        </div>
+      </motion.div>
+    )
+  }
+
+  if (mode === 'capturing') {
+    return (
+      <motion.form
+        onSubmit={handleSubmit}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-3xl border border-gray-200 bg-white p-6 md:p-8"
+      >
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-orange-600">
+          One last step
+        </p>
+        <h3 className="mt-2 text-2xl font-black leading-tight text-gray-900 md:text-3xl">
+          Where do we land the interrupt?
+        </h3>
+        <p className="mt-2 max-w-lg text-sm text-gray-600">
+          Phone gets the surgical version. Email works too. Pick whichever
+          you actually open in the moment.
+        </p>
+
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <label className="block">
+            <span className="block text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
+              Phone
+            </span>
+            <input
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder="(555) 867-5309"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+            />
+          </label>
+          <label className="block">
+            <span className="block text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
+              Or email
+            </span>
+            <input
+              type="email"
+              autoComplete="email"
+              placeholder="you@domain.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+            />
+          </label>
+        </div>
+
+        {errorMessage && (
+          <p className="mt-4 text-sm font-semibold text-red-600">{errorMessage}</p>
+        )}
+
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-opacity disabled:opacity-60"
+          >
+            {submitting ? 'Locking it in…' : 'Lock in my first interrupt'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('idle')}
+            className="text-sm font-semibold text-gray-500 hover:text-gray-700"
+          >
+            Cancel
+          </button>
+        </div>
+        <p className="mt-4 font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-gray-500">
+          No spam &middot; one interrupt &middot; reply STOP to opt out
+        </p>
+      </motion.form>
+    )
+  }
+
+  return (
+    <div className="flex flex-wrap gap-3">
+      <button
+        onClick={() => setMode('capturing')}
+        className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+      >
+        Schedule my first interrupt &rarr;
+      </button>
+      <button
+        onClick={onReset}
+        className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
+      >
+        Run it again
+      </button>
+    </div>
+  )
 }
 
 function StepWrap({
