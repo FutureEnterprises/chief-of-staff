@@ -115,11 +115,32 @@ ${dangerWindows.map((w) => `- ${w.label} (${['Sun','Mon','Tue','Wed','Thu','Fri'
           text: `${firstName},\n\nHere's what your autopilot looked like this week.\n\n${text}\n\nOpen COYL: https://coyl.ai/patterns\n\n— COYL`,
         })
 
+        // Persist the full autopsy text + structured counts on the
+        // event so the in-app /autopsy page can render it without a
+        // separate model. metadataJson is Json, so an autopsy of a
+        // few KB is fine.
         await prisma.productivityEvent.create({
           data: {
             userId: user.id,
             eventType: 'WEEKLY_REPORT_SENT',
-            metadataJson: { type: 'autopilot_autopsy' },
+            metadataJson: {
+              type: 'autopilot_autopsy',
+              autopsyText: text,
+              topExcuses: excuses
+                .sort((a, b) => b._count - a._count)
+                .slice(0, 3)
+                .map((e) => ({ category: e.category, count: e._count })),
+              slipCount: slips.length,
+              rescueCounts: rescues.reduce<Record<string, number>>((acc, r) => {
+                acc[r.outcome] = r._count
+                return acc
+              }, {}),
+              tasksCompleted: completedCount,
+              dangerWindowCount: dangerWindows.length,
+              wedge: user.primaryWedge,
+              periodStart: sevenDaysAgo.toISOString(),
+              periodEnd: now.toISOString(),
+            },
           },
         })
 

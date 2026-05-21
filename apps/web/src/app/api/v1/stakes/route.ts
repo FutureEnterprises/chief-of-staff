@@ -60,20 +60,66 @@ export async function POST(req: Request) {
     return Response.json({ error: 'No billing profile — subscribe first' }, { status: 409 })
   }
 
+  // Off-session authorization: pull the customer's default payment
+  // method (or any saved one) and pre-authorize the stake amount with
+  // manual capture. That way:
+  //   - "kept"   → cancel the intent (no charge, no refund roundtrip)
+  //   - "broken" → capture the authorized amount (funds collected)
+  //
+  // If the customer has no saved payment method, return 409 so the UI
+  // can route them to subscription setup first.
+  let paymentMethodId: string | null = null
+  try {
+    const customer = await stripe.customers.retrieve(customerId)
+    if (typeof customer === 'object' && !customer.deleted) {
+      const dpm = customer.invoice_settings?.default_payment_method
+      paymentMethodId = typeof dpm === 'string' ? dpm : dpm?.id ?? null
+    }
+    if (!paymentMethodId) {
+      const pms = await stripe.paymentMethods.list({ customer: customerId, limit: 1 })
+      paymentMethodId = pms.data[0]?.id ?? null
+    }
+  } catch {
+    // ignore — fall through to the no-PM error below
+  }
+  if (!paymentMethodId) {
+    return Response.json(
+      { error: 'No payment method on file — subscribe first' },
+      { status: 409 },
+    )
+  }
+
   let stripeIntentId: string | undefined
   try {
     const intent = await stripe.paymentIntents.create({
       amount: parsed.data.amountCents,
       currency: 'usd',
       customer: customerId,
+      payment_method: paymentMethodId,
       capture_method: 'manual',
-      confirm: false,
+      confirm: true,
+      off_session: true,
       description: `COYL stake: ${parsed.data.charityLabel ?? 'GiveDirectly'}`,
       metadata: { userId: user.id, commitmentId: parsed.data.commitmentId ?? '' },
     })
+    // requires_action = SCA challenge. v1 returns 402 and lets the user
+    // retry with a different card. Real fix: return client_secret and
+    // let Stripe.js confirm with the 3DS modal client-side.
+    if (intent.status === 'requires_action') {
+      return Response.json(
+        { error: 'Card requires authentication — try a different card' },
+        { status: 402 },
+      )
+    }
+    if (intent.status !== 'requires_capture' && intent.status !== 'succeeded') {
+      return Response.json({ error: `Intent status: ${intent.status}` }, { status: 402 })
+    }
     stripeIntentId = intent.id
-  } catch {
-    return Response.json({ error: 'Failed to create payment intent' }, { status: 500 })
+  } catch (err) {
+    console.warn('Stake PaymentIntent failed', {
+      err: err instanceof Error ? err.message : 'unknown',
+    })
+    return Response.json({ error: 'Failed to authorize stake' }, { status: 500 })
   }
 
   const stake = await prisma.stake.create({

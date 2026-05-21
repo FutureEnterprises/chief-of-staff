@@ -7,6 +7,7 @@ import type { User } from '@repo/database'
 import {
   Brain, CheckSquare, Clock, Eye, Flame, FolderOpen, Home,
   Inbox, LogOut, MessageSquare, Settings, Shield, Sparkles, TrendingUp, Zap,
+  Activity,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CoylLogo } from '@/components/brand/logo'
@@ -18,6 +19,7 @@ const navItems = [
   { label: 'Slip recovery', href: '/slip', icon: Shield },
   { label: 'Commitments', href: '/commitments', icon: Shield },
   { label: 'Patterns', href: '/patterns', icon: Eye },
+  { label: 'Autopsy', href: '/autopsy', icon: Activity },
   { label: 'Simulate', href: '/simulate', icon: Zap },
   { label: 'Inbox', href: '/inbox', icon: Inbox },
   { label: 'Tasks', href: '/tasks', icon: CheckSquare },

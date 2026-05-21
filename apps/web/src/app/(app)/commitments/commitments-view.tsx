@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'motion/react'
 import { PageTransition, StaggerList, StaggerItem } from '@/components/motion/animations'
-import { Shield, Plus, Check, X, CheckCircle2 } from 'lucide-react'
+import { Shield, Plus, Check, X, CheckCircle2, DollarSign } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type Commitment = {
@@ -16,6 +16,14 @@ type Commitment = {
   breakCount: number
   lastCheckedAt: string | null
   startedAt: string
+}
+
+type Stake = {
+  id: string
+  amountCents: number
+  charityLabel: string
+  status: 'active' | 'released' | 'charged' | 'refunded'
+  commitment: { id: string } | null
 }
 
 const DOMAINS = [
@@ -32,22 +40,56 @@ const DOMAINS = [
 
 export function CommitmentsView() {
   const [commitments, setCommitments] = useState<Commitment[]>([])
+  const [stakes, setStakes] = useState<Stake[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [rule, setRule] = useState('')
   const [domain, setDomain] = useState('OTHER')
   const [frequency, setFrequency] = useState<'DAILY' | 'WEEKLY' | 'ONE_TIME'>('DAILY')
   const [saving, setSaving] = useState(false)
+  const [stakingCommitmentId, setStakingCommitmentId] = useState<string | null>(null)
+  const [stakeError, setStakeError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch('/api/v1/commitments')
-      const data = await res.json()
-      setCommitments(data.commitments ?? [])
+      const [cRes, sRes] = await Promise.all([
+        fetch('/api/v1/commitments'),
+        fetch('/api/v1/stakes'),
+      ])
+      const cData = await cRes.json()
+      setCommitments(cData.commitments ?? [])
+      if (sRes.ok) {
+        const sData = await sRes.json()
+        setStakes(sData.stakes ?? [])
+      }
     } finally {
       setLoading(false)
     }
   }, [])
+
+  async function placeStake(commitmentId: string, amountCents: number) {
+    setStakeError(null)
+    try {
+      const res = await fetch('/api/v1/stakes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amountCents, commitmentId, charityLabel: 'GiveDirectly' }),
+      })
+      if (!res.ok) {
+        const err = (await res.json().catch(() => ({}))) as { error?: string }
+        setStakeError(err.error ?? 'Could not place stake')
+        return
+      }
+      setStakingCommitmentId(null)
+      await load()
+    } catch {
+      setStakeError('Network error — try again')
+    }
+  }
+
+  function stakeFor(commitmentId: string): Stake | undefined {
+    return stakes.find((s) => s.commitment?.id === commitmentId && s.status === 'active')
+  }
 
   useEffect(() => {
     load()
@@ -197,36 +239,99 @@ export function CommitmentsView() {
             <div className="mb-8">
               <h2 className="label-xs mb-3 text-muted-foreground">Active</h2>
               <StaggerList className="space-y-2">
-                {activeCommitments.map((c) => (
-                  <StaggerItem key={c.id}>
-                    <div className="glass flex items-center justify-between rounded-xl p-4">
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold">{c.rule}</p>
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {emojiFor(c.domain)} {c.domain.toLowerCase()} &middot; {c.frequency.replace('_', ' ').toLowerCase()} &middot;
-                          <span className="ml-1 text-emerald-500">{c.keepCount} kept</span>
-                          {c.breakCount > 0 && <span className="ml-1 text-red-500">&middot; {c.breakCount} broken</span>}
-                        </p>
+                {activeCommitments.map((c) => {
+                  const stake = stakeFor(c.id)
+                  const isStaking = stakingCommitmentId === c.id
+                  return (
+                    <StaggerItem key={c.id}>
+                      <div className="glass rounded-xl p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <p className="text-sm font-semibold">{c.rule}</p>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              {emojiFor(c.domain)} {c.domain.toLowerCase()} &middot; {c.frequency.replace('_', ' ').toLowerCase()} &middot;
+                              <span className="ml-1 text-emerald-500">{c.keepCount} kept</span>
+                              {c.breakCount > 0 && <span className="ml-1 text-red-500">&middot; {c.breakCount} broken</span>}
+                              {stake && (
+                                <span className="ml-1 text-orange-400">
+                                  &middot; ${(stake.amountCents / 100).toFixed(0)} staked → {stake.charityLabel}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                          <div className="flex gap-1.5">
+                            <button
+                              onClick={() => handleCheck(c.id, true)}
+                              className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+                              title="Kept it"
+                            >
+                              <Check className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleCheck(c.id, false)}
+                              className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                              title="Broke it"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Stake row — visible only when no active stake exists.
+                            Three quick-select amounts; on click → POSTs to
+                            /api/v1/stakes which authorizes via off_session
+                            PaymentIntent on the customer's default card. On
+                            "kept" the auth is voided; on "broken" the auth
+                            is captured to GiveDirectly. */}
+                        {!stake && (
+                          <div className="mt-3 border-t border-white/5 pt-3">
+                            {!isStaking ? (
+                              <button
+                                onClick={() => {
+                                  setStakingCommitmentId(c.id)
+                                  setStakeError(null)
+                                }}
+                                className="inline-flex items-center gap-1.5 rounded-lg border border-orange-500/30 bg-orange-500/[0.06] px-3 py-1.5 text-xs font-bold text-orange-300 hover:bg-orange-500/[0.12]"
+                              >
+                                <DollarSign className="h-3 w-3" />
+                                Add a financial stake
+                              </button>
+                            ) : (
+                              <div>
+                                <p className="mb-2 text-[11px] text-muted-foreground">
+                                  Choose a stake amount. If you break the rule, the money goes to GiveDirectly. If you keep it, your card is never charged.
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                  {[1000, 2500, 5000].map((amt) => (
+                                    <button
+                                      key={amt}
+                                      onClick={() => placeStake(c.id, amt)}
+                                      className="rounded-lg bg-gradient-to-r from-orange-500 to-red-500 px-4 py-1.5 text-xs font-bold text-white shadow-[0_0_12px_-3px_rgba(255,102,0,0.4)]"
+                                    >
+                                      Stake ${(amt / 100).toFixed(0)}
+                                    </button>
+                                  ))}
+                                  <button
+                                    onClick={() => {
+                                      setStakingCommitmentId(null)
+                                      setStakeError(null)
+                                    }}
+                                    className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                                {stakeError && (
+                                  <p className="mt-2 text-[11px] text-red-400">{stakeError}</p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      <div className="flex gap-1.5">
-                        <button
-                          onClick={() => handleCheck(c.id, true)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
-                          title="Kept it"
-                        >
-                          <Check className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleCheck(c.id, false)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 text-red-500 hover:bg-red-500/20"
-                          title="Broke it"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </StaggerItem>
-                ))}
+                    </StaggerItem>
+                  )
+                })}
               </StaggerList>
             </div>
           )}
