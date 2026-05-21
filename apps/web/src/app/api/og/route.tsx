@@ -126,7 +126,7 @@ export async function GET(req: NextRequest) {
           }}
         >
           <span style={{ color: '#888888', fontSize: '22px', fontWeight: 500 }}>
-            Stop the script before it runs your life.
+            Catch yourself before you do it again.
           </span>
           <span style={{ color: accent, fontSize: '22px', fontWeight: 700 }}>
             coyl.ai

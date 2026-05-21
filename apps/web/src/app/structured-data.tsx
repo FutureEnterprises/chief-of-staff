@@ -221,10 +221,10 @@ export function WebSiteSchema() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'COYL',
-    alternateName: 'Control Over Your Life',
+    alternateName: 'Catch Yourself Before You Do It Again',
     url: 'https://coyl.ai',
     description:
-      "Real-time autopilot interruption for behavior change. Stop the script before it runs your life.",
+      "Real-time autopilot interruption for behavior change. Catch yourself before you do it again.",
     publisher: {
       '@type': 'Organization',
       name: 'COYL',

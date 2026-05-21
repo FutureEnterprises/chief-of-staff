@@ -77,7 +77,7 @@ export function LandingFooter() {
 
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-gray-200 pt-6 md:flex-row md:items-center">
           <span className="text-xs text-gray-600">
-            &copy; {new Date().getFullYear()} COYL &middot; Stop the script before it runs your life.
+            &copy; {new Date().getFullYear()} COYL &middot; Catch yourself before you do it again.
           </span>
           <Link
             href="/sign-up?ref=footer"

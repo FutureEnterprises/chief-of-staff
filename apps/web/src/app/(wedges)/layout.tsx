@@ -26,7 +26,7 @@ export default function WedgeLayout({ children }: { children: React.ReactNode })
 
       <footer className="border-t border-gray-200 bg-white px-6 py-8">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 text-xs text-gray-600">
-          <span>&copy; {new Date().getFullYear()} COYL &middot; Stop the script before it runs your life.</span>
+          <span>&copy; {new Date().getFullYear()} COYL &middot; Catch yourself before you do it again.</span>
           <div className="flex gap-4">
             <Link href="/how-it-works" className="hover:text-orange-600">How it works</Link>
             <Link href="/pricing" className="hover:text-orange-600">Pricing</Link>

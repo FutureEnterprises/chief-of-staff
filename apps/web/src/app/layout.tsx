@@ -19,15 +19,15 @@ import './globals.css'
 // openGraph.images points at the dynamic /api/og route so every share
 // \u2014 Twitter/X, LinkedIn, iMessage, Slack, Discord, Facebook \u2014 gets a
 // branded 1200\u00d7630 preview instead of collapsing to a tiny favicon.
-const OG_DEFAULT = '/api/og?title=It%27s+not+the+mistake.+It%27s+what+you+do+after.&kicker=COYL'
+const OG_DEFAULT = '/api/og?title=AI+for+the+moment+before+behavior+happens.&kicker=COYL'
 
 export const metadata: Metadata = {
   title: {
-    default: "COYL \u2014 Stop the script before it runs your life",
+    default: "COYL \u2014 Catch yourself before you do it again",
     template: '%s | COYL',
   },
   description:
-    "COYL is the decision-interrupt layer for human behavior \u2014 a real-time substrate that fires in the 3-second window between trigger and action. Late-night eating, the 9 PM kitchen, doom-scrolling, post-GLP-1 regain \u2014 caught before the script runs, not journaled after.",
+    "COYL is the first AI built for the moment before behavior happens. It detects your autopilot patterns and interrupts them in real time \u2014 before the fridge opens, before the tab wins, before one slip becomes the night.",
   keywords: [
     'decision interrupt layer',
     'autopilot interruption',
@@ -60,15 +60,15 @@ export const metadata: Metadata = {
     siteName: 'COYL',
     locale: 'en_US',
     url: 'https://coyl.ai',
-    title: "COYL \u2014 Stop the script before it runs your life",
+    title: "COYL \u2014 Catch yourself before you do it again",
     description:
-      "Real-time autopilot interruption. Catches the 9 PM kitchen, the doom-scroll, the post-GLP-1 regain \u2014 before they cost the day. Built first for weight loss.",
+      "The first AI built for the moment before behavior happens. Catches autopilot patterns in real time \u2014 the fridge, the tab, the spiral \u2014 before they run the night.",
     images: [
       {
         url: OG_DEFAULT,
         width: 1200,
         height: 630,
-        alt: 'COYL \u2014 Stop the script before it runs your life',
+        alt: 'COYL \u2014 Catch yourself before you do it again',
       },
     ],
   },
@@ -76,9 +76,9 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@coylapp',
     creator: '@coylapp',
-    title: "COYL \u2014 Stop the script before it runs your life",
+    title: "COYL \u2014 Catch yourself before you do it again",
     description:
-      "Real-time autopilot interruption. Catches the 9 PM kitchen, the doom-scroll, the post-GLP-1 regain.",
+      "The first AI for the moment before behavior happens. Catches the autopilot pattern in real time — not after the journal.",
     images: [OG_DEFAULT],
   },
   robots: {
