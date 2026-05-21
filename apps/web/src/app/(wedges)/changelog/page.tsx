@@ -1,3 +1,17 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): refined editorial H1 with
+ *     italic accent on "Shipped this week."
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): each release re-rendered
+ *     as an editorial dispatch — date kicker, serif headline, body, "for you"
+ *     italic pull-line, link row.
+ *   - 4784cf2e-58ed-4b0c-8e6d-8758f595d997 (Medium): hairline borders between
+ *     entries; no card chrome.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): newsletter
+ *     CTA set on a single top border, not a glowing card.
+ */
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
@@ -159,72 +173,85 @@ export default function ChangelogPage() {
         ]}
       />
 
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
-          Changelog
-        </span>
-      </div>
+      <div className="space-y-24 pb-12">
+        <header className="space-y-10">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-12 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Changelog
+            </span>
+          </div>
 
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Built in public.<br />
-        <span className="text-orange-600">Shipped this week.</span>
-      </h1>
+          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
+            Built in public.<br />
+            <span className="italic text-orange-600">Shipped this week.</span>
+          </h1>
 
-      <p className="mb-12 max-w-2xl text-lg text-gray-600">
-        COYL ships every Monday. No press releases, no roadmap theater &mdash;
-        the behavioral interface between AI and real life, built one piece at a time.
-        Latest releases and what they unlock below.
-      </p>
+          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+            COYL ships every Monday. No press releases, no roadmap theater &mdash;
+            the behavioral interface between AI and real life, built one piece at a time.
+            Latest releases and what they unlock below.
+          </p>
+        </header>
 
-      <div className="space-y-8">
-        {RELEASES.map((r) => (
-          <article
-            key={r.date + r.title}
-            className="rounded-2xl border border-gray-200 bg-white p-6"
+        <div>
+          {RELEASES.map((r) => (
+            <article
+              key={r.date + r.title}
+              className="border-t border-gray-200 py-12"
+            >
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                {new Date(r.date).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </p>
+              <h2 className="mt-4 font-serif text-3xl font-normal leading-[1.1] tracking-[-0.015em] text-gray-900 md:text-4xl">
+                {r.title}
+              </h2>
+              <p className="mt-5 max-w-3xl text-base leading-[1.7] text-gray-700">{r.body}</p>
+              <p className="mt-5 max-w-3xl font-serif text-lg font-normal italic leading-[1.5] text-gray-900">
+                <span className="font-mono text-[10px] font-medium not-italic uppercase tracking-[0.32em] text-orange-600">
+                  For you &rarr;{' '}
+                </span>
+                {r.forYou}
+              </p>
+              {r.links && r.links.length > 0 && (
+                <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
+                  {r.links.map((l) => (
+                    <Link
+                      key={l.href}
+                      href={l.href}
+                      className="font-serif text-base italic text-orange-600 underline-offset-4 hover:underline"
+                    >
+                      {l.label} &rarr;
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
+
+        <section className="border-t border-orange-500 pt-16">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            Subscribe
+          </p>
+          <h2 className="mt-6 font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Want updates <span className="italic text-orange-600">as we ship?</span>
+          </h2>
+          <p className="mt-6 max-w-2xl text-base leading-[1.7] text-gray-700">
+            One email a week. Tactics for catching your autopilot + new product drops.
+            Unsubscribe anytime.
+          </p>
+          <Link
+            href="/sign-up?ref=changelog"
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
           >
-            <p className="font-mono text-[11px] uppercase tracking-widest text-orange-500">
-              {new Date(r.date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </p>
-            <h2 className="mt-2 text-xl font-bold text-gray-900">{r.title}</h2>
-            <p className="mt-3 text-sm leading-relaxed text-gray-600">{r.body}</p>
-            <p className="mt-3 rounded-lg border-l-[3px] border-orange-500 bg-orange-50 px-3 py-2 text-sm font-medium text-gray-800">
-              <span className="font-bold text-orange-600">&rarr; For you:</span>{' '}
-              {r.forYou}
-            </p>
-            {r.links && r.links.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {r.links.map((l) => (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    className="inline-flex items-center gap-1 rounded-full border border-orange-500/30 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700 hover:bg-orange-500/[0.1]"
-                  >
-                    {l.label} &rarr;
-                  </Link>
-                ))}
-              </div>
-            )}
-          </article>
-        ))}
-      </div>
-
-      <div className="mt-16 rounded-3xl border border-orange-500/30 bg-gradient-to-br from-orange-500/[0.05] to-transparent p-8">
-        <h2 className="mb-2 text-xl font-bold text-gray-900">Want updates as we ship?</h2>
-        <p className="mb-5 text-sm text-gray-600">
-          One email a week. Tactics for catching your autopilot + new product drops.
-          Unsubscribe anytime.
-        </p>
-        <Link
-          href="/sign-up?ref=changelog"
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
-        >
-          Start free
-        </Link>
+            Start free
+          </Link>
+        </section>
       </div>
     </>
   )

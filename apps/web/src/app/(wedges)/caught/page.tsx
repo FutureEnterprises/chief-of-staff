@@ -1,10 +1,23 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): refined editorial H1 with
+ *     italic accent on "Someone you know just caught one."
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): loop-beat chapters set as
+ *     editorial entries on top borders.
+ *   - 4784cf2e-58ed-4b0c-8e6d-8758f595d997 (Medium): quotables list and wedge
+ *     pivots rendered as gallery columns.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): gallery-mast
+ *     section openers; AutopilotDemoCard preserved as a product surface.
+ */
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
 import { AutopilotDemoCard } from '@/components/landing/autopilot-demo-card'
 
 export const metadata: Metadata = {
-  title: 'Your real-life COYL moments \u2014 share, watch, recognize',
+  title: 'Your real-life COYL moments — share, watch, recognize',
   description:
     "Someone you know just caught themselves in the act. The 9pm kitchen, the email they didn't send, the loop they were about to run. Real moments, caught in real life. Start catching yours.",
   keywords: [
@@ -32,18 +45,18 @@ export const metadata: Metadata = {
 }
 
 /**
- * /caught \u2014 the public landing page every ShareMoment chip points at.
+ * /caught — the public landing page every ShareMoment chip points at.
  *
- * Strategic purpose (per Viral $100M ARR Playbook \u00a74.2.3, \u00a75.1.1):
+ * Strategic purpose (per Viral $100M ARR Playbook §4.2.3, §5.1.1):
  * every shared recovery moment must land on a page built to convert the
  * viewer, not the generic homepage. This IS the "How did you make this?"
- * engine applied to behavior change \u2014 except the question is "How did
+ * engine applied to behavior change — except the question is "How did
  * you break that pattern?" and the answer is the signup flow.
  *
  * Moment context is carried via the `m` query param (recovery | streak |
  * pattern | readme) so future copy tests can personalize per peak type.
  * For the first cut we render one emotionally-aligned frame that works
- * for all four moments \u2014 the recipient arrived because someone they
+ * for all four moments — the recipient arrived because someone they
  * know caught themselves in the act. That's the hook.
  */
 
@@ -74,7 +87,7 @@ const QUOTABLES = [
 
 const WEDGES = [
   { href: '/weight-loss', label: 'Weight loss', body: '9pm kitchen. Weekend spirals. Skipped weigh-ins.' },
-  { href: '/work', label: 'Work follow-through', body: 'The follow-up you said you\u2019d send. Didn\u2019t.' },
+  { href: '/work', label: 'Work follow-through', body: 'The follow-up you said you’d send. Didn’t.' },
   { href: '/destructive-behaviors', label: 'Destructive patterns', body: 'The loop you keep returning to. Even when you know better.' },
   { href: '/decision-support', label: 'Decision support', body: 'You already know. You just need something to make you decide.' },
 ]
@@ -89,129 +102,157 @@ export default function CaughtPage() {
         ]}
       />
 
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
-          Someone shared a moment
-        </span>
-      </div>
+      <div className="space-y-24 pb-12">
+        <header className="space-y-10">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-12 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Someone shared a moment
+            </span>
+          </div>
 
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Real-life COYL moments.<br />
-        <span className="text-orange-600">Someone you know just caught one.</span>
-      </h1>
+          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
+            Real-life COYL moments.<br />
+            <span className="italic text-orange-600">Someone you know just caught one.</span>
+          </h1>
 
-      <p className="mb-10 max-w-2xl text-lg text-gray-600">
-        Not Monday. Not tomorrow. The exact moment they were about to run the loop.
-        COYL caught it. They shared it. Now you can catch yours.
-      </p>
+          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+            Not Monday. Not tomorrow. The exact moment they were about to run the loop.
+            COYL caught it. They shared it. Now you can catch yours.
+          </p>
 
-      {/* Demo card — the "wow in 1 second" screenshot. Shared-link visitors
-          won't read a landing page top-to-bottom; they scan. This card is
-          the scan target. Same component the homepage hero uses so the
-          brand reads consistent across surfaces. */}
-      <div className="mb-10 max-w-md">
-        <AutopilotDemoCard />
-      </div>
+          {/* Demo card — the "wow in 1 second" screenshot, preserved as a product surface. */}
+          <div className="max-w-md pt-2">
+            <AutopilotDemoCard />
+          </div>
 
-      <div className="mb-16 flex flex-wrap gap-3">
-        <Link
-          href="/sign-up?ref=caught"
-          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          Start catching yours
-        </Link>
-        <Link
-          href="/how-it-works"
-          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
-        >
-          How it works
-        </Link>
-      </div>
-
-      <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-2 text-2xl font-bold text-gray-900">
-          It&rsquo;s not the mistake. It&rsquo;s what you do after.
-        </h2>
-        <p className="mb-8 text-sm text-gray-600">
-          The loop that runs every time you slip. COYL interrupts it at step 2.
-        </p>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {LOOP_BEATS.map((b) => (
-            <div
-              key={b.n}
-              className="rounded-xl border border-orange-500/30 bg-gray-100 p-5"
-            >
-              <p className="text-xs font-mono text-orange-500">{b.n}</p>
-              <h3 className="mt-2 text-base font-bold text-gray-900">{b.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">{b.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mb-16">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          What COYL says in the moment
-        </h2>
-        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-4xl">
-          Not motivation. Pattern recognition.
-        </h3>
-        <ul className="space-y-3">
-          {QUOTABLES.map((line) => (
-            <li
-              key={line}
-              className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-5 py-3 text-lg font-semibold text-gray-900"
-            >
-              {line}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mb-16">
-        <h2 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
-          What pattern do you keep repeating?
-        </h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {WEDGES.map((w) => (
+          <div className="flex flex-wrap gap-3 pt-2">
             <Link
-              key={w.href}
-              href={w.href}
-              className="group rounded-2xl border border-gray-200 bg-white p-5 transition-all hover:border-orange-300 hover:bg-orange-50"
+              href="/sign-up?ref=caught"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              <p className="text-base font-bold text-gray-900 group-hover:text-orange-700">
-                {w.label}
-              </p>
-              <p className="mt-1 text-sm text-gray-600">{w.body}</p>
+              Start catching yours
             </Link>
-          ))}
-        </div>
-      </section>
+            <Link
+              href="/how-it-works"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+            >
+              How it works
+            </Link>
+          </div>
+        </header>
 
-      <section className="mb-12 rounded-3xl border border-gray-200 bg-white p-8">
-        <p className="text-sm uppercase tracking-widest text-gray-500">The share you just saw</p>
-        <p className="mt-2 text-lg text-gray-700">
-          It wasn&rsquo;t bragging. It was proof. Someone caught themselves in the act and wanted
-          you to know you can too. <span className="font-bold text-gray-900">Same loop. Same interrupt.</span>{' '}
-          One signup away.
-        </p>
-      </section>
+        {/* Loop beats — chapter entries */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              The loop everyone runs
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            It&rsquo;s not the mistake. It&rsquo;s <span className="italic text-orange-600">what you do after.</span>
+          </h2>
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+            The loop that runs every time you slip. COYL interrupts it at step 2.
+          </p>
 
-      <div className="flex flex-wrap gap-3">
-        <Link
-          href="/sign-up?ref=caught"
-          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          Start catching yours
-        </Link>
-        <Link
-          href="/science"
-          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
-        >
-          See the research
-        </Link>
+          <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-3">
+            {LOOP_BEATS.map((b) => (
+              <div key={b.n} className="border-t border-orange-500 pt-6">
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                  {b.n}
+                </p>
+                <h3 className="mt-4 font-serif text-2xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900">
+                  {b.title}
+                </h3>
+                <p className="mt-3 text-base leading-[1.65] text-gray-700">{b.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Quotables */}
+        <section className="space-y-8 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              What COYL says in the moment
+            </span>
+          </div>
+          <h3 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Not motivation. <span className="italic text-orange-600">Pattern recognition.</span>
+          </h3>
+          <ul className="space-y-6 pt-4">
+            {QUOTABLES.map((line) => (
+              <li
+                key={line}
+                className="border-t border-gray-200 pt-5 font-serif text-2xl font-normal italic leading-[1.2] text-gray-900"
+              >
+                {line}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Pattern routes */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Your pattern
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            What pattern do you <span className="italic text-orange-600">keep repeating?</span>
+          </h2>
+          <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-2">
+            {WEDGES.map((w) => (
+              <Link
+                key={w.href}
+                href={w.href}
+                className="group block border-t border-gray-200 pt-6 transition-colors hover:border-orange-500"
+              >
+                <p className="font-serif text-2xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900 transition-colors group-hover:text-orange-600">
+                  {w.label}
+                </p>
+                <p className="mt-3 text-base leading-[1.65] text-gray-700">{w.body}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* The share you saw */}
+        <section className="border-t border-gray-200 pt-16">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
+            The share you just saw
+          </p>
+          <p className="mt-6 max-w-2xl text-lg leading-[1.7] text-gray-700">
+            It wasn&rsquo;t bragging. It was proof. Someone caught themselves in the act and wanted
+            you to know you can too.{' '}
+            <strong className="font-serif font-normal italic text-gray-900">
+              Same loop. Same interrupt.
+            </strong>{' '}
+            One signup away.
+          </p>
+        </section>
+
+        <section className="border-t border-gray-200 pt-16">
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/sign-up?ref=caught"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+            >
+              Start catching yours
+            </Link>
+            <Link
+              href="/science"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+            >
+              See the research
+            </Link>
+          </div>
+        </section>
       </div>
     </>
   )

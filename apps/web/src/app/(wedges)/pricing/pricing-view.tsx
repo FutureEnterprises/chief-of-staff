@@ -1,3 +1,22 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): refined editorial H1 with
+ *     italic accent on "not for the guilt."
+ *   - 4784cf2e-58ed-4b0c-8e6d-8758f595d997 (Medium): tier-grid stays as a
+ *     functional product surface (price is the product); FAQ + side-notes
+ *     get the editorial hairline-rule treatment.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): "what you get on every tier"
+ *     three-beat row set as gallery columns.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): gallery-mast
+ *     section openers, no card chrome, generous breath between sections.
+ *
+ * Design note: the four pricing tier cards themselves retain their light card
+ * form — pricing is a checkout decision and benefits from contained grouping
+ * of price + features + CTA. Editorial treatment applies to the page chrome
+ * (headline, section headers, FAQ rows, three-beat trust band).
+ */
+
 'use client'
 
 import { useState } from 'react'
@@ -171,58 +190,60 @@ export function PricingView() {
   const [interval, setInterval] = useState<Interval>('monthly')
 
   return (
-    <>
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
-          Pricing
-        </span>
-      </div>
-
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Pay for the interrupt,<br />
-        <span className="text-orange-600">not for the guilt.</span>
-      </h1>
-
-      <p className="mb-10 max-w-2xl text-lg text-gray-600">
-        Free audit + one behavior loop to start. $9.99/mo when you want the full
-        rescue + recovery engine. $19.99/mo for GLP-1 maintenance and rebound
-        coverage. No 7-day trial gimmicks, no annual lock-in tricks, cancel anytime.
-      </p>
-
-      {/* Monthly / Annual toggle */}
-      <div className="mb-12 inline-flex rounded-full border border-gray-200 bg-white p-1">
-        <button
-          type="button"
-          onClick={() => setInterval('monthly')}
-          aria-pressed={interval === 'monthly'}
-          className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors duration-200 ${
-            interval === 'monthly'
-              ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_0_12px_rgba(255,102,0,0.3)]'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-        >
-          Monthly
-        </button>
-        <button
-          type="button"
-          onClick={() => setInterval('annual')}
-          aria-pressed={interval === 'annual'}
-          className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors duration-200 ${
-            interval === 'annual'
-              ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_0_12px_rgba(255,102,0,0.3)]'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-        >
-          Annual
-          <span className="ml-1.5 rounded-full bg-orange-500/20 px-1.5 py-0.5 text-[10px] font-bold text-orange-700">
-            − 17%
+    <div className="space-y-24 pb-12">
+      <header className="space-y-10">
+        <div className="flex items-center gap-3">
+          <span className="h-px w-12 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            Pricing
           </span>
-        </button>
-      </div>
+        </div>
 
-      {/* Tier grid */}
-      <section className="mb-20 grid grid-cols-1 gap-4 lg:grid-cols-4">
+        <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
+          Pay for the interrupt,<br />
+          <span className="italic text-orange-600">not for the guilt.</span>
+        </h1>
+
+        <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+          Free audit + one behavior loop to start. $9.99/mo when you want the full
+          rescue + recovery engine. $19.99/mo for GLP-1 maintenance and rebound
+          coverage. No 7-day trial gimmicks, no annual lock-in tricks, cancel anytime.
+        </p>
+
+        {/* Monthly / Annual toggle */}
+        <div className="inline-flex rounded-full border border-gray-200 bg-white p-1">
+          <button
+            type="button"
+            onClick={() => setInterval('monthly')}
+            aria-pressed={interval === 'monthly'}
+            className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors duration-200 ${
+              interval === 'monthly'
+                ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_0_12px_rgba(255,102,0,0.3)]'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Monthly
+          </button>
+          <button
+            type="button"
+            onClick={() => setInterval('annual')}
+            aria-pressed={interval === 'annual'}
+            className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors duration-200 ${
+              interval === 'annual'
+                ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_0_12px_rgba(255,102,0,0.3)]'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Annual
+            <span className="ml-1.5 rounded-full bg-orange-500/20 px-1.5 py-0.5 text-[10px] font-bold text-orange-700">
+              − 17%
+            </span>
+          </button>
+        </div>
+      </header>
+
+      {/* Tier grid — pricing cards kept as a product surface (price IS the product) */}
+      <section className="grid grid-cols-1 gap-4 lg:grid-cols-4">
         {TIERS.map((t, i) => {
           const isPmpm = !!t.priceLabel
           const isFree = !isPmpm && t.monthly === 0
@@ -247,21 +268,23 @@ export function PricingView() {
               }`}
             >
               {t.featured && (
-                <span className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-[0_0_16px_rgba(255,102,0,0.4)]">
+                <span className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-white shadow-[0_0_16px_rgba(255,102,0,0.4)]">
                   GLP-1 lane
                 </span>
               )}
 
-              <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-600">
                 {t.name}
               </p>
-              <p className="mt-1 mb-5 text-base font-semibold text-gray-900">
+              <p className="mb-5 mt-3 font-serif text-xl font-normal italic leading-[1.25] text-gray-900">
                 {t.tagline}
               </p>
 
               <div className="mb-2 flex items-baseline gap-1">
-                <span className="text-5xl font-black text-gray-900">${priceDisplay}</span>
-                <span className="text-sm text-gray-500">{isPmpm ? '/PMPM' : '/mo'}</span>
+                <span className="font-serif text-5xl font-normal tracking-[-0.02em] text-gray-900">
+                  ${priceDisplay}
+                </span>
+                <span className="text-sm text-gray-600">{isPmpm ? '/PMPM' : '/mo'}</span>
               </div>
               <p className="mb-6 text-xs text-gray-600">
                 {isPmpm
@@ -278,7 +301,7 @@ export function PricingView() {
                 className={`mb-6 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition-all duration-200 ${
                   t.featured
                     ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_0_20px_rgba(255,102,0,0.35)] hover:shadow-[0_0_28px_rgba(255,102,0,0.5)]'
-                    : 'border border-gray-200 bg-white text-gray-100 hover:border-orange-300 hover:text-gray-900'
+                    : 'border border-gray-200 bg-white text-gray-900 hover:border-orange-300'
                 }`}
               >
                 {t.cta}
@@ -295,9 +318,9 @@ export function PricingView() {
                 {t.excluded?.map((f) => (
                   <li
                     key={f}
-                    className="flex items-start gap-2 text-sm text-gray-600 line-through"
+                    className="flex items-start gap-2 text-sm text-gray-500 line-through"
                   >
-                    <X className="mt-0.5 h-4 w-4 shrink-0 text-gray-700" />
+                    <X className="mt-0.5 h-4 w-4 shrink-0 text-gray-500" />
                     <span>{f}</span>
                   </li>
                 ))}
@@ -307,17 +330,21 @@ export function PricingView() {
         })}
       </section>
 
-      {/* Compare-the-loops belt. Per design-system-v2 §"Migration",
-          inner marketing blocks use rounded-2xl; only the tier cards
-          + final CTA stay at 3xl as the page anchors. */}
-      <section className="mb-20 rounded-2xl border border-gray-200 bg-white p-8">
-        <h2 className="mb-2 text-2xl font-bold text-gray-900">
-          What you get on every tier.
+      {/* Compare-the-loops belt */}
+      <section className="space-y-10 border-t border-gray-200 pt-16">
+        <div className="flex items-center gap-3">
+          <span className="h-px w-10 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            What you get on every tier
+          </span>
+        </div>
+        <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+          Free is real software, <span className="italic text-orange-600">not a 7-day demo.</span>
         </h2>
-        <p className="mb-6 text-sm text-gray-600">
-          Free is real software, not a 7-day demo. The paid tiers add depth, not gates around the basics.
+        <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+          The paid tiers add depth, not gates around the basics.
         </p>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-3">
           {[
             {
               n: '01',
@@ -335,62 +362,67 @@ export function PricingView() {
               b: 'Behavioral support only. Always work with your doctor for clinical concerns.',
             },
           ].map((b) => (
-            <div
-              key={b.n}
-              className="rounded-2xl border border-gray-200 bg-gray-50 p-5"
-            >
-              <p className="text-xs font-mono text-orange-500">{b.n}</p>
-              <h3 className="mt-2 text-base font-bold text-gray-900">{b.h}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">{b.b}</p>
+            <div key={b.n} className="border-t border-orange-500 pt-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                {b.n}
+              </p>
+              <h3 className="mt-4 font-serif text-2xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900">
+                {b.h}
+              </h3>
+              <p className="mt-3 text-base leading-[1.65] text-gray-700">{b.b}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="mb-20">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          FAQ
+      <section className="space-y-10 border-t border-gray-200 pt-16">
+        <div className="flex items-center gap-3">
+          <span className="h-px w-10 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            FAQ
+          </span>
+        </div>
+        <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+          Honest answers, <span className="italic text-orange-600">before you sign up.</span>
         </h2>
-        <h3 className="mb-8 text-2xl font-bold text-gray-900 md:text-3xl">
-          Honest answers, before you sign up.
-        </h3>
-        <div className="space-y-3">
+        <div className="pt-4">
           {FAQ.map((f) => (
             <details
               key={f.q}
-              className="group rounded-2xl border border-gray-200 bg-white p-5 open:border-orange-500/20 open:bg-orange-500/[0.03]"
+              className="group border-t border-gray-200 py-6 open:border-orange-500"
             >
-              <summary className="flex cursor-pointer items-center justify-between gap-3 text-base font-semibold text-gray-900 marker:hidden [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer items-start justify-between gap-6 font-serif text-xl font-normal leading-[1.3] tracking-[-0.01em] text-gray-900 marker:hidden [&::-webkit-details-marker]:hidden">
                 <span>{f.q}</span>
                 <span
                   aria-hidden
-                  className="text-orange-600 transition-transform duration-200 group-open:rotate-45"
+                  className="mt-1 font-mono text-base text-orange-600 transition-transform duration-200 group-open:rotate-45"
                 >
                   +
                 </span>
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">{f.a}</p>
+              <p className="mt-4 max-w-3xl text-base leading-[1.7] text-gray-700">{f.a}</p>
             </details>
           ))}
         </div>
       </section>
 
-      <div className="flex flex-wrap gap-3">
-        <Link
-          href="/sign-up?ref=pricing-bottom"
-          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          Start free
-        </Link>
-        <Link
-          href="/how-it-works"
-          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
-        >
-          How it works
-        </Link>
-      </div>
-    </>
+      <section className="border-t border-gray-200 pt-16">
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/sign-up?ref=pricing-bottom"
+            className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+          >
+            Start free
+          </Link>
+          <Link
+            href="/how-it-works"
+            className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+          >
+            How it works
+          </Link>
+        </div>
+      </section>
+    </div>
   )
 }

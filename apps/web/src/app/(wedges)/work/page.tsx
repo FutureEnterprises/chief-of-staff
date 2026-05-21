@@ -1,9 +1,22 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): refined editorial H1 with
+ *     italic accent on "Follow-through is."
+ *   - 4784cf2e-58ed-4b0c-8e6d-8758f595d997 (Medium): "you said / what really happened"
+ *     pairs as gallery columns, not card boxes.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): the meeting → closure stages
+ *     reframed as hairline-ruled chapter entries.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): gallery-mast
+ *     section openers, hairline rules, no card chrome.
+ */
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
 
 export const metadata: Metadata = {
-  title: "COYL for work \u2014 productivity isn't the problem. Follow-through is.",
+  title: "COYL for work — productivity isn't the problem. Follow-through is.",
   description:
     "The email you said you'd send. The meeting you didn't close out. The follow-up you let slip. COYL catches the moment the commitment drops, not after the deal is gone.",
   keywords: [
@@ -38,12 +51,12 @@ export const metadata: Metadata = {
 }
 
 /**
- * /work \u2014 the employee / work-follow-through wedge page.
+ * /work — the employee / work-follow-through wedge page.
  *
- * Positioning (per GODFILE \u00a712): COYL makes sure you follow through at
+ * Positioning (per GODFILE §12): COYL makes sure you follow through at
  * work. Not a productivity app. Not a task manager. A commitment engine
- * that catches the broken promises \u2014 the email you didn\u2019t send, the
- * meeting you didn\u2019t close, the follow-up that dropped \u2014 before they
+ * that catches the broken promises — the email you didn’t send, the
+ * meeting you didn’t close, the follow-up that dropped — before they
  * compound into missed deals or dropped balls.
  *
  * Same engine as the weight-loss wedge; different language and examples.
@@ -51,35 +64,35 @@ export const metadata: Metadata = {
 
 const WORK_MOMENTS = [
   {
-    you: '"I\u2019ll follow up."',
+    you: '"I’ll follow up."',
     real: 'You never did. The thread went cold. The deal moved on.',
   },
   {
-    you: '"I\u2019ll respond tomorrow."',
-    real: '14 days later it\u2019s buried under 200 emails you also haven\u2019t answered.',
+    you: '"I’ll respond tomorrow."',
+    real: '14 days later it’s buried under 200 emails you also haven’t answered.',
   },
   {
     you: '"No reply means stop."',
     real: 'No reply means follow up again. Waiting is not action.',
   },
   {
-    you: '"I\u2019ll get to it after lunch."',
+    you: '"I’ll get to it after lunch."',
     real: 'After lunch is after standup is after the 3 PM slump is tomorrow.',
   },
 ]
 
 const CAPABILITIES = [
   {
-    title: 'Meeting \u2192 commitment',
-    body: 'Every meeting you log generates the list of things you said you\u2019d do. No lost action items.',
+    title: 'Meeting → commitment',
+    body: 'Every meeting you log generates the list of things you said you’d do. No lost action items.',
   },
   {
-    title: 'Commitment \u2192 follow-up',
+    title: 'Commitment → follow-up',
     body: 'Each follow-up is tracked. Deadline, channel, owner. COYL pings before it slips.',
   },
   {
-    title: 'Follow-up \u2192 closure',
-    body: 'Either you closed it or you didn\u2019t. No middle ground. The loop either reports kept or broken.',
+    title: 'Follow-up → closure',
+    body: 'Either you closed it or you didn’t. No middle ground. The loop either reports kept or broken.',
   },
 ]
 
@@ -92,101 +105,126 @@ export default function WorkWedgePage() {
           { name: 'Work', url: 'https://coyl.ai/work' },
         ]}
       />
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
-          Work
-        </span>
-      </div>
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Productivity isn&apos;t the problem.<br />
-        <span className="text-orange-600">Follow-through is.</span>
-      </h1>
-      <p className="mb-12 max-w-2xl text-lg text-gray-600">
-        The email you said you&rsquo;d send. The meeting you didn&rsquo;t close out.
-        The follow-up you let slip. COYL catches the moment the commitment drops &mdash;
-        not the post-mortem after the deal is gone.
-      </p>
 
-      <section className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">
-        {WORK_MOMENTS.map((m, i) => (
-          <div
-            key={i}
-            className="rounded-2xl border border-gray-200 bg-white p-5"
-          >
-            <p className="text-base font-semibold italic text-orange-700">{m.you}</p>
-            <p className="mt-2 text-sm text-gray-600">{m.real}</p>
+      <div className="space-y-24 pb-12">
+        <header className="space-y-10">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-12 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Work
+            </span>
           </div>
-        ))}
-      </section>
 
-      <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-6 text-2xl font-bold text-gray-900">
-          Meeting &rarr; commitment &rarr; follow-up &rarr; closure.
-        </h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {CAPABILITIES.map((c) => (
-            <div
-              key={c.title}
-              className="rounded-xl border border-orange-500/30 bg-gray-100 p-5"
-            >
-              <p className="text-xs font-mono uppercase tracking-widest text-orange-500">
-                Stage
+          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
+            Productivity isn&apos;t the problem.<br />
+            <span className="italic text-orange-600">Follow-through is.</span>
+          </h1>
+
+          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+            The email you said you&rsquo;d send. The meeting you didn&rsquo;t close out.
+            The follow-up you let slip. COYL catches the moment the commitment drops &mdash;
+            not the post-mortem after the deal is gone.
+          </p>
+        </header>
+
+        {/* Excuses gallery — "you said / what really happened" pairs as editorial columns */}
+        <section className="grid grid-cols-1 gap-10 md:grid-cols-2">
+          {WORK_MOMENTS.map((m, i) => (
+            <div key={i} className="border-t border-gray-200 pt-6">
+              <p className="font-serif text-2xl font-normal italic leading-[1.2] text-orange-600">
+                {m.you}
               </p>
-              <h3 className="mt-2 text-base font-bold text-gray-900">{c.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">{c.body}</p>
+              <p className="mt-4 text-base leading-[1.65] text-gray-700">{m.real}</p>
             </div>
           ))}
-        </div>
-      </section>
+        </section>
 
-      <section className="mb-16">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          The four sentences that kill deals
-        </h2>
-        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-4xl">
-          COYL catches them in your head.
-        </h3>
-        <ul className="space-y-3">
-          {[
-            'You said you\u2019d follow up. Did you?',
-            'Waiting is not action.',
-            'No reply doesn\u2019t mean stop.',
-            'Send the email.',
-          ].map((line) => (
-            <li
-              key={line}
-              className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-5 py-3 text-lg font-semibold text-gray-900"
+        {/* Stages — chapter-style hairline entries */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              The arc of every commitment
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Meeting. Commitment. Follow-up. <span className="italic text-orange-600">Closure.</span>
+          </h2>
+
+          <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-3">
+            {CAPABILITIES.map((c) => (
+              <div key={c.title} className="border-t border-orange-500 pt-6">
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                  Stage
+                </p>
+                <h3 className="mt-4 font-serif text-2xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900">
+                  {c.title}
+                </h3>
+                <p className="mt-3 text-base leading-[1.65] text-gray-700">{c.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Quotable scripts */}
+        <section className="space-y-8 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              The four sentences that kill deals
+            </span>
+          </div>
+          <h3 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            COYL catches them <span className="italic text-orange-600">in your head.</span>
+          </h3>
+          <ul className="space-y-6 pt-4">
+            {[
+              'You said you’d follow up. Did you?',
+              'Waiting is not action.',
+              'No reply doesn’t mean stop.',
+              'Send the email.',
+            ].map((line) => (
+              <li
+                key={line}
+                className="border-t border-gray-200 pt-5 font-serif text-2xl font-normal italic leading-[1.2] text-gray-900"
+              >
+                {line}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Same engine */}
+        <section className="border-t border-gray-200 pt-16">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
+            Same engine
+          </p>
+          <p className="mt-6 max-w-2xl text-lg leading-[1.7] text-gray-700">
+            COYL for weight loss catches the 9 PM kitchen. COYL for work catches the email
+            you never sent.{' '}
+            <strong className="font-serif font-normal italic text-gray-900">
+              Different problem, same loop.
+            </strong>{' '}
+            A commitment is broken before you realize it. COYL interrupts.
+          </p>
+        </section>
+
+        <section className="border-t border-gray-200 pt-16">
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/sign-up?ref=work"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              {line}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mb-12 rounded-3xl border border-gray-200 bg-white p-8">
-        <p className="text-sm uppercase tracking-widest text-gray-500">Same engine</p>
-        <p className="mt-2 text-lg text-gray-700">
-          COYL for weight loss catches the 9 PM kitchen. COYL for work catches the email
-          you never sent. <span className="font-bold text-gray-900">Different problem, same
-          loop.</span> A commitment is broken before you realize it. COYL interrupts.
-        </p>
-      </section>
-
-      <div className="flex flex-wrap gap-3">
-        <Link
-          href="/sign-up?ref=work"
-          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          Start following through
-        </Link>
-        <Link
-          href="/how-it-works"
-          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800"
-        >
-          How it works
-        </Link>
+              Start following through
+            </Link>
+            <Link
+              href="/how-it-works"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+            >
+              How it works
+            </Link>
+          </div>
+        </section>
       </div>
     </>
   )

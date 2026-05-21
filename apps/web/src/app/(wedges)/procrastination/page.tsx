@@ -1,3 +1,16 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): refined editorial H1
+ *     with italic accent on "You need the moment caught."
+ *   - 4784cf2e-58ed-4b0c-8e6d-8758f595d997 (Medium): MOMENTS rendered as
+ *     paired editorial columns on hairline rules.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): the loop stages and
+ *     six-script blockquote chain re-rendered as gallery entries.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): gallery-mast
+ *     openers, no card chrome, generous breath between sections.
+ */
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
@@ -109,141 +122,172 @@ export default function ProcrastinationWedgePage() {
         ]}
       />
 
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
-          Procrastination
-        </span>
-      </div>
-
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        You don&rsquo;t need another to-do list.<br />
-        <span className="text-orange-600">You need the moment caught.</span>
-      </h1>
-
-      <p className="mb-3 max-w-2xl text-lg text-gray-600">
-        Productivity tools organize intentions. COYL interrupts avoidance.
-        The tab switch takes half a second. Recovery costs 23 minutes &mdash; if you ever
-        actually recover. COYL fires before the gesture completes.
-      </p>
-      <p className="mb-12 max-w-2xl text-xs text-gray-500">
-        23-minute recovery cost: Mark et al., 2008 &mdash; <em>The cost of interrupted work</em>, UC Irvine.
-      </p>
-
-      <div className="mb-16 flex flex-wrap gap-3">
-        <Link
-          href="/sign-up?ref=procrastination"
-          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          Stop the tab switch
-        </Link>
-        <Link
-          href="/how-it-works"
-          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
-        >
-          How it works
-        </Link>
-      </div>
-
-      <section className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">
-        {MOMENTS.map((m, i) => (
-          <div
-            key={i}
-            className="rounded-2xl border border-gray-200 bg-white p-5"
-          >
-            <p className="text-base font-semibold italic text-orange-700">{m.you}</p>
-            <p className="mt-2 text-sm text-gray-600">{m.real}</p>
+      <div className="space-y-24 pb-12">
+        <header className="space-y-10">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-12 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Procrastination
+            </span>
           </div>
-        ))}
-      </section>
 
-      <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-2 text-2xl font-bold text-gray-900">
-          Tab switch &rarr; excuse &rarr; interrupt &rarr; back in the block.
-        </h2>
-        <p className="mb-6 text-sm text-gray-600">
-          The procrastination loop runs the same way every time. COYL fires at step 2.
-        </p>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {CAPABILITIES.map((c) => (
-            <div
-              key={c.title}
-              className="rounded-xl border border-orange-500/30 bg-gray-100 p-5"
+          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
+            You don&rsquo;t need another to-do list.<br />
+            <span className="italic text-orange-600">You need the moment caught.</span>
+          </h1>
+
+          <div className="max-w-2xl space-y-4">
+            <p className="text-lg leading-[1.7] text-gray-700">
+              Productivity tools organize intentions. COYL interrupts avoidance.
+              The tab switch takes half a second. Recovery costs 23 minutes &mdash; if you ever
+              actually recover. COYL fires before the gesture completes.
+            </p>
+            <p className="text-xs text-gray-500">
+              23-minute recovery cost: Mark et al., 2008 &mdash;{' '}
+              <em className="font-serif italic">The cost of interrupted work</em>, UC Irvine.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Link
+              href="/sign-up?ref=procrastination"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              <p className="text-xs font-mono uppercase tracking-widest text-orange-500">
-                Stage
+              Stop the tab switch
+            </Link>
+            <Link
+              href="/how-it-works"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+            >
+              How it works
+            </Link>
+          </div>
+        </header>
+
+        {/* Moment-pairs gallery */}
+        <section className="grid grid-cols-1 gap-10 md:grid-cols-2">
+          {MOMENTS.map((m, i) => (
+            <div key={i} className="border-t border-gray-200 pt-6">
+              <p className="font-serif text-2xl font-normal italic leading-[1.2] text-orange-600">
+                {m.you}
               </p>
-              <h3 className="mt-2 text-base font-bold text-gray-900">{c.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">{c.body}</p>
+              <p className="mt-4 text-base leading-[1.65] text-gray-700">{m.real}</p>
             </div>
           ))}
-        </div>
-      </section>
+        </section>
 
-      <section className="mb-16">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          The six sentences that kill the block
-        </h2>
-        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-4xl">
-          COYL catches them in your head.
-        </h3>
-        <ul className="space-y-3">
-          {SCRIPTS.map((line) => (
-            <li
-              key={line}
-              className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/5 px-5 py-3 text-lg font-semibold italic text-gray-900"
+        {/* Stages */}
+        <section className="space-y-8 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              The loop
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Tab switch. Excuse. Interrupt. <span className="italic text-orange-600">Back in the block.</span>
+          </h2>
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+            The procrastination loop runs the same way every time. COYL fires at step 2.
+          </p>
+
+          <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-3">
+            {CAPABILITIES.map((c) => (
+              <div key={c.title} className="border-t border-orange-500 pt-6">
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                  Stage
+                </p>
+                <h3 className="mt-4 font-serif text-2xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900">
+                  {c.title}
+                </h3>
+                <p className="mt-3 text-base leading-[1.65] text-gray-700">{c.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Six scripts */}
+        <section className="space-y-8 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              The six sentences that kill the block
+            </span>
+          </div>
+          <h3 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            COYL catches them <span className="italic text-orange-600">in your head.</span>
+          </h3>
+          <ul className="space-y-6 pt-4">
+            {SCRIPTS.map((line) => (
+              <li
+                key={line}
+                className="border-t border-gray-200 pt-5 font-serif text-2xl font-normal italic leading-[1.2] text-gray-900"
+              >
+                {line}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Same engine */}
+        <section className="border-t border-gray-200 pt-16">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
+            Same engine
+          </p>
+          <p className="mt-6 max-w-2xl text-lg leading-[1.7] text-gray-700">
+            COYL for weight loss catches the 9 PM kitchen. COYL for procrastination catches the
+            11 AM Twitter tab.{' '}
+            <strong className="font-serif font-normal italic text-gray-900">
+              Different trigger, same loop.
+            </strong>{' '}
+            A compulsion is happening before you decide. COYL fires in the half-second between
+            the impulse and the action.
+          </p>
+        </section>
+
+        {/* For employers */}
+        <section className="border-t border-orange-500 pt-16">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            For employers
+          </p>
+          <p className="mt-6 max-w-2xl font-serif text-3xl font-normal leading-[1.1] tracking-[-0.02em] text-gray-900 md:text-4xl">
+            Workplace procrastination is the{' '}
+            <span className="italic text-orange-600">#1 hidden cost</span> on every
+            knowledge-worker P&amp;L.
+          </p>
+          <p className="mt-6 max-w-2xl text-base leading-[1.65] text-gray-700">
+            The average focus session is destroyed every 11 minutes. The recovery cost is 23.
+            Multiply by your headcount. COYL embeds in the workflow as the interrupt your team
+            actually wants. Outcome reporting available.
+          </p>
+          <p className="mt-3 text-xs text-gray-500">
+            11-minute interruption cadence: Microsoft Work Trend Index, 2023. 23-minute recovery
+            cost: Mark et al., 2008 (UC Irvine).
+          </p>
+          <Link
+            href="/research"
+            className="mt-8 inline-flex items-center gap-1.5 font-serif text-base italic text-orange-600 underline-offset-4 hover:underline"
+          >
+            For partners &rarr;
+          </Link>
+        </section>
+
+        <section className="border-t border-gray-200 pt-16">
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/sign-up?ref=procrastination"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              {line}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mb-16 rounded-2xl border border-gray-200 bg-white p-8">
-        <p className="text-sm uppercase tracking-widest text-gray-500">Same engine</p>
-        <p className="mt-2 text-lg text-gray-700">
-          COYL for weight loss catches the 9 PM kitchen. COYL for procrastination catches the
-          11 AM Twitter tab. <span className="font-bold text-gray-900">Different trigger, same loop.</span>{' '}
-          A compulsion is happening before you decide. COYL fires in the half-second between
-          the impulse and the action.
-        </p>
-      </section>
-
-      <section className="mb-16 rounded-2xl border border-orange-500/20 bg-orange-50 p-8">
-        <p className="text-sm uppercase tracking-widest text-orange-500">For employers</p>
-        <p className="mt-2 text-lg font-bold text-gray-900">
-          Workplace procrastination is the #1 hidden cost on every knowledge-worker P&amp;L.
-        </p>
-        <p className="mt-3 text-base text-gray-700">
-          The average focus session is destroyed every 11 minutes. The recovery cost is 23.
-          Multiply by your headcount. COYL embeds in the workflow as the interrupt your team
-          actually wants. Outcome reporting available.
-        </p>
-        <p className="mt-2 text-xs text-gray-500">
-          11-minute interruption cadence: Microsoft Work Trend Index, 2023. 23-minute recovery cost: Mark et al., 2008 (UC Irvine).
-        </p>
-        <Link
-          href="/research"
-          className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-orange-500/40 bg-orange-100 px-4 py-2 text-sm font-bold text-orange-200 hover:border-orange-500/60 hover:text-gray-900"
-        >
-          For partners &rarr;
-        </Link>
-      </section>
-
-      <div className="flex flex-wrap gap-3">
-        <Link
-          href="/sign-up?ref=procrastination"
-          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          Catch the next switch
-        </Link>
-        <Link
-          href="/science"
-          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
-        >
-          The research
-        </Link>
+              Catch the next switch
+            </Link>
+            <Link
+              href="/science"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+            >
+              The research
+            </Link>
+          </div>
+        </section>
       </div>
     </>
   )

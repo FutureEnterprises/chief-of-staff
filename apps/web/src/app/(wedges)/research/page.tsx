@@ -1,3 +1,17 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): refined editorial H1
+ *     with italic accent on "Things we'll publish."
+ *   - 4784cf2e-58ed-4b0c-8e6d-8758f595d997 (Medium): metrics + study designs
+ *     rendered as gallery columns on top borders.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): live-study banner kept
+ *     as the page's single decisive product surface; "not this" disclaimer
+ *     list rendered as serif-italic chapter beats.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): gallery-mast
+ *     openers; hairline rules instead of card chrome.
+ */
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
@@ -126,171 +140,192 @@ export default function ResearchPage() {
         ]}
       />
 
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
-          Research &amp; outcomes
-        </span>
-      </div>
+      <div className="space-y-24 pb-12">
+        <header className="space-y-10">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-12 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Research &amp; outcomes
+            </span>
+          </div>
 
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Outcomes we measure.<br />
-        <span className="text-orange-600">Things we&rsquo;ll publish.</span>
-      </h1>
+          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
+            Outcomes we measure.<br />
+            <span className="italic text-orange-600">Things we&rsquo;ll publish.</span>
+          </h1>
 
-      <p className="mb-10 max-w-2xl text-lg text-gray-600">
-        Most behavior-change apps measure engagement &mdash; app opens, sessions, content
-        consumed. COYL measures the only thing that matters: did the user catch themselves
-        before the loop completed? Here&rsquo;s what we track today, what we&rsquo;ll
-        publish next, and how to study it with us.
-      </p>
+          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+            Most behavior-change apps measure engagement &mdash; app opens, sessions, content
+            consumed. COYL measures the only thing that matters: did the user catch themselves
+            before the loop completed? Here&rsquo;s what we track today, what we&rsquo;ll
+            publish next, and how to study it with us.
+          </p>
 
-      <div className="mb-16 flex flex-wrap gap-3">
-        <Link
-          href="/clinical-study"
-          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          See the 12-week protocol &rarr;
-        </Link>
-        <Link
-          href="/science"
-          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
-        >
-          Read the underlying science
-        </Link>
-      </div>
-
-      {/* Live-study banner — replaces the "we want to run" framing with a
-          "the protocol is real, here's how to enroll" surface. The /research
-          page stays focused on outcomes-we-track; partners click through to
-          /clinical-study for the IRB-ready protocol. */}
-      <section className="mb-16 rounded-3xl border border-orange-500/40 bg-gradient-to-br from-orange-500/[0.08] to-transparent p-8">
-        <div className="mb-3 flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/40 bg-orange-100 px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest text-orange-600">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-orange-400" />
-            Open for partner enrollment
-          </span>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-gray-500">
-            Protocol v0.9 &middot; IRB pathway: minimal-risk expedited
-          </span>
-        </div>
-        <h2 className="mb-3 text-2xl font-bold text-gray-900 md:text-3xl">
-          GLP-1 weight-regain study &mdash; protocol live.
-        </h2>
-        <p className="mb-5 max-w-2xl text-base text-gray-700">
-          12 weeks, N=80, randomized 1:1. Tests whether real-time pattern interrupt
-          during GLP-1 maintenance reduces weight regain in the 90 days after
-          discontinuation. The protocol is drafted and partner-ready.
-        </p>
-        <Link
-          href="/clinical-study"
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
-        >
-          Read the protocol &rarr;
-        </Link>
-      </section>
-
-      <section className="mb-16">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          What we measure
-        </h2>
-        <h3 className="mb-8 text-2xl font-bold text-gray-900 md:text-3xl">
-          Five outcome metrics, none of which are &ldquo;app opens.&rdquo;
-        </h3>
-
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {METRICS.map((m) => (
-            <div
-              key={m.title}
-              className="rounded-2xl border border-gray-200 bg-white p-6"
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Link
+              href="/clinical-study"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              <p className="mb-2 text-[10px] font-mono font-bold uppercase tracking-widest text-orange-500">
-                {m.label}
-              </p>
-              <h3 className="mb-3 text-lg font-bold text-gray-900">{m.title}</h3>
-              <p className="text-sm leading-relaxed text-gray-600">{m.body}</p>
-              <p className="mt-3 inline-block rounded-full border border-gray-200 bg-white px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-widest text-gray-500">
-                {m.note}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mb-16 rounded-2xl border border-orange-500/20 bg-orange-50 p-8">
-        <h2 className="mb-6 text-2xl font-bold text-gray-900">
-          Three studies we want to run.
-        </h2>
-        <p className="mb-8 text-sm text-gray-600">
-          We&rsquo;re looking for telehealth GLP-1 prescribers, university research labs,
-          and obesity-medicine clinics willing to co-author. We provide product access,
-          de-identified outcome data, and engineering support. You provide IRB and patient
-          recruitment.
-        </p>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {STUDY_DESIGN.map((s) => (
-            <div
-              key={s.n}
-              className="rounded-2xl border border-orange-500/30 bg-gray-100 p-5"
+              See the 12-week protocol &rarr;
+            </Link>
+            <Link
+              href="/science"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
             >
-              <p className="text-xs font-mono text-orange-500">{s.n}</p>
-              <h3 className="mt-2 text-base font-bold text-gray-900">{s.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">{s.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+              Read the underlying science
+            </Link>
+          </div>
+        </header>
 
-      <section className="mb-16">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          What COYL is not
-        </h2>
-        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
-          Behavioral support, not medical treatment.
-        </h3>
-        <ul className="space-y-3">
-          {NOT_THIS.map((line) => (
-            <li
-              key={line}
-              className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-500/[0.03] px-5 py-3 text-base text-gray-800"
+        {/* Live-study banner — page's primary product CTA */}
+        <section className="border-t border-orange-500 pt-16">
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-orange-500" />
+              Open for partner enrollment
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-gray-500">
+              Protocol v0.9 &middot; IRB pathway: minimal-risk expedited
+            </span>
+          </div>
+          <h2 className="mt-6 font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            GLP-1 weight-regain study &mdash; <span className="italic text-orange-600">protocol live.</span>
+          </h2>
+          <p className="mt-6 max-w-2xl text-base leading-[1.7] text-gray-700">
+            12 weeks, N=80, randomized 1:1. Tests whether real-time pattern interrupt
+            during GLP-1 maintenance reduces weight regain in the 90 days after
+            discontinuation. The protocol is drafted and partner-ready.
+          </p>
+          <Link
+            href="/clinical-study"
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
+          >
+            Read the protocol &rarr;
+          </Link>
+        </section>
+
+        {/* Metrics */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              What we measure
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Five outcome metrics, <span className="italic text-orange-600">none of which are &ldquo;app opens.&rdquo;</span>
+          </h2>
+
+          <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-2">
+            {METRICS.map((m) => (
+              <div key={m.title} className="border-t border-gray-200 pt-6">
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                  {m.label}
+                </p>
+                <h3 className="mt-4 font-serif text-2xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900">
+                  {m.title}
+                </h3>
+                <p className="mt-3 text-base leading-[1.65] text-gray-700">{m.body}</p>
+                <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.25em] text-gray-500">
+                  {m.note}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Three studies */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              On the bench
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Three studies <span className="italic text-orange-600">we want to run.</span>
+          </h2>
+          <p className="max-w-3xl text-base leading-[1.7] text-gray-700">
+            We&rsquo;re looking for telehealth GLP-1 prescribers, university research labs,
+            and obesity-medicine clinics willing to co-author. We provide product access,
+            de-identified outcome data, and engineering support. You provide IRB and patient
+            recruitment.
+          </p>
+          <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-3">
+            {STUDY_DESIGN.map((s) => (
+              <div key={s.n} className="border-t border-orange-500 pt-6">
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                  {s.n}
+                </p>
+                <h3 className="mt-4 font-serif text-2xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900">
+                  {s.title}
+                </h3>
+                <p className="mt-3 text-base leading-[1.65] text-gray-700">{s.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* What COYL is not */}
+        <section className="space-y-8 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              What COYL is not
+            </span>
+          </div>
+          <h3 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Behavioral support, <span className="italic text-orange-600">not medical treatment.</span>
+          </h3>
+          <ul className="space-y-5 pt-4">
+            {NOT_THIS.map((line) => (
+              <li
+                key={line}
+                className="border-t border-gray-200 pt-5 font-serif text-xl font-normal italic leading-[1.3] text-gray-900"
+              >
+                {line}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* For partners */}
+        <section className="border-t border-orange-500 pt-16">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            For partners
+          </p>
+          <p className="mt-6 max-w-3xl text-lg leading-[1.7] text-gray-700">
+            If you run a clinic, a telehealth GLP-1 program, or a research lab and want to
+            study real-time pattern interrupt with a real patient cohort,{' '}
+            <strong className="font-serif font-normal italic text-gray-900">
+              we want to talk.
+            </strong>{' '}
+            Co-authored publications welcome. De-identified data sharing under a DUA welcome.
+          </p>
+          <Link
+            href="mailto:research@coyl.ai?subject=Clinical%20study%20partnership"
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+          >
+            research@coyl.ai
+          </Link>
+        </section>
+
+        <section className="border-t border-gray-200 pt-16">
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/science"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
             >
-              {line}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mb-12 rounded-2xl border border-gray-200 bg-white p-8">
-        <p className="text-sm uppercase tracking-widest text-gray-500">For partners</p>
-        <p className="mt-2 text-lg text-gray-700">
-          If you run a clinic, a telehealth GLP-1 program, or a research lab and want to
-          study real-time pattern interrupt with a real patient cohort,{' '}
-          <span className="font-bold text-gray-900">we want to talk.</span> Co-authored
-          publications welcome. De-identified data sharing under a DUA welcome.
-        </p>
-        <Link
-          href="mailto:research@coyl.ai?subject=Clinical%20study%20partnership"
-          className="mt-5 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          research@coyl.ai
-        </Link>
-      </section>
-
-      <div className="flex flex-wrap gap-3">
-        <Link
-          href="/science"
-          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
-        >
-          The underlying science
-        </Link>
-        <Link
-          href="/how-it-works"
-          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
-        >
-          How COYL works
-        </Link>
+              The underlying science
+            </Link>
+            <Link
+              href="/how-it-works"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+            >
+              How COYL works
+            </Link>
+          </div>
+        </section>
       </div>
     </>
   )

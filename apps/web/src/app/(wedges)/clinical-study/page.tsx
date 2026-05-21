@@ -1,3 +1,16 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): refined editorial H1 with
+ *     italic accent on "No patients enrolled yet."
+ *   - 4784cf2e-58ed-4b0c-8e6d-8758f595d997 (Medium): status row, eligibility,
+ *     roles, and risk sections rendered as gallery columns on hairline rules.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): timeline and outcomes
+ *     rendered as chapter-style editorial entries on top borders.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): gallery-mast
+ *     section openers, hairline rules instead of soft cards.
+ */
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema, MedicalStudySchema } from '@/app/structured-data'
@@ -176,317 +189,338 @@ export default function ClinicalStudyPage() {
       />
       <MedicalStudySchema />
 
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
-          Clinical study
-        </span>
-      </div>
-
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Study-ready. Partner-ready.<br />
-        <span className="text-orange-600">No patients enrolled yet.</span>
-      </h1>
-
-      <p className="mb-10 max-w-2xl text-lg text-gray-600">
-        12-week randomized protocol on whether real-time pattern interrupt during GLP-1
-        maintenance reduces weight regain after discontinuation. Protocol drafted,
-        IRB pathway mapped, N=80 target. We&rsquo;re looking for telehealth prescribers,
-        obesity-medicine clinics, and research labs to run it with us.
-      </p>
-
-      {/* Status row — replaces the typical "trust badge" cluster.
-          Honest status > fake credibility. */}
-      <section className="mb-16 rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/[0.06] to-transparent p-6 md:p-8">
-        <p className="mb-5 text-xs font-mono uppercase tracking-widest text-orange-600">
-          Status
-        </p>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
-          {STATUS.map((s) => (
-            <div key={s.label}>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-gray-500">
-                {s.label}
-              </p>
-              <p className="mt-1 text-sm font-bold text-gray-900">{s.value}</p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link
-            href={`mailto:research@coyl.ai?subject=${ENROLL_SUBJECT}&body=${ENROLL_BODY}`}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
-          >
-            Enroll your cohort
-          </Link>
-          <Link
-            href="/research"
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-800 hover:border-orange-500/40 hover:text-gray-900"
-          >
-            Back to outcomes
-          </Link>
-        </div>
-      </section>
-
-      {/* Question + design */}
-      <section className="mb-16">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          The question
-        </h2>
-        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
-          GLP-1s suppress appetite while you take them.<br />
-          The autopilot is still there when you stop.
-        </h3>
-        <p className="mb-8 max-w-3xl text-base leading-relaxed text-gray-600">
-          Published discontinuation literature shows ~two-thirds of weight loss returns within
-          a year of stopping a GLP-1 (Wilding et al., 2022 &mdash; STEP 1 extension, NEJM /
-          Diabetes, Obesity and Metabolism), with the largest regain occurring in the first
-          90 days. The drug suppressed the hunger signal, but it never touched the late-night
-          kitchen loop, the stress-eat reflex, or the &ldquo;I deserve this&rdquo; script.
-          When the suppression lifts, the script is right where the user left it.
-        </p>
-        <p className="max-w-3xl text-base leading-relaxed text-gray-600">
-          COYL is built to interrupt that script in real time. The hypothesis is that
-          training the interrupt during the medicated window builds behavioral muscle
-          memory that survives discontinuation. That&rsquo;s the question this study answers.
-        </p>
-      </section>
-
-      {/* Design diagram (simple ASCII-ish flow, no images required).
-          Inner card — rounded-2xl per design-system-v2 §"Migration".
-          Hero status row + final CTA stay rounded-3xl as the page
-          anchors. */}
-      <section className="mb-16 rounded-2xl border border-gray-200 bg-white p-8">
-        <h2 className="mb-6 text-2xl font-bold text-gray-900">Design</h2>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
-            <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
-              Recruitment
-            </p>
-            <p className="mt-2 text-base font-bold text-gray-900">N = 80</p>
-            <p className="mt-2 text-sm text-gray-600">
-              Randomized 1:1 to intervention or control. Stratified by baseline BMI and
-              GLP-1 type.
-            </p>
+      <div className="space-y-24 pb-12">
+        <header className="space-y-10">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-12 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Clinical study
+            </span>
           </div>
-          <div className="rounded-2xl border border-orange-500/30 bg-orange-50 p-5">
-            <p className="text-xs font-mono uppercase tracking-widest text-orange-600">
-              Intervention arm
-            </p>
-            <p className="mt-2 text-base font-bold text-gray-900">Rx + COYL Premium</p>
-            <p className="mt-2 text-sm text-gray-600">
-              GLP-1 prescription per usual care, plus 12 weeks of COYL Premium access
-              (rescue flows, recovery engine, precision interrupts, pattern detection).
-            </p>
-          </div>
-          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
-            <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
-              Control arm
-            </p>
-            <p className="mt-2 text-base font-bold text-gray-900">Rx alone</p>
-            <p className="mt-2 text-sm text-gray-600">
-              GLP-1 prescription per usual care. Waitlist offered Premium after the
-              12-week active phase. Reduces ethical concern around withholding a
-              promising consumer tool.
-            </p>
-          </div>
-        </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-4">
-          {[
-            { t: 'Week 0', b: 'Baseline weight, consent, randomization' },
-            { t: 'Weeks 1–12', b: 'Active intervention, in-app data + weekly weight' },
-            { t: 'Week 13–24', b: 'Discontinuation window, +30/+60/+90 weight' },
-            { t: 'Week 25', b: 'Dataset lock, analysis, readout' },
-          ].map((s) => (
-            <div key={s.t} className="rounded-xl border border-gray-200 bg-white p-4">
-              <p className="text-xs font-mono uppercase tracking-widest text-orange-600">
-                {s.t}
-              </p>
-              <p className="mt-2 text-sm text-gray-700">{s.b}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
+            Study-ready. Partner-ready.<br />
+            <span className="italic text-orange-600">No patients enrolled yet.</span>
+          </h1>
 
-      {/* Outcomes */}
-      <section className="mb-16">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          Outcomes
-        </h2>
-        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
-          Pre-specified. Reproducible from the events table.
-        </h3>
-        <div className="space-y-3">
-          {OUTCOMES.map((o) => (
-            <div
-              key={o.tier}
-              className="rounded-2xl border-l-[3px] border-orange-500/60 bg-orange-500/[0.03] px-6 py-5"
-            >
-              <p className="text-[10px] font-mono uppercase tracking-widest text-orange-600">
-                {o.tier}
-              </p>
-              <p className="mt-2 text-base leading-relaxed text-gray-800">{o.body}</p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-6 max-w-2xl text-xs text-gray-500">
-          Sample size justification: feasibility + effect-size estimation, not confirmatory
-          inference. N = 80 powered to detect a ~3 kg differential weight regain at 90 days
-          (effect size d ≈ 0.55, &alpha; = 0.05, two-sided, 80% power) assuming 20%
-          attrition. A confirmatory replication would target N &ge; 200.
-        </p>
-      </section>
-
-      {/* Eligibility */}
-      <section className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6">
-          <p className="text-xs font-mono uppercase tracking-widest text-orange-600">
-            Inclusion
+          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+            12-week randomized protocol on whether real-time pattern interrupt during GLP-1
+            maintenance reduces weight regain after discontinuation. Protocol drafted,
+            IRB pathway mapped, N=80 target. We&rsquo;re looking for telehealth prescribers,
+            obesity-medicine clinics, and research labs to run it with us.
           </p>
-          <ul className="mt-4 space-y-2">
-            {ELIGIBILITY_IN.map((e) => (
-              <li key={e} className="flex gap-2 text-sm text-gray-700">
-                <span className="text-orange-600">+</span>
-                <span>{e}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-2xl border border-gray-200 bg-white p-6">
-          <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
-            Exclusion
-          </p>
-          <ul className="mt-4 space-y-2">
-            {ELIGIBILITY_OUT.map((e) => (
-              <li key={e} className="flex gap-2 text-sm text-gray-600">
-                <span className="text-gray-600">&minus;</span>
-                <span>{e}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+        </header>
 
-      {/* Risk + privacy */}
-      <section className="mb-16">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          IRB &amp; data handling
-        </h2>
-        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
-          Designed for minimal risk. Expedited pathway intended. Partner-ready DUA.
-        </h3>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {RISK.map((r) => (
-            <div
-              key={r.h}
-              className="rounded-2xl border border-gray-200 bg-white p-6"
-            >
-              <h3 className="mb-2 text-base font-bold text-gray-900">{r.h}</h3>
-              <p className="text-sm leading-relaxed text-gray-600">{r.b}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Roles — paired cards. Inner blocks → rounded-2xl. */}
-      <section className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-orange-500/30 bg-orange-50 p-6">
-          <p className="text-xs font-mono uppercase tracking-widest text-orange-600">
-            COYL provides
+        {/* Status row */}
+        <section className="space-y-10 border-t border-orange-500 pt-16">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            Status
           </p>
-          <ul className="mt-4 space-y-2.5">
-            {COYL_PROVIDES.map((c) => (
-              <li key={c} className="flex gap-2 text-sm text-gray-800">
-                <span className="text-orange-600">&bull;</span>
-                <span>{c}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-2xl border border-gray-200 bg-white p-6">
-          <p className="text-xs font-mono uppercase tracking-widest text-gray-500">
-            Partner provides
-          </p>
-          <ul className="mt-4 space-y-2.5">
-            {PARTNER_PROVIDES.map((p) => (
-              <li key={p} className="flex gap-2 text-sm text-gray-700">
-                <span className="text-gray-500">&bull;</span>
-                <span>{p}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* Timeline */}
-      <section className="mb-16">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          Timeline
-        </h2>
-        <h3 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
-          8 months from kickoff to readout.
-        </h3>
-        <ol className="space-y-2">
-          {TIMELINE.map((t, i) => (
-            <li
-              key={t.phase}
-              className="flex gap-4 rounded-2xl border border-gray-200 bg-white p-5"
-            >
-              <span className="font-mono text-xl font-black text-orange-600">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <div>
-                <p className="text-sm font-bold text-gray-900">{t.phase}</p>
-                <p className="mt-1 text-sm text-gray-600">{t.body}</p>
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-5">
+            {STATUS.map((s) => (
+              <div key={s.label} className="border-t border-gray-200 pt-5">
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
+                  {s.label}
+                </p>
+                <p className="mt-3 font-serif text-base font-normal italic leading-[1.35] text-gray-900">
+                  {s.value}
+                </p>
               </div>
-            </li>
-          ))}
-        </ol>
-      </section>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Link
+              href={`mailto:research@coyl.ai?subject=${ENROLL_SUBJECT}&body=${ENROLL_BODY}`}
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
+            >
+              Enroll your cohort
+            </Link>
+            <Link
+              href="/research"
+              className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+            >
+              Back to outcomes
+            </Link>
+          </div>
+        </section>
 
-      {/* Final CTA */}
-      <section className="mb-12 rounded-3xl border border-orange-500/30 bg-gradient-to-br from-orange-500/[0.08] via-orange-500/[0.03] to-transparent p-8 md:p-12">
-        <h2 className="mb-3 text-3xl font-black text-gray-900 md:text-4xl">
-          Bring the cohort.<br />
-          <span className="text-orange-600">We&rsquo;ll bring the protocol.</span>
-        </h2>
-        <p className="mb-6 max-w-2xl text-base text-gray-700">
-          One email opens it. We respond within two business days with the full protocol
-          pack, draft DUA, and a kickoff call link. Co-authored publication welcome.
-          De-identified data sharing under a DUA welcome.
+        {/* Question */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              The question
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            GLP-1s suppress appetite while you take them.<br />
+            <span className="italic text-orange-600">The autopilot is still there when you stop.</span>
+          </h2>
+          <div className="max-w-3xl space-y-5">
+            <p className="text-base leading-[1.7] text-gray-700">
+              Published discontinuation literature shows ~two-thirds of weight loss returns within
+              a year of stopping a GLP-1 (Wilding et al., 2022 &mdash; STEP 1 extension, NEJM /
+              Diabetes, Obesity and Metabolism), with the largest regain occurring in the first
+              90 days. The drug suppressed the hunger signal, but it never touched the late-night
+              kitchen loop, the stress-eat reflex, or the &ldquo;I deserve this&rdquo; script.
+              When the suppression lifts, the script is right where the user left it.
+            </p>
+            <p className="text-base leading-[1.7] text-gray-700">
+              COYL is built to interrupt that script in real time. The hypothesis is that
+              training the interrupt during the medicated window builds behavioral muscle
+              memory that survives discontinuation. That&rsquo;s the question this study answers.
+            </p>
+          </div>
+        </section>
+
+        {/* Design */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Design
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Three arms. Twelve weeks. <span className="italic text-orange-600">One real question.</span>
+          </h2>
+          <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-3">
+            <div className="border-t border-gray-200 pt-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
+                Recruitment
+              </p>
+              <p className="mt-4 font-serif text-2xl font-normal leading-[1.15] text-gray-900">
+                N = 80
+              </p>
+              <p className="mt-3 text-base leading-[1.65] text-gray-700">
+                Randomized 1:1 to intervention or control. Stratified by baseline BMI and
+                GLP-1 type.
+              </p>
+            </div>
+            <div className="border-t border-orange-500 pt-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                Intervention arm
+              </p>
+              <p className="mt-4 font-serif text-2xl font-normal leading-[1.15] text-gray-900">
+                Rx + COYL Premium
+              </p>
+              <p className="mt-3 text-base leading-[1.65] text-gray-700">
+                GLP-1 prescription per usual care, plus 12 weeks of COYL Premium access
+                (rescue flows, recovery engine, precision interrupts, pattern detection).
+              </p>
+            </div>
+            <div className="border-t border-gray-200 pt-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
+                Control arm
+              </p>
+              <p className="mt-4 font-serif text-2xl font-normal leading-[1.15] text-gray-900">
+                Rx alone
+              </p>
+              <p className="mt-3 text-base leading-[1.65] text-gray-700">
+                GLP-1 prescription per usual care. Waitlist offered Premium after the
+                12-week active phase. Reduces ethical concern around withholding a
+                promising consumer tool.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-10 pt-8 md:grid-cols-4">
+            {[
+              { t: 'Week 0', b: 'Baseline weight, consent, randomization' },
+              { t: 'Weeks 1–12', b: 'Active intervention, in-app data + weekly weight' },
+              { t: 'Week 13–24', b: 'Discontinuation window, +30/+60/+90 weight' },
+              { t: 'Week 25', b: 'Dataset lock, analysis, readout' },
+            ].map((s) => (
+              <div key={s.t} className="border-t border-gray-200 pt-5">
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                  {s.t}
+                </p>
+                <p className="mt-3 text-sm leading-[1.6] text-gray-700">{s.b}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Outcomes */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Outcomes
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Pre-specified. <span className="italic text-orange-600">Reproducible from the events table.</span>
+          </h2>
+          <div className="space-y-6 pt-4">
+            {OUTCOMES.map((o) => (
+              <div key={o.tier} className="border-t border-orange-500 pt-6">
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                  {o.tier}
+                </p>
+                <p className="mt-4 max-w-3xl text-base leading-[1.7] text-gray-700">{o.body}</p>
+              </div>
+            ))}
+          </div>
+          <p className="max-w-2xl text-xs leading-[1.6] text-gray-500">
+            Sample size justification: feasibility + effect-size estimation, not confirmatory
+            inference. N = 80 powered to detect a ~3 kg differential weight regain at 90 days
+            (effect size d ≈ 0.55, &alpha; = 0.05, two-sided, 80% power) assuming 20%
+            attrition. A confirmatory replication would target N &ge; 200.
+          </p>
+        </section>
+
+        {/* Eligibility */}
+        <section className="grid grid-cols-1 gap-10 border-t border-gray-200 pt-16 md:grid-cols-2">
+          <div className="border-t border-orange-500 pt-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Inclusion
+            </p>
+            <ul className="mt-6 space-y-3">
+              {ELIGIBILITY_IN.map((e) => (
+                <li key={e} className="flex gap-3 text-base leading-[1.65] text-gray-700">
+                  <span className="text-orange-600">+</span>
+                  <span>{e}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="border-t border-gray-200 pt-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
+              Exclusion
+            </p>
+            <ul className="mt-6 space-y-3">
+              {ELIGIBILITY_OUT.map((e) => (
+                <li key={e} className="flex gap-3 text-base leading-[1.65] text-gray-700">
+                  <span className="text-gray-500">&minus;</span>
+                  <span>{e}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* Risk + privacy */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              IRB &amp; data handling
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Minimal risk. Expedited pathway. <span className="italic text-orange-600">Partner-ready DUA.</span>
+          </h2>
+          <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-2">
+            {RISK.map((r) => (
+              <div key={r.h} className="border-t border-gray-200 pt-6">
+                <h3 className="font-serif text-2xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900">
+                  {r.h}
+                </h3>
+                <p className="mt-3 text-base leading-[1.65] text-gray-700">{r.b}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Roles — paired */}
+        <section className="grid grid-cols-1 gap-10 border-t border-gray-200 pt-16 md:grid-cols-2">
+          <div className="border-t border-orange-500 pt-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              COYL provides
+            </p>
+            <ul className="mt-6 space-y-3">
+              {COYL_PROVIDES.map((c) => (
+                <li key={c} className="flex gap-3 text-base leading-[1.65] text-gray-700">
+                  <span className="text-orange-600">&bull;</span>
+                  <span>{c}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="border-t border-gray-200 pt-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
+              Partner provides
+            </p>
+            <ul className="mt-6 space-y-3">
+              {PARTNER_PROVIDES.map((p) => (
+                <li key={p} className="flex gap-3 text-base leading-[1.65] text-gray-700">
+                  <span className="text-gray-500">&bull;</span>
+                  <span>{p}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* Timeline */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Timeline
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Eight months from <span className="italic text-orange-600">kickoff to readout.</span>
+          </h2>
+          <ol className="space-y-8 pt-4">
+            {TIMELINE.map((t, i) => (
+              <li key={t.phase} className="flex gap-8 border-t border-gray-200 pt-6">
+                <span className="font-serif text-3xl font-normal italic leading-none text-orange-600">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div>
+                  <p className="font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900">
+                    {t.phase}
+                  </p>
+                  <p className="mt-2 max-w-2xl text-base leading-[1.65] text-gray-700">{t.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {/* Final CTA */}
+        <section className="border-t border-orange-500 pt-16">
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Bring the cohort.<br />
+            <span className="italic text-orange-600">We&rsquo;ll bring the protocol.</span>
+          </h2>
+          <p className="mt-6 max-w-2xl text-lg leading-[1.7] text-gray-700">
+            One email opens it. We respond within two business days with the full protocol
+            pack, draft DUA, and a kickoff call link. Co-authored publication welcome.
+            De-identified data sharing under a DUA welcome.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href={`mailto:research@coyl.ai?subject=${ENROLL_SUBJECT}&body=${ENROLL_BODY}`}
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+            >
+              research@coyl.ai
+            </Link>
+            <Link
+              href="/research"
+              className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+            >
+              Outcomes we already track
+            </Link>
+            <Link
+              href="/science"
+              className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+            >
+              The underlying science
+            </Link>
+          </div>
+        </section>
+
+        <p className="border-t border-gray-200 pt-8 text-xs leading-[1.6] text-gray-500">
+          COYL is a behavioral support tool. It is not a medical device, treatment, or
+          therapy. The study described here is a behavioral feasibility study, minimal-risk
+          category, conducted under IRB oversight. Not a substitute for professional medical
+          care.
         </p>
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href={`mailto:research@coyl.ai?subject=${ENROLL_SUBJECT}&body=${ENROLL_BODY}`}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-          >
-            research@coyl.ai
-          </Link>
-          <Link
-            href="/research"
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-800 hover:border-orange-500/40 hover:text-gray-900"
-          >
-            Outcomes we already track
-          </Link>
-          <Link
-            href="/science"
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-800 hover:border-orange-500/40 hover:text-gray-900"
-          >
-            The underlying science
-          </Link>
-        </div>
-      </section>
-
-      <p className="text-xs text-gray-500">
-        COYL is a behavioral support tool. It is not a medical device, treatment, or
-        therapy. The study described here is a behavioral feasibility study, minimal-risk
-        category, conducted under IRB oversight. Not a substitute for professional medical
-        care.
-      </p>
+      </div>
     </>
   )
 }

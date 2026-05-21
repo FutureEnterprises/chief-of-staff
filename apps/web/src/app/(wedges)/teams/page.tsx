@@ -1,3 +1,16 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): refined editorial H1 with
+ *     italic accent on "23 minutes to recover."
+ *   - 4784cf2e-58ed-4b0c-8e6d-8758f595d997 (Medium): stat rows, use cases,
+ *     and FAQ rendered as editorial entries on hairline rules.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): pilot-terms block and
+ *     privacy list set as oversized italic-serif chapter beats.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): gallery-mast
+ *     section openers; PMPM calculator left intact as a product surface.
+ */
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
@@ -130,179 +143,206 @@ export default function TeamsWedgePage() {
         ]}
       />
 
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
-          For teams
-        </span>
-      </div>
-
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Interrupted every 11 minutes.<br />
-        <span className="text-orange-600">23 minutes to recover.</span>
-      </h1>
-
-      <p className="mb-12 max-w-2xl text-lg text-gray-600">
-        A third of every knowledge-worker week is spent recovering, not working.
-        COYL catches the moment before the tab switch &mdash; the behavioral layer
-        underneath your focus stack. Deployed as a benefit, billed PMPM, no integration
-        with work content required.
-      </p>
-
-      <div className="mb-16 flex flex-wrap gap-3">
-        <Link
-          href="mailto:teams@coyl.ai?subject=Pilot%20inquiry%20for%20%5Bcompany%5D"
-          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          Start a 30-day pilot
-        </Link>
-        <Link
-          href="/research"
-          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
-        >
-          See research + outcomes
-        </Link>
-      </div>
-
-      {/* Stats band — three numbers, each with a citation. We don't include
-          a fabricated "78% of users avoid X" placeholder. Real research,
-          honest framing. */}
-      <section className="mb-20 grid grid-cols-1 gap-4 md:grid-cols-3">
-        {STAT_ROWS.map((s) => (
-          <div
-            key={s.label}
-            className="rounded-2xl border border-gray-200 bg-white p-6"
-          >
-            <div className="mb-3 flex items-baseline gap-1">
-              <span className="text-5xl font-black text-orange-600">{s.n}</span>
-              <span className="text-sm font-semibold text-gray-500">{s.unit}</span>
-            </div>
-            <p className="text-sm font-semibold leading-snug text-gray-900">{s.label}</p>
-            <p className="mt-2 text-[11px] text-gray-600">{s.src}</p>
+      <div className="space-y-24 pb-12">
+        <header className="space-y-10">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-12 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              For teams
+            </span>
           </div>
-        ))}
-      </section>
 
-      <section className="mb-16">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          Where COYL lives
-        </h2>
-        <h3 className="mb-8 text-2xl font-bold text-gray-900 md:text-3xl">
-          Three roles where the math is the most painful.
-        </h3>
+          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
+            Interrupted every 11 minutes.<br />
+            <span className="italic text-orange-600">23 minutes to recover.</span>
+          </h1>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {USE_CASES.map((u) => (
-            <div
-              key={u.title}
-              className="rounded-2xl border border-gray-200 bg-white p-6"
+          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+            A third of every knowledge-worker week is spent recovering, not working.
+            COYL catches the moment before the tab switch &mdash; the behavioral layer
+            underneath your focus stack. Deployed as a benefit, billed PMPM, no integration
+            with work content required.
+          </p>
+
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Link
+              href="mailto:teams@coyl.ai?subject=Pilot%20inquiry%20for%20%5Bcompany%5D"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              <h3 className="text-base font-bold text-gray-900">{u.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">{u.body}</p>
+              Start a 30-day pilot
+            </Link>
+            <Link
+              href="/research"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+            >
+              See research + outcomes
+            </Link>
+          </div>
+        </header>
+
+        {/* Stats band — three numbers, each with a citation. */}
+        <section className="grid grid-cols-1 gap-10 md:grid-cols-3">
+          {STAT_ROWS.map((s) => (
+            <div key={s.label} className="border-t border-orange-500 pt-6">
+              <div className="flex items-baseline gap-1">
+                <span className="font-serif text-6xl font-normal leading-none tracking-[-0.03em] text-orange-600">
+                  {s.n}
+                </span>
+                <span className="text-sm font-semibold text-gray-600">{s.unit}</span>
+              </div>
+              <p className="mt-5 text-base font-medium leading-[1.5] text-gray-900">{s.label}</p>
+              <p className="mt-3 text-xs text-gray-600">{s.src}</p>
             </div>
           ))}
-        </div>
-      </section>
+        </section>
 
-      <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-4 text-2xl font-bold text-gray-900">
-          Privacy-first by architecture, not by promise.
-        </h2>
-        <ul className="space-y-3 text-base text-gray-700">
-          <li className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-50 px-5 py-3">
-            COYL never reads email, calendar, code, documents, or any work content.
-          </li>
-          <li className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-50 px-5 py-3">
-            Sabotage patterns are learned from user-self-reported moments and (optionally)
-            wearables. Nothing leaves the device that the user didn&rsquo;t opt in to.
-          </li>
-          <li className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-50 px-5 py-3">
-            Aggregated outcome reporting is delivered to your benefits team. Individual user
-            data stays with the individual user.
-          </li>
-          <li className="rounded-xl border-l-[3px] border-orange-500/60 bg-orange-50 px-5 py-3">
-            SOC 2, BAA-eligible deployments available. SSO via Okta / Azure AD /
-            Google Workspace.
-          </li>
-        </ul>
-      </section>
+        {/* Use cases */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Where COYL lives
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Three roles where the math is <span className="italic text-orange-600">the most painful.</span>
+          </h2>
 
-      {/* PMPM calculator — the "no contact us" pricing transparency
-          surface. Benefits buyers want to model cost before talking to
-          sales; this gets them to the proposal request with a number
-          already in hand. Placed before pilot-terms so the cost
-          conversation happens before the pilot ask. */}
-      <div className="mb-16">
-        <PMPMCalculator />
-      </div>
+          <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-3">
+            {USE_CASES.map((u) => (
+              <div key={u.title} className="border-t border-gray-200 pt-6">
+                <h3 className="font-serif text-2xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900">
+                  {u.title}
+                </h3>
+                <p className="mt-3 text-base leading-[1.65] text-gray-700">{u.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
-      <section className="mb-16 rounded-3xl border border-gray-200 bg-white p-8">
-        <p className="text-sm uppercase tracking-widest text-gray-500">Pilot terms</p>
-        <p className="mt-2 text-2xl font-black leading-tight text-gray-900">
-          30 days. 50&ndash;500 employees. No cost. Decision at end of pilot.
-        </p>
-        <p className="mt-3 max-w-2xl text-base text-gray-600">
-          We instrument the cohort, your benefits team owns the outcome report, and we
-          co-author a case study if the data justifies it. Pricing is PMPM after the pilot
-          &mdash; let&rsquo;s talk numbers when the evidence is in front of us.
-        </p>
-        <Link
-          href="mailto:teams@coyl.ai?subject=Pilot%20inquiry%20for%20%5Bcompany%5D"
-          className="mt-5 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          teams@coyl.ai
-        </Link>
-      </section>
+        {/* Privacy */}
+        <section className="space-y-8 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Privacy
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Privacy-first by architecture, <span className="italic text-orange-600">not by promise.</span>
+          </h2>
+          <ul className="space-y-4 pt-4">
+            <li className="border-t border-gray-200 pt-5 text-base leading-[1.65] text-gray-700">
+              <strong className="font-serif font-normal italic text-gray-900">
+                Never reads work content.
+              </strong>{' '}
+              COYL never reads email, calendar, code, documents, or any work content.
+            </li>
+            <li className="border-t border-gray-200 pt-5 text-base leading-[1.65] text-gray-700">
+              <strong className="font-serif font-normal italic text-gray-900">
+                User-controlled signals.
+              </strong>{' '}
+              Sabotage patterns are learned from user-self-reported moments and (optionally)
+              wearables. Nothing leaves the device that the user didn&rsquo;t opt in to.
+            </li>
+            <li className="border-t border-gray-200 pt-5 text-base leading-[1.65] text-gray-700">
+              <strong className="font-serif font-normal italic text-gray-900">
+                Aggregate-only reporting.
+              </strong>{' '}
+              Aggregated outcome reporting is delivered to your benefits team. Individual
+              user data stays with the individual user.
+            </li>
+            <li className="border-t border-gray-200 pt-5 text-base leading-[1.65] text-gray-700">
+              <strong className="font-serif font-normal italic text-gray-900">
+                Enterprise-grade.
+              </strong>{' '}
+              SOC 2, BAA-eligible deployments available. SSO via Okta / Azure AD /
+              Google Workspace.
+            </li>
+          </ul>
+        </section>
 
-      <section className="mb-16">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-500">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          The questions every benefits lead asks
-        </h2>
-        <h3 className="mb-8 text-2xl font-bold text-gray-900 md:text-3xl">
-          Honest answers, before the call.
-        </h3>
-        <div className="space-y-3">
-          {FAQ.map((f) => (
-            <details
-              key={f.q}
-              className="group rounded-2xl border border-gray-200 bg-white p-5 open:border-orange-500/20 open:bg-orange-500/[0.03]"
+        {/* PMPM calculator — kept intact as a product surface */}
+        <section className="border-t border-gray-200 pt-16">
+          <PMPMCalculator />
+        </section>
+
+        {/* Pilot terms */}
+        <section className="border-t border-orange-500 pt-16">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            Pilot terms
+          </p>
+          <p className="mt-6 font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            30 days. 50&ndash;500 employees. No cost.<br />
+            <span className="italic text-orange-600">Decision at end of pilot.</span>
+          </p>
+          <p className="mt-8 max-w-2xl text-base leading-[1.7] text-gray-700">
+            We instrument the cohort, your benefits team owns the outcome report, and we
+            co-author a case study if the data justifies it. Pricing is PMPM after the pilot
+            &mdash; let&rsquo;s talk numbers when the evidence is in front of us.
+          </p>
+          <Link
+            href="mailto:teams@coyl.ai?subject=Pilot%20inquiry%20for%20%5Bcompany%5D"
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+          >
+            teams@coyl.ai
+          </Link>
+        </section>
+
+        {/* FAQ */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              The questions every benefits lead asks
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Honest answers, <span className="italic text-orange-600">before the call.</span>
+          </h2>
+          <div className="pt-4">
+            {FAQ.map((f) => (
+              <details
+                key={f.q}
+                className="group border-t border-gray-200 py-6 open:border-orange-500"
+              >
+                <summary className="flex cursor-pointer items-start justify-between gap-6 font-serif text-xl font-normal leading-[1.3] tracking-[-0.01em] text-gray-900 marker:hidden [&::-webkit-details-marker]:hidden">
+                  <span>{f.q}</span>
+                  <span
+                    aria-hidden
+                    className="mt-1 font-mono text-base text-orange-600 transition-transform duration-200 group-open:rotate-45"
+                  >
+                    +
+                  </span>
+                </summary>
+                <p className="mt-4 max-w-3xl text-base leading-[1.7] text-gray-700">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <section className="border-t border-gray-200 pt-16">
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="mailto:teams@coyl.ai?subject=Pilot%20inquiry%20for%20%5Bcompany%5D"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              <summary className="flex cursor-pointer items-center justify-between gap-3 text-base font-semibold text-gray-900 marker:hidden [&::-webkit-details-marker]:hidden">
-                <span>{f.q}</span>
-                <span
-                  aria-hidden
-                  className="text-orange-600 transition-transform duration-200 group-open:rotate-45"
-                >
-                  +
-                </span>
-              </summary>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">{f.a}</p>
-            </details>
-          ))}
-        </div>
-      </section>
-
-      <div className="flex flex-wrap gap-3">
-        <Link
-          href="mailto:teams@coyl.ai?subject=Pilot%20inquiry%20for%20%5Bcompany%5D"
-          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          Start a 30-day pilot
-        </Link>
-        <Link
-          href="/procrastination"
-          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
-        >
-          The consumer wedge
-        </Link>
-        <Link
-          href="/research"
-          className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
-        >
-          Research + outcomes
-        </Link>
+              Start a 30-day pilot
+            </Link>
+            <Link
+              href="/procrastination"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+            >
+              The consumer wedge
+            </Link>
+            <Link
+              href="/research"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+            >
+              Research + outcomes
+            </Link>
+          </div>
+        </section>
       </div>
     </>
   )

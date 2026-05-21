@@ -1,3 +1,15 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): refined editorial H1.
+ *   - 4784cf2e-58ed-4b0c-8e6d-8758f595d997 (Medium): pattern grid as gallery
+ *     columns on hairline rules.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): shared-loop sequence
+ *     re-rendered as serif-italic chain on hairline.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): gallery-mast
+ *     openers; SafetyBanner preserved.
+ */
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { SafetyBanner } from '@/components/safety/safety-banner'
@@ -57,32 +69,37 @@ export const metadata: Metadata = {
 
 export default function AutopilotLoopsPage() {
   return (
-    <>
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-600">
-          Patterns COYL catches
-        </span>
-      </div>
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
-        Recurring autopilot loops.
-      </h1>
-      <p className="mb-4 max-w-2xl text-lg text-gray-600">
-        COYL works at the behavioral pattern layer &mdash; the recurring loops
-        people return to even when they know better. The 9:12 PM kitchen. The
-        tab you reopened. The cart you filled at midnight. The scroll you
-        promised was just five minutes.
-      </p>
-      <p className="mb-8 max-w-2xl text-base text-gray-700">
-        This is about pattern recognition and interrupt design. It is not
-        therapy, not recovery, not dependency treatment. COYL maps the shape
-        of your autopilot moments and stands in the doorway before the loop
-        runs.
-      </p>
+    <div className="space-y-24 pb-12">
+      <header className="space-y-10">
+        <div className="flex items-center gap-3">
+          <span className="h-px w-12 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            Patterns COYL catches
+          </span>
+        </div>
+        <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
+          Recurring <span className="italic text-orange-600">autopilot loops.</span>
+        </h1>
+        <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+          COYL works at the behavioral pattern layer &mdash; the recurring loops
+          people return to even when they know better. The 9:12 PM kitchen. The
+          tab you reopened. The cart you filled at midnight. The scroll you
+          promised was just five minutes.
+        </p>
+        <p className="max-w-2xl text-base leading-[1.65] text-gray-700">
+          This is about pattern recognition and interrupt design. It is{' '}
+          <strong className="font-serif font-normal italic text-gray-900">
+            not therapy, not recovery, not dependency treatment.
+          </strong>{' '}
+          COYL maps the shape of your autopilot moments and stands in the doorway
+          before the loop runs.
+        </p>
+      </header>
 
       <SafetyBanner variant="prominent" />
 
-      <section className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">
+      {/* Pattern gallery */}
+      <section className="grid grid-cols-1 gap-10 border-t border-gray-200 pt-16 md:grid-cols-2">
         {[
           {
             title: 'Doomscrolling',
@@ -109,52 +126,58 @@ export default function AutopilotLoopsPage() {
             body: 'Tomorrow as a reset day. The week as a clean slate. COYL meets you in the script before Monday is the excuse.',
           },
         ].map((p) => (
-          <div
-            key={p.title}
-            className="rounded-2xl border border-gray-200 bg-gradient-to-br from-orange-500/5 to-transparent p-5"
-          >
-            <h3 className="mb-2 text-base font-bold text-gray-900">{p.title}</h3>
-            <p className="text-sm text-gray-600">{p.body}</p>
+          <div key={p.title} className="border-t border-gray-200 pt-6">
+            <h3 className="font-serif text-2xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900">
+              {p.title}
+            </h3>
+            <p className="mt-3 text-base leading-[1.65] text-gray-700">{p.body}</p>
           </div>
         ))}
       </section>
 
-      <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-4 text-2xl font-bold text-gray-900">The shared loop</h2>
-        <p className="mb-4 text-sm text-gray-600">
-          Every autopilot moment runs the same sequence. Different object,
-          identical shape.
+      {/* Shared loop */}
+      <section className="space-y-8 border-t border-orange-500 pt-16">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+          The shared loop
         </p>
-        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-700">
+        <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+          Different object, <span className="italic text-orange-600">identical shape.</span>
+        </h2>
+        <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+          Every autopilot moment runs the same sequence.
+        </p>
+        <div className="flex flex-wrap items-center gap-4 pt-4 font-mono text-sm text-gray-700">
           {['Cue', 'Urge', 'Excuse', 'Lapse', 'Reset', 'Repeat'].map((node, i, arr) => (
-            <span key={node} className="flex items-center gap-3">
-              <span className="rounded-full border border-orange-500/30 bg-gray-100 px-3 py-1.5 font-mono">
+            <span key={node} className="flex items-center gap-4">
+              <span className="font-serif text-2xl font-normal italic text-gray-900">
                 {node}
               </span>
               {i < arr.length - 1 && <span className="text-orange-500">&rarr;</span>}
             </span>
           ))}
         </div>
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="max-w-2xl pt-4 text-base leading-[1.7] text-gray-700">
           COYL detects the cue, names the excuse, and interrupts the sequence
           before the lapse becomes the night.
         </p>
       </section>
 
-      <div className="flex flex-wrap gap-3">
-        <Link
-          href="/audit"
-          className="inline-block rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          Start the audit
-        </Link>
-        <Link
-          href="/how-it-works"
-          className="inline-block rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
-        >
-          See how it works
-        </Link>
-      </div>
-    </>
+      <section className="border-t border-gray-200 pt-16">
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/audit"
+            className="inline-block rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+          >
+            Start the audit
+          </Link>
+          <Link
+            href="/how-it-works"
+            className="inline-block rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
+          >
+            See how it works
+          </Link>
+        </div>
+      </section>
+    </div>
   )
 }
