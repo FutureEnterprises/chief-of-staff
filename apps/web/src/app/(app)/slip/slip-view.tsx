@@ -1,18 +1,17 @@
 'use client'
 /**
- * AESTHETIC UPGRADE — May 2026 (operator surface)
+ * LUXURY EDITORIAL OVERHAUL — May 2026 (slip recovery, dark)
  * Refero references applied:
- *   - 554b801c-3b31-4086-a7e5-ae613cdd618b (Linear): compact element gap,
- *     6px card radius, hairline borders, monospace section labels,
- *     refined medium-weight headlines instead of font-black.
- *   - 6e9baa82-2f2f-4e77-8b0d-566325635dbe (Axiom): single orange accent,
- *     2px-feeling rectangular surfaces, charcoal card backgrounds,
- *     monospace meta-data.
- *   - 11d3e58a-87d7-4a9a-bbf5-720f4fd3ffc6 (Linear Changelog): timeline
- *     entry pattern — slip entries presented as stacked sections with
- *     thin graphite separation, mono timestamps, tight letter-spacing.
- * Slip-specific: a log surface used in recovery — bias for calm structure,
- * no theatrical emphasis. Reduce caps-bombing, lean on type weight.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): refined editorial
+ *     restraint — cream serif on warm canvas reads as composure, not alarm.
+ *   - 067fe2b3-9411-42b9-9ea4-39338344f66d (Liron Moran): monumental serif
+ *     headline as the "you slipped" gesture; gallery whitespace.
+ *   - c18d1c89-bb32-4a3c-bdc8-42d3355b8905 (DNA Capital): whispered
+ *     authority — the recovery surface is "we continue," not "you failed."
+ *   - 76c30104-1a19-42e7-a585-19505882f600 (Monopo Saigon): warm earthy
+ *     dark tones, calm atmosphere over chrome.
+ * Slip is the gentlest surface in the product. Serif gives the moment
+ * dignity. Mono only for status labels. No theatrical emphasis.
  */
 
 import { useState } from 'react'
@@ -110,60 +109,64 @@ export function SlipView({ userId, currentStreak }: SlipViewProps) {
 
   if (!trigger) {
     return (
-      <PageTransition className="flex h-full flex-col">
-        <div className="border-b border-white/[0.06] px-6 py-3.5">
-          <h1 className="text-[13px] font-semibold tracking-[-0.01em]">Slip recovery</h1>
-          <p className="font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">No Monday reset. We continue now.</p>
-        </div>
+      <PageTransition className="flex h-full flex-col bg-[#0e0d0b]">
+        <header className="border-b border-white/[0.05] px-6 pb-8 pt-12 sm:px-10">
+          <div className="mx-auto max-w-3xl">
+            <div className="flex items-center gap-3">
+              <span className="h-px w-8 bg-orange-500/70" />
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
+                Slip recovery
+              </p>
+            </div>
+            <h1 className="mt-4 font-serif text-4xl font-normal leading-[1.04] tracking-[-0.015em] text-[#f5f3ee] sm:text-5xl">
+              You slipped.
+              <br />
+              <span className="text-[#f5f3ee]/80 italic">Good. Now we continue.</span>
+            </h1>
+            <p className="mt-4 max-w-xl font-sans text-[14px] leading-relaxed text-[#a39d92]">
+              No Monday reset. No spiral. Pick what happened &mdash; COYL builds the next move in ten seconds.
+            </p>
+          </div>
+        </header>
 
-        <div className="flex-1 overflow-y-auto px-6 py-7">
-          <div className="mx-auto max-w-xl">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6 text-center"
-            >
-              <p className="text-3xl font-semibold leading-[1.05] tracking-[-0.025em] text-white sm:text-4xl">
-                You slipped.
-              </p>
-              <p className="mb-3 text-3xl font-semibold leading-[1.05] tracking-[-0.025em] text-orange-400 sm:text-4xl">
-                Good. Now we stop the damage.
-              </p>
-              <p className="text-[13px] leading-relaxed text-muted-foreground">
-                Pick what happened. COYL builds the next move in 10 seconds.
-              </p>
-            </motion.div>
-
-            <div className="mb-5 grid grid-cols-1 gap-1.5">
+        <div className="flex-1 overflow-y-auto px-6 py-12 sm:px-10">
+          <div className="mx-auto max-w-3xl">
+            <p className="mb-6 font-mono text-[10px] uppercase tracking-[0.28em] text-[#8a847a]">
+              Name it
+            </p>
+            <div className="mb-12 grid grid-cols-1 gap-px overflow-hidden border-y border-white/[0.05] bg-white/[0.04]">
               {QUICK_TAGS.map((t, i) => (
                 <motion.button
                   key={t.value}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.04 * i, duration: 0.28, ease: [0.23, 1, 0.32, 1] }}
-                  whileHover={{ y: -1 }}
-                  whileTap={{ scale: 0.98 }}
+                  transition={{ delay: 0.04 * i, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  whileTap={{ scale: 0.995 }}
                   onClick={() => submit(t.value)}
-                  className="flex items-center gap-3 rounded-md border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-left text-[13px] font-semibold tracking-[-0.005em] transition-all hover:border-orange-500/40 hover:bg-orange-500/[0.04]"
+                  className="group flex items-center gap-4 bg-[#0e0d0b] px-5 py-5 text-left transition-colors hover:bg-[#13110d]"
                 >
-                  <span className="text-xl">{t.emoji}</span>
-                  {t.label}
+                  <span className="text-2xl opacity-80">{t.emoji}</span>
+                  <span className="font-serif text-[19px] font-normal leading-tight tracking-[-0.005em] text-[#f5f3ee] transition-colors group-hover:text-orange-300">
+                    {t.label}.
+                  </span>
                 </motion.button>
               ))}
             </div>
 
-            <div className="rounded-md border border-white/[0.06] bg-white/[0.02] px-4 py-3">
-              <label className="mb-1.5 block font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Or tell COYL what happened</label>
+            <div className="border-t border-white/[0.05] pt-6">
+              <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.28em] text-[#8a847a]">
+                Or write it out
+              </p>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="e.g. Ate the whole pint. Ignored weigh-in. Missed workout."
-                className="min-h-[60px] w-full resize-none border-0 bg-transparent p-0 text-[13px] leading-relaxed outline-none placeholder:text-muted-foreground/60"
+                placeholder="Ate the whole pint. Ignored weigh-in. Missed workout."
+                className="min-h-[88px] w-full resize-none border-0 bg-transparent p-0 font-serif text-xl font-normal leading-snug tracking-[-0.005em] text-[#f5f3ee] outline-none placeholder:text-[#5f5a52] placeholder:italic"
               />
               <button
                 onClick={() => submit('other', notes)}
                 disabled={!notes.trim()}
-                className="mt-1.5 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-orange-400 transition-opacity hover:text-orange-300 disabled:opacity-40"
+                className="mt-2 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.20em] text-orange-400 transition-colors hover:text-orange-300 disabled:opacity-40"
               >
                 Get recovery plan <ArrowRight className="h-3 w-3" />
               </button>
@@ -177,96 +180,136 @@ export function SlipView({ userId, currentStreak }: SlipViewProps) {
   }
 
   return (
-    <PageTransition className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-3.5">
-        <div>
-          <h1 className="text-[13px] font-semibold tracking-[-0.01em]">Slip recovery</h1>
-          <p className="font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">{trigger}</p>
+    <PageTransition className="flex h-full flex-col bg-[#0e0d0b]">
+      <header className="border-b border-white/[0.05] px-6 pb-8 pt-10 sm:px-10">
+        <div className="mx-auto flex max-w-3xl items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="h-px w-8 bg-orange-500/70" />
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
+                Slip recovery &middot; {trigger}
+              </p>
+            </div>
+            <h1 className="mt-4 font-serif text-3xl font-normal leading-[1.06] tracking-[-0.015em] text-[#f5f3ee] sm:text-4xl">
+              Next move. Not Monday.
+            </h1>
+          </div>
+          <button
+            onClick={reset}
+            className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.20em] text-[#8a847a] transition-colors hover:text-[#f5f3ee]"
+          >
+            <RotateCcw className="h-3 w-3" /> Log another
+          </button>
         </div>
-        <button onClick={reset} className="flex items-center gap-1 rounded-sm px-2 py-1 font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground">
-          <RotateCcw className="h-3 w-3" /> Log another
-        </button>
-      </div>
+      </header>
 
-      <div className="flex-1 overflow-y-auto px-6 py-6">
-        <div className="mx-auto max-w-2xl">
+      <div className="flex-1 overflow-y-auto px-6 py-10 sm:px-10">
+        <div className="mx-auto max-w-3xl">
           {loading && !response && (
-            <div className="rounded-md border border-white/[0.06] bg-white/[0.02] px-5 py-5 text-center">
-              <motion.div
-                animate={{ opacity: [0.3, 1, 0.3] }}
-                transition={{ duration: 1.2, repeat: Infinity }}
-                className="mb-1.5 text-[13px] font-semibold tracking-[-0.005em] text-orange-400"
+            <div className="border-y border-orange-500/20 py-10 text-center">
+              <motion.p
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 1.6, repeat: Infinity }}
+                className="font-serif text-2xl font-normal italic text-orange-300"
               >
-                Building your next move…
-              </motion.div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">No shame. Just next move.</p>
+                Building your next move&hellip;
+              </motion.p>
+              <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
+                No shame. Just next move.
+              </p>
             </div>
           )}
 
           {response && <StructuredResponse text={response} accentColor="orange" />}
 
           {!loading && response && (
-            <div className="mt-5">
-              <p className="mb-2.5 font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500">Stabilize — tap when done</p>
-              <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3">
+            <div className="mt-8">
+              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
+                Stabilize &middot; tap when done
+              </p>
+              <div className="grid grid-cols-1 gap-px overflow-hidden border-y border-white/[0.05] bg-white/[0.04] sm:grid-cols-3">
                 {stabilizeActions.map((a) => {
                   const done = !!stabilizeDone[a.key]
                   return (
                     <button
                       key={a.key}
                       onClick={() => setStabilizeDone((s) => ({ ...s, [a.key]: !s[a.key] }))}
-                      className={`flex items-center gap-2 rounded-md border px-3 py-2.5 text-[12px] font-semibold transition-all ${
+                      className={`flex items-center gap-3 px-4 py-4 text-left transition-colors ${
                         done
-                          ? 'border-emerald-500/40 bg-emerald-500/[0.08] text-emerald-400'
-                          : 'border-white/[0.08] bg-white/[0.02] text-foreground/90 hover:bg-white/[0.05]'
+                          ? 'bg-emerald-500/[0.08]'
+                          : 'bg-[#0e0d0b] hover:bg-[#13110d]'
                       }`}
                     >
-                      {done ? <span className="text-[15px]">✓</span> : <a.icon className="h-3.5 w-3.5" />}
-                      {a.label}
+                      {done ? (
+                        <span className="font-serif text-lg text-emerald-400">✓</span>
+                      ) : (
+                        <a.icon className="h-4 w-4 shrink-0 text-[#8a847a]" />
+                      )}
+                      <span
+                        className={`font-serif text-base leading-snug ${
+                          done ? 'text-emerald-300' : 'text-[#f5f3ee]'
+                        }`}
+                      >
+                        {a.label}
+                      </span>
                     </button>
                   )
                 })}
               </div>
 
-              <div className="mt-5 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+              <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden border-y border-white/[0.05] bg-white/[0.04] sm:grid-cols-2">
                 <Link
                   href="/today"
-                  className="flex items-center justify-center gap-1.5 rounded-md bg-gradient-warm px-4 py-2.5 text-[12px] font-bold uppercase tracking-[0.08em] text-white shadow-[0_0_18px_-4px_rgba(255,102,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.15)] transition-shadow hover:shadow-[0_0_28px_-4px_rgba(255,102,0,0.6)]"
+                  className="group bg-[#13110d] px-5 py-5 text-left transition-colors hover:bg-[#181510]"
                 >
-                  Back to today <ArrowRight className="h-3.5 w-3.5" />
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-orange-400">
+                    Continue
+                  </p>
+                  <p className="mt-2 flex items-center gap-2 font-serif text-xl font-normal leading-tight text-[#f5f3ee]">
+                    Back to today <ArrowRight className="h-4 w-4" />
+                  </p>
                 </Link>
                 <Link
                   href="/commitments"
-                  className="flex items-center justify-center gap-1.5 rounded-md border border-white/[0.08] bg-white/[0.02] px-4 py-2.5 text-[12px] font-semibold text-foreground transition-colors hover:bg-white/[0.05]"
+                  className="group bg-[#0e0d0b] px-5 py-5 text-left transition-colors hover:bg-[#13110d]"
                 >
-                  Set tomorrow&apos;s rule
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
+                    Tomorrow
+                  </p>
+                  <p className="mt-2 font-serif text-xl font-normal leading-tight text-[#f5f3ee]">
+                    Set tomorrow&rsquo;s rule.
+                  </p>
                 </Link>
               </div>
 
-              {/* "I'm back" share chip — only shows once all three stabilize
-                  actions are tapped. That gate matters: we don't want people
-                  broadcasting "I recovered" before they actually did the
-                  stabilizing work. The chip is the reward for follow-through. */}
+              {/* "I'm back" share — only after all three stabilize taps. */}
               {allStabilizeDone && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="mt-4 flex items-center gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/[0.04] px-3 py-2.5"
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  className="mt-10 border-y border-emerald-500/20 py-8"
                 >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[12px] font-semibold tracking-[-0.005em] text-emerald-400">You stabilized. You&rsquo;re back.</p>
-                    <p className="mt-0.5 font-mono text-[10px] tabular-nums text-muted-foreground">
-                      Streak preserved: {currentStreak}d &middot; share if it helps someone else
-                    </p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-emerald-400">
+                    Stabilized
+                  </p>
+                  <div className="mt-3 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+                    <div className="min-w-0">
+                      <p className="font-serif text-2xl font-normal leading-snug tracking-[-0.01em] text-[#f5f3ee] sm:text-3xl">
+                        You&rsquo;re back.
+                      </p>
+                      <p className="mt-1 font-mono text-[10px] tabular-nums uppercase tracking-[0.18em] text-[#8a847a]">
+                        Streak preserved &middot; {currentStreak}d
+                      </p>
+                    </div>
+                    <ShareMoment
+                      userId={userId}
+                      moment="recovery"
+                      shareText="I slipped. COYL caught me. I'm back."
+                      label="Share"
+                      variant="solid"
+                    />
                   </div>
-                  <ShareMoment
-                    userId={userId}
-                    moment="recovery"
-                    shareText="I slipped. COYL caught me. I'm back."
-                    label="Share"
-                    variant="solid"
-                  />
                 </motion.div>
               )}
             </div>

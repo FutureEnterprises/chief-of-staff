@@ -1,18 +1,18 @@
 'use client'
 /**
- * AESTHETIC UPGRADE — May 2026 (operator surface)
+ * LUXURY EDITORIAL OVERHAUL — May 2026 (rescue, dark)
  * Refero references applied:
- *   - 554b801c-3b31-4086-a7e5-ae613cdd618b (Linear): two-pane layered
- *     surfaces, 6px card radius, compact element gap, hairline borders
- *     instead of heavy panels.
- *   - 6e9baa82-2f2f-4e77-8b0d-566325635dbe (Axiom): single orange CTA
- *     spotlight, 2px-ish rectangular interactive surfaces, monospace
- *     timer/data, charcoal feature cards (no glassy gloss).
- *   - 11d3e58a-87d7-4a9a-bbf5-720f4fd3ffc6 (Linear Changelog): mono
- *     timestamps for the countdown, ghost capsule feedback chips, refined
- *     medium-weight headlines.
- * Rescue-specific: crisis surface needs INSTANT readability — denser type,
- * fewer competing accents, monospace for the urgent countdown.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): luxury dark editorial
+ *     restraint; cream typography cuts crisply through the warm canvas.
+ *   - c00d3961-a100-4c22-91fe-75f6e488e579 (Pipe): one molten orange CTA,
+ *     no rainbow accents — the rescue moment is severe, not festive.
+ *   - 067fe2b3-9411-42b9-9ea4-39338344f66d (Liron Moran): serif headline
+ *     as monumental gesture; the trigger label reads like a chapter title.
+ *   - c18d1c89-bb32-4a3c-bdc8-42d3355b8905 (DNA Capital): whispered
+ *     authority for the consent-architecture preamble.
+ * Rescue is a crisis surface — typography that calms rather than shouts.
+ * Serif on the focal "what's happening" line, mono for the urgent
+ * countdown (precision matters in the moment), warm body sans for guidance.
  */
 
 import { useState, useEffect, useRef } from 'react'
@@ -210,37 +210,42 @@ export function RescueView({ userId }: RescueViewProps) {
 
   if (!selectedTrigger) {
     return (
-      <PageTransition className="flex h-full flex-col">
-        <div className="border-b border-white/[0.06] px-6 py-3.5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-gradient-to-br from-red-500 to-orange-500 shadow-[0_0_16px_-2px_rgba(239,68,68,0.4),inset_0_1px_0_0_rgba(255,255,255,0.15)]">
-              <Flame className="h-3.5 w-3.5 text-white" />
+      <PageTransition className="flex h-full flex-col bg-[#0e0d0b]">
+        {/* Editorial header — eyebrow + serif title. No icon medallions.
+            The page itself is the medallion. */}
+        <header className="border-b border-white/[0.05] px-6 pb-8 pt-12 sm:px-10">
+          <div className="mx-auto max-w-3xl">
+            <div className="flex items-center gap-3">
+              <span className="h-px w-8 bg-orange-500/70" />
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
+                Rescue
+              </p>
             </div>
-            <div>
-              <h1 className="text-[13px] font-semibold tracking-[-0.01em]">Rescue</h1>
-              <p className="font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">Tap what you&apos;re facing right now</p>
-            </div>
+            <h1 className="mt-4 font-serif text-4xl font-normal leading-[1.05] tracking-[-0.015em] text-[#f5f3ee] sm:text-5xl">
+              What&rsquo;s happening?
+            </h1>
+            <p className="mt-3 max-w-xl font-sans text-[14px] leading-relaxed text-[#a39d92]">
+              Tap what you&rsquo;re facing right now. COYL interrupts the script.
+            </p>
           </div>
-        </div>
+        </header>
 
-        <div className="flex-1 overflow-y-auto px-6 py-6">
-          <div className="mx-auto max-w-2xl">
+        <div className="flex-1 overflow-y-auto px-6 py-12 sm:px-10">
+          <div className="mx-auto max-w-3xl">
             {/* "Why this fired" — consent-architecture transparency.
                 If the user got here from a push or the /today banner, show
-                them WHY the interrupt fired before showing the triggers.
-                This is what converts the surveillance perception into
-                trust: the user can see the reasoning, not just the
-                notification. */}
+                them WHY the interrupt fired before showing the triggers. */}
             {cameFromPush && (
               <motion.div
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-5 rounded-md border-l-2 border border-l-orange-500/60 border-orange-500/20 bg-orange-500/[0.04] px-4 py-3"
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="mb-10 border-l-[1.5px] border-orange-500/50 pl-5 py-1"
               >
-                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-400">
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-orange-400">
                   Why this fired
                 </p>
-                <p className="mt-1 text-[13px] leading-relaxed text-foreground">
+                <p className="mt-2 font-serif text-xl font-normal leading-snug tracking-[-0.01em] text-[#f5f3ee]">
                   {cameFromDangerWindow
                     ? "You're inside one of your mapped danger windows. The pattern from past slips puts this hour in your top risk band."
                     : "A precision interrupt fired based on your danger window history."}
@@ -248,7 +253,7 @@ export function RescueView({ userId }: RescueViewProps) {
                 {windowId && (
                   <Link
                     href="/patterns"
-                    className="mt-1.5 inline-block text-[11px] font-semibold text-orange-300 hover:text-orange-200"
+                    className="mt-3 inline-block font-mono text-[11px] uppercase tracking-[0.18em] text-orange-300 transition-colors hover:text-orange-200"
                   >
                     See the full pattern &rarr;
                   </Link>
@@ -256,23 +261,25 @@ export function RescueView({ userId }: RescueViewProps) {
               </motion.div>
             )}
 
-            <p className="mb-5 text-center text-[13px] leading-relaxed text-muted-foreground">
-              You&apos;re not alone in the moment. Tap what&apos;s happening and COYL will interrupt the script.
+            <p className="mb-8 font-mono text-[10px] uppercase tracking-[0.28em] text-[#8a847a]">
+              Pick the moment
             </p>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+
+            <div className="grid grid-cols-1 gap-px overflow-hidden border-y border-white/[0.05] bg-white/[0.04] sm:grid-cols-2">
               {TRIGGERS.map((t, i) => (
                 <motion.button
                   key={t.key}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.04 * i, duration: 0.28, ease: [0.23, 1, 0.32, 1] }}
-                  whileHover={{ y: -1 }}
-                  whileTap={{ scale: 0.98 }}
+                  transition={{ delay: 0.035 * i, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  whileTap={{ scale: 0.99 }}
                   onClick={() => handleTrigger(t)}
-                  className="flex items-center gap-3 rounded-md border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-left transition-all hover:border-orange-500/40 hover:bg-orange-500/[0.04] hover:shadow-[0_0_18px_-6px_rgba(255,102,0,0.3)]"
+                  className="group flex items-center gap-4 bg-[#0e0d0b] px-5 py-5 text-left transition-colors hover:bg-[#13110d]"
                 >
-                  <span className="text-xl">{t.emoji}</span>
-                  <span className="text-[13px] font-semibold tracking-[-0.005em] text-foreground">{t.label}</span>
+                  <span className="text-2xl opacity-80">{t.emoji}</span>
+                  <span className="font-serif text-[19px] font-normal leading-tight tracking-[-0.005em] text-[#f5f3ee] transition-colors group-hover:text-orange-300">
+                    {t.label}.
+                  </span>
                 </motion.button>
               ))}
             </div>
@@ -290,48 +297,78 @@ export function RescueView({ userId }: RescueViewProps) {
   }
 
   return (
-    <PageTransition className="flex h-full flex-col">
-      {/* Header — operator pattern: thin border, mono metadata sublabel */}
-      <div className="flex items-center gap-3 border-b border-white/[0.06] px-6 py-3.5">
-        <button
-          onClick={reset}
-          className="flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-        </button>
-        <span className="text-xl">{selectedTrigger.emoji}</span>
-        <div className="flex-1">
-          <h1 className="text-[13px] font-semibold tracking-[-0.01em]">{selectedTrigger.label}</h1>
-          <p className="font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">You&apos;re here. That&apos;s the first move.</p>
+    <PageTransition className="flex h-full flex-col bg-[#0e0d0b]">
+      {/* Editorial chapter header — back glyph, serif trigger label as
+          monumental composition, mono "you're here" subtitle. */}
+      <header className="border-b border-white/[0.05] px-6 pb-8 pt-10 sm:px-10">
+        <div className="mx-auto max-w-3xl">
+          <button
+            onClick={reset}
+            className="mb-6 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a] transition-colors hover:text-[#f5f3ee]"
+          >
+            <ArrowLeft className="h-3 w-3" />
+            Back
+          </button>
+          <div className="flex items-center gap-3">
+            <span className="h-px w-8 bg-orange-500/70" />
+            <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
+              Rescue &middot; in session
+            </p>
+          </div>
+          <div className="mt-4 flex items-baseline gap-4">
+            <span className="font-serif text-4xl leading-none text-[#f5f3ee]/85">{selectedTrigger.emoji}</span>
+            <h1 className="font-serif text-3xl font-normal leading-[1.06] tracking-[-0.015em] text-[#f5f3ee] sm:text-4xl">
+              {selectedTrigger.label}.
+            </h1>
+          </div>
+          <p className="mt-3 font-sans text-[13px] leading-relaxed text-[#a39d92]">
+            You&rsquo;re here. That&rsquo;s the first move.
+          </p>
         </div>
-      </div>
+      </header>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-6 py-6">
-        <div className="mx-auto max-w-2xl space-y-3">
+      <div className="flex-1 overflow-y-auto px-6 py-10 sm:px-10">
+        <div className="mx-auto max-w-3xl space-y-5">
           {loading && !response && (
-            <div className="flex items-center gap-3 rounded-md border border-white/[0.06] bg-white/[0.02] px-4 py-3">
-              <AlertCircle className="h-4 w-4 shrink-0 animate-pulse text-orange-500" />
-              <span className="font-mono text-[11px] uppercase tracking-[0.10em] text-muted-foreground">Interrupting…</span>
+            <div className="flex items-center gap-3 border-l-[1.5px] border-orange-500/40 bg-white/[0.02] px-5 py-4">
+              <AlertCircle className="h-3.5 w-3.5 shrink-0 animate-pulse text-orange-500" />
+              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#a39d92]">
+                Interrupting&hellip;
+              </span>
             </div>
           )}
 
           {response && <StructuredResponse text={response} accentColor="red" />}
 
           {!loading && response && (
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-px overflow-hidden border-y border-white/[0.05] bg-white/[0.04] sm:grid-cols-2">
               <button
                 onClick={startDelay}
                 disabled={delayActive}
-                className="rounded-md bg-gradient-to-r from-orange-500 to-red-500 px-4 py-2.5 text-[12px] font-bold uppercase tracking-[0.08em] text-white shadow-[0_0_18px_-4px_rgba(255,102,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.15)] transition-shadow hover:shadow-[0_0_28px_-4px_rgba(255,102,0,0.6)] disabled:opacity-60 disabled:shadow-none"
+                className="group bg-[#13110d] px-5 py-5 text-left transition-colors hover:bg-[#181510] disabled:opacity-60"
               >
-                {delayActive ? <span className="font-mono tabular-nums tracking-[0.02em] normal-case">{formatTime(delayRemaining)}</span> : 'Start 10-min delay'}
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-orange-400">
+                  {delayActive ? 'Counting down' : 'Buy time'}
+                </p>
+                <p className="mt-2 font-serif text-xl font-normal leading-tight tracking-[-0.005em] text-[#f5f3ee]">
+                  {delayActive ? (
+                    <span className="font-mono tabular-nums">{formatTime(delayRemaining)}</span>
+                  ) : (
+                    'Start the 10-minute delay.'
+                  )}
+                </p>
               </button>
               <button
                 onClick={reset}
-                className="rounded-md border border-white/[0.08] bg-white/[0.02] px-4 py-2.5 text-[12px] font-semibold text-foreground transition-colors hover:bg-white/[0.05]"
+                className="group bg-[#0e0d0b] px-5 py-5 text-left transition-colors hover:bg-[#13110d]"
               >
-                I got it from here
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
+                  Already through
+                </p>
+                <p className="mt-2 font-serif text-xl font-normal leading-tight tracking-[-0.005em] text-[#f5f3ee]">
+                  I got it from here.
+                </p>
               </button>
             </div>
           )}
@@ -348,12 +385,12 @@ export function RescueView({ userId }: RescueViewProps) {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="rounded-md border border-white/[0.06] bg-white/[0.02] px-3 py-2.5"
+              className="border-t border-white/[0.05] pt-5"
             >
-              <p className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                Was this fire helpful?
+              <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
+                Was this the moment?
               </p>
-              <div className="flex gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => {
                     setFeedback('helpful')
@@ -367,7 +404,7 @@ export function RescueView({ userId }: RescueViewProps) {
                       }),
                     }).catch(() => {})
                   }}
-                  className="flex-1 rounded-sm border border-emerald-500/35 bg-emerald-500/[0.08] px-3 py-1.5 text-[11px] font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/[0.16]"
+                  className="rounded-full border border-emerald-500/35 px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-emerald-300 transition-colors hover:bg-emerald-500/[0.08]"
                 >
                   Caught me
                 </button>
@@ -384,7 +421,7 @@ export function RescueView({ userId }: RescueViewProps) {
                       }),
                     }).catch(() => {})
                   }}
-                  className="flex-1 rounded-sm border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 text-[11px] font-semibold text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
+                  className="rounded-full border border-white/[0.10] px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[#a39d92] transition-colors hover:bg-white/[0.04] hover:text-[#f5f3ee]"
                 >
                   Wasn&rsquo;t the moment
                 </button>
@@ -392,8 +429,8 @@ export function RescueView({ userId }: RescueViewProps) {
             </motion.div>
           )}
           {feedback && (
-            <p className="text-center font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">
-              {feedback === 'helpful' ? 'Logged. The model gets sharper.' : "Logged. We'll back off this window."}
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
+              {feedback === 'helpful' ? 'Logged. The model gets sharper.' : 'Logged. We&rsquo;ll back off this window.'}
             </p>
           )}
 
@@ -406,21 +443,21 @@ export function RescueView({ userId }: RescueViewProps) {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.4 }}
-              className="rounded-md border-l-2 border border-l-orange-500/60 border-orange-500/15 bg-orange-500/[0.03] px-3 py-2.5"
+              className="border-l-[1.5px] border-orange-500/40 pl-5 py-1"
             >
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[12px] font-semibold tracking-[-0.005em] text-orange-300">
-                    Want the deeper read?
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-orange-400">
+                    Deeper read
                   </p>
-                  <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
-                    COYL&rsquo;s pattern call on what&rsquo;s actually running you right now.
+                  <p className="mt-1 font-serif text-lg font-normal italic leading-snug tracking-[-0.005em] text-[#f5f3ee]">
+                    What&rsquo;s actually running you right now.
                   </p>
                 </div>
                 <CalloutPanel
                   userId={userId}
                   trigger={
-                    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-sm border border-orange-500/40 bg-orange-500/[0.08] px-2.5 py-1 text-[11px] font-bold text-orange-300 transition-all hover:border-orange-500/60 hover:bg-orange-500/[0.16]">
+                    <span className="inline-flex shrink-0 items-center gap-2 border-b border-orange-500/40 pb-0.5 font-mono text-[11px] uppercase tracking-[0.18em] text-orange-300 transition-colors hover:border-orange-500 hover:text-orange-200">
                       <Flame className="h-3 w-3" />
                       Call it out
                     </span>
@@ -434,10 +471,12 @@ export function RescueView({ userId }: RescueViewProps) {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="rounded-md border border-orange-500/30 bg-orange-500/[0.04] px-4 py-4 text-center"
+              className="border-y border-orange-500/20 py-10 text-center"
             >
-              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">Time passing is what breaks the urge.</p>
-              <p className="mt-2 font-mono text-3xl font-semibold tabular-nums tracking-[-0.01em] text-orange-500">
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#8a847a]">
+                Time passing is what breaks the urge
+              </p>
+              <p className="mt-4 font-mono text-6xl font-light tabular-nums tracking-[-0.02em] text-orange-400">
                 {formatTime(delayRemaining)}
               </p>
             </motion.div>
@@ -448,22 +487,36 @@ export function RescueView({ userId }: RescueViewProps) {
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-md border border-white/[0.06] bg-white/[0.02] px-5 py-4 text-center"
+              className="border-y border-white/[0.05] py-8 text-center"
             >
-              <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500">10 minutes in</p>
-              <p className="mb-4 text-lg font-semibold tracking-[-0.015em] text-foreground">Did you pull back?</p>
-              <div className="grid grid-cols-2 gap-1.5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
+                Ten minutes in
+              </p>
+              <p className="mt-3 font-serif text-3xl font-normal tracking-[-0.015em] text-[#f5f3ee]">
+                Did you pull back?
+              </p>
+              <div className="mt-6 grid grid-cols-1 gap-px overflow-hidden border-y border-white/[0.05] bg-white/[0.04] sm:grid-cols-2">
                 <button
                   onClick={() => logFollowUp(true)}
-                  className="flex items-center justify-center gap-1.5 rounded-md bg-gradient-warm px-4 py-2.5 text-[12px] font-bold uppercase tracking-[0.06em] text-white shadow-[0_0_18px_-4px_rgba(255,102,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.15)]"
+                  className="group bg-[#13110d] px-5 py-5 text-left transition-colors hover:bg-[#181510]"
                 >
-                  ✅ Yes, I pulled back
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-orange-400">
+                    Yes
+                  </p>
+                  <p className="mt-2 font-serif text-xl font-normal leading-tight text-[#f5f3ee]">
+                    I pulled back.
+                  </p>
                 </button>
                 <button
                   onClick={() => logFollowUp(false)}
-                  className="flex items-center justify-center gap-1.5 rounded-md border border-red-500/30 bg-red-500/[0.04] px-4 py-2.5 text-[12px] font-bold uppercase tracking-[0.06em] text-red-400 transition-colors hover:bg-red-500/[0.10]"
+                  className="group bg-[#0e0d0b] px-5 py-5 text-left transition-colors hover:bg-[#13110d]"
                 >
-                  💥 I slipped
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-red-400/80">
+                    No
+                  </p>
+                  <p className="mt-2 font-serif text-xl font-normal leading-tight text-[#f5f3ee]">
+                    I slipped.
+                  </p>
                 </button>
               </div>
             </motion.div>
@@ -473,29 +526,31 @@ export function RescueView({ userId }: RescueViewProps) {
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-md border border-emerald-500/30 bg-emerald-500/[0.04] px-5 py-4 text-center"
+              className="border-y border-emerald-500/20 py-10 text-center"
             >
-              <p className="mb-1 text-xl">🔥</p>
-              <p className="text-[15px] font-semibold tracking-[-0.01em] text-emerald-300">You interrupted the script.</p>
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">That&apos;s the rep. Do it again next time.</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-emerald-400/90">
+                Autopilot interrupted
+              </p>
+              <p className="mt-4 font-serif text-3xl font-normal leading-[1.1] tracking-[-0.015em] text-[#f5f3ee] sm:text-4xl">
+                You interrupted the script.
+              </p>
+              <p className="mt-3 font-sans text-[13px] text-[#a39d92]">
+                That&rsquo;s the rep. Do it again next time.
+              </p>
 
               {/* Did it catch you? — §6 non-negotiable feedback */}
               <CatchFeedback trigger={selectedTrigger?.key} />
 
-              {/* Autopilot Interrupted card — the shareable artifact promised
-                  across three strategy docs. Generated on demand so we only
-                  create a RescueSession row when the user actually wants to
-                  share, not on every pull. */}
               {!shareCard ? (
                 <button
                   onClick={generateShareCard}
                   disabled={generatingCard}
-                  className="mt-4 inline-flex items-center gap-2 rounded-md bg-gradient-to-r from-orange-500 to-red-500 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.08em] text-white shadow-[0_0_16px_-4px_rgba(255,102,0,0.45),inset_0_1px_0_0_rgba(255,255,255,0.15)] disabled:opacity-60"
+                  className="mt-6 inline-flex items-center gap-2 border-b border-orange-500/40 pb-0.5 font-mono text-[11px] uppercase tracking-[0.20em] text-orange-300 transition-colors hover:border-orange-500 hover:text-orange-200 disabled:opacity-60"
                 >
-                  {generatingCard ? 'Making the card…' : 'Share the moment'}
+                  {generatingCard ? 'Making the card…' : 'Share the moment →'}
                 </button>
               ) : (
-                <div className="mt-5 text-left">
+                <div className="mt-6 text-left">
                   <AutopilotCard data={shareCard} />
                   <ShareActions
                     shareUrl={shareCard.shareUrl}
@@ -510,10 +565,17 @@ export function RescueView({ userId }: RescueViewProps) {
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-md border border-orange-500/30 bg-orange-500/[0.04] px-5 py-4 text-center"
+              className="border-y border-orange-500/20 py-10 text-center"
             >
-              <p className="mb-1.5 text-[15px] font-semibold tracking-[-0.01em] text-foreground">Okay. That happened.</p>
-              <p className="mb-3 text-[12px] leading-relaxed text-muted-foreground">No Monday reset. No spiral. Next move matters more.</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
+                Okay
+              </p>
+              <p className="mt-4 font-serif text-3xl font-normal leading-[1.1] tracking-[-0.015em] text-[#f5f3ee] sm:text-4xl">
+                That happened. We continue now.
+              </p>
+              <p className="mt-3 font-sans text-[13px] leading-relaxed text-[#a39d92]">
+                No Monday reset. No spiral. Next move matters more.
+              </p>
               <a
                 href="/api/v1/slip"
                 onClick={(e) => {
@@ -524,9 +586,9 @@ export function RescueView({ userId }: RescueViewProps) {
                     body: JSON.stringify({ trigger: selectedTrigger?.key, notes: 'Slipped after rescue delay' }),
                   }).finally(() => reset())
                 }}
-                className="inline-block rounded-md bg-gradient-warm px-4 py-2 text-[12px] font-bold uppercase tracking-[0.08em] text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15)]"
+                className="mt-6 inline-flex items-center gap-2 border-b border-orange-500/40 pb-0.5 font-mono text-[11px] uppercase tracking-[0.20em] text-orange-300 transition-colors hover:border-orange-500 hover:text-orange-200"
               >
-                Get recovery plan →
+                Get recovery plan &rarr;
               </a>
             </motion.div>
           )}
@@ -572,7 +634,7 @@ function CatchFeedback({ trigger }: { trigger: string | undefined }) {
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="mt-4 font-mono text-[10px] uppercase tracking-[0.10em] text-emerald-400"
+        className="mt-5 font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-400"
       >
         Got it. This is the metric that matters.
       </motion.p>
@@ -580,14 +642,16 @@ function CatchFeedback({ trigger }: { trigger: string | undefined }) {
   }
 
   return (
-    <div className="mt-4">
-      <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">Which one fits?</p>
-      <div className="flex flex-wrap justify-center gap-1.5">
+    <div className="mt-6">
+      <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
+        Which one fits?
+      </p>
+      <div className="flex flex-wrap justify-center gap-2">
         {FEEDBACK_OPTIONS.map((o) => (
           <button
             key={o.key}
             onClick={() => send(o.key)}
-            className="rounded-full border border-emerald-500/30 bg-emerald-500/[0.04] px-3 py-0.5 text-[11px] font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/[0.14]"
+            className="rounded-full border border-emerald-500/30 px-4 py-1.5 font-serif text-sm italic text-emerald-300 transition-colors hover:bg-emerald-500/[0.08]"
           >
             &ldquo;{o.label}&rdquo;
           </button>

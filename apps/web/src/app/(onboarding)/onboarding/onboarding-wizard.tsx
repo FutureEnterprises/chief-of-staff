@@ -35,25 +35,22 @@ import { ShareMoment } from '@/components/share/share-moment'
 import { CoylLogo } from '@/components/brand/logo'
 
 /**
- * Onboarding wizard — full-bleed dark surface, Linear/Framer-style.
+ * Onboarding wizard — luxury editorial overhaul (May 2026).
  *
- * Design philosophy (per 2026-04-22 redesign):
- *   • One question per screen. No competing focal points.
- *   • Dark #0a0a0a matches every other authenticated surface. Light cream
- *     was pre-pivot Chief-of-Staff era.
- *   • Heavy display type (font-black, 4xl → 6xl). Treats each question
- *     like a line in a manifesto, not a form label.
- *   • Keyboard-native: Enter advances, Esc goes back. No decorative fluff.
- *   • Lucide icons only, never emoji. Emoji render inconsistently and
- *     signal "toy onboarding" — wrong tone for a behavior-change product.
- *   • Progress bar is a single thin gradient line, not dots-in-a-row.
- *     Reads as "how much of the thing is behind me" at a glance.
- *   • Motion: 0.35s ease-out slide-up + fade. Respects
- *     prefers-reduced-motion automatically via motion/react.
+ * Refero references applied:
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): refined editorial
+ *     restraint on a warm dark canvas; serif headlines as the signature.
+ *   - 067fe2b3-9411-42b9-9ea4-39338344f66d (Liron Moran): monumental serif
+ *     question on a gallery-spaced screen.
+ *   - c00d3961-a100-4c22-91fe-75f6e488e579 (Pipe): ONE molten orange action.
+ *   - c18d1c89-bb32-4a3c-bdc8-42d3355b8905 (DNA Capital): whispered
+ *     authority, restrained luxury fintech serif typography.
  *
- * Data contract is unchanged from the legacy light-mode version. The
- * server action `completeOnboarding` still receives the same payload so
- * no migration or API change is needed.
+ * Each question is a chapter line set in Instrument Serif. Mono is reserved
+ * for step name + counter. Body sans for instructional copy. Canvas is the
+ * warm charcoal #0e0d0b — not pure black, not Linear blue-black.
+ *
+ * Data contract unchanged: same payload to completeOnboarding.
  */
 
 const TIMEZONES = [
@@ -324,35 +321,35 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white antialiased">
-      {/* Ambient glow — subtle, top-right orange haze. Sets brand tone
-          without stealing focus from the content column. */}
+    <div className="relative min-h-screen bg-[#0e0d0b] text-[#f5f3ee] antialiased">
+      {/* Restrained warm canvas wash — single orange whisper, top-right.
+          Sequel/Liron Moran: gallery atmosphere, not a flashy hero. */}
       <div
-        className="pointer-events-none fixed inset-0 opacity-60"
+        className="pointer-events-none fixed inset-0 opacity-70"
         style={{
           background:
-            'radial-gradient(600px at 85% 10%, rgba(255,102,0,0.12), transparent 70%), radial-gradient(400px at 10% 90%, rgba(239,68,68,0.06), transparent 60%)',
+            'radial-gradient(700px at 88% 8%, rgba(255,102,0,0.08), transparent 65%), radial-gradient(500px at 8% 92%, rgba(255,102,0,0.03), transparent 70%)',
         }}
       />
 
       {/* Top rail — logo left, progress center, step counter right. Fixed so
           the content column can scroll without losing orientation. */}
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-md">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.05] bg-[#0e0d0b]/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-4">
           <CoylLogo size="sm" theme="dark" />
 
-          <div className="relative h-px flex-1 overflow-hidden bg-white/5">
+          <div className="relative h-px flex-1 overflow-hidden bg-white/[0.06]">
             <motion.div
               initial={false}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-y-0 left-0 bg-gradient-to-r from-orange-500 to-red-500"
+              className="absolute inset-y-0 left-0 bg-orange-500"
             />
           </div>
 
-          <span className="font-mono text-xs text-gray-500 tabular-nums">
+          <span className="font-mono text-[11px] uppercase tracking-[0.22em] tabular-nums text-[#8a847a]">
             {String(step + 1).padStart(2, '0')}
-            <span className="mx-1 text-gray-700">/</span>
+            <span className="mx-1.5 text-[#5f5a52]">/</span>
             {String(totalSteps).padStart(2, '0')}
           </span>
         </div>
@@ -371,10 +368,10 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="flex-1"
           >
-            {/* Eyebrow: step name, tiny, uppercase. Anchors each page. */}
-            <div className="mb-4 flex items-center gap-3">
-              <span className="h-px w-8 bg-orange-500" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-orange-500">
+            {/* Eyebrow: step name, tiny, uppercase. Gallery wall label. */}
+            <div className="mb-6 flex items-center gap-3">
+              <span className="h-px w-8 bg-orange-500/70" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
                 {steps[step]?.label ?? 'Start'}
               </span>
             </div>
@@ -393,20 +390,19 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
         </AnimatePresence>
       </main>
 
-      {/* Bottom rail — sticky, dark. Back (ghost) + Continue (primary) + kbd
-          hint. Same brand gradient as every other CTA on the site. */}
-      <footer className="fixed inset-x-0 bottom-0 z-50 border-t border-white/5 bg-[#0a0a0a]/80 backdrop-blur-md">
+      {/* Bottom rail — Back (ghosted) + Continue (single orange focal CTA). */}
+      <footer className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.05] bg-[#0e0d0b]/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <div className="flex items-center gap-2">
             {step > 0 ? (
               <button
                 type="button"
                 onClick={goBack}
-                className="group flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.02] px-4 py-2 text-xs font-semibold text-gray-300 transition-colors duration-200 hover:border-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
+                className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.20em] text-[#8a847a] transition-colors hover:text-[#f5f3ee] focus-visible:outline-none focus-visible:text-[#f5f3ee]"
               >
-                <ArrowLeft className="h-3.5 w-3.5" />
+                <ArrowLeft className="h-3 w-3" />
                 Back
-                <kbd className="ml-1 hidden rounded border border-white/10 bg-white/5 px-1 font-mono text-[10px] text-gray-500 md:inline">
+                <kbd className="ml-1 hidden font-mono text-[10px] text-[#5f5a52] md:inline">
                   esc
                 </kbd>
               </button>
@@ -420,17 +416,17 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
               type="button"
               onClick={handleFinish}
               disabled={loading || !canProceed}
-              className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-2.5 text-sm font-bold text-white shadow-[0_0_24px_rgba(255,102,0,0.35)] transition-all duration-200 hover:shadow-[0_0_32px_rgba(255,102,0,0.55)] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
+              className="group inline-flex items-center gap-2 border border-orange-500/50 bg-orange-500/[0.08] px-6 py-2.5 font-mono text-[11px] uppercase tracking-[0.20em] text-orange-300 shadow-[0_0_28px_-8px_rgba(255,102,0,0.45)] transition-colors hover:border-orange-500 hover:bg-orange-500/[0.14] hover:text-orange-200 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? (
                 <>
-                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  Building your plan…
+                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  Building your plan&hellip;
                 </>
               ) : (
                 <>
                   Build my plan
-                  <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
                 </>
               )}
             </button>
@@ -439,11 +435,11 @@ export function OnboardingWizard({ user }: OnboardingWizardProps) {
               type="button"
               onClick={goNext}
               disabled={!canProceed}
-              className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-2.5 text-sm font-bold text-white shadow-[0_0_24px_rgba(255,102,0,0.35)] transition-all duration-200 hover:shadow-[0_0_32px_rgba(255,102,0,0.55)] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
+              className="group inline-flex items-center gap-2 border border-orange-500/50 bg-orange-500/[0.08] px-6 py-2.5 font-mono text-[11px] uppercase tracking-[0.20em] text-orange-300 transition-colors hover:border-orange-500 hover:bg-orange-500/[0.14] hover:text-orange-200 disabled:cursor-not-allowed disabled:opacity-40"
             >
               Continue
-              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-              <kbd className="ml-1 hidden rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px] text-white/70 md:inline">
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+              <kbd className="ml-1 hidden font-mono text-[10px] text-orange-400/70 md:inline">
                 ↵
               </kbd>
             </button>
@@ -485,37 +481,42 @@ function SelectableTile({
       role={multi ? 'checkbox' : 'radio'}
       aria-checked={selected}
       className={cn(
-        'group relative flex w-full items-start gap-4 rounded-2xl border px-5 py-4 text-left transition-all duration-200',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
+        'group relative flex w-full items-start gap-4 border px-5 py-4 text-left transition-colors duration-200',
+        'focus-visible:outline-none focus-visible:border-orange-500/60',
         selected
           ? 'border-orange-500/50 bg-orange-500/[0.08]'
-          : 'border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent hover:border-orange-500/25 hover:bg-white/[0.04]',
+          : 'border-white/[0.08] bg-[#0e0d0b] hover:border-white/[0.18] hover:bg-[#13110d]',
       )}
     >
       {Icon && (
         <div
           className={cn(
-            'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors duration-200',
+            'flex h-10 w-10 shrink-0 items-center justify-center border transition-colors duration-200',
             selected
-              ? 'border-orange-500/40 bg-orange-500/15 text-orange-400'
-              : 'border-white/5 bg-white/[0.03] text-gray-400 group-hover:text-gray-200',
+              ? 'border-orange-500/40 bg-orange-500/[0.10] text-orange-300'
+              : 'border-white/[0.08] bg-white/[0.02] text-[#8a847a] group-hover:text-[#a39d92]',
           )}
         >
           <Icon className="h-4 w-4" />
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className={cn('text-base font-semibold', selected ? 'text-white' : 'text-gray-100')}>
+        <p
+          className={cn(
+            'font-serif text-lg font-normal leading-tight tracking-[-0.005em]',
+            selected ? 'text-[#f5f3ee]' : 'text-[#f5f3ee]/95',
+          )}
+        >
           {label}
         </p>
         {sublabel && (
-          <p className="mt-0.5 text-sm leading-snug text-gray-500">{sublabel}</p>
+          <p className="mt-1 font-sans text-[13px] leading-relaxed text-[#8a847a]">{sublabel}</p>
         )}
       </div>
       {selected && (
         <span
           aria-hidden
-          className="mt-1 h-2 w-2 shrink-0 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(255,102,0,0.6)]"
+          className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500"
         />
       )}
     </button>
@@ -533,9 +534,10 @@ function OpeningFrameStep({ onAgree }: { onAgree: () => void }) {
 
   return (
     <div>
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] tracking-tight text-white md:text-6xl">
-        Let me guess &mdash;<br />
-        <span className="text-orange-400">
+      <h1 className="mb-8 font-serif text-5xl font-normal leading-[1.04] tracking-[-0.018em] text-[#f5f3ee] md:text-6xl">
+        Let me guess &mdash;
+        <br />
+        <span className="italic text-orange-300/95">
           you&rsquo;re good for a few days, then you blow it at night.
         </span>
       </h1>
@@ -545,25 +547,34 @@ function OpeningFrameStep({ onAgree }: { onAgree: () => void }) {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+          className="grid grid-cols-1 gap-px overflow-hidden border border-white/[0.06] bg-white/[0.04] sm:grid-cols-2"
         >
           <button
             type="button"
             onClick={() => {
               setGuessed('yes')
-              // small breath, then advance automatically so the beat lands
               setTimeout(onAgree, 900)
             }}
-            className="rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 px-6 py-4 text-base font-bold text-white shadow-[0_0_24px_rgba(255,102,0,0.35)] transition-all duration-200 hover:shadow-[0_0_36px_rgba(255,102,0,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
+            className="group bg-[#13110d] px-6 py-6 text-left transition-colors hover:bg-[#181510] focus-visible:bg-[#181510] focus-visible:outline-none"
           >
-            Yeah, that&rsquo;s me.
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-orange-400">
+              Yes
+            </p>
+            <p className="mt-2 font-serif text-2xl font-normal leading-tight tracking-[-0.01em] text-[#f5f3ee]">
+              Yeah, that&rsquo;s me.
+            </p>
           </button>
           <button
             type="button"
             onClick={() => setGuessed('no')}
-            className="rounded-2xl border border-white/10 bg-white/[0.02] px-6 py-4 text-base font-semibold text-gray-200 transition-all duration-200 hover:border-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
+            className="group bg-[#0e0d0b] px-6 py-6 text-left transition-colors hover:bg-[#13110d] focus-visible:bg-[#13110d] focus-visible:outline-none"
           >
-            Not exactly.
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
+              No
+            </p>
+            <p className="mt-2 font-serif text-2xl font-normal leading-tight tracking-[-0.01em] text-[#f5f3ee]">
+              Not exactly.
+            </p>
           </button>
         </motion.div>
       )}
@@ -572,15 +583,15 @@ function OpeningFrameStep({ onAgree }: { onAgree: () => void }) {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
+          className="space-y-6"
         >
-          <p className="rounded-2xl border-l-[3px] border-orange-500 bg-orange-500/[0.06] px-5 py-4 text-xl font-semibold text-orange-200">
+          <p className="border-l-[1.5px] border-orange-500/60 pl-5 font-serif text-3xl font-normal leading-snug tracking-[-0.012em] text-orange-200/95">
             Yeah. That&rsquo;s your pattern.
           </p>
-          <p className="text-lg leading-relaxed text-gray-300">
+          <p className="font-sans text-lg leading-relaxed text-[#a39d92]">
             You don&rsquo;t fail randomly. You fail at the same time. Same week. Same script.
           </p>
-          <p className="pt-2 text-xl font-black text-white">
+          <p className="pt-2 font-serif text-2xl font-normal italic text-[#f5f3ee]">
             We&rsquo;re going to catch it this week.
           </p>
         </motion.div>
@@ -590,14 +601,13 @@ function OpeningFrameStep({ onAgree }: { onAgree: () => void }) {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
+          className="space-y-6"
         >
-          <p className="rounded-2xl border-l-[3px] border-orange-500 bg-orange-500/[0.06] px-5 py-4 text-xl font-semibold text-orange-200">
+          <p className="border-l-[1.5px] border-orange-500/60 pl-5 font-serif text-3xl font-normal leading-snug tracking-[-0.012em] text-orange-200/95">
             OK. Then you tell me.
           </p>
-          <p className="text-lg leading-relaxed text-gray-300">
-            The pattern is still there. You just named a different one. Next
-            screens: we map yours exactly.
+          <p className="font-sans text-lg leading-relaxed text-[#a39d92]">
+            The pattern is still there. You just named a different one. Next screens: we map yours exactly.
           </p>
         </motion.div>
       )}
@@ -614,16 +624,16 @@ function WelcomeStep({
 }) {
   return (
     <div>
-      <h1 className="mb-3 text-4xl font-black leading-[1.05] tracking-tight text-white md:text-5xl">
+      <h1 className="mb-4 font-serif text-5xl font-normal leading-[1.04] tracking-[-0.018em] text-[#f5f3ee] md:text-6xl">
         What should we call you?
       </h1>
-      <p className="mb-10 max-w-lg text-lg text-gray-400">
+      <p className="mb-12 max-w-lg font-sans text-lg leading-relaxed text-[#a39d92]">
         COYL talks to you directly. This is how.
       </p>
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div>
-          <label className="mb-2 block text-xs font-mono uppercase tracking-widest text-gray-500">
+          <label className="mb-2 block font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
             Name
           </label>
           <input
@@ -632,21 +642,21 @@ function WelcomeStep({
             onChange={(e) => onChange({ name: e.target.value })}
             placeholder="Your name"
             autoFocus
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.02] px-5 py-4 text-lg font-medium text-white placeholder-gray-600 transition-colors duration-200 focus:border-orange-500/50 focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="w-full border-0 border-b border-white/[0.10] bg-transparent px-0 py-3 font-serif text-3xl font-normal tracking-[-0.012em] text-[#f5f3ee] outline-none transition-colors focus:border-orange-500/60 placeholder:italic placeholder:text-[#5f5a52]"
           />
         </div>
 
         <div>
-          <label className="mb-2 block text-xs font-mono uppercase tracking-widest text-gray-500">
+          <label className="mb-2 block font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
             Timezone
           </label>
           <select
             value={data.timezone}
             onChange={(e) => onChange({ timezone: e.target.value })}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.02] px-5 py-4 text-base font-medium text-white transition-colors duration-200 focus:border-orange-500/50 focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="w-full border border-white/[0.10] bg-[#0e0d0b] px-4 py-3 font-sans text-base text-[#f5f3ee] outline-none transition-colors focus:border-orange-500/50"
           >
             {TIMEZONES.map((tz) => (
-              <option key={tz} value={tz} className="bg-[#0a0a0a]">
+              <option key={tz} value={tz} className="bg-[#0e0d0b]">
                 {tz.replace('_', ' ').replace('/', ' / ')}
               </option>
             ))}
@@ -666,10 +676,10 @@ function BattlefieldStep({
 }) {
   return (
     <div>
-      <h1 className="mb-3 text-4xl font-black leading-[1.05] tracking-tight text-white md:text-5xl">
+      <h1 className="mb-4 font-serif text-5xl font-normal leading-[1.04] tracking-[-0.018em] text-[#f5f3ee] md:text-6xl">
         Which loop is eating you?
       </h1>
-      <p className="mb-10 max-w-lg text-lg text-gray-400">
+      <p className="mb-12 max-w-lg font-sans text-lg leading-relaxed text-[#a39d92]">
         Pick the one you keep losing in the most. You can add more later.
       </p>
 
@@ -707,10 +717,10 @@ function DangerWindowsStep({
 
   return (
     <div>
-      <h1 className="mb-3 text-4xl font-black leading-[1.05] tracking-tight text-white md:text-5xl">
+      <h1 className="mb-4 font-serif text-5xl font-normal leading-[1.04] tracking-[-0.018em] text-[#f5f3ee] md:text-6xl">
         When do you lose?
       </h1>
-      <p className="mb-10 max-w-lg text-lg text-gray-400">
+      <p className="mb-12 max-w-lg font-sans text-lg leading-relaxed text-[#a39d92]">
         These become your danger windows. COYL will watch them like a hawk. Pick all that apply.
       </p>
 
@@ -740,10 +750,10 @@ function ExcuseStyleStep({
 }) {
   return (
     <div>
-      <h1 className="mb-3 text-4xl font-black leading-[1.05] tracking-tight text-white md:text-5xl">
+      <h1 className="mb-4 font-serif text-5xl font-normal leading-[1.04] tracking-[-0.018em] text-[#f5f3ee] md:text-6xl">
         Which one sounds like you?
       </h1>
-      <p className="mb-10 max-w-lg text-lg text-gray-400">
+      <p className="mb-12 max-w-lg font-sans text-lg leading-relaxed text-[#a39d92]">
         Be honest. COYL will call this exact sentence out in the moment.
       </p>
 
@@ -759,17 +769,17 @@ function ExcuseStyleStep({
               role="radio"
               aria-checked={selected}
               className={cn(
-                'relative flex w-full items-center justify-between rounded-2xl border px-5 py-4 text-left transition-all duration-200',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
+                'relative flex w-full items-center justify-between border px-5 py-4 text-left transition-colors duration-200',
+                'focus-visible:outline-none focus-visible:border-orange-500/60',
                 selected
                   ? 'border-orange-500/50 bg-orange-500/[0.08]'
-                  : 'border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent hover:border-orange-500/25',
+                  : 'border-white/[0.08] bg-[#0e0d0b] hover:border-white/[0.18] hover:bg-[#13110d]',
               )}
             >
               <span
                 className={cn(
-                  'text-lg font-semibold italic',
-                  selected ? 'text-orange-200' : 'text-gray-200',
+                  'font-serif text-xl font-normal italic leading-snug tracking-[-0.005em]',
+                  selected ? 'text-orange-200/95' : 'text-[#f5f3ee]',
                 )}
               >
                 &ldquo;{e.label}&rdquo;
@@ -777,7 +787,7 @@ function ExcuseStyleStep({
               {selected && (
                 <span
                   aria-hidden
-                  className="h-2 w-2 shrink-0 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(255,102,0,0.6)]"
+                  className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500"
                 />
               )}
             </button>
@@ -797,10 +807,10 @@ function ToneStep({
 }) {
   return (
     <div>
-      <h1 className="mb-3 text-4xl font-black leading-[1.05] tracking-tight text-white md:text-5xl">
+      <h1 className="mb-4 font-serif text-5xl font-normal leading-[1.04] tracking-[-0.018em] text-[#f5f3ee] md:text-6xl">
         How should COYL talk to you?
       </h1>
-      <p className="mb-10 max-w-lg text-lg text-gray-400">
+      <p className="mb-12 max-w-lg font-sans text-lg leading-relaxed text-[#a39d92]">
         Same intelligence, different pressure. You can change this anytime.
       </p>
 
@@ -816,26 +826,28 @@ function ToneStep({
               role="radio"
               aria-checked={selected}
               className={cn(
-                'flex flex-col items-start gap-3 rounded-2xl border p-5 text-left transition-all duration-200',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]',
+                'flex flex-col items-start gap-4 border p-5 text-left transition-colors duration-200',
+                'focus-visible:outline-none focus-visible:border-orange-500/60',
                 selected
                   ? 'border-orange-500/50 bg-orange-500/[0.08]'
-                  : 'border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent hover:border-orange-500/25',
+                  : 'border-white/[0.08] bg-[#0e0d0b] hover:border-white/[0.18] hover:bg-[#13110d]',
               )}
             >
               <div
                 className={cn(
-                  'flex h-10 w-10 items-center justify-center rounded-xl border',
+                  'flex h-10 w-10 items-center justify-center border',
                   selected
-                    ? 'border-orange-500/40 bg-orange-500/15'
-                    : 'border-white/10 bg-white/[0.02]',
+                    ? 'border-orange-500/40 bg-orange-500/[0.10]'
+                    : 'border-white/[0.10] bg-white/[0.02]',
                 )}
               >
-                <t.Icon className={cn('h-5 w-5', t.accent)} />
+                <t.Icon className={cn('h-4 w-4', selected ? 'text-orange-300' : t.accent)} />
               </div>
               <div>
-                <p className="text-lg font-bold text-white">{t.label}</p>
-                <p className="mt-1 text-sm text-gray-400">{t.desc}</p>
+                <p className="font-serif text-xl font-normal leading-tight tracking-[-0.01em] text-[#f5f3ee]">
+                  {t.label}
+                </p>
+                <p className="mt-1 font-sans text-[13px] leading-relaxed text-[#8a847a]">{t.desc}</p>
               </div>
             </button>
           )
@@ -854,10 +866,10 @@ function CommitmentStep({
 }) {
   return (
     <div>
-      <h1 className="mb-3 text-4xl font-black leading-[1.05] tracking-tight text-white md:text-5xl">
+      <h1 className="mb-4 font-serif text-5xl font-normal leading-[1.04] tracking-[-0.018em] text-[#f5f3ee] md:text-6xl">
         Your first rule.
       </h1>
-      <p className="mb-10 max-w-lg text-lg text-gray-400">
+      <p className="mb-12 max-w-lg font-sans text-lg leading-relaxed text-[#a39d92]">
         One specific commitment for the next 7 days. Concrete. Trackable. Yes or no.
       </p>
 
@@ -867,13 +879,16 @@ function CommitmentStep({
         placeholder="No food after 9 PM. No delivery apps Sun&ndash;Thu. Weigh in 5&times;/week."
         autoFocus
         rows={3}
-        className="w-full resize-none rounded-2xl border border-white/10 bg-white/[0.02] px-5 py-4 text-lg font-medium text-white placeholder-gray-600 transition-colors duration-200 focus:border-orange-500/50 focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+        className="w-full resize-none border-0 border-b border-white/[0.10] bg-transparent px-0 py-3 font-serif text-3xl font-normal leading-snug tracking-[-0.012em] text-[#f5f3ee] outline-none transition-colors focus:border-orange-500/60 placeholder:italic placeholder:text-[#5f5a52]"
       />
 
-      <div className="mt-5 rounded-2xl border-l-[3px] border-orange-500/60 bg-orange-500/[0.05] px-5 py-4 text-sm text-gray-300">
-        <span className="font-bold text-white">COYL will build</span> your first
-        rescue protocol and danger windows from your picks. You&rsquo;ll see it on
-        your home screen.
+      <div className="mt-8 border-l-[1.5px] border-orange-500/60 pl-5 py-1">
+        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-orange-400">
+          What happens next
+        </p>
+        <p className="mt-2 font-serif text-xl font-normal leading-snug text-[#f5f3ee]">
+          COYL builds your rescue protocol and danger windows from your picks. You&rsquo;ll see it on your home screen.
+        </p>
       </div>
     </div>
   )
@@ -888,10 +903,12 @@ function RescuePreferenceStep({
 }) {
   return (
     <div>
-      <h1 className="mb-3 text-4xl font-black leading-[1.05] tracking-tight text-white md:text-5xl">
-        When you&rsquo;re about to slip, what should COYL do?
+      <h1 className="mb-4 font-serif text-5xl font-normal leading-[1.04] tracking-[-0.018em] text-[#f5f3ee] md:text-6xl">
+        When you&rsquo;re about to slip,
+        <br />
+        <span className="italic text-[#f5f3ee]/85">what should COYL do?</span>
       </h1>
-      <p className="mb-10 max-w-lg text-lg text-gray-400">
+      <p className="mb-12 max-w-lg font-sans text-lg leading-relaxed text-[#a39d92]">
         This becomes your default rescue style. You can change it anytime.
       </p>
 
@@ -955,18 +972,16 @@ function Glp1Step({
 
   return (
     <div>
-      <h1 className="mb-3 text-4xl font-black leading-[1.05] tracking-tight text-white md:text-5xl">
+      <h1 className="mb-4 font-serif text-5xl font-normal leading-[1.04] tracking-[-0.018em] text-[#f5f3ee] md:text-6xl">
         On a GLP-1?
       </h1>
-      <p className="mb-10 max-w-lg text-lg text-gray-400">
-        Ozempic, Wegovy, Mounjaro, Zepbound, compounded? COYL fires a
-        targeted interrupt 72 hours after each dose &mdash; the exact moment
-        appetite suppression tapers. Skip if not on one.
+      <p className="mb-12 max-w-lg font-sans text-lg leading-relaxed text-[#a39d92]">
+        Ozempic, Wegovy, Mounjaro, Zepbound, compounded? COYL fires a targeted interrupt 72 hours after each dose &mdash; the exact moment appetite suppression tapers. Skip if not on one.
       </p>
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div>
-          <label className="mb-2 block text-xs font-mono uppercase tracking-widest text-gray-500">
+          <label className="mb-2 block font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
             Medication (leave blank to skip)
           </label>
           <input
@@ -974,39 +989,39 @@ function Glp1Step({
             value={data.glp1Drug}
             onChange={(e) => onChange({ glp1Drug: e.target.value })}
             placeholder="Ozempic / Wegovy / Mounjaro / Zepbound / Compounded"
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.02] px-5 py-4 text-lg font-medium text-white placeholder-gray-600 transition-colors duration-200 focus:border-orange-500/50 focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="w-full border-0 border-b border-white/[0.10] bg-transparent px-0 py-3 font-serif text-2xl font-normal tracking-[-0.01em] text-[#f5f3ee] outline-none transition-colors focus:border-orange-500/60 placeholder:italic placeholder:text-[#5f5a52]"
           />
         </div>
 
         {data.glp1Drug.trim().length > 0 && (
           <div>
-            <label className="mb-2 block text-xs font-mono uppercase tracking-widest text-gray-500">
+            <label className="mb-3 block font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
               Injection day (in your local timezone)
             </label>
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-7 gap-1.5">
               {weekdays.map((label, idx) => (
                 <button
                   key={label}
                   type="button"
                   onClick={() => onChange({ glp1InjectionWeekday: idx })}
-                  className={`rounded-xl border px-2 py-3 text-sm font-bold transition-colors ${
+                  className={`border px-2 py-3 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
                     data.glp1InjectionWeekday === idx
-                      ? 'border-orange-500 bg-orange-500/15 text-orange-300'
-                      : 'border-white/10 bg-white/[0.02] text-gray-400 hover:border-orange-500/30'
+                      ? 'border-orange-500/60 bg-orange-500/[0.10] text-orange-300'
+                      : 'border-white/[0.08] bg-[#0e0d0b] text-[#a39d92] hover:border-white/[0.18] hover:text-[#f5f3ee]'
                   }`}
                 >
                   {label}
                 </button>
               ))}
             </div>
-            <p className="mt-2 text-[11px] text-gray-500">
+            <p className="mt-3 font-sans text-[12px] text-[#8a847a]">
               Day 3 after this is when the autopilot tries to come back. That&rsquo;s when COYL fires.
             </p>
           </div>
         )}
 
-        <p className="text-xs text-gray-500">
-          You can change or remove this any time from /settings. Behavioral support, not medical advice.
+        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#5f5a52]">
+          Change or remove any time in /settings &middot; behavioral support, not medical advice
         </p>
       </div>
     </div>
@@ -1036,14 +1051,14 @@ function SummaryStep({ data, userId }: { data: FormData; userId: string }) {
 
   return (
     <div>
-      <h1 className="mb-3 text-4xl font-black leading-[1.05] tracking-tight text-white md:text-5xl">
+      <h1 className="mb-4 font-serif text-5xl font-normal leading-[1.04] tracking-[-0.018em] text-[#f5f3ee] md:text-6xl">
         Here&rsquo;s what I see.
       </h1>
-      <p className="mb-10 max-w-lg text-lg text-gray-400">
+      <p className="mb-12 max-w-lg font-sans text-lg leading-relaxed text-[#a39d92]">
         Read it slowly. This is your pattern.
       </p>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         {beats.map((line, i) => {
           const isExcuseQuote = line.startsWith('\u201C') && line.endsWith('\u201D')
           const isFinal = line === 'Deal?'
@@ -1052,13 +1067,13 @@ function SummaryStep({ data, userId }: { data: FormData; userId: string }) {
               key={i}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 + i * 0.55, duration: 0.4 }}
+              transition={{ delay: 0.35 + i * 0.55, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className={cn(
-                'text-lg leading-relaxed',
+                'font-serif text-xl leading-relaxed',
                 isExcuseQuote &&
-                  'rounded-2xl border-l-[3px] border-orange-500 bg-orange-500/[0.06] px-5 py-4 text-xl font-semibold italic text-orange-200',
-                isFinal && 'pt-4 text-3xl font-black text-white md:text-4xl',
-                !isExcuseQuote && !isFinal && 'text-gray-300',
+                  'border-l-[1.5px] border-orange-500/60 pl-5 py-1 text-3xl italic text-orange-200/95 leading-snug tracking-[-0.01em]',
+                isFinal && 'pt-6 text-5xl tracking-[-0.018em] text-[#f5f3ee] md:text-6xl',
+                !isExcuseQuote && !isFinal && 'text-[#d6cfc1] tracking-[-0.005em]',
               )}
             >
               {line}
@@ -1067,14 +1082,11 @@ function SummaryStep({ data, userId }: { data: FormData; userId: string }) {
         })}
       </div>
 
-      {/* Share chip lands after all beats have rendered. First-use moment
-          worth sharing; most users never get this specific a read from any
-          app. Kept optional — no gate on proceeding. */}
       <motion.div
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 + beats.length * 0.55 + 0.15, duration: 0.5 }}
-        className="mt-8 flex items-center gap-3"
+        className="mt-10 flex items-center gap-3"
       >
         <ShareMoment
           userId={userId}
@@ -1082,26 +1094,26 @@ function SummaryStep({ data, userId }: { data: FormData; userId: string }) {
           shareText={`COYL just read me. "Your autopilot runs ${windowText}. This week the sentence in my head will be: ${excuseQuote}"`}
           label="Share this read"
         />
-        <span className="text-[11px] text-gray-600">Optional.</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#5f5a52]">
+          Optional
+        </span>
       </motion.div>
 
-      {/* Quiet footer — the picks, compacted. Reassures the user that the
-          AI remembers what they said. */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.35 + beats.length * 0.55 + 0.3, duration: 0.6 }}
-        className="mt-8 grid grid-cols-2 gap-2"
+        className="mt-10 grid grid-cols-2 gap-px overflow-hidden border-y border-white/[0.05] bg-white/[0.04]"
       >
-        <div className="rounded-2xl border border-white/5 bg-white/[0.02] px-4 py-3">
-          <p className="text-[10px] font-mono uppercase tracking-widest text-gray-600">Tone</p>
-          <p className="mt-0.5 text-sm font-semibold text-white">
+        <div className="bg-[#0e0d0b] px-5 py-5">
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">Tone</p>
+          <p className="mt-2 font-serif text-xl font-normal leading-tight text-[#f5f3ee]">
             {TONE_MODES.find((t) => t.value === data.toneMode)?.label ?? data.toneMode}
           </p>
         </div>
-        <div className="rounded-2xl border border-white/5 bg-white/[0.02] px-4 py-3">
-          <p className="text-[10px] font-mono uppercase tracking-widest text-gray-600">Rescue</p>
-          <p className="mt-0.5 text-sm font-semibold text-white">
+        <div className="bg-[#0e0d0b] px-5 py-5">
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">Rescue</p>
+          <p className="mt-2 font-serif text-xl font-normal leading-tight text-[#f5f3ee]">
             {RESCUE_PREFERENCES.find((r) => r.value === data.rescuePreference)?.label ?? 'Called out'}
           </p>
         </div>

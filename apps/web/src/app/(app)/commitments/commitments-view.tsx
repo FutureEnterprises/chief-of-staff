@@ -1,9 +1,22 @@
 'use client'
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026 (commitments, dark)
+ * Refero references applied:
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): editorial restraint,
+ *     cream-on-warm-canvas hierarchy, gallery rhythm.
+ *   - 067fe2b3-9411-42b9-9ea4-39338344f66d (Liron Moran): serif rules read
+ *     as chapter lines, not form values.
+ *   - c00d3961-a100-4c22-91fe-75f6e488e579 (Pipe): ONE warm orange action
+ *     mark per surface; charcoal interactive panels.
+ * Each rule the user holds themselves to gets set in Instrument Serif —
+ * it's the literal sentence the operator is keeping or breaking. Treat it
+ * like editorial copy, not a database row.
+ */
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'motion/react'
 import { PageTransition, StaggerList, StaggerItem } from '@/components/motion/animations'
-import { Shield, Plus, Check, X, CheckCircle2, DollarSign } from 'lucide-react'
+import { Plus, Check, X, CheckCircle2, DollarSign } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type Commitment = {
@@ -176,55 +189,80 @@ export function CommitmentsView() {
   const inactiveCommitments = commitments.filter((c) => !c.active)
 
   return (
-    <PageTransition className="relative mx-auto max-w-3xl p-8">
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-mesh opacity-40" />
+    <PageTransition className="relative mx-auto max-w-3xl px-6 py-10 sm:py-12">
+      {/* Warm restraint glow — single ambient orange wash, top-right. */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 opacity-60"
+        style={{
+          background:
+            'radial-gradient(700px at 90% -10%, rgba(255,102,0,0.06), transparent 65%)',
+        }}
+      />
 
-      <div className="mb-8 flex items-start justify-between">
+      <header className="mb-12 flex items-end justify-between border-b border-white/[0.05] pb-8">
         <div>
-          <h1 className="heading-1 flex items-center gap-2">
-            <Shield className="h-6 w-6 text-orange-500" />
-            Commitments
+          <div className="flex items-center gap-3">
+            <span className="h-px w-8 bg-orange-500/70" />
+            <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
+              Commitments
+            </p>
+          </div>
+          <h1 className="mt-4 font-serif text-4xl font-normal leading-[1.04] tracking-[-0.015em] text-[#f5f3ee] sm:text-5xl">
+            Rules you made to yourself.
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Rules you&apos;ve made to yourself. Track them. Keep them.
+          <p className="mt-3 max-w-lg font-sans text-[14px] leading-relaxed text-[#a39d92]">
+            Track them. Keep them. Each is a sentence you&rsquo;re either holding or letting go of.
           </p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-1.5 rounded-xl bg-gradient-warm px-4 py-2 text-sm font-bold text-white shadow-glow-orange"
+          className="hidden shrink-0 items-center gap-2 border-b border-orange-500/40 pb-1 font-mono text-[11px] uppercase tracking-[0.20em] text-orange-400 transition-colors hover:border-orange-500 hover:text-orange-300 sm:inline-flex"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3 w-3" />
           New commitment
         </button>
-      </div>
+      </header>
+
+      <button
+        onClick={() => setShowForm(!showForm)}
+        className="mb-8 inline-flex items-center gap-2 border-b border-orange-500/40 pb-1 font-mono text-[11px] uppercase tracking-[0.20em] text-orange-400 transition-colors hover:border-orange-500 hover:text-orange-300 sm:hidden"
+      >
+        <Plus className="h-3 w-3" />
+        New commitment
+      </button>
 
       {showForm && (
         <motion.div
-          initial={{ opacity: 0, y: -8 }}
+          initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass mb-6 rounded-2xl p-5"
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-12 border-y border-white/[0.05] py-8"
         >
-          <label className="text-sm font-semibold">Your rule</label>
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
+            Write the rule
+          </p>
           <input
             autoFocus
             value={rule}
             onChange={(e) => setRule(e.target.value)}
-            placeholder="e.g. No food after 9 PM"
-            className="mt-2 w-full rounded-xl border bg-transparent px-4 py-3 text-sm focus:shadow-glow-orange"
+            placeholder="No food after 9 PM."
+            className="w-full border-0 bg-transparent p-0 font-serif text-2xl font-normal leading-snug tracking-[-0.01em] text-[#f5f3ee] outline-none placeholder:text-[#5f5a52] placeholder:italic sm:text-3xl"
           />
 
-          <div className="mt-4">
-            <label className="text-xs font-semibold text-muted-foreground">Domain</label>
-            <div className="mt-2 grid grid-cols-3 gap-1.5 sm:grid-cols-5">
+          <div className="mt-8">
+            <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
+              Domain
+            </p>
+            <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-5">
               {DOMAINS.map((d) => (
                 <button
                   key={d.value}
                   onClick={() => setDomain(d.value)}
                   className={cn(
-                    'flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs transition-all',
+                    'flex items-center justify-center gap-1.5 border px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors',
                     domain === d.value
-                      ? 'bg-gradient-warm text-white border-transparent'
-                      : 'hover:bg-muted'
+                      ? 'border-orange-500/60 bg-orange-500/[0.08] text-orange-300'
+                      : 'border-white/[0.08] bg-[#0e0d0b] text-[#a39d92] hover:border-white/[0.18] hover:text-[#f5f3ee]',
                   )}
                 >
                   <span>{d.emoji}</span>
@@ -234,18 +272,20 @@ export function CommitmentsView() {
             </div>
           </div>
 
-          <div className="mt-4">
-            <label className="text-xs font-semibold text-muted-foreground">Frequency</label>
-            <div className="mt-2 flex gap-1.5">
+          <div className="mt-6">
+            <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
+              Frequency
+            </p>
+            <div className="flex gap-1.5">
               {(['DAILY', 'WEEKLY', 'ONE_TIME'] as const).map((f) => (
                 <button
                   key={f}
                   onClick={() => setFrequency(f)}
                   className={cn(
-                    'rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all',
+                    'border px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] transition-colors',
                     frequency === f
-                      ? 'bg-gradient-warm text-white border-transparent'
-                      : 'hover:bg-muted'
+                      ? 'border-orange-500/60 bg-orange-500/[0.08] text-orange-300'
+                      : 'border-white/[0.08] bg-[#0e0d0b] text-[#a39d92] hover:border-white/[0.18] hover:text-[#f5f3ee]',
                   )}
                 >
                   {f.replace('_', ' ')}
@@ -254,71 +294,94 @@ export function CommitmentsView() {
             </div>
           </div>
 
-          <div className="mt-5 flex justify-end gap-2">
+          <div className="mt-8 flex justify-end gap-4">
             <button
               onClick={() => setShowForm(false)}
-              className="rounded-lg border px-4 py-2 text-sm text-muted-foreground"
+              className="font-mono text-[11px] uppercase tracking-[0.20em] text-[#8a847a] transition-colors hover:text-[#f5f3ee]"
             >
               Cancel
             </button>
             <button
               onClick={handleCreate}
               disabled={!rule.trim() || saving}
-              className="rounded-lg bg-gradient-warm px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+              className="inline-flex items-center gap-2 border-b border-orange-500/60 pb-1 font-mono text-[11px] uppercase tracking-[0.20em] text-orange-300 transition-colors hover:border-orange-500 hover:text-orange-200 disabled:opacity-40"
             >
-              {saving ? 'Saving…' : 'Create'}
+              {saving ? 'Saving…' : 'Create rule →'}
             </button>
           </div>
         </motion.div>
       )}
 
       {loading ? (
-        <div className="text-center text-sm text-muted-foreground">Loading…</div>
+        <p className="border-y border-white/[0.05] py-16 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
+          Loading&hellip;
+        </p>
       ) : commitments.length === 0 ? (
-        <div className="glass rounded-2xl p-12 text-center">
-          <Shield className="mx-auto mb-3 h-10 w-10 text-orange-500/50" />
-          <h3 className="heading-3">No commitments yet</h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Start with one rule. Something specific and trackable.
+        <div className="border-y border-white/[0.05] py-16 text-center">
+          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#8a847a]">
+            Nothing here yet
+          </p>
+          <p className="mx-auto mt-4 max-w-md font-serif text-3xl font-normal leading-[1.1] tracking-[-0.012em] text-[#f5f3ee] sm:text-4xl">
+            Start with one rule. Something specific, something trackable.
           </p>
         </div>
       ) : (
         <>
           {activeCommitments.length > 0 && (
-            <div className="mb-8">
-              <h2 className="label-xs mb-3 text-muted-foreground">Active</h2>
-              <StaggerList className="space-y-2">
+            <div className="mb-12">
+              <div className="mb-5 flex items-baseline justify-between border-b border-white/[0.05] pb-3">
+                <h2 className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#8a847a]">
+                  Active
+                </h2>
+                <span className="font-mono text-[10px] tabular-nums text-[#8a847a]">
+                  {String(activeCommitments.length).padStart(2, '0')}
+                </span>
+              </div>
+              <StaggerList className="divide-y divide-white/[0.05]">
                 {activeCommitments.map((c) => {
                   const stake = stakeFor(c.id)
                   const isStaking = stakingCommitmentId === c.id
                   return (
                     <StaggerItem key={c.id}>
-                      <div className="glass rounded-xl p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <p className="text-sm font-semibold">{c.rule}</p>
-                            <p className="mt-1 text-xs text-muted-foreground">
-                              {emojiFor(c.domain)} {c.domain.toLowerCase()} &middot; {c.frequency.replace('_', ' ').toLowerCase()} &middot;
-                              <span className="ml-1 text-emerald-500">{c.keepCount} kept</span>
-                              {c.breakCount > 0 && <span className="ml-1 text-red-500">&middot; {c.breakCount} broken</span>}
+                      <div className="py-6">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-serif text-2xl font-normal leading-snug tracking-[-0.01em] text-[#f5f3ee]">
+                              {c.rule}
+                            </p>
+                            <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[#8a847a]">
+                              <span>{emojiFor(c.domain)} {c.domain.toLowerCase()}</span>
+                              <span className="mx-2 text-[#5f5a52]">/</span>
+                              <span>{c.frequency.replace('_', ' ').toLowerCase()}</span>
+                              <span className="mx-2 text-[#5f5a52]">/</span>
+                              <span className="text-emerald-400/80">{c.keepCount} kept</span>
+                              {c.breakCount > 0 && (
+                                <>
+                                  <span className="mx-2 text-[#5f5a52]">/</span>
+                                  <span className="text-red-400/80">{c.breakCount} broken</span>
+                                </>
+                              )}
                               {stake && (
-                                <span className="ml-1 text-orange-400">
-                                  &middot; ${(stake.amountCents / 100).toFixed(0)} staked → {stake.charityLabel}
-                                </span>
+                                <>
+                                  <span className="mx-2 text-[#5f5a52]">/</span>
+                                  <span className="text-orange-400">
+                                    ${(stake.amountCents / 100).toFixed(0)} staked &rarr; {stake.charityLabel}
+                                  </span>
+                                </>
                               )}
                             </p>
                           </div>
                           <div className="flex gap-1.5">
                             <button
                               onClick={() => handleCheck(c.id, true)}
-                              className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+                              className="flex h-9 w-9 items-center justify-center border border-emerald-500/30 text-emerald-400/90 transition-colors hover:bg-emerald-500/[0.08]"
                               title="Kept it"
                             >
                               <Check className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => handleCheck(c.id, false)}
-                              className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                              className="flex h-9 w-9 items-center justify-center border border-red-500/30 text-red-400/90 transition-colors hover:bg-red-500/[0.08]"
                               title="Broke it"
                             >
                               <X className="h-4 w-4" />
@@ -326,36 +389,30 @@ export function CommitmentsView() {
                           </div>
                         </div>
 
-                        {/* Stake row — visible only when no active stake exists.
-                            Three quick-select amounts; on click → POSTs to
-                            /api/v1/stakes which authorizes via off_session
-                            PaymentIntent on the customer's default card. On
-                            "kept" the auth is voided; on "broken" the auth
-                            is captured to GiveDirectly. */}
                         {!stake && (
-                          <div className="mt-3 border-t border-white/5 pt-3">
+                          <div className="mt-5 border-t border-white/[0.04] pt-4">
                             {!isStaking ? (
                               <button
                                 onClick={() => {
                                   setStakingCommitmentId(c.id)
                                   setStakeError(null)
                                 }}
-                                className="inline-flex items-center gap-1.5 rounded-lg border border-orange-500/30 bg-orange-500/[0.06] px-3 py-1.5 text-xs font-bold text-orange-300 hover:bg-orange-500/[0.12]"
+                                className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.20em] text-orange-400 transition-colors hover:text-orange-300"
                               >
                                 <DollarSign className="h-3 w-3" />
                                 Add a financial stake
                               </button>
                             ) : (
                               <div>
-                                <p className="mb-2 text-[11px] text-muted-foreground">
-                                  Choose a stake amount. If you break the rule, the money goes to GiveDirectly. If you keep it, your card is never charged.
+                                <p className="mb-3 font-sans text-[13px] leading-relaxed text-[#a39d92]">
+                                  Pick a stake. Break the rule &rarr; the money goes to GiveDirectly. Keep it &rarr; your card is never charged.
                                 </p>
                                 <div className="flex flex-wrap gap-2">
                                   {[1000, 2500, 5000].map((amt) => (
                                     <button
                                       key={amt}
                                       onClick={() => placeStake(c.id, amt)}
-                                      className="rounded-lg bg-gradient-to-r from-orange-500 to-red-500 px-4 py-1.5 text-xs font-bold text-white shadow-[0_0_12px_-3px_rgba(255,102,0,0.4)]"
+                                      className="border border-orange-500/50 px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-orange-300 transition-colors hover:bg-orange-500/[0.10]"
                                     >
                                       Stake ${(amt / 100).toFixed(0)}
                                     </button>
@@ -365,13 +422,13 @@ export function CommitmentsView() {
                                       setStakingCommitmentId(null)
                                       setStakeError(null)
                                     }}
-                                    className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+                                    className="font-mono text-[11px] uppercase tracking-[0.20em] text-[#8a847a] transition-colors hover:text-[#f5f3ee]"
                                   >
                                     Cancel
                                   </button>
                                 </div>
                                 {stakeError && (
-                                  <p className="mt-2 text-[11px] text-red-400">{stakeError}</p>
+                                  <p className="mt-2 font-mono text-[11px] text-red-400">{stakeError}</p>
                                 )}
                               </div>
                             )}
@@ -387,15 +444,22 @@ export function CommitmentsView() {
 
           {inactiveCommitments.length > 0 && (
             <div>
-              <h2 className="label-xs mb-3 text-muted-foreground">Past</h2>
-              <div className="space-y-2 opacity-60">
-                {inactiveCommitments.map((c) => (
-                  <div key={c.id} className="glass flex items-center gap-3 rounded-xl p-3">
-                    <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-                    <p className="text-sm">{c.rule}</p>
-                  </div>
-                ))}
+              <div className="mb-5 flex items-baseline justify-between border-b border-white/[0.05] pb-3">
+                <h2 className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#8a847a]">
+                  Past
+                </h2>
+                <span className="font-mono text-[10px] tabular-nums text-[#8a847a]">
+                  {String(inactiveCommitments.length).padStart(2, '0')}
+                </span>
               </div>
+              <ul className="divide-y divide-white/[0.04]">
+                {inactiveCommitments.map((c) => (
+                  <li key={c.id} className="flex items-center gap-3 py-3 opacity-60">
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#8a847a]" />
+                    <p className="font-serif text-base italic text-[#a39d92]">{c.rule}</p>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </>

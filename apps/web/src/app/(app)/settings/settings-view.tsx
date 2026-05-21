@@ -1,4 +1,16 @@
 'use client'
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026 (settings, dark)
+ * Refero references applied:
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): editorial restraint
+ *     on a dense, functional surface. Serif on section headers only.
+ *   - c00d3961-a100-4c22-91fe-75f6e488e579 (Pipe): ONE orange touchpoint
+ *     per section (the section icon dot). Functional UI stays operator-grade.
+ *   - 067fe2b3-9411-42b9-9ea4-39338344f66d (Liron Moran): warm charcoal
+ *     canvas underneath the existing GlassCard sections.
+ * Settings keeps its functional density (toggles + inputs unchanged), but
+ * the page-level chrome, section headers, and h1 read editorial.
+ */
 import { useState } from 'react'
 import type { User } from '@repo/database'
 import { Input } from '@/components/ui/input'
@@ -40,13 +52,29 @@ export function SettingsView({ user }: SettingsViewProps) {
   }
 
   return (
-    <PageTransition className="relative mx-auto max-w-2xl p-8">
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-mesh opacity-40" />
+    <PageTransition className="relative mx-auto max-w-2xl px-6 py-10 sm:py-12">
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 opacity-60"
+        style={{
+          background:
+            'radial-gradient(700px at 90% -10%, rgba(255,102,0,0.06), transparent 65%)',
+        }}
+      />
 
-      <div className="mb-8">
-        <h1 className="heading-1">Settings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Manage your account and preferences</p>
-      </div>
+      <header className="mb-12 border-b border-white/[0.05] pb-8">
+        <div className="flex items-center gap-3">
+          <span className="h-px w-8 bg-orange-500/70" />
+          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
+            Settings
+          </p>
+        </div>
+        <h1 className="mt-4 font-serif text-4xl font-normal leading-[1.05] tracking-[-0.015em] text-[#f5f3ee] sm:text-5xl">
+          Account, voice, &amp; consent.
+        </h1>
+        <p className="mt-3 max-w-lg font-sans text-[14px] leading-relaxed text-[#a39d92]">
+          How COYL talks to you, what it can interrupt, and the data it holds on your behalf.
+        </p>
+      </header>
 
       <StaggerList className="space-y-6">
         {/* Account */}
@@ -57,8 +85,8 @@ export function SettingsView({ user }: SettingsViewProps) {
                 <UserIcon className="h-4 w-4 text-orange-500" />
               </div>
               <div>
-                <h3 className="heading-4">Account</h3>
-                <p className="text-xs text-muted-foreground">Your profile and plan</p>
+                <h3 className="font-serif text-2xl font-normal leading-tight tracking-[-0.012em] text-[#f5f3ee]">Account</h3>
+                <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.20em] text-[#8a847a]">Profile &amp; plan</p>
               </div>
             </div>
             <div className="space-y-4">
@@ -106,8 +134,8 @@ export function SettingsView({ user }: SettingsViewProps) {
                 <Bell className="h-4 w-4 text-orange-500" />
               </div>
               <div>
-                <h3 className="heading-4">Preferences</h3>
-                <p className="text-xs text-muted-foreground">Customize how COYL works for you</p>
+                <h3 className="font-serif text-2xl font-normal leading-tight tracking-[-0.012em] text-[#f5f3ee]">Preferences</h3>
+                <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.20em] text-[#8a847a]">How COYL works for you</p>
               </div>
             </div>
             <div className="space-y-5">
@@ -316,8 +344,8 @@ function Glp1ProfileCard({ user }: { user: User }) {
           <Syringe className="h-4 w-4 text-orange-500" />
         </div>
         <div>
-          <h3 className="heading-4">GLP-1 companion</h3>
-          <p className="text-xs text-muted-foreground">
+          <h3 className="font-serif text-2xl font-normal leading-tight tracking-[-0.012em] text-[#f5f3ee]">GLP-1 companion</h3>
+          <p className="mt-1 font-sans text-[12px] leading-relaxed text-[#a39d92]">
             On Ozempic, Wegovy, Mounjaro, Zepbound, or compounded? Tell COYL so it can time interrupts to your cycle.
           </p>
         </div>

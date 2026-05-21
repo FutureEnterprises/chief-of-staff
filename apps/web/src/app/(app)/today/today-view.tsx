@@ -1,33 +1,36 @@
 'use client'
 /**
- * AESTHETIC UPGRADE — May 2026 (operator surface)
+ * LUXURY EDITORIAL OVERHAUL — May 2026 (operator surface, dark)
  * Refero references applied:
- *   - 554b801c-3b31-4086-a7e5-ae613cdd618b (Linear): midnight command-center
- *     layering, compact 24px section gap, monospace metadata, single accent
- *     restraint, 6px card radius, tight letter-spacing.
- *   - 6e9baa82-2f2f-4e77-8b0d-566325635dbe (Axiom): industrial precision —
- *     2px radius on rectangular surfaces, single orange CTA spotlight,
- *     monospace data labels, thin medium-gray borders for tonal separation.
- *   - 11d3e58a-87d7-4a9a-bbf5-720f4fd3ffc6 (Linear Changelog): mono
- *     timestamps, tabular-nums data alignment, ghost capsule pills,
- *     compact element gap, refined medium-weight headlines.
- * Density/typography tightened for daily-use surface. Brand orange preserved.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): refined dark-mode editorial,
+ *     cream typography on warm canvas, gallery restraint over decorative gloss.
+ *   - 067fe2b3-9411-42b9-9ea4-39338344f66d (Liron Moran): muted charcoal canvas,
+ *     oversized serif headline as monumental composition, generous breathing room.
+ *   - c18d1c89-bb32-4a3c-bdc8-42d3355b8905 (DNA Capital): premium dark fintech,
+ *     serif display + whispered authority, ONE accent moment per surface.
+ *   - c00d3961-a100-4c22-91fe-75f6e488e579 (Pipe): dark canvas + a single
+ *     molten orange spotlight — exact analog for COYL brand mark.
+ *   - 75236d28-494c-457f-81f3-3c2f2679bb2b (V7labs): warm dark operational
+ *     surface, refined serif paired with mono metadata, orange as energy.
+ *   - 76c30104-1a19-42e7-a585-19505882f600 (Monopo Saigon): warm earthy
+ *     dark tones, calm editorial restraint, type-led atmosphere.
+ *
+ * Body sans (Geist) for utility text. Instrument Serif (font-serif) for
+ * the daily ritual moments — greeting, Today's Rule, identity read.
+ * Mono (Geist Mono) for metadata only. Background warm charcoal #0e0d0b,
+ * NOT pure black, NOT Linear blue-black. Single orange focal moment.
  */
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
 import type { Task, User, Tag } from '@repo/database'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { GlassCard } from '@/components/ui/glass-card'
 import { TaskCard } from '@/components/tasks/task-card'
 import { TaskCreateModal } from '@/components/tasks/task-create-modal'
-import { EmptyState } from '@/components/ui/empty-state'
 import { StaggerList, StaggerItem, PageTransition, AnimatedCounter } from '@/components/motion/animations'
 import {
   Sun, Moon, Plus, CheckCircle2, AlertTriangle,
-  RefreshCw, Clock, Zap, Flame, Brain,
+  RefreshCw, Clock, Flame, Brain,
 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { CalloutPanel } from '@/components/callout/callout-panel'
@@ -104,20 +107,32 @@ export function TodayView({
     .slice(0, 3)
 
   return (
-    <PageTransition className="relative mx-auto max-w-3xl px-6 py-6">
-      {/* Decorative gradient mesh — Linear-style restrained ambient lift */}
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-mesh opacity-40" />
+    <PageTransition className="relative mx-auto max-w-3xl px-6 py-10 sm:py-12">
+      {/* Warm charcoal canvas wash. Sequel/Liron Moran-style restrained
+          ambient — a whisper of orange in the top-right, never enough to
+          compete with the serif. Single focal accent doctrine. */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 opacity-70"
+        style={{
+          background:
+            'radial-gradient(800px at 90% -10%, rgba(255,102,0,0.07), transparent 65%), radial-gradient(600px at -10% 100%, rgba(255,102,0,0.03), transparent 70%)',
+        }}
+      />
 
-      {/* Header — operator-style metadata rail. Greeting + monospace timestamp,
-          flush-baseline. Mirrors Linear Changelog's date treatment. */}
-      <div className="mb-5 flex items-baseline justify-between border-b border-white/[0.06] pb-3">
-        <p className="label-xs text-foreground/90">
-          {greeting}, {firstName}
-        </p>
-        <p className="font-mono text-[10px] uppercase tracking-[0.08em] tabular-nums text-muted-foreground">
+      {/* EDITORIAL MASTHEAD — serif greeting as the page's signature.
+          Liron Moran's monumental headline pattern translated into a daily
+          ritual surface. Mono timestamp slipped underneath like a
+          gallery wall label. */}
+      <header className="mb-10 border-b border-white/[0.05] pb-8">
+        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
           {formatDate(new Date())}
         </p>
-      </div>
+        <h1 className="mt-3 font-serif text-4xl font-normal leading-[1.02] tracking-[-0.015em] text-[#f5f3ee] sm:text-5xl">
+          {greeting},
+          <br />
+          <span className="text-[#f5f3ee]/85">{firstName}.</span>
+        </h1>
+      </header>
 
       {/* Browser push enablement — only renders if the user has danger
           windows mapped, no existing subscription, and hasn't dismissed
@@ -235,199 +250,242 @@ export function TodayView({
           <motion.div
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`mb-3 rounded-sm border-l-2 ${borderColor} bg-white/[0.02] px-4 py-2.5`}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className={`mb-10 border-l-[1.5px] ${borderColor} pl-6 py-1`}
           >
-            <p className={`font-mono text-[10px] uppercase tracking-[0.12em] ${textColor}`}>
+            <p className={`font-mono text-[10px] uppercase tracking-[0.22em] ${textColor}`}>
               Identity read
             </p>
-            <p className="mt-1 text-[15px] font-semibold tracking-[-0.01em] text-foreground sm:text-base">
+            <p className="mt-2 font-serif text-2xl font-normal leading-[1.15] tracking-[-0.012em] text-[#f5f3ee] sm:text-[28px]">
               {id.headline}
             </p>
-            <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">{id.evidence}</p>
+            <p className="mt-2 font-sans text-[13px] leading-relaxed text-[#a39d92]">{id.evidence}</p>
           </motion.div>
         )
       })()}
 
-      {/* TONIGHT'S RULE — dominant hero. Axiom-inspired: charcoal card,
-          single orange accent, refined medium-weight headline (not black). */}
+      {/* TODAY'S RULE — the focal serif moment. This is the page's gallery
+          centerpiece. Pipe-style single orange spotlight, Liron Moran's
+          oversized serif as the signature. Ambient orange glow behind it
+          is the ONE accent moment on the page. */}
       {activeCommitment ? (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-3 overflow-hidden rounded-md border border-orange-500/30 bg-gradient-to-br from-orange-500/[0.10] via-orange-500/[0.03] to-transparent p-5 shadow-[0_0_28px_-12px_rgba(255,102,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)]"
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+          className="relative mb-12 overflow-hidden border-y border-orange-500/15 py-10"
         >
-          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500">Today&apos;s rule</p>
-          <p className="mt-2 text-2xl font-semibold leading-[1.15] tracking-[-0.02em] text-foreground sm:text-3xl">
+          {/* Ambient warm spotlight behind the rule — the only luxury glow
+              on the page. Restraint per Sequel/DNA: one focal moment, not
+              every accent simultaneously. */}
+          <div
+            className="pointer-events-none absolute inset-0 -z-10 opacity-80"
+            style={{
+              background:
+                'radial-gradient(420px at 18% 50%, rgba(255,102,0,0.10), transparent 70%)',
+            }}
+          />
+          <div className="flex items-center gap-3">
+            <span className="h-px w-8 bg-orange-500/70" />
+            <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-400">
+              Today&rsquo;s rule
+            </p>
+          </div>
+          <p className="mt-5 font-serif text-[34px] font-normal leading-[1.08] tracking-[-0.015em] text-[#f5f3ee] sm:text-5xl">
             {activeCommitment.rule}
           </p>
-          <div className="mt-3 flex items-center justify-between border-t border-white/[0.04] pt-3 text-[11px] font-mono tabular-nums">
-            <span className="text-muted-foreground">
-              <span className="text-emerald-400">{activeCommitment.keepCount} kept</span>
+          <div className="mt-7 flex items-center justify-between border-t border-white/[0.05] pt-4 font-mono text-[11px] tabular-nums">
+            <span className="text-[#8a847a]">
+              <span className="text-emerald-400/90">{activeCommitment.keepCount} kept</span>
               {activeCommitment.breakCount > 0 && (
-                <> · <span className="text-red-400">{activeCommitment.breakCount} broken</span></>
+                <> &middot; <span className="text-red-400/90">{activeCommitment.breakCount} broken</span></>
               )}
             </span>
-            <Link href="/commitments" className="text-orange-400 hover:text-orange-300">Manage →</Link>
+            <Link
+              href="/commitments"
+              className="uppercase tracking-[0.18em] text-orange-400 transition-colors hover:text-orange-300"
+            >
+              Manage &rarr;
+            </Link>
           </div>
         </motion.div>
       ) : (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-3 rounded-md border border-dashed border-orange-500/25 bg-white/[0.01] p-5 text-center"
+          transition={{ duration: 0.5, delay: 0.05 }}
+          className="mb-12 border-y border-white/[0.06] py-10"
         >
-          <p className="text-[13px] text-muted-foreground">No rule set yet.</p>
-          <Link href="/commitments" className="mt-1.5 inline-block text-[13px] font-semibold text-orange-400 hover:text-orange-300">
-            Set today&apos;s rule →
+          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#8a847a]">No rule yet</p>
+          <p className="mt-4 font-serif text-3xl font-normal leading-[1.1] tracking-[-0.012em] text-[#f5f3ee] sm:text-4xl">
+            Write the line you&rsquo;ll either keep or break today.
+          </p>
+          <Link
+            href="/commitments"
+            className="mt-5 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.20em] text-orange-400 transition-colors hover:text-orange-300"
+          >
+            Set today&rsquo;s rule &rarr;
           </Link>
         </motion.div>
       )}
 
-      {/* THREE-CTA ROW — the core UX primitives from the spec.
-          All three equal-weight; slip gets promoted out of the secondary
-          row because recovery is as important as prevention. Stacks
-          1-col mobile, 3-col desktop. */}
+      {/* THREE PRIMITIVES — quiet, equal-weight. The Today's Rule callout
+          already owns the orange spotlight, so these recede into refined
+          warm-charcoal cards with hairline borders. Single orange index
+          stroke on hover, no rainbow accents. */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="mb-3 grid grid-cols-1 gap-2 md:grid-cols-3"
+        transition={{ delay: 0.15, duration: 0.5 }}
+        className="mb-12 grid grid-cols-1 gap-[1px] overflow-hidden border border-white/[0.06] bg-white/[0.04] md:grid-cols-3"
       >
-        <Link
-          href="/rescue"
-          className="group flex items-center justify-center gap-2.5 rounded-md bg-gradient-to-br from-red-500 to-orange-600 px-4 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-white shadow-[0_0_22px_-6px_rgba(239,68,68,0.5),inset_0_1px_0_0_rgba(255,255,255,0.12)] transition-all hover:shadow-[0_0_36px_-6px_rgba(239,68,68,0.75)]"
-        >
-          <Flame className="h-4 w-4 transition-transform group-hover:rotate-12" />
-          I&rsquo;m about to mess up
-        </Link>
-        <Link
-          href="/decide"
-          className="group flex items-center justify-center gap-2.5 rounded-md border border-orange-500/30 bg-gradient-to-br from-orange-500/[0.08] to-transparent px-4 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-foreground transition-all hover:border-orange-500/50 hover:bg-orange-500/[0.12]"
-        >
-          <Brain className="h-4 w-4 text-orange-500 transition-transform group-hover:scale-110" />
-          What should I do?
-        </Link>
-        <Link
-          href="/slip"
-          className="group flex items-center justify-center gap-2.5 rounded-md border border-amber-500/30 bg-gradient-to-br from-amber-500/[0.08] to-transparent px-4 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-foreground transition-all hover:border-amber-500/50 hover:bg-amber-500/[0.12]"
-        >
-          <AlertTriangle className="h-4 w-4 text-amber-500 transition-transform group-hover:scale-110" />
-          I already slipped
-        </Link>
+        {[
+          { href: '/rescue', icon: Flame, eyebrow: 'Crisis', label: 'I’m about to mess up' },
+          { href: '/decide', icon: Brain, eyebrow: 'Support', label: 'What should I do' },
+          { href: '/slip', icon: AlertTriangle, eyebrow: 'Recovery', label: 'I already slipped' },
+        ].map(({ href, icon: Icon, eyebrow, label }) => (
+          <Link
+            key={href}
+            href={href}
+            className="group flex flex-col gap-3 bg-[#0e0d0b] px-5 py-6 transition-colors hover:bg-[#13110d]"
+          >
+            <div className="flex items-center justify-between">
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a] transition-colors group-hover:text-orange-400/80">
+                {eyebrow}
+              </p>
+              <Icon className="h-3.5 w-3.5 text-[#8a847a] transition-colors group-hover:text-orange-400" />
+            </div>
+            <p className="font-serif text-[19px] font-normal leading-[1.15] tracking-[-0.01em] text-[#f5f3ee]">
+              {label}.
+            </p>
+          </Link>
+        ))}
       </motion.div>
 
-      {/* Quick stats row — Linear-style metric panels. Tight 12px padding,
-          monospace labels, hairline borders, tabular-nums for data alignment. */}
+      {/* Editorial metrics rail — gallery-label aesthetic. Tiny mono
+          eyebrow, serif read for the figure that matters, mono for the
+          delta line. Hairline divider grid in cream tones, not boxes. */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="mb-6 grid grid-cols-1 gap-2 md:grid-cols-3"
+        transition={{ delay: 0.22, duration: 0.5 }}
+        className="mb-12 grid grid-cols-1 gap-px overflow-hidden border-y border-white/[0.05] bg-white/[0.04] md:grid-cols-3"
       >
-        <GlassCard className="!p-3.5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500/90">Next danger window</p>
+        <div className="bg-[#0e0d0b] px-5 py-6">
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">Next danger window</p>
           {nextDangerWindow ? (
             <>
-              <p className="mt-1.5 text-[13px] font-semibold tracking-[-0.01em] text-foreground">{nextDangerWindow.label}</p>
-              <p className="mt-0.5 font-mono text-[11px] tabular-nums text-muted-foreground">{nextDangerWindow.whenText}</p>
+              <p className="mt-3 font-serif text-xl font-normal leading-snug tracking-[-0.01em] text-[#f5f3ee]">
+                {nextDangerWindow.label}
+              </p>
+              <p className="mt-1 font-mono text-[11px] tabular-nums text-[#8a847a]">{nextDangerWindow.whenText}</p>
             </>
           ) : (
-            <p className="mt-1.5 text-[13px] text-muted-foreground">None mapped yet</p>
+            <p className="mt-3 font-serif text-xl font-normal text-[#8a847a]">None mapped yet.</p>
           )}
-        </GlassCard>
+        </div>
 
-        <GlassCard className="!p-3.5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500/90">Self-Trust</p>
-          <div className="mt-1.5 flex items-baseline gap-1.5">
-            <AnimatedCounter value={user.selfTrustScore ?? 0} className="text-2xl font-semibold tabular-nums tracking-[-0.02em] text-foreground" />
-            <span className="font-mono text-[10px] tabular-nums text-muted-foreground">/ 100</span>
+        <div className="bg-[#0e0d0b] px-5 py-6">
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">Self-trust</p>
+          <div className="mt-3 flex items-baseline gap-2">
+            <AnimatedCounter
+              value={user.selfTrustScore ?? 0}
+              className="font-serif text-4xl font-normal tabular-nums tracking-[-0.02em] text-[#f5f3ee]"
+            />
+            <span className="font-mono text-[11px] tabular-nums text-[#8a847a]">/ 100</span>
           </div>
           {selfTrustDelta != null && selfTrustDelta !== 0 && (
-            <p className={`mt-0.5 font-mono text-[10px] font-semibold tabular-nums ${selfTrustDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            <p
+              className={`mt-1 font-mono text-[10px] uppercase tracking-[0.18em] tabular-nums ${
+                selfTrustDelta > 0 ? 'text-emerald-400/90' : 'text-red-400/90'
+              }`}
+            >
               {selfTrustDelta > 0 ? '↑' : '↓'} {Math.abs(selfTrustDelta)} this week
             </p>
           )}
-        </GlassCard>
+        </div>
 
-        <GlassCard className="!p-3.5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-orange-500/90">Excuse detected</p>
+        <div className="bg-[#0e0d0b] px-5 py-6">
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">Excuse detected</p>
           {topExcuseCategory && topExcuseCount && topExcuseCount > 1 ? (
             <>
-              <p className="mt-1.5 text-[13px] font-semibold leading-snug tracking-[-0.01em] text-foreground">
-                That&apos;s your &ldquo;{EXCUSE_TAG[topExcuseCategory] ?? topExcuseCategory.toLowerCase().replace('_', ' ')}&rdquo; excuse again.
+              <p className="mt-3 font-serif text-lg font-normal italic leading-snug tracking-[-0.005em] text-[#f5f3ee]">
+                &ldquo;{EXCUSE_TAG[topExcuseCategory] ?? topExcuseCategory.toLowerCase().replace('_', ' ')}&rdquo;
               </p>
-              <p className="mt-1 font-mono text-[10px] tabular-nums text-muted-foreground">
-                {topExcuseCount}&times; this week · we&rsquo;ll catch it
+              <p className="mt-1 font-mono text-[10px] tabular-nums text-[#8a847a]">
+                {topExcuseCount}&times; this week &middot; we&rsquo;ll catch it
               </p>
             </>
           ) : (
-            <p className="mt-1.5 text-[13px] text-muted-foreground">Not enough data yet</p>
+            <p className="mt-3 font-serif text-lg font-normal italic text-[#8a847a]">Not enough yet.</p>
           )}
-        </GlassCard>
+        </div>
       </motion.div>
 
-      {/* Recent interrupts — visible proof the JITAI claim is real.
-          Server-rendered shell, client component fetches the data
-          (small list, mostly cached). Closes the "is COYL actually
-          firing for me" question without making the user check email. */}
-      <div className="mb-5">
+      {/* Recent interrupts — visible proof the JITAI claim is real. */}
+      <div className="mb-12">
         <InterruptHistory />
       </div>
 
-      {/* Secondary CTAs — Linear Changelog ghost-capsule pills. */}
-      <div className="mb-6 flex flex-wrap gap-1.5">
-        <Button variant="glass" size="sm" asChild>
-          <Link href="/chat?mode=morning">
-            <Sun className="h-3.5 w-3.5 text-amber-500" /> Set today&apos;s rule
-          </Link>
-        </Button>
-        <Button variant="glass" size="sm" asChild>
-          <Link href="/chat?mode=night">
-            <Moon className="h-3.5 w-3.5 text-indigo-400" /> Did you keep your word?
-          </Link>
-        </Button>
+      {/* Quiet text-link rail — ghosted ritual entry points. Editorial
+          column-of-links pattern from Christopher Ireland Creative
+          (refero f293bacf), translated into a horizontal rail. */}
+      <div className="mb-12 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/[0.05] pt-6 font-mono text-[11px] uppercase tracking-[0.18em]">
+        <Link
+          href="/chat?mode=morning"
+          className="inline-flex items-center gap-2 text-[#a39d92] transition-colors hover:text-[#f5f3ee]"
+        >
+          <Sun className="h-3 w-3 text-[#8a847a]" />
+          Set today&rsquo;s rule
+        </Link>
+        <Link
+          href="/chat?mode=night"
+          className="inline-flex items-center gap-2 text-[#a39d92] transition-colors hover:text-[#f5f3ee]"
+        >
+          <Moon className="h-3 w-3 text-[#8a847a]" />
+          Did you keep your word
+        </Link>
         <CalloutPanel
           userId={user.id}
           trigger={
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/30 bg-orange-500/[0.06] px-3 py-1 text-[11px] font-semibold text-orange-300 transition-all hover:border-orange-500/50 hover:bg-orange-500/[0.12]">
-              <Flame className="h-3 w-3 text-orange-400" />
+            <span className="inline-flex items-center gap-2 text-[#a39d92] transition-colors hover:text-orange-400">
+              <Flame className="h-3 w-3 text-orange-400/80" />
               Be brutally honest
             </span>
           }
         />
       </div>
 
-      {/* Stats — Linear dashboard tile pattern. Tight gap, mono labels,
-          tabular numerals, hairline tonal separation. */}
-      <StaggerList className="mb-6 grid grid-cols-4 gap-2">
+      {/* Daily numerals — Sequel-style ledger row. Serif numbers, mono
+          labels, hairline-bordered surfaces. No colored badges, no
+          rainbow icon backgrounds. Calm operator data. */}
+      <StaggerList className="mb-12 grid grid-cols-2 gap-px overflow-hidden border-y border-white/[0.05] bg-white/[0.04] sm:grid-cols-4">
         {[
-          { label: 'Due today', value: dueTodayTasks.length, color: 'var(--status-open)', icon: Clock },
-          { label: 'Overdue', value: overdueTasks.length, color: overdueTasks.length > 0 ? 'var(--status-blocked)' : 'var(--status-completed)', icon: AlertTriangle },
-          { label: 'Follow-ups', value: followUpsDueToday.length, color: 'var(--status-in-progress)', icon: RefreshCw },
-          { label: 'Done today', value: recentlyCompleted.length, color: 'var(--status-completed)', icon: CheckCircle2 },
+          { label: 'Due today', value: dueTodayTasks.length, icon: Clock },
+          { label: 'Overdue', value: overdueTasks.length, icon: AlertTriangle },
+          { label: 'Follow-ups', value: followUpsDueToday.length, icon: RefreshCw },
+          { label: 'Done today', value: recentlyCompleted.length, icon: CheckCircle2 },
         ].map((stat) => (
           <StaggerItem key={stat.label}>
-            <GlassCard borderColor={stat.color} hover>
-              <div className="flex items-start justify-between">
-                <AnimatedCounter value={stat.value} className="text-2xl font-semibold leading-none tabular-nums tracking-[-0.02em]" />
-                <div className="rounded-sm p-1" style={{ backgroundColor: `${stat.color}15` }}>
-                  <stat.icon className="h-3.5 w-3.5" style={{ color: stat.color }} />
-                </div>
+            <div className="flex h-full flex-col justify-between bg-[#0e0d0b] px-4 py-5">
+              <div className="flex items-center justify-between">
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a847a]">
+                  {stat.label}
+                </p>
+                <stat.icon className="h-3 w-3 text-[#8a847a]" />
               </div>
-              <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.10em] text-muted-foreground">{stat.label}</div>
-            </GlassCard>
+              <AnimatedCounter
+                value={stat.value}
+                className="mt-4 font-serif text-3xl font-normal leading-none tabular-nums tracking-[-0.02em] text-[#f5f3ee]"
+              />
+            </div>
           </StaggerItem>
         ))}
       </StaggerList>
 
       {/* Top priorities */}
       {criticalTasks.length > 0 && (
-        <Section
-          title="Top priorities"
-          icon={<Zap className="h-3 w-3 text-amber-500" />}
-          count={criticalTasks.length}
-          className="mb-5"
-        >
+        <Section title="Top priorities" count={criticalTasks.length} className="mb-10">
           <StaggerList className="space-y-1.5">
             {criticalTasks.map((task) => (
               <StaggerItem key={task.id}>
@@ -440,7 +498,7 @@ export function TodayView({
 
       {/* Due today */}
       {dueTodayTasks.length > 0 && (
-        <Section title="Due today" count={dueTodayTasks.length} className="mb-5">
+        <Section title="Due today" count={dueTodayTasks.length} className="mb-10">
           <StaggerList className="space-y-1.5">
             {dueTodayTasks.map((task) => (
               <StaggerItem key={task.id}>
@@ -453,12 +511,7 @@ export function TodayView({
 
       {/* Follow-ups */}
       {followUpsDueToday.length > 0 && (
-        <Section
-          title="Follow-ups due"
-          icon={<RefreshCw className="h-3 w-3 text-amber-500" />}
-          count={followUpsDueToday.length}
-          className="mb-5"
-        >
+        <Section title="Follow-ups due" count={followUpsDueToday.length} className="mb-10">
           <StaggerList className="space-y-1.5">
             {followUpsDueToday.map((task) => (
               <StaggerItem key={task.id}>
@@ -473,10 +526,9 @@ export function TodayView({
       {overdueTasks.length > 0 && (
         <Section
           title="Overdue"
-          icon={<AlertTriangle className="h-3 w-3 text-red-500" />}
           count={overdueTasks.length}
           countVariant="destructive"
-          className="mb-5"
+          className="mb-10"
         >
           <StaggerList className="space-y-1.5">
             {overdueTasks.map((task) => (
@@ -488,68 +540,67 @@ export function TodayView({
         </Section>
       )}
 
-      {/* Empty state */}
+      {/* All-caught-up — serif moment, not a celebratory medal. The
+          luxury read is "calm", not "congratulations". */}
       {totalAttention === 0 && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="border-y border-white/[0.05] py-16 text-center"
         >
-          <GlassCard className="py-12 text-center">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.1 }}
-              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-warm"
-            >
-              <CheckCircle2 className="h-8 w-8 text-white" />
-            </motion.div>
-            <h3 className="heading-3 text-foreground">All caught up</h3>
-            <p className="mx-auto mt-1 max-w-xs text-sm text-muted-foreground">
-              Nothing urgent needs your attention right now. Great execution.
-            </p>
-            <Button variant="brand" size="sm" className="mt-4" onClick={() => setShowCreateModal(true)}>
-              <Plus className="h-3.5 w-3.5" /> Add a task
-            </Button>
-          </GlassCard>
+          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#8a847a]">
+            Today
+          </p>
+          <p className="mx-auto mt-4 max-w-md font-serif text-3xl font-normal leading-[1.12] tracking-[-0.012em] text-[#f5f3ee] sm:text-4xl">
+            All clear. The quiet is the reward.
+          </p>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="mt-6 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.20em] text-orange-400 transition-colors hover:text-orange-300"
+          >
+            <Plus className="h-3 w-3" /> Add a task
+          </button>
         </motion.div>
       )}
 
       {/* Recently completed */}
       <AnimatePresence>
         {recentlyCompleted.length > 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6">
-            <Separator className="mb-5" />
-            <Section
-              title="Completed today"
-              icon={<CheckCircle2 className="h-3 w-3 text-emerald-500" />}
-              count={recentlyCompleted.length}
-            >
-              <div className="space-y-0.5">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-12">
+            <Separator className="mb-8 bg-white/[0.05]" />
+            <Section title="Completed today" count={recentlyCompleted.length}>
+              <ul className="divide-y divide-white/[0.04]">
                 {recentlyCompleted.map((task) => (
-                  <div key={task.id} className="flex items-center gap-2 rounded-sm px-2.5 py-1.5 transition-colors hover:bg-white/[0.02]">
-                    <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-500" />
-                    <span className="text-[13px] text-muted-foreground line-through">{task.title}</span>
-                  </div>
+                  <li
+                    key={task.id}
+                    className="flex items-center gap-3 py-2.5 transition-colors hover:bg-white/[0.02]"
+                  >
+                    <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-500/80" />
+                    <span className="font-sans text-[13px] text-[#8a847a] line-through decoration-[#8a847a]/40">
+                      {task.title}
+                    </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </Section>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* FAB — slightly more rectangular per operator aesthetic */}
+      {/* FAB — refined warm-orange disc, the second restrained orange
+          touchpoint. Editorial gallery icon button, not a glowing alarm. */}
       <motion.button
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.3, type: 'spring', stiffness: 400, damping: 25 }}
-        whileHover={{ scale: 1.06 }}
-        whileTap={{ scale: 0.94 }}
+        transition={{ delay: 0.35, type: 'spring', stiffness: 360, damping: 24 }}
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.96 }}
         onClick={() => setShowCreateModal(true)}
-        className="fixed bottom-6 right-6 flex h-12 w-12 items-center justify-center rounded-md bg-gradient-warm text-white shadow-[0_0_24px_-4px_rgba(255,102,0,0.5),inset_0_1px_0_0_rgba(255,255,255,0.15)] animate-pulse-glow"
+        className="fixed bottom-8 right-8 flex h-12 w-12 items-center justify-center rounded-full border border-orange-500/30 bg-[#13110d] text-orange-400 shadow-[0_0_28px_-8px_rgba(255,102,0,0.45)] transition-colors hover:border-orange-500/55 hover:text-orange-300"
         aria-label="Add task"
       >
-        <Plus className="h-5 w-5" />
+        <Plus className="h-4 w-4" />
       </motion.button>
 
       <AnimatePresence>
@@ -562,10 +613,13 @@ export function TodayView({
 }
 
 function Section({
-  title, icon, count, countVariant = 'secondary', children, className,
+  title,
+  count,
+  countVariant = 'secondary',
+  children,
+  className,
 }: {
   title: string
-  icon?: React.ReactNode
   count?: number
   countVariant?: 'secondary' | 'destructive'
   children: React.ReactNode
@@ -573,11 +627,18 @@ function Section({
 }) {
   return (
     <section className={className}>
-      <div className="mb-2.5 flex items-center gap-1.5 border-b border-white/[0.04] pb-2">
-        {icon}
-        <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">{title}</h2>
+      <div className="mb-5 flex items-baseline justify-between border-b border-white/[0.05] pb-3">
+        <h2 className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#8a847a]">
+          {title}
+        </h2>
         {count !== undefined && (
-          <Badge variant={countVariant} className="h-4 px-1.5 font-mono text-[10px] tabular-nums">{count}</Badge>
+          <span
+            className={`font-mono text-[10px] tabular-nums ${
+              countVariant === 'destructive' ? 'text-red-400/80' : 'text-[#8a847a]'
+            }`}
+          >
+            {String(count).padStart(2, '0')}
+          </span>
         )}
       </div>
       {children}
