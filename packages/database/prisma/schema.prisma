@@ -202,11 +202,17 @@ model RescueSession {
   outcome       RescueOutcome  @default(PENDING)
   startedAt     DateTime       @default(now())
   resolvedAt    DateTime?
+  // Public-share token for the Autopilot Interrupted card. Generated
+  // when the user marks a rescue as PULLED_THROUGH and taps "share."
+  // Distinct from id so the share URL can't be guessed from sequential
+  // session IDs. Optional — most rescues will never be shared.
+  shareCode     String?        @unique
 
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("rescue_sessions")
   @@index([userId, startedAt])
+  @@index([shareCode])
 }
 
 enum RescueTrigger {

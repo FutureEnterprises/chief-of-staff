@@ -8,6 +8,9 @@ import { PageTransition } from '@/components/motion/animations'
 import { PaywallDialog } from '@/components/paywall/paywall-dialog'
 import { StructuredResponse } from '@/components/structured-response'
 import { CalloutPanel } from '@/components/callout/callout-panel'
+import { AutopilotCard } from '@/components/share/autopilot-card'
+import { ShareActions } from '@/components/share/share-actions'
+import type { ShareCardData } from '@/lib/rescue-share'
 import { Flame, ArrowLeft, AlertCircle } from 'lucide-react'
 
 type Trigger = {
@@ -44,6 +47,8 @@ export function RescueView({ userId }: RescueViewProps) {
   const [showFollowUp, setShowFollowUp] = useState(false)
   const [followUpLogged, setFollowUpLogged] = useState<'pulled' | 'slipped' | null>(null)
   const [feedback, setFeedback] = useState<'helpful' | 'not_helpful' | null>(null)
+  const [shareCard, setShareCard] = useState<(ShareCardData & { shareUrl: string }) | null>(null)
+  const [generatingCard, setGeneratingCard] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // Deep-link entry handling. When the user taps a push notification or
@@ -146,6 +151,31 @@ export function RescueView({ userId }: RescueViewProps) {
       })
     } catch {
       // silent — client state already reflects the choice
+    }
+  }
+
+  /**
+   * Generate the Autopilot Interrupted card. Creates a RescueSession
+   * row with shareCode + returns the card payload + the public share
+   * URL at /i/[code]. Idempotent at the client — once we have a card
+   * in state, the button becomes share-actions.
+   */
+  async function generateShareCard() {
+    if (shareCard || generatingCard || !selectedTrigger) return
+    setGeneratingCard(true)
+    try {
+      const res = await fetch('/api/v1/rescue/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trigger: selectedTrigger.key }),
+      })
+      if (!res.ok) return
+      const data = (await res.json()) as ShareCardData & { shareUrl: string }
+      setShareCard(data)
+    } catch {
+      // silent — user can retry by tapping the button again
+    } finally {
+      setGeneratingCard(false)
     }
   }
 
@@ -436,6 +466,28 @@ export function RescueView({ userId }: RescueViewProps) {
 
               {/* Did it catch you? — §6 non-negotiable feedback */}
               <CatchFeedback trigger={selectedTrigger?.key} />
+
+              {/* Autopilot Interrupted card — the shareable artifact promised
+                  across three strategy docs. Generated on demand so we only
+                  create a RescueSession row when the user actually wants to
+                  share, not on every pull. */}
+              {!shareCard ? (
+                <button
+                  onClick={generateShareCard}
+                  disabled={generatingCard}
+                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-xs font-bold text-white shadow-[0_0_16px_-3px_rgba(255,102,0,0.4)] disabled:opacity-60"
+                >
+                  {generatingCard ? 'Making the card…' : 'Share the moment'}
+                </button>
+              ) : (
+                <div className="mt-5 text-left">
+                  <AutopilotCard data={shareCard} />
+                  <ShareActions
+                    shareUrl={shareCard.shareUrl}
+                    shareText={`Autopilot interrupted at ${shareCard.localTimeLabel}. ${shareCard.triggerLabel}. COYL caught me.`}
+                  />
+                </div>
+              )}
             </motion.div>
           )}
 
