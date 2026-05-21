@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Menu, X } from 'lucide-react'
+import { useUser, SignOutButton } from '@clerk/nextjs'
 import { CoylLogo } from '@/components/brand/logo'
 
 /**
@@ -166,17 +167,12 @@ export function GlassNav() {
           <Menu className="h-5 w-5" />
         </button>
 
-        {/* CTA — desktop only; mobile gets it inside the drawer */}
-        <Link
-          href="/sign-up?ref=nav"
-          onClick={() => setOpen(null)}
-          className="hidden items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)] transition-all hover:shadow-[0_0_24px_rgba(255,102,0,0.5)] md:flex"
-        >
-          Start free
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </Link>
+        {/* CTA — auth-aware. Signed-in users see a pair:
+              [Dashboard →]   [Sign out]
+            Signed-out users see the standard signup CTA.
+            Mobile gets the same pair inside the drawer; desktop hides
+            here and shows in the drawer per the `hidden md:flex` rule. */}
+        <NavAuthCta onCloseDropdowns={() => setOpen(null)} />
       </div>
 
       {/* Desktop dropdown panels */}
@@ -314,18 +310,106 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
         </div>
         <MobileSection title="Research" links={RESEARCH} onClose={onClose} />
 
+        <div className="mt-10">
+          <NavAuthCta onCloseDropdowns={onClose} fullWidth />
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+/**
+ * NavAuthCta — the auth-aware CTA cluster shared by desktop nav + mobile
+ * drawer. Signed-out users see a single "Start free" button. Signed-in
+ * users see two: a primary "Dashboard" link going to /today plus a
+ * secondary "Sign out" pill. While Clerk loads (useUser.isLoaded is
+ * false) we render a soft skeleton placeholder to avoid CLS — if we
+ * defaulted to the signed-out CTA and then flipped after hydration,
+ * users would see "Start free" flash before "Dashboard" lands. The
+ * placeholder is sized to match either state.
+ */
+function NavAuthCta({
+  onCloseDropdowns,
+  fullWidth = false,
+}: {
+  onCloseDropdowns: () => void
+  fullWidth?: boolean
+}) {
+  const { isLoaded, isSignedIn } = useUser()
+
+  // Pre-hydration placeholder. Same height as the eventual CTA so the
+  // layout doesn't shift when Clerk resolves.
+  if (!isLoaded) {
+    return (
+      <div
+        aria-hidden
+        className={
+          fullWidth
+            ? 'flex h-12 w-full rounded-full bg-white/40'
+            : 'hidden h-10 w-28 rounded-full bg-white/40 md:block'
+        }
+      />
+    )
+  }
+
+  if (isSignedIn) {
+    return (
+      <div
+        className={
+          fullWidth
+            ? 'flex flex-col gap-2'
+            : 'hidden items-center gap-2 md:flex'
+        }
+      >
         <Link
-          href="/sign-up?ref=nav-mobile"
-          onClick={onClose}
-          className="mt-10 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-4 text-base font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+          href="/today"
+          onClick={onCloseDropdowns}
+          className={
+            (fullWidth
+              ? 'flex items-center justify-center gap-2 rounded-full px-6 py-4 text-base font-bold'
+              : 'flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold') +
+            ' bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_0_16px_rgba(255,102,0,0.3)] transition-all hover:shadow-[0_0_24px_rgba(255,102,0,0.5)]'
+          }
         >
-          Start free
+          Dashboard
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </Link>
+        <SignOutButton redirectUrl="/">
+          <button
+            type="button"
+            onClick={onCloseDropdowns}
+            className={
+              (fullWidth
+                ? 'flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-base font-semibold'
+                : 'flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold') +
+              ' border border-gray-300 bg-white text-gray-900 transition-colors hover:border-orange-300 hover:bg-orange-50'
+            }
+          >
+            Sign out
+          </button>
+        </SignOutButton>
       </div>
-    </motion.div>
+    )
+  }
+
+  // Signed-out — original single CTA.
+  return (
+    <Link
+      href={fullWidth ? '/sign-up?ref=nav-mobile' : '/sign-up?ref=nav'}
+      onClick={onCloseDropdowns}
+      className={
+        fullWidth
+          ? 'flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-4 text-base font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]'
+          : 'hidden items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)] transition-all hover:shadow-[0_0_24px_rgba(255,102,0,0.5)] md:flex'
+      }
+    >
+      Start free
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </Link>
   )
 }
 
