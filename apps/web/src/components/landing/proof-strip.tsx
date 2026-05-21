@@ -31,7 +31,7 @@ export function ProofStrip() {
       product: 'COYL',
       timing: 'Fires at the 3-second window',
       shame: 'Recovery engine · no Monday reset',
-      price: 'Free or $19',
+      price: 'Free or $9.99',
       highlight: true,
     },
     {

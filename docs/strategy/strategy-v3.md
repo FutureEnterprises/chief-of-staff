@@ -78,13 +78,35 @@ script the user defines. Three primary wedges today:
 - Procrastination / focus
 - Destructive loops (cravings, doom-scroll, impulse spending)
 
-Pricing live: Free / Core $19 / Plus $29 / Premium $49 monthly.
+**Pricing — two scenarios:**
 
-**Y1 target: 100K free signups + 4K paid = $1M MRR ($12M ARR run-rate
-by month 12, ~$5M GAAP Y1 with ramp).**
+| Lane | **Scenario B (LIVE)** | Scenario A (upmarket fallback) |
+|---|---|---|
+| Free | Audit + archetype + 1 behavior loop | 7-day trial |
+| Core | **$9.99/mo** ($99/yr) | $19/mo ($179/yr) |
+| GLP-1 / high-intent | **$19.99/mo — GLP-1 Companion** | $29/mo Plus + $49/mo Pro |
+
+Scenario B is what's live on coyl.ai today. It is acquisition-pricing,
+not LTV-maximizing. The $9.99 Core is calibrated to the virality
+coefficient of the free audit funnel; the $19.99 GLP-1 tier is where
+the paid ARPU concentrates because willingness-to-pay tracks the
+medical / aesthetic stakes of weight maintenance.
+
+Scenario A is the trade-up path if consumer pricing power proves
+higher than projected after Month 3 of paid-user data. Existing users
+grandfathered; new cohorts re-priced.
+
+**Y1 targets:**
+- Scenario B: ~250K free signups + 10K paid (mix-shifted to $19.99 tier
+  at ~35%) ≈ $1.4M ARR run-rate by month 12, ~$3.5M GAAP Y1 with ramp
+- Scenario A: 100K free signups + 4K paid = $1M MRR ($12M ARR run-rate
+  by month 12, ~$5M GAAP Y1 with ramp)
 
 The consumer line funds operations and builds the dataset that
 underwrites Layers 2–4. It's the cash engine, not the valuation engine.
+**In Scenario B the dataset compounds 2.5× faster because the free
+audit funnel sweeps more users — this is the strategic argument for
+launching with the lower price.**
 
 ### Layer 2 — Enterprise / EAP displacement (Year 1–3)
 
@@ -167,6 +189,8 @@ Target partners by category:
 
 ## Section 4 — The corrected revenue model
 
+### Scenario A — Premium clinical-led ($19 / $29 / $49)
+
 | Year | Consumer | Enterprise | API | Clinical | Total ARR | Multiple | Valuation |
 |---|---|---|---|---|---|---|---|
 | Y1 | $5M | $0.5M | $0 | $0 | $5.5M | 14× | $77M |
@@ -175,22 +199,54 @@ Target partners by category:
 | Y4 | $60M | $45M | $15M | $4M | $124M | 14× | $1.7B |
 | Y5 | $80M | $70M | $30M | $20M | $200M | 18× | $3.6B |
 
-**Reading this table honestly:**
+### Scenario B — Consumer-led launch ($9.99 / $19.99) — LIVE
 
+| Year | Consumer | Enterprise | API | Clinical | Total ARR | Multiple | Valuation |
+|---|---|---|---|---|---|---|---|
+| Y1 | $3.5M | $0.5M | $0 | $0 | $4.0M | 14× | $56M |
+| Y2 | $13M | $5M | $1M | $0 | $19M | 16× | $304M |
+| Y3 | $27M | $20M | $6M | $1M | $54M | 18× | $972M |
+| Y4 | $44M | $45M | $15M | $4M | $108M | 14× | $1.5B |
+| Y5 | $60M | $70M | $30M | $20M | $180M | 17× | $3.0–3.2B |
+
+**Reading these tables honestly:**
+
+- **Scenario B lands at ~75% of Scenario A's Y5 ARR.** Lower per-user
+  ARPU, ~2.5× the paid users; enterprise / API / clinical lines do
+  not change because the price-point shift only re-prices the consumer
+  column. The Y5 multiple compresses slightly (17× vs 18×) because the
+  consumer mix is heavier in the cap table; the FDA / payer multiple
+  on the other lines stays the same.
+- **The launch decision is strategic, not financial.** Scenario B
+  trades ~25% of Y5 ARR for ~2.5× the dataset that underwrites the API
+  moat (Layer 4) and the strategic-acquisition optionality (the $4B
+  story is behavior graph + category control, not ARPU).
 - **$4B is a Year 5 number, not Year 4.** Pushing it to Year 5 reads
-  as discipline, not weakness. The Y4 number ($1.7B) is still an
-  extraordinary outcome — 70× return on a $25M post-money seed.
+  as discipline, not weakness. Scenario A Y4 = $1.7B; Scenario B Y4 =
+  $1.5B. Both are 60×+ outcomes on a $25M post-money seed.
 - **The Y5 valuation expands** because by then FDA clearance is real,
   payer revenue is meaningful, and the multiple legitimately
-  compresses to a healthcare-grade 18–22×.
+  compresses to a healthcare-grade 17–22×.
 - **Consumer + enterprise carry the first three years.** Don't
   underwrite payer revenue in any pre-Series-B model.
-- **Y2 burn is real.** At $24M ARR with 4 BD reps, 18 engineers,
-  clinical study running, API substrate in flight — burn is
-  ~$28–34M, net cash deficit ~$10–14M annually. **Series A must
-  cover this.**
+- **Y2 burn is similar in both scenarios.** Scenario B has higher
+  paid-user count (2.5×) but lower per-user support cost (lower price,
+  lower expectation surface); Scenario A has higher CAC and higher
+  support cost per user. Burn lands within ~10% across scenarios.
+  **Series A must cover either case.**
 
 ### CAC payback + burn discipline
+
+**Scenario B (LIVE):**
+
+| Assumption | Conservative | Mid | Aggressive |
+|---|---|---|---|
+| Consumer 12-mo retention | 40% | 50% | 60% |
+| Consumer blended CAC | $60 | $35 | $20 |
+| ARPU monthly (mix of $9.99 + $19.99) | $10 | $11.50 | $13 |
+| Payback months | 9.5 | 6.1 | 3.6 |
+
+**Scenario A (fallback):**
 
 | Assumption | Conservative | Mid | Aggressive |
 |---|---|---|---|
@@ -199,13 +255,17 @@ Target partners by category:
 | ARPU monthly | $17 | $19 | $22 |
 | Payback months | 9.2 | 5.0 | 2.7 |
 
-**The silent bet:** the recovery engine + identity narrative + Self-
-Trust Score deliver better-than-category retention (45%+). If they
-don't, D2C is subsidized by B2B and the timeline slips a year.
+**The silent bet (both scenarios):** the recovery engine + identity
+narrative + Self-Trust Score deliver better-than-category retention.
+In Scenario A the bet is 45%+; in Scenario B the bet is 50%+ because
+lower price reduces churn-by-pricing (the cheapest tier on the market
+gets fewer "I can't justify it this month" cancellations). If retention
+misses, D2C is subsidized by B2B and the timeline slips a year.
 
 **Measurement gate:** the recovery-engine retention number gets
-re-underwritten at Month 3 of paid-user data. The Series A pitch
-explicitly names this as the silent bet. Don't hide it.
+re-underwritten at Month 3 of paid-user data. Same gate decides whether
+to trade up from Scenario B to Scenario A pricing for new cohorts. The
+Series A pitch explicitly names both bets. Don't hide them.
 
 ---
 
@@ -287,9 +347,10 @@ Valuation: $20–30M pre.
 
 ### Series A · $18–22M · Month 12–15 *(corrected from v1 $20–30M with explicit oversize rationale)*
 
-Milestone to hit first: $9M+ ARR, 1 GLP-1 partner live, RCT 12-week
-data in hand (paper not yet submitted), API substrate engineering
-complete, 5–8 enterprise pilots running.
+Milestone to hit first: $7–9M+ ARR (Scenario B target is $7M; Scenario
+A target is $9M — both unlock the same Series A), 1 GLP-1 partner
+live, RCT 12-week data in hand (paper not yet submitted), API substrate
+engineering complete, 5–8 enterprise pilots running.
 
 **Use of funds (24-month runway through Series B trigger):**
 
@@ -297,6 +358,13 @@ The oversizing is the point. $18–22M (vs. an aggressive $12–15M) is
 specifically to survive the 24–30 month payer-channel dead zone
 between RCT submission and payer revenue. This is the Pear
 mitigation.
+
+**Scenario B does not reduce the Series A ask.** Volume-led growth
+needs more burn for paid acquisition + product surface for a larger
+free cohort (more SMS, more pushes, more inference). The Pear-mitigation
+runway still applies regardless of which pricing scenario carries the
+consumer line. If anything, Scenario B's higher user count makes the
+24–30 month buffer more important, not less.
 
 - $6M Engineering scale (18-person team across 4 layers)
 - $4M Enterprise GTM (4 BD reps + sales engineer + marketing)

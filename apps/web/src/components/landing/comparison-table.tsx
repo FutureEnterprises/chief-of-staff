@@ -17,8 +17,11 @@ import { Check, X } from 'lucide-react'
  *   2. BAD-DAY HANDLING — only COYL has "no restart, continue."
  *      Streak-based products literally penalize the moment users need
  *      support most.
- *   3. PRICE — Core $19/mo is below MFP+ Premium ($20) and well below
- *      Calibrate ($1,649/yr ≈ $137/mo) and Noom ($60/mo + Rx).
+ *   3. PRICE — Core $9.99/mo is materially below MFP+ Premium ($20),
+ *      Noom ($60/mo + Rx), and Calibrate ($1,649/yr ≈ $137/mo). The
+ *      $19.99 GLP-1 tier is still half of Noom's monthly price. This
+ *      is launch pricing (Scenario B), tuned for category capture, not
+ *      ARPU maximization.
  *
  * Honest about competitors: Noom $60/mo, Calibrate $137/mo are real
  * publicly-quoted prices. MFP Premium is $20/mo. We don't lie about
@@ -63,7 +66,7 @@ const ROWS = [
     label: 'Price (consumer)',
     tracker: '$10–20/mo',
     coach: '$60–137/mo',
-    coyl: '$19/mo',
+    coyl: '$9.99/mo',
   },
 ]
 

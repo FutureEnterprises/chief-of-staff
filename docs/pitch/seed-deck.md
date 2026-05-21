@@ -120,8 +120,9 @@ suppresses appetite chemically; it doesn't touch the behavioral script.
 Behavioral relapse prevention is now a $50B problem.
 
 **2. Real-time AI is finally cheap.** Per-event LLM inference at <$0.001
-makes "fire at the exact moment" economically possible for a $19/mo
-consumer product. Three years ago it wasn't.
+makes "fire at the exact moment" economically possible at a $9.99/mo
+consumer price point. Three years ago even a $19/mo product couldn't
+have absorbed the inference cost.
 
 **3. JITAI evidence base matured.** 200+ peer-reviewed studies, NIH
 funding, behavioral medicine consensus. The science is ready; nobody
@@ -140,17 +141,20 @@ priors. Hit GLP-1 hardest; it's the wedge that gets the partner deals.*
 
 # Stack the wedges. Sequence them.
 
-| Business | Revenue | Path to $100M | When |
+| Business | Revenue (Scenario B / live) | Path to $100M | When |
 |---|---|---|---|
-| **D2C consumer** | $19–49/mo subscription | 175K paid × $19 × 12 = $40M | Months 0–24 |
-| **GLP-1 partner platform** | $10 PMPM via telehealth | 250K covered × $10 × 12 = $30M | Months 6–24 |
+| **D2C consumer** | Free → $9.99 Core → $19.99 GLP-1 | 400K paid × $11.50 blended × 12 ≈ $55M | Months 0–24 |
+| **GLP-1 partner platform** | $5–$15 PMPM via clinics + employers | 250K covered × $10 × 12 = $30M | Months 6–24 |
 | **Behavioral interrupt SDK** | $0.05/interrupt + platform fee | 10M events/mo × $0.05 × 12 = $6M | Months 12–24 |
 
 Consumer first → manufactures the proof BD needs.
 GLP-1 partner second → unlocks the highest dollar-per-deal channel.
 SDK third → the platform ceiling once the model has 12+ months of data.
 
-**Total Month 24 target: $80M ARR base case · $100M aggressive scenario.**
+**Total Month 24 target (Scenario B): $80–90M ARR base case · $100M
+aggressive scenario.** Scenario A's $19/$29/$49 pricing reaches the
+same $100M target with ~40% fewer paid users; see Slide 12 for the
+full comparison.
 
 *Speaker notes: This is the only complicated slide. Walk it
 left-to-right. The "$80M base / $100M aggressive" honesty matters —
@@ -221,13 +225,23 @@ faster isn't a moat.*
 
 ## Slide 9 — Business Model + Unit Economics
 
-# 4 tiers. Overage credits. PMPM. Per-event SDK.
+# Two pricing scenarios. Launching with the conservative one.
 
-**Consumer (live):**
-- Free · $0 — 25 commitments, 20 AI charges/mo
-- **Core · $19/mo · $179/yr** — full rescue + recovery + pattern detection
-- Plus · $29/mo · $279/yr — accountability partner + precision interrupts
-- Premium · $49/mo · $469/yr — financial stakes + scenario sim + health integrations
+**Scenario B — live on coyl.ai today (consumer-led launch):**
+- Free · $0 — audit + archetype card + 1 behavior loop
+- **Core · $9.99/mo · $99/yr** — full rescue + recovery + pattern detection
+- **Plus · $19.99/mo · $199/yr — GLP-1 Companion** (weight maintenance
+  + rebound coverage; this is the high-intent ARPU lane)
+- Clinics & Employers · $5–$15 PMPM — outcomes-tracked B2B
+- Enterprise / API — bespoke partner pricing
+
+**Scenario A — upmarket fallback (premium clinical-led, documented
+for the deck only):**
+- Free trial → Core $19/mo → Plus $29/mo → Pro $49/mo (coach-supported)
+
+We are launching with Scenario B. Scenario A is the trade-up the company
+runs if consumer pricing power proves higher than expected after Month
+3 of paid-user data. Both scenarios are modeled on Slide 12.
 
 **Overage (shipping Month 2):**
 - 100 credits = $4.99, sold *during* danger windows when intent peaks
@@ -238,13 +252,18 @@ faster isn't a moat.*
 **SDK (Month 12+):**
 - $0.05 per delivered interrupt + monthly platform fee
 
-**CAC payback (mid-case):**
+**CAC payback (mid-case, Scenario B):**
+- 50% 12-mo retention · $35 blended CAC · ~$11.50 blended ARPU
+  (mix of $9.99 Core + $19.99 GLP-1 paid users) → **~6 months payback**
+
+**CAC payback (mid-case, Scenario A):**
 - 45% 12-mo retention · $80 blended CAC · $19 ARPU → **5.0 months payback**
 
-*Speaker notes: The overage trick is the part that gets a "huh" from
-investors who've seen Lovable's curve. The "during a danger window" is
-the moment-of-peak-intent unlock — different from every other usage
-pricing they've seen.*
+*Speaker notes: Scenario B lowers ARPU but compresses CAC because the
+free audit funnel is virality-shaped — referral coefficient is what
+funds the model, not ad spend. The overage trick still works in
+Scenario B; the "during a danger window" is the moment-of-peak-intent
+unlock — different from every other usage pricing they've seen.*
 
 ---
 
@@ -311,7 +330,9 @@ confidence here gets you killed.*
 
 ## Slide 12 — The Path to $1.5–4B
 
-# 5 years. Four layers. Compounding.
+# 5 years. Four layers. Compounding. Two pricing scenarios.
+
+### Scenario A — Premium clinical-led ($19 / $29 / $49)
 
 | Year | Consumer | Enterprise | API | Clinical | Total ARR | Valuation |
 |---|---|---|---|---|---|---|
@@ -321,22 +342,67 @@ confidence here gets you killed.*
 | Y4 | $60M | $45M | $15M | $4M | **$124M** | $1.7B |
 | Y5 | $80M | $70M | $30M | $20M | **$200M** | $3.6B |
 
-**The structure that gets us there:**
+### Scenario B — Consumer-led launch (LIVE on coyl.ai today)
+
+Free audit + archetype + 1 behavior loop · Core $9.99/mo · GLP-1
+Companion $19.99/mo · Clinics + Employers $5–$15 PMPM.
+
+Assumptions: ~2.5× the paid user count (free-audit funnel + lower price
+point widen the top of funnel), but ~50–55% of Scenario A's per-paid-user
+ARPU. Enterprise + API + Clinical lines do not change materially —
+Scenario B only re-prices the consumer column. Mix-shift to the $19.99
+GLP-1 tier matters: assumed 35% of paid users at Y1, climbing to 45% by
+Y3 as the GLP-1 wedge sharpens.
+
+| Year | Consumer | Enterprise | API | Clinical | Total ARR | Valuation |
+|---|---|---|---|---|---|---|
+| Y1 | $3.5M | $0.5M | $0 | $0 | **$4.0M** | $56M |
+| Y2 | $13M | $5M | $1M | $0 | **$19M** | $304M |
+| Y3 | $27M | $20M | $6M | $1M | **$54M** | $972M |
+| Y4 | $44M | $45M | $15M | $4M | **$108M** | $1.5B |
+| Y5 | $60M | $70M | $30M | $20M | **$180M** | $3.0–3.2B |
+
+Scenario B lands at ~75% of Scenario A's Y5 ARR. The valuation gap
+narrows after Y3 because Enterprise + API + Clinical multiples don't
+change with consumer ARPU.
+
+### Why we are launching with Scenario B
+
+The $4B story is not ARPU-first. **It is behavior graph + category
+control + strategic acquisition.** The free audit drives the data
+engine that underwrites the API moat (Slide 8). The $19.99 GLP-1 tier
+captures the high-intent paid ARPU where willingness-to-pay is highest.
+The $9.99 consumer tier is acquisition pricing optimized for virality,
+not LTV — the goal is to control the category name before Noom, Calm,
+or Headspace can ship a JITAI surface, not to extract the maximum
+monthly check from each user.
+
+If Scenario B's consumer pricing power proves higher than projected
+(measured at Month 3 of paid-user data alongside the retention silent
+bet), the company trades up to Scenario A pricing for new cohorts. The
+upside on Scenario A is preserved; the downside on Scenario B is
+defended by the funnel volume.
+
+**The structure that gets us there (both scenarios):**
 - Consumer + Enterprise carry Years 1–3 (the cash floor)
 - API launches at Month 18 after substrate engineering is real
 - Clinical / payer is the Year 4–5 multiplier, **never the lifeline**
 
 **The silent bet (named explicitly):** the recovery engine delivers
-better-than-category retention (45%+). Measured at Month 3 of paid-
-user data, model re-underwritten if it misses.
+better-than-category retention (45%+ in Scenario A, 50%+ in Scenario B
+because lower price reduces churn-by-pricing). Measured at Month 3 of
+paid-user data, model re-underwritten if it misses.
 
 **Why $4B at Year 5, not Year 4:** by Year 5 FDA clearance is real,
 payer revenue is meaningful, the multiple legitimately compresses to
 healthcare-grade 18–22×. Pushing $4B to Year 5 reads as discipline.
+Scenario B lands the Y5 outcome at $3.0–3.2B — still a 60×+ return on
+a $25M post-money seed.
 
-*Speaker notes: Honest base case + named silent bet beats any
-hockey-stick chart. Year 4 at $1.7B is already a 70× return on a $25M
-post-money seed. Don't oversell Year 5.*
+*Speaker notes: Lead with Scenario B since that's what's live. Show
+Scenario A as the upmarket option preserved in case consumer power
+exceeds projections. Honest base case + named silent bet beats any
+hockey-stick chart. Don't oversell Year 5 in either scenario.*
 
 ---
 

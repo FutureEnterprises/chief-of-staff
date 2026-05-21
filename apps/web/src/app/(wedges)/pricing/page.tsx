@@ -4,19 +4,20 @@ import { PricingView } from './pricing-view'
 export const metadata: Metadata = {
   title: 'Pricing — COYL',
   description:
-    'Free forever to start. Core $19/mo for full rescue + recovery. Plus $29/mo adds accountability partner + precision interrupts. Premium $49/mo unlocks scenario simulator + financial stakes.',
+    'Free audit + 1 behavior loop to start. Core $9.99/mo for the full rescue + recovery engine. GLP-1 Companion $19.99/mo for weight maintenance + rebound coverage. Clinics + employers $5–$15 PMPM.',
   keywords: [
     'coyl pricing',
     'autopilot interruption pricing',
     'behavior change app cost',
     'glp-1 companion app price',
+    'glp-1 maintenance pricing',
     'noom alternative pricing',
   ],
   alternates: { canonical: '/pricing' },
   openGraph: {
     title: 'Pricing — COYL',
     description:
-      'Free to start. $19/mo for the full interrupt + recovery engine. Plus and Premium for accountability and stakes.',
+      'Free audit to start. $9.99/mo for the interrupt + recovery engine. $19.99/mo for GLP-1 maintenance + rebound coverage.',
     url: 'https://coyl.ai/pricing',
     images: [
       {
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Pricing — COYL',
-    description: 'Free to start. $19/mo Core. $29/mo Plus. $49/mo Premium. Cancel anytime.',
+    description: 'Free audit. $9.99/mo Core. $19.99/mo GLP-1 Companion. $5–$15 PMPM for clinics + employers.',
     images: ['/api/og?title=Pay+for+the+interrupt%2C+not+for+the+guilt.&kicker=Pricing'],
   },
 }

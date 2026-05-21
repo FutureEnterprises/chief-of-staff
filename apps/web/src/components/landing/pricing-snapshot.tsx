@@ -24,26 +24,26 @@ export function PricingSnapshot() {
       name: 'Free',
       price: '$0',
       cadence: 'forever',
-      hook: 'Notice the script.',
+      hook: 'Audit + 1 behavior loop.',
     },
     {
       name: 'Core',
-      price: '$19',
+      price: '$9.99',
       cadence: '/mo',
       hook: 'Interrupt. Recover. Repeat.',
+    },
+    {
+      name: 'GLP-1',
+      price: '$19.99',
+      cadence: '/mo',
+      hook: 'Weight maintenance + rebound coverage.',
       featured: true,
     },
     {
-      name: 'Plus',
-      price: '$29',
-      cadence: '/mo',
-      hook: 'Push at danger windows.',
-    },
-    {
-      name: 'Premium',
-      price: '$49',
-      cadence: '/mo',
-      hook: 'Stakes. Sim. Health.',
+      name: 'Teams',
+      price: '$5–$15',
+      cadence: '/PMPM',
+      hook: 'Clinics + employers.',
     },
   ]
 
@@ -60,8 +60,8 @@ export function PricingSnapshot() {
           Pricing
         </p>
         <h2 className="text-4xl font-black leading-[1.05] tracking-tight text-gray-900 md:text-5xl">
-          Free to start.<br />
-          <span className="text-orange-600">$19 when you mean it.</span>
+          Free audit to start.<br />
+          <span className="text-orange-600">$9.99 when you mean it.</span>
         </h2>
       </motion.div>
 
@@ -104,7 +104,7 @@ export function PricingSnapshot() {
         </Link>
         <span className="text-gray-400">&middot;</span>
         <p className="text-sm text-gray-600">
-          Annual saves 22%. Cancel anytime. No card for Free.
+          Annual saves ~17%. Cancel anytime. No card for Free.
         </p>
       </motion.div>
     </section>
