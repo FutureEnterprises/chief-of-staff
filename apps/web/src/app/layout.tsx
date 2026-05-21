@@ -2,9 +2,31 @@ import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
+import { Instrument_Serif } from 'next/font/google'
 import { CookieConsent } from '@/components/cookie-consent'
 import { OrganizationSchema, WebSiteSchema } from './structured-data'
 import './globals.css'
+
+/**
+ * Instrument Serif — luxury editorial display face.
+ *
+ * Refined high-contrast serif from the Instrument Foundry. Free, OFL,
+ * weight 400 + italic. Used for display headings and pull-quotes
+ * across both marketing and app surfaces. Pairs with Geist Sans for
+ * body. The combination gives the brand a luxury fintech /
+ * editorial feel (Letter, Sequel, Cluely reference set) without
+ * pulling away from the orange brand DNA.
+ *
+ * Loaded with display:swap so FOUT-not-FOIT — better Core Web Vitals
+ * + the page is readable while the serif loads.
+ */
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: '400',
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-serif',
+})
 
 // Root metadata \u2014 positioned for search + social preview around the
 // autopilot-interruption framing (post-v4 rebrand). Title stays under 60
@@ -109,7 +131,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const clerkReady = publishableKey && !publishableKey.startsWith('pk_...')
 
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${instrumentSerif.variable}`} suppressHydrationWarning>
       <head>
         <OrganizationSchema />
         <WebSiteSchema />

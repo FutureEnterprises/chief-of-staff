@@ -8,6 +8,12 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
         mono: ['var(--font-geist-mono)', 'monospace'],
+        // Instrument Serif — luxury editorial display face. Use via
+        // `font-serif` on H1 / pull-quotes / signature moments. Pairs
+        // with Geist Sans body so the visual tone reads as luxury
+        // editorial (Letter / Sequel / Cluely reference set) rather
+        // than generic SaaS.
+        serif: ['var(--font-serif)', 'ui-serif', 'Georgia', 'serif'],
       },
       colors: {
         border: 'hsl(var(--border))',
