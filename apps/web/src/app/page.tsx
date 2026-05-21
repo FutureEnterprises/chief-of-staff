@@ -5,28 +5,46 @@ import { SoftwareApplicationSchema, FAQSchema } from './structured-data'
 import { CrystalBackground } from '@/components/landing/crystal-bg'
 import { GlassNav } from '@/components/landing/glass-nav'
 import { HeroVariants } from '@/components/landing/hero-variants'
-import { BrandStatement } from '@/components/landing/brand-statement'
-import { LiveExample } from '@/components/landing/live-example'
-import { RecoverySection } from '@/components/landing/recovery-section'
 import { RescueDemo } from '@/components/landing/rescue-demo'
-import { UniversalWedges } from '@/components/landing/universal-wedges'
-import { YouIf } from '@/components/landing/you-if'
-import { ThingsCoylSays } from '@/components/landing/things-coyl-says'
-import { Glp1Callout } from '@/components/landing/glp1-callout'
-import { ProcrastinationCallout } from '@/components/landing/procrastination-callout'
-import { TeamsCallout } from '@/components/landing/teams-callout'
+import { WhatItCatches } from '@/components/landing/what-it-catches'
 import { HowItWorksStrip } from '@/components/landing/how-it-works-strip'
-import { ComparisonTable } from '@/components/landing/comparison-table'
-import { HomepageFaq } from '@/components/landing/homepage-faq'
+import { ProofStrip } from '@/components/landing/proof-strip'
+import { PricingSnapshot } from '@/components/landing/pricing-snapshot'
 import { PartnersStrip } from '@/components/landing/partners-strip'
 import { FinalCta } from '@/components/landing/final-cta'
-// Cut from the homepage per COYL_homepage_v4.md (cut-convert-win pass):
-//   - FeaturesGrid (demoted as "deep feature breakdown"; still exists for
-//     internal/feature pages if needed)
-//   - PricingSection (detailed tiers live at /pricing, not on homepage)
-//   - WedgeClarity, AiDemo, PatternIntelligence (still exports for
-//     re-introduction if A/B tests justify)
 import { LandingFooter } from '@/components/landing/footer'
+
+/**
+ * Homepage — v5 (May 2026 overhaul).
+ *
+ * Per the Refero synthesis (Linear, Vapi, Metaview, Vercel, Pipe,
+ * Dovetail): award-winning SaaS homepages stop at 5–8 sections. The
+ * prior v4 stacked 17 sections — too much, too fast, no breath.
+ *
+ * v5 cuts to 8 disciplined beats:
+ *
+ *   1. HERO              → animated COYL letters + the ONE line + 2 CTAs
+ *   2. TRY IT NOW        → RescueDemo (the product moment)
+ *   3. WHAT IT CATCHES   → three wedges in a tight band (NEW)
+ *   4. HOW IT WORKS      → 3-step strip — detect / interrupt / recover
+ *   5. THE PROOF         → comparison + clinical study + recovery (NEW)
+ *   6. PRICING SNAPSHOT  → 4 tiers in a band, link to /pricing (NEW)
+ *   7. FOR PARTNERS      → B2B trust strip (telehealth + employers + research)
+ *   8. FINAL CTA         → single moment, single CTA
+ *
+ * What got cut from the homepage (still exist for other pages):
+ *   - Glp1Callout, ProcrastinationCallout, TeamsCallout (absorbed into WhatItCatches)
+ *   - BrandStatement, IconicLine (the iconic line is the hero subhead now)
+ *   - ComparisonTable (absorbed into ProofStrip)
+ *   - YouIf, LiveExample (the rescue demo does this job better)
+ *   - ThingsCoylSays (vanity — drop)
+ *   - UniversalWedges, RecoverySection (absorbed elsewhere)
+ *   - HomepageFaq (moved entirely to /pricing; no FAQ on homepage)
+ *
+ * The principle: one moment per section, one accent per section, breath
+ * between sections. If a visitor scrolls and can't tell what each
+ * section is doing, it's not earning its place.
+ */
 
 type Variant = 'a' | 'b' | 'c'
 
@@ -38,10 +56,7 @@ async function pickVariant(searchVariant: string | undefined): Promise<Variant> 
   if (explicit) return explicit
   if (sticky === 'a' || sticky === 'b' || sticky === 'c') return sticky
 
-  // v3 spec: lock the hero to variant B ("Why do you keep doing this?").
-  // The A/B/C system stays \u2014 ?v=a|b|c still overrides \u2014 but fresh
-  // traffic without a cookie or param gets the spec-approved hero.
-  // Flip this back to weighted rolls when we want to re-test variants.
+  // Locked to variant B per v3 spec. ?v=a|b|c still overrides for testing.
   return 'b'
 }
 
@@ -50,12 +65,9 @@ export default async function HomePage({
 }: {
   searchParams: Promise<{ v?: string }>
 }) {
-  // Try to detect a logged-in user and bounce to /today. Wrapped in
-  // try/catch because the middleware BYPASSES Clerk on `/` to keep the
-  // marketing page reachable while Clerk still uses dev-instance keys
-  // (see middleware.ts + docs/ENGINEERING.md \u00a711). When middleware
-  // hasn't run, @clerk/nextjs/server's auth() throws \u2014 treating that
-  // as "not signed in" is the right fallback on the landing.
+  // Logged-in visitors bounce to /today. Wrapped in try/catch because
+  // middleware bypasses Clerk on `/` while dev-instance keys are live
+  // (see middleware.ts + docs/ENGINEERING.md §11).
   const clerkReady =
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
     !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_...')
@@ -64,8 +76,7 @@ export default async function HomePage({
       const { userId } = await auth()
       if (userId) redirect('/today')
     } catch {
-      // Clerk middleware didn't run on this route (by design). Render
-      // the landing regardless; logged-in users can navigate via CTAs.
+      // Clerk middleware didn't run on this route; render the landing.
     }
   }
 
@@ -81,103 +92,27 @@ export default async function HomePage({
         <GlassNav />
 
         <main className="relative z-10">
-          {/* v4 spec order (COYL_homepage_v4.md):
-              1. Hero
-              2. This is your loop          \u2190 BrandStatement
-              3. Try it now                  \u2190 RescueDemo (moved up)
-              4. This is for you             \u2190 YouIf (restored)
-              5. Real moment                 \u2190 LiveExample
-              6. Wedge                       \u2190 UniversalWedges
-              7. Recovery                    \u2190 RecoverySection
-              8. Final CTA                   \u2190 FinalCta
-              Cut: FeaturesGrid (3-block explanation \u2014 demoted as
-                                  "deep feature breakdown" per v4 \u00a71) */}
-
-          {/* 1. Hero */}
+          {/* 1. Hero — the one line + animated letters */}
           <HeroVariants variant={variant} />
 
-          {/* GLP-1 callout band — surfaces the urgent payer-funded wedge
-              right after the hero without replacing it. Lead use case for
-              Year 1 per the May 2026 strategy doc; the dedicated /glp1
-              page is the destination. */}
-          <Glp1Callout />
-
-          {/* Procrastination callout — paired with Glp1Callout per the
-              May 2026 wedge ultrathink. The brand says "any compulsive
-              behavior" but surfaces had been over-indexing on weight.
-              These two equal-weight bands declare the brand's actual
-              category position: pattern interrupt is universal; weight
-              and workplace are co-leads, not lead-and-aside. */}
-          <ProcrastinationCallout />
-
-          {/* Teams callout — workplace + employer B2B surface. Per the
-              wedge ultrathink, /procrastination addresses the consumer
-              side of workplace; /teams addresses the buyer (HR head,
-              benefits broker). Three callouts in sequence (Glp1 +
-              Procrastination + Teams) cover both verticals × both
-              audience types — D2C and B2B — without overloading the
-              hero or burying any of them in a footer strip. */}
-          <TeamsCallout />
-
-          {/* How COYL works — three-step answer to "what is this thing?"
-              for cold traffic. Per the May 2026 homepage audit, the page
-              previously made visitors sit through 4 emotional sections
-              before they could explain the product to themselves. This
-              strip gives them the answer in 5 seconds, then the
-              emotional sections deepen the why. */}
-          <HowItWorksStrip />
-
-          {/* 2. This is your loop */}
-          <BrandStatement />
-
-          {/* Iconic-line motif between Loop and Try-it. V4 Option 1 locked:
-              "It's not the mistake. It's what you do after." Single-line,
-              no outcome copy beneath it \u2014 v4 wants less, not more. */}
-          <IconicLine />
-
-          {/* 3. Try it now \u2014 interactive, still the #try-it anchor target */}
+          {/* 2. Try it now — the product moment, mid-fold */}
           <div id="try-it">
             <RescueDemo />
           </div>
 
-          {/* Comparison table \u2014 cold visitors compare COYL to Noom /
-              MFP / Calibrate in their head; this gives them a structured
-              way to do it. Wins on three axes: when-it-acts (only COYL
-              fires at decision moment), bad-day handling (no restart),
-              and price ($19 below Noom's $60 and Calibrate's ~$137). Per
-              May 2026 audit \u00a77. */}
-          <ComparisonTable />
+          {/* 3. What it catches — three wedges, one band */}
+          <WhatItCatches />
 
-          {/* 4. This is for you \u2014 recognition bullets */}
-          <YouIf />
+          {/* 4. How it works — detect / interrupt / recover */}
+          <HowItWorksStrip />
 
-          {/* 5. Real moment \u2014 Friday night "I'll restart Monday" scene */}
-          <LiveExample />
+          {/* 5. The proof — comparison + clinical + recovery */}
+          <ProofStrip />
 
-          {/* Viral-screenshot section. Four punchy quotable lines designed
-              to be screenshotted and shared. Added per reviewer note:
-              "You need ONE viral screenshot moment." */}
-          <ThingsCoylSays />
+          {/* 6. Pricing snapshot — 4 tiers, route to /pricing */}
+          <PricingSnapshot />
 
-          {/* 6. Wedge \u2014 Built first for weight loss + one-line broaden */}
-          <UniversalWedges />
-
-          {/* 7. Recovery */}
-          <RecoverySection />
-
-          {/* Homepage FAQ — five highest-frequency cold-traffic
-              objections (GLP-1 replace?, privacy, notification volume,
-              what-if-it-doesn't-work, medical disclaimer). Sits before
-              B2B + final CTA so consumer questions are answered before
-              we ask for the click. Full FAQ continues on /pricing. */}
-          <HomepageFaq />
-
-          {/* B2B partners strip — telehealth GLP-1, employers, research
-              labs. Per the May 2026 audit, the homepage was 100%
-              consumer-facing with no surface for the 3 audiences that
-              gate $60M of the $100M revenue plan. Honest framing — no
-              fake logos, no fake outcome stats, single mailto +
-              /research deep link. */}
+          {/* 7. For partners — B2B trust strip */}
           <PartnersStrip />
 
           {/* 8. Final CTA */}
@@ -191,32 +126,8 @@ export default async function HomePage({
 }
 
 /**
- * The iconic line, per v3 spec \u00a73. Used verbatim everywhere it appears
- * so readers see it enough to stick. Styled as a quiet full-width
- * statement between sections \u2014 not a CTA, just a recurring motif.
- */
-/**
- * LOCKED signature line \u2014 used verbatim on landing, ads, OG cards,
- * product header, social. One line, seen enough times to stick.
- * No subcopy \u2014 spec says less, not more.
- */
-function IconicLine() {
-  return (
-    <section className="relative mx-auto max-w-5xl px-6 py-16 text-center md:px-12">
-      <p className="text-3xl font-black leading-tight tracking-tight text-white md:text-5xl">
-        It&apos;s not the mistake.<br />
-        It&apos;s{' '}
-        <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-          what you do after
-        </span>.
-      </p>
-    </section>
-  )
-}
-
-/**
- * Client-side cookie setter — stamps the user's assigned variant so they see
- * the same hero on return visits + tags sign-up analytics.
+ * Cookie setter for the hero variant — sticks the user's assigned
+ * variant so they see the same hero on return + tags analytics.
  */
 function VariantCookieSetter({ variant }: { variant: Variant }) {
   return (
