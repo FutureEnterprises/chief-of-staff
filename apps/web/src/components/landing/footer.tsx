@@ -64,7 +64,7 @@ export function LandingFooter() {
 
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           <div className="col-span-2 flex flex-col md:col-span-1">
-            <CoylLogo size="sm" theme="dark" />
+            <CoylLogo size="sm" theme="light" />
             <p className="mt-3 max-w-[14rem] text-xs leading-relaxed text-gray-500">
               The missing behavioral interface between AI and real life.
             </p>

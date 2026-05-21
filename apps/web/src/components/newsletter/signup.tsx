@@ -72,10 +72,10 @@ export function NewsletterSignup({
       <motion.div
         initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`rounded-2xl border border-orange-500/30 bg-orange-500/[0.05] ${compact ? 'px-4 py-3' : 'p-6'}`}
+        className={`rounded-2xl border border-orange-200 bg-orange-50 ${compact ? 'px-4 py-3' : 'p-6'}`}
       >
-        <p className="text-sm font-bold text-orange-300">You&rsquo;re in.</p>
-        <p className="mt-1 text-xs text-gray-400">
+        <p className="text-sm font-bold text-orange-700">You&rsquo;re in.</p>
+        <p className="mt-1 text-xs text-gray-600">
           First playbook lands within a week. If it doesn&rsquo;t, check spam and add hello@coyl.ai to your contacts.
         </p>
       </motion.div>
@@ -92,7 +92,7 @@ export function NewsletterSignup({
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@email.com"
           aria-label="Email address"
-          className="flex-1 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-white placeholder:text-gray-500 focus:border-orange-500/40 focus:outline-none"
+          className="flex-1 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:border-orange-500/40 focus:outline-none"
         />
         <button
           type="submit"
@@ -106,9 +106,9 @@ export function NewsletterSignup({
   }
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent p-6 md:p-8">
-      <h3 className="mb-2 text-xl font-bold text-white md:text-2xl">{headline}</h3>
-      <p className="mb-5 text-sm text-gray-400">{subhead}</p>
+    <div className="rounded-3xl border border-gray-200 bg-white p-6 md:p-8">
+      <h3 className="mb-2 text-xl font-bold text-gray-900 md:text-2xl">{headline}</h3>
+      <p className="mb-5 text-sm text-gray-600">{subhead}</p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
         <input
           type="email"
@@ -117,7 +117,7 @@ export function NewsletterSignup({
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@email.com"
           aria-label="Email address"
-          className="flex-1 rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm text-white placeholder:text-gray-500 focus:border-orange-500/40 focus:outline-none"
+          className="flex-1 rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:border-orange-500/40 focus:outline-none"
         />
         <button
           type="submit"
