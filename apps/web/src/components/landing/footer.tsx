@@ -35,6 +35,7 @@ export function LandingFooter() {
 
   const partners = [
     { label: 'Press kit', href: '/press' },
+    { label: 'Safety', href: '/safety' },
     { label: 'Research + outcomes', href: '/research' },
     { label: 'Clinical study', href: '/clinical-study' },
     { label: 'The science', href: '/science' },

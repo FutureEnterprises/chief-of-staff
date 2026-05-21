@@ -68,6 +68,7 @@ const RESEARCH: DropdownLink[] = [
   { label: 'Clinical study', href: '/clinical-study', description: 'Study-readiness package — protocol drafted.' },
   { label: 'Research + outcomes', href: '/research', description: 'What we measure, what we will publish.' },
   { label: 'Press', href: '/press', description: 'AI is leaving the prompt box — for journalists.' },
+  { label: 'Safety', href: '/safety', description: 'What COYL is for, and what it is not. Real-help routing.' },
   { label: 'Content playbook', href: '/content', description: 'Long-form writing on behavior, AI, and habit.' },
   { label: 'Changelog', href: '/changelog', description: 'What shipped, what is shipping next.' },
 ]
