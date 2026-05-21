@@ -1,3 +1,10 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references: Letter (28523918) — serif H1 with italic accent.
+ * Sequel (50c47480) — hairline editorial composition for pain-point columns.
+ * Cori Corinne (08b879e1) — gallery-grade breathing around primary CTA.
+ */
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
@@ -63,46 +70,48 @@ function WeightLossContent() {
 
   return (
     <>
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">Weight loss</span>
+      <div className="mb-8 flex items-center gap-3">
+        <span className="h-px w-10 bg-orange-500" />
+        <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">Weight loss</span>
       </div>
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
+      <h1 className="mb-10 font-serif text-5xl font-normal leading-[1.0] tracking-[-0.03em] text-gray-900 md:text-7xl">
         Weight loss doesn&apos;t fail at lunch.<br />
-        <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">It fails at 9 PM.</span>
+        <span className="italic text-orange-600">It fails at 9 PM.</span>
       </h1>
-      <p className="mb-16 max-w-2xl text-lg text-gray-600">
+      <p className="mb-20 max-w-2xl text-lg leading-[1.7] text-gray-600">
         The autopilot runs after the meal plan ends &mdash; late-night kitchen, weekend
         drift, the &ldquo;I already blew it&rdquo; loop. COYL catches the script the second
         it fires, not the next morning when the damage is already done.
       </p>
 
-      <section className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">
+      <section className="mb-20 grid grid-cols-1 gap-x-10 gap-y-10 md:grid-cols-2">
         {painPoints.map((p) => (
-          <div key={p.title} className="rounded-2xl border border-gray-200 bg-white p-5">
-            <h3 className="mb-2 text-base font-bold text-gray-900">{p.title}</h3>
-            <p className="text-sm text-gray-600">{p.body}</p>
+          <div key={p.title} className="border-t border-gray-200 pt-5">
+            <h3 className="mb-3 font-serif text-xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900">{p.title}</h3>
+            <p className="text-sm leading-[1.65] text-gray-600">{p.body}</p>
           </div>
         ))}
       </section>
 
-      <section className="mb-16 rounded-3xl border border-orange-500/20 bg-orange-500/5 p-8">
-        <h2 className="mb-4 text-2xl font-bold text-gray-900">What COYL actually does</h2>
-        <ul className="space-y-3 text-sm text-gray-700">
-          <li>• <strong className="text-gray-900">Risk Window setup</strong> — you map (or we infer) your danger hours</li>
-          <li>• <strong className="text-gray-900">Food rescue flows</strong> — one tap for binge urge, delivery urge, late-night opening the fridge</li>
-          <li>• <strong className="text-gray-900">Slip recovery protocol</strong> — hydrate, protein-first next meal, no starvation compensation, no Monday reset</li>
-          <li>• <strong className="text-gray-900">Weekly Autopilot Autopsy</strong> — the exact first point of leakage, the excuse you used most, next week&apos;s one focus</li>
-          <li>• <strong className="text-gray-900">Self-trust rebuilding</strong> — a score that measures whether you&apos;re becoming someone you can count on</li>
+      <section className="mb-20 border-l border-orange-500 pl-6 md:pl-8">
+        <p className="mb-6 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">What COYL actually does</p>
+        <h2 className="mb-8 font-serif text-3xl font-normal leading-[1.1] tracking-[-0.015em] text-gray-900 md:text-5xl">
+          A precision interrupt, <span className="italic text-orange-600">where the script always runs.</span>
+        </h2>
+        <ul className="space-y-4 text-base leading-[1.65] text-gray-700">
+          <li><strong className="font-serif font-normal italic text-gray-900">Risk Window setup.</strong> You map (or we infer) your danger hours.</li>
+          <li><strong className="font-serif font-normal italic text-gray-900">Food rescue flows.</strong> One tap for binge urge, delivery urge, late-night opening the fridge.</li>
+          <li><strong className="font-serif font-normal italic text-gray-900">Slip recovery protocol.</strong> Hydrate, protein-first next meal, no starvation compensation, no Monday reset.</li>
+          <li><strong className="font-serif font-normal italic text-gray-900">Weekly Autopilot Autopsy.</strong> The exact first point of leakage, the excuse you used most, next week&apos;s one focus.</li>
+          <li><strong className="font-serif font-normal italic text-gray-900">Self-trust rebuilding.</strong> A score that measures whether you&apos;re becoming someone you can count on.</li>
         </ul>
       </section>
 
-      <p className="mb-8 text-sm italic text-gray-500">
-        COYL is a behavioral support tool. It is not medical advice, nutrition counseling, or a
-        substitute for a clinician.
+      <p className="mb-10 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
+        COYL is a behavioral support tool. Not medical advice or a substitute for a clinician.
       </p>
 
-      <Link href="/sign-up?wedge=weight-loss" className="inline-block rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white">
+      <Link href="/sign-up?wedge=weight-loss" className="inline-flex items-center rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(255,102,0,0.45)] transition-all hover:bg-orange-600">
         Build my weight-loss interrupt plan
       </Link>
     </>

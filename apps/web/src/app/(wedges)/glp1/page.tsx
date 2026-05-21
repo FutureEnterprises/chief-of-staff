@@ -1,3 +1,10 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references: Letter (28523918) — serif H1 with italic accent.
+ * Sequel (50c47480) — drug-gap rows become editorial entries on hairline rules.
+ * Medium (4784cf2e) — scripts list as italic serif blockquote chain.
+ */
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'

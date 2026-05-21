@@ -1,5 +1,17 @@
 'use client'
 
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026 (intro screen only; question /
+ * result screens preserved to avoid disturbing the validated funnel).
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): refined serif H1, mono
+ *     kicker, gallery-grade breathing on the intro spread.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): six-family preview becomes
+ *     editorial entries with hairline rules, not card chrome.
+ *   - 4784cf2e-58ed-4b0c-8e6d-8758f595d997 (Medium): serif italic signature
+ *     lines treated as remembered quotes.
+ */
+
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
@@ -133,60 +145,52 @@ export function AuditView() {
     const families = allFamilies()
     return (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="mb-4 flex items-center gap-3">
-          <span className="h-px w-8 bg-orange-500" />
-          <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
+        <div className="mb-8 flex items-center gap-3">
+          <span className="h-px w-10 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
             Autopilot audit
           </span>
         </div>
-        <h1 className="mb-6 text-4xl font-black leading-[1.05] tracking-[-0.01em] text-gray-900 md:text-6xl">
+        <h1 className="mb-10 font-serif text-5xl font-normal leading-[0.98] tracking-[-0.03em] text-gray-900 md:text-7xl">
           Find your<br />
-          <span className="text-orange-600">autopilot family.</span>
+          <span className="italic text-orange-600">autopilot family.</span>
         </h1>
-        <p className="mb-4 max-w-2xl text-xl font-semibold leading-snug text-gray-800">
+        <p className="mb-6 max-w-2xl font-serif text-2xl font-normal italic leading-[1.35] text-gray-900 md:text-3xl">
           Three questions. No signup. Your autopilot family on the other side.
         </p>
-        <p className="mb-8 max-w-2xl text-base leading-relaxed text-gray-600">
+        <p className="mb-14 max-w-2xl text-base leading-[1.7] text-gray-600">
           The audit places you in one of six families &mdash; the named identity
           that drives your loop &mdash; and pins your specific moment: the
           exact wedge, window, and script the pattern runs on.
         </p>
 
-        {/* Six-family preview grid.
-            Non-interactive on purpose: this is "here's what you could be",
-            not "click to read". The audit determines which family is yours.
-            Visually subdued vs. the homepage version (smaller icon badge,
-            no hover lift, no link affordance, no prevalence chip). */}
-        <div className="mb-12">
-          <div className="mb-4 flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-sm bg-orange-500" />
-            <p className="text-xs font-bold uppercase tracking-[0.28em] text-orange-600">
+        {/* Six-family preview grid. Editorial entries with hairline rules,
+            not card chrome. Family name in serif, signature in serif italic. */}
+        <div className="mb-16">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
               The six families
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
             {families.map((f) => {
               const Icon = f.Icon
               return (
                 <div
                   key={f.slug}
-                  className="rounded-2xl border border-gray-200 bg-white/70 p-4"
+                  className="border-t border-gray-200 pt-5"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span
-                      aria-hidden
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-50 ring-1 ring-orange-100"
-                    >
-                      <Icon className="h-4 w-4 text-orange-600" strokeWidth={2} />
-                    </span>
-                    <p className="text-sm font-black leading-tight tracking-[-0.01em] text-gray-900">
+                  <div className="flex items-center gap-3">
+                    <Icon className="h-4 w-4 text-gray-400" strokeWidth={1.5} />
+                    <p className="font-serif text-lg font-normal leading-[1.1] tracking-[-0.01em] text-gray-900">
                       {f.name}
                     </p>
                   </div>
-                  <p className="mt-2 text-xs leading-relaxed text-gray-600">
+                  <p className="mt-3 text-xs leading-[1.65] text-gray-600">
                     {f.essence}
                   </p>
-                  <p className="mt-2 font-serif text-xs italic leading-snug text-orange-700">
+                  <p className="mt-3 font-serif text-sm italic leading-snug text-orange-600">
                     {f.signature}
                   </p>
                 </div>
@@ -195,18 +199,15 @@ export function AuditView() {
           </div>
         </div>
 
-        {/* Example outputs.
-            Two miniature versions of the /a/[slug] share card so visitors
-            can pre-see the deliverable. "Example output" chip in the top
-            corner makes the synthetic status unambiguous. */}
-        <div className="mb-12">
-          <div className="mb-4 flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-sm bg-emerald-500" />
-            <p className="text-xs font-bold uppercase tracking-[0.28em] text-emerald-600">
+        {/* Example outputs. Editorial preview of /a/[slug] share card. */}
+        <div className="mb-16">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
               What you get
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-2">
             {[
               {
                 familyName: 'The Deserver',
@@ -225,27 +226,22 @@ export function AuditView() {
               return (
                 <div
                   key={ex.familyName}
-                  className="relative rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-white p-5 shadow-[0_12px_30px_-12px_rgba(255,102,0,0.18)]"
+                  className="relative border-t border-orange-500 pt-5"
                 >
-                  <span className="absolute right-3 top-3 rounded-full bg-white px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-orange-700 ring-1 ring-orange-200">
+                  <span className="absolute right-0 top-5 font-mono text-[9px] font-medium uppercase tracking-[0.24em] text-gray-400">
                     Example output
                   </span>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-600">
+                  <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
                     You&rsquo;re
                   </p>
-                  <p className="mt-1.5 flex items-center gap-2.5 text-xl font-black leading-tight tracking-[-0.01em] text-gray-900">
-                    <span
-                      aria-hidden
-                      className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-orange-100 text-orange-600 ring-1 ring-orange-200"
-                    >
-                      <Icon className="h-5 w-5" strokeWidth={2} />
-                    </span>
+                  <p className="mt-3 flex items-center gap-3 font-serif text-2xl font-normal leading-[1.1] tracking-[-0.015em] text-gray-900">
+                    <Icon className="h-5 w-5 text-gray-400" strokeWidth={1.5} />
                     <span>{ex.familyName}</span>
                   </p>
-                  <p className="mt-3 font-serif text-sm italic text-orange-800">
+                  <p className="mt-4 font-serif text-base italic text-orange-600">
                     {ex.signature}
                   </p>
-                  <p className="mt-2 text-xs text-gray-600">{ex.prevalence}.</p>
+                  <p className="mt-2 text-xs text-gray-500">{ex.prevalence}.</p>
                 </div>
               )
             })}
@@ -256,12 +252,12 @@ export function AuditView() {
         <div>
           <button
             onClick={() => setStep(1)}
-            className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-7 py-3.5 text-base font-bold text-white shadow-[0_10px_28px_-6px_rgba(255,102,0,0.55),inset_0_1px_0_0_rgba(255,255,255,0.25)] transition-transform hover:scale-[1.02]"
+            className="rounded-full bg-orange-500 px-7 py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_-8px_rgba(255,102,0,0.5)] transition-all hover:bg-orange-600"
           >
             Start the audit
           </button>
-          <p className="mt-3 text-xs font-medium text-gray-500">
-            60 seconds &middot; 3 questions &middot; zero email required.
+          <p className="mt-4 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
+            60 seconds &middot; 3 questions &middot; zero email required
           </p>
         </div>
       </motion.div>

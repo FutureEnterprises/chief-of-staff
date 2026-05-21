@@ -1,5 +1,16 @@
 'use client'
 
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): editorial pricing snapshot,
+ *     refined serif H2 + numbers set in serif as the price-display face.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): tier names in serif, hairline
+ *     borders, the highlighted tier earns a single thin accent rule.
+ *   - c763837b-8389-4246-a070-87ff79e8ae0b (Cluely): calm grid, generous breathing
+ *     between tier columns.
+ */
+
 import Link from 'next/link'
 import { motion, useInView } from 'motion/react'
 import { useRef } from 'react'
@@ -48,44 +59,44 @@ export function PricingSnapshot() {
   ]
 
   return (
-    <section ref={ref} className="relative mx-auto max-w-6xl px-6 py-24 md:px-12">
+    <section ref={ref} className="relative mx-auto max-w-6xl px-6 py-32 md:py-40 md:px-12">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.55 }}
-        className="mb-12 max-w-3xl"
+        className="mb-16 max-w-3xl"
       >
-        <p className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-600">
-          <span className="h-px w-8 bg-orange-600" />
-          Pricing
-        </p>
-        <h2 className="text-4xl font-black leading-[1.05] tracking-tight text-gray-900 md:text-5xl">
+        <div className="mb-8 flex items-center gap-3">
+          <span className="h-px w-10 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            Pricing
+          </span>
+        </div>
+        <h2 className="font-serif text-5xl font-normal leading-[1.02] tracking-[-0.02em] text-gray-900 md:text-6xl">
           Free audit to start.<br />
-          <span className="text-orange-600">$9.99 when you mean it.</span>
+          <span className="italic text-orange-600">$9.99 when you mean it.</span>
         </h2>
       </motion.div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-4">
         {tiers.map((t, i) => (
           <motion.div
             key={t.name}
             initial={{ opacity: 0, y: 12 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1 + i * 0.06, duration: 0.5 }}
-            className={`rounded-2xl border p-5 ${
-              t.featured
-                ? 'border-orange-300 bg-orange-50'
-                : 'border-gray-200 bg-white'
+            className={`border-t pt-5 ${
+              t.featured ? 'border-orange-500' : 'border-gray-200'
             }`}
           >
-            <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-gray-500">
+            <p className={`font-serif text-2xl font-normal leading-[1.1] tracking-[-0.01em] ${t.featured ? 'italic text-orange-600' : 'text-gray-900'}`}>
               {t.name}
             </p>
-            <p className="mt-3 flex items-baseline gap-1">
-              <span className="text-3xl font-black text-gray-900 tabular-nums">{t.price}</span>
-              <span className="text-xs text-gray-500">{t.cadence}</span>
+            <p className="mt-6 flex items-baseline gap-1">
+              <span className="font-serif text-4xl font-normal tracking-[-0.02em] text-gray-900 tabular-nums">{t.price}</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{t.cadence}</span>
             </p>
-            <p className="mt-3 text-xs text-gray-600">{t.hook}</p>
+            <p className="mt-4 text-sm leading-[1.6] text-gray-600">{t.hook}</p>
           </motion.div>
         ))}
       </div>
@@ -94,11 +105,11 @@ export function PricingSnapshot() {
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ delay: 0.4, duration: 0.5 }}
-        className="mt-8 flex flex-wrap items-center gap-3"
+        className="mt-16 flex flex-wrap items-center gap-3"
       >
         <Link
           href="/pricing"
-          className="inline-flex items-center gap-1 text-sm font-semibold text-orange-600 underline-offset-4 hover:underline"
+          className="inline-flex items-center gap-1 text-sm font-medium text-orange-600 underline-offset-4 hover:underline"
         >
           Full pricing &rarr;
         </Link>

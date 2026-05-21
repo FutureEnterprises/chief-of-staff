@@ -1,5 +1,16 @@
 'use client'
 
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): serif H2 + italic accent
+ *     phrase; the breadth section reads as an editorial spread.
+ *   - 4784cf2e-58ed-4b0c-8e6d-8758f595d997 (Medium): pull-quote titles set in
+ *     serif italic — each wedge becomes a remembered line, not a bullet.
+ *   - 0e9417ba-1c8d-421a-8880-047eff20959f (Alison Roman): warm cream canvas,
+ *     dark ink serif, restrained orange.
+ */
+
 import Link from 'next/link'
 import { motion, useInView } from 'motion/react'
 import { useRef } from 'react'
@@ -46,24 +57,26 @@ export function WhatItCatches() {
   ]
 
   return (
-    <section ref={ref} className="relative mx-auto max-w-6xl px-6 py-24 md:px-12">
+    <section ref={ref} className="relative mx-auto max-w-6xl px-6 py-32 md:py-40 md:px-12">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.55 }}
-        className="mb-12 max-w-3xl"
+        className="mb-16 max-w-3xl"
       >
-        <p className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-600">
-          <span className="h-px w-8 bg-orange-600" />
-          Patterns COYL catches
-        </p>
-        <h2 className="text-4xl font-black leading-[1.05] tracking-tight text-gray-900 md:text-5xl">
+        <div className="mb-8 flex items-center gap-3">
+          <span className="h-px w-10 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            Patterns COYL catches
+          </span>
+        </div>
+        <h2 className="font-serif text-5xl font-normal leading-[1.02] tracking-[-0.02em] text-gray-900 md:text-6xl">
           Whatever you keep doing<br />
-          <span className="text-orange-600">that you don&rsquo;t mean to.</span>
+          <span className="italic text-orange-600">that you don&rsquo;t mean to.</span>
         </h2>
       </motion.div>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
         {wedges.map((w, i) => (
           <motion.div
             key={w.eyebrow}
@@ -73,16 +86,16 @@ export function WhatItCatches() {
           >
             <Link
               href={w.href}
-              className="group block h-full rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:border-orange-500/40 hover:shadow-[0_8px_30px_-12px_rgba(255,102,0,0.18)]"
+              className="group block h-full border-t border-gray-200 pt-6 transition-all hover:border-gray-900"
             >
-              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-600">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
                 {w.eyebrow}
               </p>
-              <p className="mt-3 text-xl font-black leading-tight text-gray-900">
+              <p className="mt-5 font-serif text-2xl font-normal italic leading-[1.15] tracking-[-0.01em] text-gray-900 md:text-[1.625rem]">
                 {w.title}
               </p>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">{w.body}</p>
-              <p className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-orange-600 transition-transform group-hover:translate-x-0.5">
+              <p className="mt-4 text-sm leading-[1.7] text-gray-600">{w.body}</p>
+              <p className="mt-6 inline-flex items-center gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-gray-500 transition-colors group-hover:text-orange-600">
                 {w.cta} <span aria-hidden>&rarr;</span>
               </p>
             </Link>
@@ -95,7 +108,7 @@ export function WhatItCatches() {
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ delay: 0.4, duration: 0.5 }}
-        className="mt-10 text-sm text-gray-600"
+        className="mt-16 text-sm text-gray-600"
       >
         Or anything you keep sabotaging.{' '}
         <Link

@@ -1,3 +1,9 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references: Letter (28523918) — serif H1; Christopher Ireland
+ * (f293bacf) — citations as editorial entries with hairline rules.
+ */
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
@@ -95,30 +101,30 @@ const CITATIONS: Citation[] = [
 export default function SciencePage() {
   return (
     <>
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">Science</span>
+      <div className="mb-8 flex items-center gap-3">
+        <span className="h-px w-10 bg-orange-500" />
+        <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">Science</span>
       </div>
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
+      <h1 className="mb-10 font-serif text-5xl font-normal leading-[1.0] tracking-[-0.03em] text-gray-900 md:text-7xl">
         The behavioral mechanism<br />
-        <span className="text-orange-600">behind COYL.</span>
+        <span className="italic text-orange-600">behind COYL.</span>
       </h1>
-      <p className="mb-16 max-w-2xl text-lg text-gray-600">
+      <p className="mb-20 max-w-2xl text-lg leading-[1.7] text-gray-600">
         Pattern interrupts. Just-in-time adaptive interventions (JITAI). Dual-process
         theory. Habit automaticity. Implementation intentions. Every claim cited to a
         primary source &mdash; the science behind catching yourself in real life.
       </p>
 
-      <div className="mb-12 space-y-8">
+      <div className="mb-16 space-y-12">
         {CITATIONS.map((c, i) => (
-          <section key={i} className="rounded-2xl border border-gray-200 bg-white p-6">
-            <p className="mb-3 text-xs font-mono text-orange-500">FINDING {String(i + 1).padStart(2, '0')}</p>
-            <h3 className="mb-3 text-lg font-bold text-gray-900">{c.claim}</h3>
-            <p className="mb-4 text-sm text-gray-600">{c.explanation}</p>
-            <ul className="space-y-1.5 text-xs">
+          <section key={i} className="border-t border-gray-200 pt-6">
+            <p className="mb-4 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">FINDING {String(i + 1).padStart(2, '0')}</p>
+            <h3 className="mb-5 font-serif text-2xl font-normal leading-[1.2] tracking-[-0.015em] text-gray-900 md:text-3xl">{c.claim}</h3>
+            <p className="mb-6 text-base leading-[1.65] text-gray-600">{c.explanation}</p>
+            <ul className="space-y-2 text-sm">
               {c.sources.map((s) => (
                 <li key={s.url}>
-                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-orange-600 underline underline-offset-2 hover:text-orange-700">
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="font-serif italic text-orange-600 underline-offset-4 hover:underline">
                     {s.title}
                   </a>
                 </li>
@@ -128,21 +134,22 @@ export default function SciencePage() {
         ))}
       </div>
 
-      <section className="mb-12 rounded-3xl border border-gray-200 bg-gray-100 p-8 text-sm text-gray-600">
-        <h2 className="mb-3 text-lg font-bold text-gray-900">Important: what COYL is NOT</h2>
-        <ul className="space-y-2">
-          <li>• COYL is a behavioral support tool, not medical treatment.</li>
-          <li>• It is not a substitute for a doctor, therapist, dietitian, or licensed clinician.</li>
-          <li>• If you&apos;re dealing with an eating disorder, addiction, or severe distress, please seek qualified professional care.</li>
-          <li>• Our AI provides general behavioral support, not personalized medical, psychological, or nutritional advice.</li>
+      <section className="mb-16 border-t border-gray-200 pt-12">
+        <p className="mb-6 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">Important</p>
+        <h2 className="mb-6 font-serif text-3xl font-normal leading-[1.1] tracking-[-0.015em] text-gray-900 md:text-5xl">What COYL is <span className="italic text-orange-600">not.</span></h2>
+        <ul className="space-y-3 text-base leading-[1.65] text-gray-700">
+          <li>COYL is a behavioral support tool, not medical treatment.</li>
+          <li>It is not a substitute for a doctor, therapist, dietitian, or licensed clinician.</li>
+          <li>If you&apos;re dealing with an eating disorder, addiction, or severe distress, please seek qualified professional care.</li>
+          <li>Our AI provides general behavioral support, not personalized medical, psychological, or nutritional advice.</li>
         </ul>
       </section>
 
-      <blockquote className="mb-8 max-w-2xl rounded-2xl border-l-4 border-orange-500 bg-orange-50 px-5 py-3 italic text-gray-900">
+      <blockquote className="mb-10 max-w-3xl border-l border-orange-500 pl-6 font-serif text-2xl italic leading-[1.4] text-gray-900 md:text-3xl">
         COYL is built from known behavioral science. The new invention is timing, interface, and intervention delivery.
       </blockquote>
 
-      <Link href="/sign-up" className="inline-block rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white">
+      <Link href="/sign-up" className="inline-flex items-center rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(255,102,0,0.45)] transition-all hover:bg-orange-600">
         Start your anti-autopilot map
       </Link>
     </>

@@ -1,5 +1,14 @@
 'use client'
 
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): serif H1 + mono kicker on
+ *     the SMS-capture single-question funnel.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): single decisive CTA on a
+ *     calm canvas.
+ */
+
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'motion/react'
@@ -62,16 +71,16 @@ export function CatchMeView() {
         animate={{ opacity: 1, y: 0 }}
         className="mx-auto max-w-lg"
       >
-        <div className="mb-4 flex items-center gap-3">
-          <span className="h-px w-8 bg-orange-500" />
-          <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
+        <div className="mb-8 flex items-center gap-3">
+          <span className="h-px w-10 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
             Locked in
           </span>
         </div>
 
-        <h1 className="mb-4 text-3xl font-black leading-tight text-gray-900 md:text-5xl">
+        <h1 className="mb-6 font-serif text-4xl font-normal leading-[1.02] tracking-[-0.025em] text-gray-900 md:text-6xl">
           Check your phone.<br />
-          <span className="text-orange-600">We&rsquo;ll text at 9pm.</span>
+          <span className="italic text-orange-600">We&rsquo;ll text at 9pm.</span>
         </h1>
         <p className="mb-8 text-base text-gray-600">
           One message will land tonight. If you want the full system &mdash;
@@ -100,17 +109,17 @@ export function CatchMeView() {
 
   return (
     <div className="mx-auto max-w-lg">
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
+      <div className="mb-8 flex items-center gap-3">
+        <span className="h-px w-10 bg-orange-500" />
+        <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
           One question
         </span>
       </div>
 
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
+      <h1 className="mb-10 font-serif text-5xl font-normal leading-[1.0] tracking-[-0.03em] text-gray-900 md:text-7xl">
         Catch yourself<br />
         before you do it again.<br />
-        <span className="text-orange-600">Tonight at 9.</span>
+        <span className="italic text-orange-600">Tonight at 9.</span>
       </h1>
 
       <p className="mb-10 max-w-md text-lg text-gray-600">

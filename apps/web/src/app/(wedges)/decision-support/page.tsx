@@ -1,3 +1,10 @@
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references: Letter (28523918-c7ef-481b-b818-d69b6151b768) — serif H1
+ * with italic accent; Sequel (50c47480-9451-420b-a372-eb42eda75e56) — hairline
+ * editorial section composition.
+ */
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { SafetyBanner } from '@/components/safety/safety-banner'
@@ -32,34 +39,34 @@ export default function DecisionSupportPage() {
   return (
     <>
       <SafetyBanner variant="inline" />
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">Decision support</span>
+      <div className="mb-8 mt-8 flex items-center gap-3">
+        <span className="h-px w-10 bg-orange-500" />
+        <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">Decision support</span>
       </div>
-      <h1 className="mb-6 text-4xl font-black leading-[1.05] text-gray-900 md:text-6xl">
+      <h1 className="mb-10 font-serif text-5xl font-normal leading-[1.0] tracking-[-0.03em] text-gray-900 md:text-7xl">
         Real-time guidance<br />
-        <span className="text-orange-600">at the 3-second window.</span>
+        <span className="italic text-orange-600">at the 3-second window.</span>
       </h1>
-      <p className="mb-16 max-w-2xl text-lg text-gray-600">
+      <p className="mb-20 max-w-2xl text-lg leading-[1.7] text-gray-600">
         The 3 seconds between the impulse and the action &mdash; that&rsquo;s where the
         decision actually happens. Ask COYL anything live: eat this, skip today, send
         this text, walk away. Structured answer, no therapy voice, in seconds.
       </p>
 
-      <section className="mb-16 rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-transparent p-8">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-orange-500">Every decision gives you</p>
-        <ul className="space-y-4 text-sm text-gray-700">
-          <li><strong className="text-gray-900">What you&apos;re actually deciding</strong> — the real question, not the surface one.</li>
-          <li><strong className="text-gray-900">Best move</strong> — the action your future self will thank you for.</li>
-          <li><strong className="text-gray-900">Cost of the worse move</strong> — immediate cost + pattern cost.</li>
-          <li><strong className="text-gray-900">The excuse you&apos;re probably using</strong> — classified into one of 8 known self-deception patterns.</li>
-          <li><strong className="text-gray-900">Smallest next move</strong> — one thing you can do in the next 5 minutes.</li>
+      <section className="mb-20 border-l border-orange-500 pl-6 md:pl-8">
+        <p className="mb-6 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">Every decision gives you</p>
+        <ul className="space-y-4 text-base leading-[1.65] text-gray-700">
+          <li><strong className="font-serif font-normal italic text-gray-900">What you&apos;re actually deciding.</strong> The real question, not the surface one.</li>
+          <li><strong className="font-serif font-normal italic text-gray-900">Best move.</strong> The action your future self will thank you for.</li>
+          <li><strong className="font-serif font-normal italic text-gray-900">Cost of the worse move.</strong> Immediate cost + pattern cost.</li>
+          <li><strong className="font-serif font-normal italic text-gray-900">The excuse you&apos;re probably using.</strong> Classified into one of 8 known self-deception patterns.</li>
+          <li><strong className="font-serif font-normal italic text-gray-900">Smallest next move.</strong> One thing you can do in the next 5 minutes.</li>
         </ul>
       </section>
 
-      <section className="mb-16">
-        <h2 className="mb-4 text-2xl font-bold text-gray-900">Example prompts</h2>
-        <div className="grid grid-cols-1 gap-2 text-sm text-gray-600 md:grid-cols-2">
+      <section className="mb-20 border-t border-gray-200 pt-12">
+        <h2 className="mb-8 font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">Example prompts.</h2>
+        <div className="grid grid-cols-1 gap-x-8 gap-y-3 md:grid-cols-2">
           {[
             'Should I eat this?',
             'Should I skip the workout?',
@@ -70,14 +77,14 @@ export default function DecisionSupportPage() {
             'Should I close my laptop?',
             'Should I keep scrolling?',
           ].map((p) => (
-            <div key={p} className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+            <div key={p} className="border-t border-gray-200 py-3 font-serif text-base italic text-gray-700">
               &ldquo;{p}&rdquo;
             </div>
           ))}
         </div>
       </section>
 
-      <Link href="/sign-up" className="inline-block rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white">
+      <Link href="/sign-up" className="inline-flex items-center rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(255,102,0,0.45)] transition-all hover:bg-orange-600">
         Try a decision
       </Link>
     </>

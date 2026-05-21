@@ -1,5 +1,16 @@
 'use client'
 
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): "Why now" framed as an
+ *     editorial three-column spread; serif display H3, mono ordinal pillars.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): pillars set as hairline-ruled
+ *     columns rather than soft cards.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): gallery-mast
+ *     pillar headers in serif, body in calm sans.
+ */
+
 import { useRef } from 'react'
 import { motion, useInView } from 'motion/react'
 
@@ -42,44 +53,46 @@ export function WhyNow() {
   ]
 
   return (
-    <section ref={ref} className="relative mx-auto max-w-6xl px-6 py-32 md:px-12">
+    <section ref={ref} className="relative mx-auto max-w-6xl px-6 py-40 md:px-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.7 }}
-        className="mb-12"
+        className="mb-16"
       >
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-orange-600">
-          <span className="h-2 w-2 rounded-sm bg-orange-500" />
-          Why now
-        </h2>
+        <div className="mb-8 flex items-center gap-3">
+          <span className="h-px w-10 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            Why now
+          </span>
+        </div>
 
-        <h3 className="text-4xl font-black leading-[1.05] tracking-tight text-gray-900 md:text-6xl">
+        <h3 className="font-serif text-5xl font-normal leading-[1.02] tracking-[-0.02em] text-gray-900 md:text-7xl">
           AI is leaving<br />
-          <span className="text-orange-600">the prompt box.</span>
+          <span className="italic text-orange-600">the prompt box.</span>
         </h3>
 
-        <p className="mt-6 max-w-2xl text-lg text-gray-600">
+        <p className="mt-8 max-w-2xl text-lg leading-[1.7] text-gray-600">
           For the first time, three things arrived at once. Each alone is
           interesting. Together they enable a category that couldn&rsquo;t
           have existed five years ago.
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
         {pillars.map((p, i) => (
           <motion.div
             key={p.n}
             initial={{ opacity: 0, y: 8 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.12 * i, duration: 0.5 }}
-            className="rounded-3xl border border-gray-200 bg-white p-7"
+            className="border-t border-gray-200 pt-6"
           >
-            <p className="font-mono text-xs text-orange-600">{p.n}</p>
-            <h4 className="mt-3 text-xl font-bold leading-tight text-gray-900">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">{p.n}</p>
+            <h4 className="mt-5 font-serif text-2xl font-normal leading-[1.15] tracking-[-0.015em] text-gray-900 md:text-[1.625rem]">
               {p.title}
             </h4>
-            <p className="mt-3 text-base leading-relaxed text-gray-600">
+            <p className="mt-4 text-base leading-[1.7] text-gray-600">
               {p.body}
             </p>
           </motion.div>
@@ -90,7 +103,7 @@ export function WhyNow() {
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ delay: 0.6, duration: 0.6 }}
-        className="mt-10 max-w-3xl text-xl leading-relaxed text-gray-700 md:text-2xl"
+        className="mt-16 max-w-3xl font-serif text-2xl font-normal italic leading-[1.4] text-gray-900 md:text-3xl"
       >
         Together they enable something that has never existed: a system
         that knows you are about to fold and is positioned to say

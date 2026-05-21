@@ -1,5 +1,16 @@
 'use client'
 
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): editorial proof composition
+ *     with refined serif H2 + restrained accent on the moat claim.
+ *   - b501d608-f10c-490c-8e88-a48a557603db (Public): magazine-grade comparison
+ *     row with hairline borders, fine mono headers, gallery breathing room.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): single decisive accent on
+ *     COYL's row; everything else stays monochrome editorial.
+ */
+
 import Link from 'next/link'
 import { motion, useInView } from 'motion/react'
 import { useRef } from 'react'
@@ -55,20 +66,22 @@ export function ProofStrip() {
   ]
 
   return (
-    <section ref={ref} className="relative mx-auto max-w-6xl px-6 py-24 md:px-12">
+    <section ref={ref} className="relative mx-auto max-w-6xl px-6 py-32 md:py-40 md:px-12">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.55 }}
-        className="mb-12 max-w-3xl"
+        className="mb-16 max-w-3xl"
       >
-        <p className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-orange-600">
-          <span className="h-px w-8 bg-orange-600" />
-          The proof
-        </p>
-        <h2 className="text-4xl font-black leading-[1.05] tracking-tight text-gray-900 md:text-5xl">
+        <div className="mb-8 flex items-center gap-3">
+          <span className="h-px w-10 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            The proof
+          </span>
+        </div>
+        <h2 className="font-serif text-5xl font-normal leading-[1.02] tracking-[-0.02em] text-gray-900 md:text-6xl">
           We fight for the 3 seconds<br />
-          <span className="text-orange-600">nobody else fights for.</span>
+          <span className="italic text-orange-600">nobody else fights for.</span>
         </h2>
       </motion.div>
 
@@ -115,17 +128,17 @@ export function ProofStrip() {
           initial={{ opacity: 0, y: 8 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.3 }}
-          className="rounded-2xl border border-orange-200 bg-orange-50 p-5"
+          className="border-t border-orange-500 pt-5"
         >
-          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-600">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
             Clinical study · open
           </p>
-          <p className="mt-2 text-base font-bold text-gray-900">
+          <p className="mt-3 font-serif text-xl font-normal leading-[1.3] text-gray-900">
             12-week IRB-pathway-mapped RCT — open for partner enrollment.
           </p>
           <Link
             href="/clinical-study"
-            className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-orange-600 hover:text-orange-700"
+            className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-orange-600 underline-offset-4 hover:underline"
           >
             Read the protocol &rarr;
           </Link>
@@ -135,17 +148,17 @@ export function ProofStrip() {
           initial={{ opacity: 0, y: 8 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.4 }}
-          className="rounded-2xl border border-gray-200 bg-white p-5"
+          className="border-t border-gray-300 pt-5"
         >
-          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-emerald-600">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
             Recovery engine · built in
           </p>
-          <p className="mt-2 text-base font-bold text-gray-900">
+          <p className="mt-3 font-serif text-xl font-normal leading-[1.3] text-gray-900">
             No Monday reset. One missed day doesn&rsquo;t break the streak.
           </p>
           <Link
             href="/recovery"
-            className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:text-emerald-700"
+            className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-gray-900 underline-offset-4 hover:underline"
           >
             How recovery works &rarr;
           </Link>

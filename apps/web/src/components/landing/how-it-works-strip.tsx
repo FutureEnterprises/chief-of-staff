@@ -1,5 +1,16 @@
 'use client'
 
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): serif display H2 + ordinal
+ *     mono numerals as editorial chapter markers.
+ *   - c763837b-8389-4246-a070-87ff79e8ae0b (Cluely): refined serif headline
+ *     paired with calm sans body, single accent on the highlight word.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): three column
+ *     editorial composition with hairline rules instead of card chrome.
+ */
+
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import { Eye, Zap, Heart } from 'lucide-react'
@@ -44,24 +55,24 @@ export function HowItWorksStrip() {
   ]
 
   return (
-    <section className="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
-      <div className="mb-12 flex items-center gap-3">
-        <span className="h-px w-8 bg-orange-500" />
-        <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-600">
+    <section className="relative mx-auto max-w-6xl px-6 py-32 md:py-40 md:px-12">
+      <div className="mb-8 flex items-center gap-3">
+        <span className="h-px w-10 bg-orange-500" />
+        <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
           How COYL works
         </span>
       </div>
 
-      <h2 className="mb-4 max-w-3xl text-4xl font-black leading-[1.05] tracking-tight text-gray-900 md:text-6xl">
+      <h2 className="mb-8 max-w-3xl font-serif text-5xl font-normal leading-[1.04] tracking-[-0.02em] text-gray-900 md:text-7xl">
         Three steps.<br />
-        <span className="text-orange-600">No restart, no shame, no streaks to protect.</span>
+        <span className="italic text-orange-600">No restart, no shame, no streaks to protect.</span>
       </h2>
-      <p className="mb-16 max-w-2xl text-lg text-gray-600">
+      <p className="mb-20 max-w-2xl text-lg leading-[1.7] text-gray-600">
         The entire product is a loop the visitor can hold in their head: catch the script, interrupt
         the moment, continue without punishment. Everything else is plumbing.
       </p>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-x-10 gap-y-12 md:grid-cols-3">
         {steps.map((s, i) => (
           <motion.div
             key={s.n}
@@ -69,32 +80,30 @@ export function HowItWorksStrip() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ delay: i * 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="rounded-3xl border border-gray-200 bg-white p-8"
+            className="border-t border-gray-200 pt-8"
           >
-            <div className="mb-6 flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-orange-600 tracking-widest">
+            <div className="mb-8 flex items-center justify-between">
+              <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
                 {s.n}
               </span>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-orange-500/20 bg-orange-100 text-orange-600">
-                <s.Icon className="h-5 w-5" />
-              </div>
+              <s.Icon className="h-5 w-5 text-gray-400" strokeWidth={1.5} />
             </div>
-            <h3 className="mb-3 text-2xl font-black text-gray-900">{s.title}</h3>
-            <p className="text-base leading-relaxed text-gray-600">{s.body}</p>
+            <h3 className="mb-4 font-serif text-3xl font-normal leading-[1.1] tracking-[-0.015em] text-gray-900">{s.title}</h3>
+            <p className="text-base leading-[1.7] text-gray-600">{s.body}</p>
           </motion.div>
         ))}
       </div>
 
-      <div className="mt-12 flex flex-wrap gap-3">
+      <div className="mt-20 flex flex-wrap gap-4">
         <Link
           href="/how-it-works"
-          className="rounded-full border border-gray-200 bg-gray-50 px-6 py-3 text-sm font-semibold text-gray-800 transition-colors hover:border-orange-500/40 hover:text-gray-900"
+          className="rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
         >
           See the full loop
         </Link>
         <Link
           href="/sign-up?ref=how-it-works"
-          className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
+          className="rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(255,102,0,0.45)] transition-all hover:bg-orange-600"
         >
           Start free
         </Link>

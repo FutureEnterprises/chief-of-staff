@@ -1,17 +1,24 @@
 'use client'
 
 /**
- * AESTHETIC UPGRADE — May 2026
+ * LUXURY EDITORIAL OVERHAUL — May 2026
  * Refero references applied:
- *   - 511dd047-74c3-4c94-929c-4c80a5de0356 (Replit): cream canvas + decisive
- *     orange accent + tightly tracked oversized display headline; pill CTAs
- *     with restrained elevation.
- *   - 9d0e9f91-616f-49af-9e04-4ad33ce711d6 (Poly): single orange-red gradient
- *     focal accent, refined display hierarchy on warm canvas, light haloed
- *     atmosphere behind hero image card.
- *   - 9a9e4bd1-3aee-4783-a678-028ffea1fdbe (Panxo): hero product card floats
- *     over a soft peach/blush atmospheric gradient — ambient color behind
- *     glass rather than just a shadow.
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): refined fintech editorial;
+ *     airy white + serif display headlines + generous breathing room + restrained
+ *     accent. The visual benchmark.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): ultra-premium quiet; image-led
+ *     storytelling sits inside dramatic negative space rather than glowing card stacks.
+ *   - c763837b-8389-4246-a070-87ff79e8ae0b (Cluely): large editorial serif headline
+ *     with single accent restraint; supporting sans body in calm hierarchy.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): gallery-mast
+ *     oversized serif title — H1 carries the brand weight, no decoration.
+ *   - 08b879e1-2871-488f-b573-38e438e9a85c (Cori Corinne): parchment + oversized
+ *     serif display + grainy authority.
+ *   - 0e9417ba-1c8d-421a-8880-047eff20959f (Alison Roman): warm cream, dark ink
+ *     serif, literary editorial composition.
+ *
+ * Earlier references that informed the underlying structure (kept for trace):
+ *   - Replit / Poly / Panxo — original aesthetic upgrade pass.
  *
  * What changed (vs the prior utility-grade hero):
  *   1. COYL letterform — letter-spacing tightened to -0.06em, leading-[0.82],
@@ -84,7 +91,7 @@ const COPY: Record<Variant, {
       <>
         It&apos;s not the mistake.<br />
         It&apos;s{' '}
-        <span className="border-b-2 border-orange-500 text-orange-600" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
+        <span className="italic text-orange-600">
           what you do after
         </span>.
       </>
@@ -104,7 +111,7 @@ const COPY: Record<Variant, {
     headline: (
       <>
         AI for the moment<br />
-        <span className="border-b-2 border-orange-500 text-orange-600" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
+        <span className="italic text-orange-600">
           before behavior happens.
         </span>
       </>
@@ -120,7 +127,7 @@ const COPY: Record<Variant, {
         Weight loss doesn&apos;t fail at lunch.
         <br />
         It fails{' '}
-        <span className="border-b-2 border-orange-500 text-orange-600" style={{ textShadow: '0 0 12px rgba(255, 102, 0, 0.6)' }}>
+        <span className="italic text-orange-600">
           at 9 PM
         </span>.
       </>
@@ -137,23 +144,22 @@ export function HeroVariants({ variant }: { variant: Variant }) {
     <section className="relative mx-auto flex min-h-[85vh] max-w-7xl flex-col justify-center px-6 pt-28 md:px-12 lg:pt-44">
       <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
         <div className="relative z-20 flex flex-col items-start lg:col-span-7">
-          {/* AI Willpower label */}
+          {/* Eyebrow — small caps, mono, hairline rule. Pure metadata. */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1, duration: 0.6 }}
-            className="mb-6 flex items-center gap-3"
+            className="mb-8 flex items-center gap-3"
           >
-            <div className="h-px w-8 bg-orange-500" />
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-600" style={{ textShadow: '0 0 20px rgba(255, 102, 0, 0.4)' }}>
+            <div className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
               {copy.label}
             </span>
           </motion.div>
 
-          {/* COYL wordmark — four standalone letters, no acronym lore.
-              C-O-Y-L set as a single horizontal phrase; the Y carries
-              the orange accent (same as the footer wordmark). */}
-          <h1 className="flex items-baseline gap-[0.06em] text-[clamp(4rem,15vw,8rem)] font-black uppercase leading-[0.82] tracking-[-0.06em] text-gray-900">
+          {/* COYL wordmark — set in serif now to anchor the editorial system.
+              Four standalone letters, the Y carries the orange accent. */}
+          <h1 className="flex items-baseline gap-[0.04em] font-serif text-[clamp(4.5rem,16vw,9rem)] font-normal leading-[0.85] tracking-[-0.04em] text-gray-900">
             {LETTERS.map((l, i) => (
               <motion.span
                 key={`${l.char}-${i}`}
@@ -161,29 +167,29 @@ export function HeroVariants({ variant }: { variant: Variant }) {
                 initial="hidden"
                 animate="visible"
                 variants={letterVariants}
-                className={l.accent ? 'text-orange-600' : ''}
+                className={l.accent ? 'italic text-orange-600' : ''}
               >
                 {l.char}
               </motion.span>
             ))}
           </h1>
 
-          {/* Variant headline — magazine pull-line treatment */}
+          {/* Variant headline — serif pull-line, lighter weight, generous leading */}
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.7 }}
-            className="mt-8 max-w-xl text-2xl font-black leading-[1.05] tracking-[-0.015em] text-gray-900 sm:text-3xl"
+            className="mt-10 max-w-xl font-serif text-3xl font-normal leading-[1.08] tracking-[-0.015em] text-gray-900 sm:text-4xl md:text-[2.75rem]"
           >
             {copy.headline}
           </motion.h2>
 
-          {/* Subhead */}
+          {/* Subhead — sans, breathing leading, gray-600 */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.75, duration: 0.7 }}
-            className="mt-4 max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg"
+            className="mt-6 max-w-xl text-base leading-[1.65] text-gray-600 sm:text-lg"
           >
             {copy.subhead}
           </motion.p>
@@ -202,7 +208,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
           >
             <Link
               href="/audit"
-              className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-orange-600 to-red-600 px-8 py-4 text-lg font-bold text-white shadow-[0_10px_30px_-8px_rgba(255,102,0,0.55),inset_0_1px_0_0_rgba(255,255,255,0.25)] transition-all hover:scale-[1.02] hover:shadow-[0_18px_50px_-8px_rgba(255,102,0,0.7),inset_0_1px_0_0_rgba(255,255,255,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fafaf7]"
+              className="group relative flex items-center gap-2.5 overflow-hidden rounded-full bg-orange-500 px-8 py-4 text-base font-semibold text-white shadow-[0_8px_24px_-10px_rgba(255,102,0,0.45)] transition-all hover:bg-orange-600 hover:shadow-[0_14px_36px_-10px_rgba(255,102,0,0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fafaf7]"
             >
               <span className="relative z-10">{copy.primaryCta}</span>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="relative z-10 transition-transform group-hover:translate-x-0.5">
@@ -211,7 +217,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
             </Link>
             <Link
               href="/how-it-works"
-              className="group flex items-center gap-2 rounded-full border border-gray-300 bg-white px-8 py-4 text-lg font-semibold text-gray-900 transition-all hover:border-orange-400 hover:bg-white hover:shadow-[0_0_0_4px_rgba(255,102,0,0.08)]"
+              className="group flex items-center gap-2 rounded-full border border-gray-200 bg-transparent px-8 py-4 text-base font-medium text-gray-900 transition-all hover:border-gray-900 hover:bg-white"
             >
               See the 3-second window
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:translate-x-0.5">

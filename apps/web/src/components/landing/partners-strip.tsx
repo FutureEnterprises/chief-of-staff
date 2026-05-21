@@ -1,5 +1,16 @@
 'use client'
 
+/**
+ * LUXURY EDITORIAL OVERHAUL — May 2026
+ * Refero references applied:
+ *   - 28523918-c7ef-481b-b818-d69b6151b768 (Letter): premium B2B framing with
+ *     serif headline + restrained orange accent on a single phrase.
+ *   - 50c47480-9451-420b-a372-eb42eda75e56 (Sequel): partner cards strip card
+ *     chrome and become editorial entries on the cream canvas.
+ *   - f293bacf-990b-4270-900d-90f3a565ca27 (Christopher Ireland): gallery-mast
+ *     audience labels in serif.
+ */
+
 import Link from 'next/link'
 import { motion } from 'motion/react'
 import { ArrowRight, Stethoscope, Building2, FlaskConical } from 'lucide-react'
@@ -48,43 +59,43 @@ export function PartnersStrip() {
   ]
 
   return (
-    <section className="relative mx-auto max-w-6xl px-6 py-20">
+    <section className="relative mx-auto max-w-6xl px-6 py-32 md:px-12">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="rounded-3xl border border-gray-200 bg-gradient-to-br from-white to-orange-50/40 p-8 md:p-12"
+        className="border-t border-gray-200 pt-16"
       >
-        <div className="mb-2 flex items-center gap-3">
-          <span className="h-px w-8 bg-orange-500" />
-          <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-600">
+        <div className="mb-8 flex items-center gap-3">
+          <span className="h-px w-10 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
             For partners
           </span>
         </div>
 
-        <h2 className="mb-4 text-3xl font-black leading-tight text-gray-900 md:text-4xl">
+        <h2 className="mb-6 max-w-3xl font-serif text-4xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
           The relapse-prevention layer{' '}
-          <span className="text-orange-600">beneath your weight care program.</span>
+          <span className="italic text-orange-600">beneath your weight care program.</span>
         </h2>
 
-        <p className="mb-10 max-w-2xl text-base text-gray-600">
+        <p className="mb-16 max-w-2xl text-base leading-[1.7] text-gray-600">
           Real-time pattern interrupt during the medication, behavioral muscle memory after.
           Designed to slot under existing GLP-1 protocols without rebuilding your stack.
         </p>
 
-        <div className="mb-10 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="mb-16 grid grid-cols-1 gap-10 md:grid-cols-3">
           {partners.map((p) => (
             <Link
               key={p.label}
               href={p.href}
-              className="group rounded-2xl border border-gray-200 bg-gray-50 p-5 transition-all hover:border-orange-500/30 hover:bg-orange-50"
+              className="group block border-t border-gray-200 pt-6 transition-all hover:border-gray-900"
             >
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-orange-500/20 bg-orange-100 text-orange-600">
-                <p.Icon className="h-5 w-5" />
+              <div className="mb-6 flex h-10 w-10 items-center justify-center text-gray-400 transition-colors group-hover:text-orange-600">
+                <p.Icon className="h-5 w-5" strokeWidth={1.5} />
               </div>
-              <h3 className="text-base font-bold text-gray-900 group-hover:text-orange-700">{p.label}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">{p.body}</p>
+              <h3 className="font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900">{p.label}</h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-600">{p.body}</p>
             </Link>
           ))}
         </div>
@@ -92,20 +103,20 @@ export function PartnersStrip() {
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/clinical-study"
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
+            className="inline-flex items-center gap-2 rounded-full bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(255,102,0,0.45)] transition-all hover:bg-orange-600"
           >
             See the clinical protocol
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
           <Link
             href="/research"
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-800 hover:border-orange-500/40 hover:text-gray-900"
+            className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
           >
             Outcomes we measure
           </Link>
           <Link
             href="mailto:partners@coyl.ai?subject=COYL%20partnership"
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-800 hover:border-orange-500/40 hover:text-gray-900"
+            className="inline-flex items-center gap-2 font-mono text-xs font-medium text-gray-500 underline-offset-4 hover:text-orange-600 hover:underline"
           >
             partners@coyl.ai
           </Link>
