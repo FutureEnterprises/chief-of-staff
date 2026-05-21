@@ -75,6 +75,29 @@ export function CommitmentsView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amountCents, commitmentId, charityLabel: 'GiveDirectly' }),
       })
+
+      // 402 with clientSecret = SCA / 3DS challenge required. Hand off
+      // to Stripe.js to render the bank challenge modal, then retry
+      // the stake endpoint once confirmed.
+      if (res.status === 402) {
+        const body = (await res.json().catch(() => ({}))) as {
+          error?: string
+          clientSecret?: string
+          message?: string
+        }
+        if (body.error === 'sca_required' && body.clientSecret) {
+          const ok = await handleScaChallenge(body.clientSecret)
+          if (!ok) {
+            setStakeError('Authentication failed or cancelled')
+            return
+          }
+          // Retry the stake — the card is now "known good"
+          return placeStake(commitmentId, amountCents)
+        }
+        setStakeError(body.message ?? body.error ?? 'Could not place stake')
+        return
+      }
+
       if (!res.ok) {
         const err = (await res.json().catch(() => ({}))) as { error?: string }
         setStakeError(err.error ?? 'Could not place stake')
@@ -84,6 +107,32 @@ export function CommitmentsView() {
       await load()
     } catch {
       setStakeError('Network error — try again')
+    }
+  }
+
+  /**
+   * Run the Stripe.js 3DS challenge for an SCA-required payment intent.
+   * Lazy-loads @stripe/stripe-js so the bundle stays clean for users
+   * who never stake. Returns true on successful authentication.
+   */
+  async function handleScaChallenge(clientSecret: string): Promise<boolean> {
+    try {
+      const { loadStripe } = await import('@stripe/stripe-js')
+      const stripe = await loadStripe(
+        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '',
+      )
+      if (!stripe) return false
+
+      const result = await stripe.handleNextAction({ clientSecret })
+      if (result.error) {
+        console.warn('3DS challenge failed', result.error.message)
+        return false
+      }
+      return result.paymentIntent?.status === 'requires_capture' ||
+             result.paymentIntent?.status === 'succeeded'
+    } catch (err) {
+      console.warn('SCA challenge error', err)
+      return false
     }
   }
 

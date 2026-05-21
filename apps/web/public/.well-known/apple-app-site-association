@@ -5,42 +5,24 @@
       {
         "appIDs": ["REPLACE_WITH_APPLE_TEAM_ID.ai.coyl.app"],
         "components": [
-          {
-            "/": "/today",
-            "comment": "Deep link to Today"
-          },
-          {
-            "/": "/rescue",
-            "comment": "Deep link to Rescue"
-          },
-          {
-            "/": "/slip",
-            "comment": "Deep link to Slip recovery"
-          },
-          {
-            "/": "/commitments",
-            "comment": "Deep link to Commitments"
-          },
-          {
-            "/": "/patterns",
-            "comment": "Deep link to Patterns / autopilot map"
-          },
-          {
-            "/": "/caught",
-            "comment": "Shareable recovery landing (open in browser for non-users)"
-          },
-          {
-            "/": "/audit",
-            "comment": "Shareable audit (open in browser for non-users)"
-          },
-          {
-            "/": "/glp1",
-            "comment": "Marketing page"
-          },
-          {
-            "/": "/",
-            "comment": "Homepage"
-          }
+          { "/": "/today",       "comment": "Authed app surface — Today" },
+          { "/": "/rescue*",     "comment": "Authed app surface — Rescue (incl. deep-link query params)" },
+          { "/": "/slip",        "comment": "Authed app surface — Slip recovery" },
+          { "/": "/commitments", "comment": "Authed app surface — Commitments" },
+          { "/": "/patterns",    "comment": "Authed app surface — Patterns / autopilot map" },
+          { "/": "/decide",      "comment": "Authed app surface — Decision engine" },
+          { "/": "/autopsy",     "comment": "Authed app surface — Weekly autopilot autopsy" },
+          { "/": "/settings",    "comment": "Authed app surface — Settings" },
+          { "/": "/onboarding*", "comment": "Onboarding wizard" },
+          { "/": "/",            "comment": "Homepage — opens app if installed" },
+
+          { "/": "/i/*",         "exclude": true, "comment": "Autopilot Interrupted share — must open in browser so recipients (often not COYL users yet) see the sign-up CTA" },
+          { "/": "/r/*",         "exclude": true, "comment": "Referral redirect — must hit the browser to set the coyl_ref cookie before sign-up" },
+          { "/": "/audit*",      "exclude": true, "comment": "Public audit quiz — no auth required, browser-only" },
+          { "/": "/sign-in*",    "exclude": true, "comment": "Clerk auth — browser handles" },
+          { "/": "/sign-up*",    "exclude": true, "comment": "Clerk auth — browser handles" },
+          { "/": "/api/*",       "exclude": true, "comment": "API endpoints — never deep-link" },
+          { "/": "/catch-me*",   "exclude": true, "comment": "SMS funnel landing — must stay in browser to capture the phone" }
         ]
       }
     ]
