@@ -1,0 +1,4 @@
+# This lock file tells Prisma which database provider your migrations
+# were authored against. Do not edit by hand — Prisma reads this on every
+# migrate deploy and refuses to run if the provider changes mid-history.
+provider = "postgresql"

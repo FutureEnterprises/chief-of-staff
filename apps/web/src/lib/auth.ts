@@ -17,11 +17,28 @@ export async function requireDbUser(): Promise<User> {
   const email = clerkUser.emailAddresses[0]?.emailAddress ?? ''
   const name = `${clerkUser.firstName ?? ''} ${clerkUser.lastName ?? ''}`.trim() || email
 
-  return prisma.user.upsert({
-    where: { clerkId: clerkUser.id },
-    update: { email, name, avatarUrl: clerkUser.imageUrl },
-    create: { clerkId: clerkUser.id, email, name, avatarUrl: clerkUser.imageUrl },
-  })
+  try {
+    return await prisma.user.upsert({
+      where: { clerkId: clerkUser.id },
+      update: { email, name, avatarUrl: clerkUser.imageUrl },
+      create: { clerkId: clerkUser.id, email, name, avatarUrl: clerkUser.imageUrl },
+    })
+  } catch (err) {
+    // Surface the real Postgres error to Vercel runtime logs so we can
+    // diagnose schema drift quickly (Server Components in production
+    // hide message text by default). If you see this in prod logs, run
+    // `prisma db push` against DATABASE_URL to sync the schema, or
+    // apply migrations under packages/database/prisma/migrations/.
+    const e = err as { code?: string; message?: string; meta?: unknown }
+    console.error('[requireDbUser] prisma.user.upsert failed', {
+      clerkId: clerkUser.id,
+      email,
+      code: e?.code,
+      message: e?.message,
+      meta: e?.meta,
+    })
+    throw err
+  }
 }
 
 export async function ensureUserExists(): Promise<User> {
