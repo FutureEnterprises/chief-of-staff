@@ -167,7 +167,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
                 initial="hidden"
                 animate="visible"
                 variants={letterVariants}
-                className={l.accent ? 'italic text-orange-600' : ''}
+                className={l.accent ? 'text-orange-600' : ''}
               >
                 {l.char}
               </motion.span>
