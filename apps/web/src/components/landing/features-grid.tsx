@@ -96,8 +96,8 @@ function FeatureCard({
           </div>
         )}
         {/* Progress-bar metric branch removed with the fake "82%" number.
-            If real cohort data becomes available, re-add with data wired
-            from /admin metrics. */}
+            If real cohort data becomes available, re-add it from the
+            internal metrics surface. */}
         {!feature.footer && (
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">

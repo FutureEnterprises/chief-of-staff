@@ -81,7 +81,6 @@ const RESEARCH: DropdownLink[] = [
   { label: 'Developers', href: '/developers', description: 'Build against BIP. SDKs, code examples, getting started.' },
   { label: 'Press', href: '/press', description: 'AI is leaving the prompt box — for journalists.' },
   { label: 'Safety', href: '/safety', description: 'What COYL is for, and what it is not. Real-help routing.' },
-  { label: 'Content playbook', href: '/content', description: 'Long-form writing on behavior, AI, and habit.' },
   { label: 'Changelog', href: '/changelog', description: 'What shipped, what is shipping next.' },
 ]
 

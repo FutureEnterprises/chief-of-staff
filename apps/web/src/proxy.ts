@@ -26,7 +26,6 @@ const isPublicRoute = createRouteMatcher([
   '/decision-support',
   '/recovery',
   '/autopilot-map',
-  '/content',
   '/science',
   '/caught',
   '/audit(.*)',
@@ -59,6 +58,10 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks/(.*)',
   '/api/cron/(.*)',
   '/api/health',
+  // NOTE: /content was previously public (marketing playbook). It has
+  // been removed entirely — playbook now lives at
+  // docs/marketing/content-playbook.md (private). Do not re-add to
+  // this list without an explicit policy review.
   // PAP + EAP coordinator endpoints — LLM partners auth via Bearer
   // API keys (coyl_pap_<id>_<secret>) instead of Clerk session cookies.
   '/api/eap/v1/(.*)',
@@ -107,7 +110,6 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/decision-support',
   '/recovery',
   '/autopilot-map',
-  '/content',
   '/science',
   '/caught',
   '/audit(.*)',

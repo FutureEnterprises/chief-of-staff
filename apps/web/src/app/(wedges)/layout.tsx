@@ -6,7 +6,7 @@ import { GlassNav } from '@/components/landing/glass-nav'
  * isn't the homepage (/pricing, /clinical-study, /glp1, /procrastination,
  * /teams, /weight-loss, /work, /research, /science, /audit, /catch-me,
  * /how-it-works, /recurring-loops, /decision-support, /recovery,
- * /caught, /autopilot-map, /content, /changelog).
+ * /caught, /autopilot-map, /changelog).
  *
  * Uses the SAME GlassNav as the homepage so a visitor clicking from
  * the homepage into any wedge gets a continuous navigation experience.
