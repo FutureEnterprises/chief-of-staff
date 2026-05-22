@@ -4,7 +4,6 @@ import { auth } from '@clerk/nextjs/server'
 import { notFound } from 'next/navigation'
 import { isAdmin } from '@/lib/admin-auth'
 
-export const dynamic = 'force-dynamic'
 export const metadata = { title: 'LLM partners — COYL Admin', robots: { index: false } }
 
 /**

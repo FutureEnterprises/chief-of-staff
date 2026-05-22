@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -88,22 +89,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function DailyNumberSharePage({ params }: PageProps) {
-  const { code } = await params
-  const daily = await fetchDaily(code).catch(() => null)
-
-  if (!daily) notFound()
-
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://coyl.ai'
-  const shareUrl = `${baseUrl}/d/${daily.shareCode}`
-  const deltaLabel = formatDeltaLabel(daily.selfTrustDelta)
-  const deltaIsPositive = daily.selfTrustDelta > 0
-  const deltaIsNegative = daily.selfTrustDelta < 0
-  const shareText = `Day ${daily.dayNumber}. ${formatDeltaLabel(daily.selfTrustDelta, { ascii: true })}. ${daily.identitySentence} — COYL`
-
+export default function DailyNumberSharePage({ params }: PageProps) {
   return (
     <main className="min-h-screen bg-[#f6efe4] text-[#1a1814]">
-      {/* Minimal header — brand mark only. No nav, no distractions. */}
       <header className="border-b border-black/[0.06] bg-[#f6efe4]/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link href="/">
@@ -117,7 +105,28 @@ export default async function DailyNumberSharePage({ params }: PageProps) {
           </Link>
         </div>
       </header>
+      <Suspense fallback={<div className="mx-auto max-w-xl px-6 py-10 md:py-16" />}>
+        <DailyContent params={params} />
+      </Suspense>
+    </main>
+  )
+}
 
+async function DailyContent({ params }: PageProps) {
+  const { code } = await params
+  const daily = await fetchDaily(code).catch(() => null)
+
+  if (!daily) notFound()
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://coyl.ai'
+  const shareUrl = `${baseUrl}/d/${daily.shareCode}`
+  const deltaLabel = formatDeltaLabel(daily.selfTrustDelta)
+  const deltaIsPositive = daily.selfTrustDelta > 0
+  const deltaIsNegative = daily.selfTrustDelta < 0
+  const shareText = `Day ${daily.dayNumber}. ${formatDeltaLabel(daily.selfTrustDelta, { ascii: true })}. ${daily.identitySentence} — COYL`
+
+  return (
+    <>
       <div className="mx-auto max-w-xl px-6 py-10 md:py-16">
         {/* The card — full-bleed editorial four-element layout. Cream
             canvas, Instrument Serif, single orange focal moment on the
@@ -226,6 +235,6 @@ export default async function DailyNumberSharePage({ params }: PageProps) {
           </p>
         )}
       </div>
-    </main>
+    </>
   )
 }

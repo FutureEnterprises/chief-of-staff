@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation'
 import { getDraft } from '../actions'
 import { DraftEditor } from './draft-editor'
 
-export const dynamic = 'force-dynamic'
 
 /**
  * Single-post view + edit. Server fetches the post, hands off to the

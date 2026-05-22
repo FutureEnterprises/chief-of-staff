@@ -41,8 +41,6 @@ import {
 } from '@/lib/coordinator/confidence-gate'
 import type { CoordinatorDecision } from '@/lib/coordinator'
 
-export const runtime = 'nodejs'
-
 type DemoBody = {
   confidence?: number
   scopeRequested?: string[]

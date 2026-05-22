@@ -24,11 +24,14 @@
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
 import { TryItLive } from './try-it-live'
 
-// ISR — static editorial content; 1-day revalidate window. Full cacheComponents migration with cacheTag-based surgical invalidation tracked as a follow-up.
-export const revalidate = 86400
+// Cache Components migration: replaces `export const revalidate = 86400`
+// with surgical, tag-based invalidation. Admin marketing edits call
+// revalidateTag('marketing-protocol') to invalidate this one page
+// without waiting on the daily revalidate window.
 
 export const metadata: Metadata = {
   title:
@@ -71,7 +74,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default function ProtocolPage() {
+export default async function ProtocolPage() {
+  'use cache'
+  cacheLife('days')
+  cacheTag('marketing-protocol')
+
   return (
     <>
       <BreadcrumbSchema

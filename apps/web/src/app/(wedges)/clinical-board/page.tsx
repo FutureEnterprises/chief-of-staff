@@ -19,10 +19,9 @@
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
 
-// ISR — static editorial content; 1-day revalidate window. Full cacheComponents migration with cacheTag-based surgical invalidation tracked as a follow-up.
-export const revalidate = 86400
 
 export const metadata: Metadata = {
   title: 'Clinical board — the clinical eyes on the work · COYL',
@@ -82,7 +81,11 @@ const CLINICAL = [
   },
 ]
 
-export default function ClinicalBoardPage() {
+export default async function ClinicalBoardPage() {
+  'use cache'
+  cacheLife('days')
+  cacheTag('marketing-clinical-board')
+
   return (
     <>
       <BreadcrumbSchema

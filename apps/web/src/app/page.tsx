@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
@@ -64,7 +65,23 @@ async function pickVariant(searchVariant: string | undefined): Promise<Variant> 
   return 'b'
 }
 
-export default async function HomePage({
+export default function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ v?: string }>
+}) {
+  // Outer shell renders statically (cacheComponents contract). The
+  // auth check + variant cookie read happen in HomePageContent inside
+  // the Suspense boundary, so the runtime-data accesses are properly
+  // scoped per Next 16.
+  return (
+    <Suspense fallback={null}>
+      <HomePageContent searchParams={searchParams} />
+    </Suspense>
+  )
+}
+
+async function HomePageContent({
   searchParams,
 }: {
   searchParams: Promise<{ v?: string }>

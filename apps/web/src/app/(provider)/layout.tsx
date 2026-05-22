@@ -1,8 +1,8 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { SignOutButton } from '@clerk/nextjs'
 import { getCurrentProvider, anonymizePatientName } from '@/lib/provider-rbac'
 
-export const dynamic = 'force-dynamic'
 export const metadata = {
   title: 'COYL Provider',
   robots: { index: false, follow: false },
@@ -10,24 +10,26 @@ export const metadata = {
 
 /**
  * (provider) route-group layout — the clinical / clinician surface.
+ * Provider gating sits behind a Suspense boundary so the gray-50 chrome
+ * renders statically (Next 16 cacheComponents contract).
  *
- * Distinct from /(wedges) (marketing, cream bg, serif headings) and
- * /(admin) (operator, near-black bg, monospace). This surface is the
- * one a prescriber or pharma BD partner will see in a demo or during
- * diligence, so the aesthetic is deliberately clinical-light:
- *   - gray-50 background, slate text, white cards
- *   - smaller serif headings (Charter / serif fallback via Tailwind's
- *     font-serif token already loaded on the marketing pages)
- *   - sidebar nav with Cohort / Settings / Help
- *   - top bar with provider's anonymized display name + sign out
- *
- * Gating: Clerk's middleware (proxy.ts) already requires sign-in
- * because /provider is NOT in the public-route matcher. This layout
- * is the SECOND gate — getCurrentProvider() rejects users without
- * planType ∈ {PRO, TEAM}. Non-providers get a Forbidden surface, not
- * a 404, so a curious user knows they're authenticated but ungated.
+ * Gating: Clerk's middleware (proxy.ts) requires sign-in because /provider
+ * is NOT in the public-route matcher. This layout is the SECOND gate —
+ * getCurrentProvider() rejects users without planType ∈ {PRO, TEAM}.
  */
-export default async function ProviderLayout({
+export default function ProviderLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <ProviderGuardedShell>{children}</ProviderGuardedShell>
+    </Suspense>
+  )
+}
+
+async function ProviderGuardedShell({
   children,
 }: {
   children: React.ReactNode

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
 
 /**
@@ -25,8 +26,6 @@ import { BreadcrumbSchema } from '@/app/structured-data'
  * phone between patients; the page has to feel inevitable, not
  * brochure-y.
  */
-// ISR — static editorial content; 1-day revalidate window. Full cacheComponents migration with cacheTag-based surgical invalidation tracked as a follow-up.
-export const revalidate = 86400
 
 export const metadata: Metadata = {
   title:
@@ -97,7 +96,11 @@ const WHAT_YOU_GET = [
   'White-label option for clinic branding',
 ] as const
 
-export default function ClinicianPage() {
+export default async function ClinicianPage() {
+  'use cache'
+  cacheLife('days')
+  cacheTag('marketing-clinician')
+
   return (
     <>
       <BreadcrumbSchema

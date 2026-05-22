@@ -6,7 +6,6 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { Users, Plus, KeyRound, Flame, Activity } from 'lucide-react'
 
 export const metadata = { title: 'Pods' }
-export const dynamic = 'force-dynamic'
 
 export default async function PodsPage() {
   const user = await requireDbUser()

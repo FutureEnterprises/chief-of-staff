@@ -5,11 +5,10 @@ import { withWorkflow } from 'workflow/next'
 
 const nextConfig: NextConfig = {
   turbopack: {},
-  // Cache Components migration is deferred — see docs/ENGINEERING.md §14.
-  // Enabling cacheComponents requires a coordinated pass across ~20 files:
-  // every `export const revalidate = N` becomes `"use cache" + cacheLife()`,
-  // every `runtime = 'edge'` must be removed (incompatible), and dynamic
-  // API reads on / and /admin/marketing need Suspense boundaries.
+  // Cache Components (Next 16) — enables PPR-style mixing of static,
+  // cached, and dynamic content via the "use cache" directive. Replaces
+  // the old experimental.ppr flag.
+  cacheComponents: true,
   outputFileTracingRoot: path.join(__dirname, '../../'),
   outputFileTracingIncludes: {
     '/**': ['apps/web/.prisma/client/**/*'],

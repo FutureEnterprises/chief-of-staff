@@ -1,8 +1,5 @@
 import { prisma } from '@repo/database'
 
-export const dynamic = 'force-dynamic'
-export const runtime = 'nodejs'
-
 /**
  * Health + deployment diagnostic endpoint.
  *

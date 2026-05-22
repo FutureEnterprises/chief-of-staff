@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -39,11 +40,18 @@ export async function generateMetadata({
   }
 }
 
-export default async function ProviderInviteLandingPage({
+export default function ProviderInviteLandingPage({
   params,
 }: PageProps) {
-  const { code } = await params
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-[#fafaf7]" />}>
+      <InviteContent params={params} />
+    </Suspense>
+  )
+}
 
+async function InviteContent({ params }: PageProps) {
+  const { code } = await params
   // Look up the invite + the issuing provider. The Commitment.rule
   // encoding is { invite:<code> | providerId:<id> | label:<lbl> | status:<s> }
   // — same pattern as the route handler. We only render the screen for

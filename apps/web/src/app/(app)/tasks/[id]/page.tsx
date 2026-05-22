@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { requireDbUser } from '@/lib/auth'
 import { prisma } from '@repo/database'
@@ -17,7 +18,15 @@ export async function generateMetadata({ params }: TaskPageProps) {
   return { title: task?.title ?? 'Task' }
 }
 
-export default async function TaskPage({ params }: TaskPageProps) {
+export default function TaskPage({ params }: TaskPageProps) {
+  return (
+    <Suspense fallback={<div className="p-8 text-sm text-zinc-500">Loading…</div>}>
+      <TaskContent params={params} />
+    </Suspense>
+  )
+}
+
+async function TaskContent({ params }: TaskPageProps) {
   const { id } = await params
   const user = await requireDbUser()
 

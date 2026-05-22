@@ -5,7 +5,6 @@ import { prisma } from '@repo/database'
 import { revalidatePath } from 'next/cache'
 import { isAdmin } from '@/lib/admin-auth'
 
-export const dynamic = 'force-dynamic'
 export const metadata = { title: 'LLM partner — COYL Admin', robots: { index: false } }
 
 /**

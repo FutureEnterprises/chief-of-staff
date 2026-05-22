@@ -23,10 +23,9 @@
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
 
-// ISR — static editorial content; 1-day revalidate window. Full cacheComponents migration with cacheTag-based surgical invalidation tracked as a follow-up.
-export const revalidate = 86400
 
 export const metadata: Metadata = {
   title: 'About COYL — built by someone who needed it',
@@ -61,7 +60,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  'use cache'
+  cacheLife('days')
+  cacheTag('marketing-about')
+
   return (
     <>
       <BreadcrumbSchema

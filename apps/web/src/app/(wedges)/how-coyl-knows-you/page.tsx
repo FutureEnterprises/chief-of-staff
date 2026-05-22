@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
+import { cacheLife, cacheTag } from 'next/cache'
 import { KnowsYouView } from './knows-you-view'
 
-// ISR — static editorial content; 1-day revalidate window. Full cacheComponents migration with cacheTag-based surgical invalidation tracked as a follow-up.
-export const revalidate = 86400
 
 export const metadata: Metadata = {
   title: 'How COYL knows you — the honest answer',
@@ -40,6 +39,10 @@ export const metadata: Metadata = {
   },
 }
 
-export default function HowCoylKnowsYouPage() {
+export default async function HowCoylKnowsYouPage() {
+  'use cache'
+  cacheLife('days')
+  cacheTag('marketing-how-coyl-knows-you')
+
   return <KnowsYouView />
 }

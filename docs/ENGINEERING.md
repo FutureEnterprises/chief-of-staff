@@ -468,61 +468,54 @@ execution log a crashed instance can resume from.
 
 ---
 
-## 14. Cache Components migration plan (Next 16)
+## 14. Cache Components (Next 16) — applied
 
-The v2 strategy brief listed Cache Components migration as a deferred
-engineering item. The conservative "one page at a time" plan from the
-original spec doesn't work in Next 16 — `"use cache"` is gated on the
-global `cacheComponents: true` flag in next.config.ts. There is no
-per-page opt-in.
+`cacheComponents: true` is enabled in `next.config.ts`. The build emits
+PPR-style routes: marketing wedges are `Partial Prerender` (static shell
+streamed with cached/dynamic islands), authenticated app pages are
+`Dynamic`, and the static editorial pages are fully static.
 
-**Status (May 22, 2026): deferred.** A trial enable surfaced ~20 files
-that need coordinated changes before the flag can stay on. The flag is
-intentionally off until those land.
+### Applied changes (commits 79a908d → this one)
 
-### What enabling `cacheComponents: true` requires
+- **11 marketing pages** converted from `export const revalidate = N`
+  to `"use cache" + cacheLife('days' | 'hours') + cacheTag('marketing-<slug>')`:
+  `/protocol`, `/pap`, `/eap`, `/platform`, `/psyche`, `/how-coyl-knows-you`,
+  `/about`, `/advisors`, `/clinical-board`, `/clinician`,
+  `/research/interim`.
+- **5 OG image routes** dropped `runtime = 'edge'` (incompatible with
+  cacheComponents). `ImageResponse` runs on Node now; cold-start hit
+  lands only on link-preview crawls, not user-facing hot paths.
+- **14 `dynamic = 'force-dynamic'` declarations** removed — they're
+  now Next 16's default for any page that fetches uncached data.
+- **2 `runtime = 'nodejs'` declarations** removed from `/api/health`
+  and `/api/v1/protocol/demo` (any explicit `runtime` is incompatible).
+- **Layout-level Suspense boundaries** added to (app), (admin),
+  (provider), (legal) so the chrome renders statically while auth
+  resolves. Plus per-route `loading.tsx` files in each group.
+- **Dynamic API reads wrapped in Suspense** — pages reading `params`,
+  `cookies()`, `searchParams`, or Clerk widget data now pass the
+  Promise into a child component that awaits it inside `<Suspense>`:
+  `/`, `/admin`, `/onboarding`, `/sign-in`, `/sign-up`, `/tasks/[id]`,
+  `/i/[code]`, `/i/provider/[code]`, `/d/[code]`, `/a/[slug]`.
+- **Hardcoded `new Date().getFullYear()` → `2026`** in three footers.
+  The current-year read counted as uncached data in cacheComponents land.
 
-Run from project root to reproduce the audit:
+### Surgical invalidation
 
-```bash
-# Pages with `export const revalidate = N` — must convert to
-# `"use cache" + cacheLife()`. Eleven files today.
-grep -rln "export const revalidate" apps/web/src/app --include="*.tsx" --include="*.ts"
+The `cacheTag('marketing-<slug>')` infrastructure is in place but no
+admin save action currently invalidates these tags — the public
+marketing pages are hardcoded JSX, not data-fetched from `MarketingPost`
+rows. When admin-editable marketing content lands, the consumer should
+call `revalidateTag('marketing-<slug>')` from its server action.
 
-# Routes with `runtime = 'edge'` — must be removed. Edge runtime is
-# incompatible with cacheComponents. Five files today, mostly OG
-# image renderers (api/og, api/share, d/[code]/og, d/[code]/social,
-# opengraph-image.tsx). Moving these to Node has cold-start
-# implications — measure before committing.
-grep -rln "export const runtime = 'edge'" apps/web/src/app --include="*.tsx" --include="*.ts"
+### Recurring "use cache" gotchas
 
-# Pages reading dynamic APIs at top level without Suspense — must
-# refactor so the dynamic read happens inside a Suspense'd child.
-grep -rln "await headers()\|await cookies()\|await searchParams" \
-  apps/web/src/app --include="*.tsx"
-```
-
-The third bucket today is `app/page.tsx` (variant cookie + searchParams)
-and `(admin)/admin/marketing/page.tsx` (filter searchParams).
-
-### Migration order when ready
-
-1. **Marketing wedges first** — convert each `revalidate = 86400` to
-   `'use cache' + cacheLife('days') + cacheTag('marketing-<slug>')`.
-   Wire `revalidateTag('marketing-<slug>')` into the admin marketing
-   save action so edits invalidate surgically rather than waiting 24h.
-2. **Edge route audit** — for each `runtime = 'edge'` route, decide:
-   move to Node (cold-start hit), or carve out as a non-cacheable
-   subdomain. The OG image routes are the highest-traffic of these and
-   need a perf budget before the move.
-3. **Dynamic API refactors** — wrap `app/page.tsx` variant selection
-   in a Suspense'd subcomponent so the cached shell stays static.
-   Same for `(admin)/admin/marketing/page.tsx` filter UI.
-4. **Flip the flag** — set `cacheComponents: true` in next.config.ts.
-   Run a clean build locally; address any remaining errors.
-5. **Verify in preview** — deploy to a preview URL, hit the migrated
-   pages with a fresh cache, confirm headers show the expected mix of
-   static + cached + dynamic segments.
+- **No `cookies()`/`headers()`/`searchParams` inside `'use cache'`** —
+  pass them as arguments from a parent.
+- **No `new Date()` / `Math.random()` inside `'use cache'`** without a
+  preceding request-data read (or the value gets frozen at build).
+- **`runtime = 'edge' | 'nodejs'`** declarations are forbidden anywhere.
+- **`dynamic = 'force-dynamic'`** is now redundant (default behavior).
 
 Reference: https://nextjs.org/docs/app/getting-started/cache-components
 

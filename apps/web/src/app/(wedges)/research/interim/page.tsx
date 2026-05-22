@@ -25,9 +25,8 @@
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
-
-export const revalidate = 3600 // 1-hour ISR — short enough to publish updates
 // within the news cycle, long enough that the page stays static between deploys.
 
 export const metadata: Metadata = {
@@ -175,7 +174,11 @@ const STATUS_LABEL: Record<ResultStatus, string> = {
   final: 'FINAL',
 }
 
-export default function ResearchInterimPage() {
+export default async function ResearchInterimPage() {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('marketing-research-interim')
+
   return (
     <>
       <BreadcrumbSchema

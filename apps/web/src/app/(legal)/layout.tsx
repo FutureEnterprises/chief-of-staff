@@ -24,7 +24,7 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
       {/* Footer */}
       <footer className="border-t border-white/5 px-6 py-8">
         <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-4 text-xs text-gray-600">
-          <span>&copy; {new Date().getFullYear()} COYL. All rights reserved.</span>
+          <span>&copy; 2026 COYL. All rights reserved.</span>
           <div className="flex gap-6">
             <Link href="/terms" className="transition-colors hover:text-orange-500">Terms</Link>
             <Link href="/privacy" className="transition-colors hover:text-orange-500">Privacy</Link>

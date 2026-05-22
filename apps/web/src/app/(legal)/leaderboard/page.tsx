@@ -9,7 +9,6 @@ export const metadata: Metadata = {
 // Render per-request. Leaderboard pulls from Prisma — prerendering at build
 // time requires DATABASE_URL to be reachable from the Vercel build runner,
 // which it isn't for our Supabase setup. Dynamic rendering sidesteps that.
-export const dynamic = 'force-dynamic'
 
 export default async function LeaderboardPage() {
   const top = await prisma.user.findMany({

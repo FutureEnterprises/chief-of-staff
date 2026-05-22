@@ -1,25 +1,43 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { SignOutButton } from '@clerk/nextjs'
 import { isCurrentUserAdmin } from '@/lib/admin/is-admin'
 
-export const dynamic = 'force-dynamic'
 export const metadata = { title: 'COYL Admin', robots: { index: false, follow: false } }
 
 /**
- * (admin) route-group layout — gates every page inside the group via
- * a single Clerk-email check (iman.schrock@gmail.com). Non-admins see
- * a clean Forbidden surface, not a 404, so the admin knows they're
- * signed in but not allowed (vs. being asked to sign in).
+ * (admin) route-group layout. The admin-email check sits behind a
+ * Suspense boundary so the dark operator chrome can render statically —
+ * required by Next 16 cacheComponents, which forbids uncached data
+ * fetches outside Suspense.
  *
  * Standard Clerk auth.protect() still fires in middleware before this
  * runs — the layout is the SECOND line of defense and the human-facing
  * Forbidden screen.
- *
- * Aesthetic: dark operator surface (near-black bg, slim borders,
- * monospace metadata, single orange accent). Matches /today, /rescue,
- * /slip — NOT the cream marketing aesthetic.
  */
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<AdminShellFallback />}>
+      <AdminGuardedShell>{children}</AdminGuardedShell>
+    </Suspense>
+  )
+}
+
+function AdminShellFallback() {
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-gray-100">
+      <header className="border-b border-white/[0.08] bg-[#0a0a0a]/95 backdrop-blur">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
+          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-gray-500">
+            COYL Admin
+          </span>
+        </div>
+      </header>
+    </div>
+  )
+}
+
+async function AdminGuardedShell({ children }: { children: React.ReactNode }) {
   const isAdmin = await isCurrentUserAdmin()
 
   if (!isAdmin) {

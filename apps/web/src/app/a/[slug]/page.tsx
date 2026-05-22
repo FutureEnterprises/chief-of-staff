@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -74,7 +75,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function ArchetypeSharePage({ params }: PageProps) {
+export default function ArchetypeSharePage({ params }: PageProps) {
+  return (
+    <div className="min-h-screen bg-[#fafaf7] text-gray-900 selection:bg-orange-500 selection:text-white">
+      <GlassNav />
+      <Suspense fallback={<main className="mx-auto max-w-3xl px-6 pt-28 pb-16 md:pt-36 md:pb-24" />}>
+        <ArchetypeContent params={params} />
+      </Suspense>
+    </div>
+  )
+}
+
+async function ArchetypeContent({ params }: PageProps) {
   const { slug } = await params
   const parsed = parseShareSlug(slug)
   if (!parsed) notFound()
@@ -82,9 +94,7 @@ export default async function ArchetypeSharePage({ params }: PageProps) {
   const a = buildArchetype(parsed.wedge, parsed.window, parsed.script)
 
   return (
-    <div className="min-h-screen bg-[#fafaf7] text-gray-900 selection:bg-orange-500 selection:text-white">
-      <GlassNav />
-
+    <>
       <main className="mx-auto max-w-3xl px-6 pt-28 pb-16 md:pt-36 md:pb-24">
         {/* FAMILY CARD — the screenshot atom. Big, screenshot-able,
             same shape across all 6 families so the visual identity is
@@ -269,7 +279,7 @@ export default async function ArchetypeSharePage({ params }: PageProps) {
           </Link>
         </footer>
       </main>
-    </div>
+    </>
   )
 }
 

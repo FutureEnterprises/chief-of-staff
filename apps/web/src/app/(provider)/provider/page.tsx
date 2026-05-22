@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { getCurrentProvider, getProviderPatients } from '@/lib/provider-rbac'
 import { prisma } from '@repo/database'
 
-export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Provider · Overview' }
 
 /**

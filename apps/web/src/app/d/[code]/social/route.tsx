@@ -20,8 +20,6 @@ import { formatDeltaLabel } from '@/lib/daily-number'
  * Edge runtime so cold-start latency is <50ms.
  */
 
-export const runtime = 'edge'
-
 const BG = '#f6efe4'
 const ACCENT = '#ff6600'
 const ACCENT_DARK = '#9a3a1a'

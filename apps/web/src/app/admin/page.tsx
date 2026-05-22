@@ -1,8 +1,8 @@
+import { Suspense } from 'react'
 import { requireAdmin } from '@/lib/admin-auth'
 import { prisma } from '@repo/database'
 import { Activity, Shield, Users, Zap, Flame, TrendingUp, AlertTriangle } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Admin \u2014 COYL' }
 
 /**
@@ -22,7 +22,15 @@ export const metadata = { title: 'Admin \u2014 COYL' }
  * reads directly from the product DB so it stays in sync with what
  * users actually see.
  */
-export default async function AdminPage() {
+export default function AdminPage() {
+  return (
+    <Suspense fallback={<div className="mx-auto min-h-screen max-w-6xl p-8 text-sm text-muted-foreground">Loading admin dashboard…</div>}>
+      <AdminDashboard />
+    </Suspense>
+  )
+}
+
+async function AdminDashboard() {
   const admin = await requireAdmin()
 
   const now = new Date()

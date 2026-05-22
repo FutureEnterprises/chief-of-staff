@@ -7,7 +7,6 @@ import {
 } from '@/lib/provider-rbac'
 import { prisma } from '@repo/database'
 
-export const dynamic = 'force-dynamic'
 export const metadata = {
   title: 'Provider · Patient',
   robots: { index: false, follow: false },

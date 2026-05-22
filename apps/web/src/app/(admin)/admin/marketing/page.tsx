@@ -3,7 +3,6 @@ import { MarketingPlatform, MarketingPostStatus } from '@repo/database'
 import { listDrafts } from './actions'
 import { DraftRowActions } from './draft-row-actions'
 
-export const dynamic = 'force-dynamic'
 
 /**
  * Marketing approval queue — list view.

@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -67,19 +68,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function SharePage({ params }: PageProps) {
-  const { code } = await params
-  const card = await getSharedCardByCode(code).catch(() => null)
-
-  if (!card) notFound()
-
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://coyl.ai'
-  const shareUrl = `${baseUrl}/i/${card.shareCode}`
-  const shareText = `Autopilot interrupted at ${card.localTimeLabel}. ${card.triggerLabel}. COYL caught me.`
-
+export default function SharePage({ params }: PageProps) {
   return (
     <main className="min-h-screen bg-[#0e0d0b] text-[#e7dccb]">
-      {/* Minimal header — brand mark only. No nav, no distractions. */}
       <header className="border-b border-white/5 bg-[#0e0d0b]/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link href="/">
@@ -93,13 +84,26 @@ export default async function SharePage({ params }: PageProps) {
           </Link>
         </div>
       </header>
+      <Suspense fallback={<div className="mx-auto max-w-xl px-6 py-10 md:py-16" />}>
+        <ShareContent params={params} />
+      </Suspense>
+    </main>
+  )
+}
 
+async function ShareContent({ params }: PageProps) {
+  const { code } = await params
+  const card = await getSharedCardByCode(code).catch(() => null)
+  if (!card) notFound()
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://coyl.ai'
+  const shareUrl = `${baseUrl}/i/${card.shareCode}`
+  const shareText = `Autopilot interrupted at ${card.localTimeLabel}. ${card.triggerLabel}. COYL caught me.`
+
+  return (
+    <>
       <div className="mx-auto max-w-xl px-6 py-10 md:py-16">
-        {/* The card — locked to 1080×1080 Instagram-native aspect so the
-            on-page render matches the screenshot atom 1:1. */}
         <AutopilotCard data={card} variant="square" />
-
-        {/* Share actions — for the recipient to forward */}
         <ShareActions shareUrl={shareUrl} shareText={shareText} />
 
         {/* Soft "audit yourself" CTA — for the friend who lands here cold */}
@@ -148,6 +152,6 @@ export default async function SharePage({ params }: PageProps) {
           Shared anonymously. No identity. The moment, not the person.
         </p>
       </div>
-    </main>
+    </>
   )
 }

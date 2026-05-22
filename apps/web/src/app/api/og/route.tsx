@@ -27,8 +27,6 @@ import { NextRequest } from 'next/server'
  * bulletproof at edge.
  */
 
-export const runtime = 'edge'
-
 const BG = '#0e0d0b'
 const ACCENT = '#ff6600'
 const FG = '#fff7eb'

@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation'
 import { getCurrentProvider } from '@/lib/provider-rbac'
 import { prisma } from '@repo/database'
 
-export const dynamic = 'force-dynamic'
 export const metadata = {
   title: 'Provider · Invite',
   robots: { index: false, follow: false },

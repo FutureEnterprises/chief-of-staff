@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { NewDraftForm } from './new-draft-form'
 
-export const dynamic = 'force-dynamic'
 
 /**
  * "New draft" — picks platform + archetype + topic + model, hands off

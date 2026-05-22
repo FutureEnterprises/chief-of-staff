@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { SignUp } from '@clerk/nextjs'
 
 /**
@@ -15,11 +16,15 @@ import { SignUp } from '@clerk/nextjs'
 const AFTER_SIGN_UP = '/onboarding'
 
 export default function SignUpPage() {
+  // Suspense wraps the Clerk widget so its internal cookies()/headers()
+  // reads satisfy Next 16 cacheComponents during prerender.
   return (
-    <SignUp
-      signInUrl="/sign-in"
-      fallbackRedirectUrl={AFTER_SIGN_UP}
-      forceRedirectUrl={AFTER_SIGN_UP}
-    />
+    <Suspense fallback={null}>
+      <SignUp
+        signInUrl="/sign-in"
+        fallbackRedirectUrl={AFTER_SIGN_UP}
+        forceRedirectUrl={AFTER_SIGN_UP}
+      />
+    </Suspense>
   )
 }
