@@ -196,12 +196,20 @@ export default function ResearchPage() {
             during GLP-1 maintenance reduces weight regain in the 90 days after
             discontinuation. The protocol is drafted and partner-ready.
           </p>
-          <Link
-            href="/clinical-study"
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
-          >
-            Read the protocol &rarr;
-          </Link>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <Link
+              href="/clinical-study"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)]"
+            >
+              Read the protocol &rarr;
+            </Link>
+            <Link
+              href="/research/interim"
+              className="inline-flex items-center gap-2 rounded-full border border-orange-500 px-5 py-2.5 text-sm font-bold text-orange-600 hover:bg-orange-50"
+            >
+              Interim data ledger &rarr;
+            </Link>
+          </div>
         </section>
 
         {/* Metrics */}
