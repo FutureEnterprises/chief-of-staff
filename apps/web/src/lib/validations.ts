@@ -28,6 +28,9 @@ export const updateUserSchema = z.object({
   reminderIntensity: z.enum(['GENTLE', 'STANDARD', 'RELENTLESS']).optional(),
   emailBriefingEnabled: z.boolean().optional(),
   emailBriefingDays: z.array(z.enum(['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'])).optional(),
+  // Share-card opt-in. Gates GET /api/share/[userId] — the public OG
+  // image endpoint. Default false (set in schema); user toggles in /settings.
+  shareCardEnabled: z.boolean().optional(),
   // GLP-1 companion profile — set in /settings or onboarding. All fields
   // nullable; sending null explicitly clears the value (used when a user
   // marks themselves "no longer on the drug" or removes the profile).

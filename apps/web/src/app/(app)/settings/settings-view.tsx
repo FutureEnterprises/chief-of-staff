@@ -35,6 +35,7 @@ export function SettingsView({ user }: SettingsViewProps) {
   const [timezone, setTimezone] = useState(user.timezone)
   const [emailBriefing, setEmailBriefing] = useState(user.emailBriefingEnabled)
   const [reminderIntensity, setReminderIntensity] = useState(user.reminderIntensity ?? 'STANDARD')
+  const [shareCardEnabled, setShareCardEnabled] = useState(user.shareCardEnabled)
   const [saving, setSaving] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
   const isPro = user.planType === 'PRO' || user.planType === 'TEAM'
@@ -42,7 +43,12 @@ export function SettingsView({ user }: SettingsViewProps) {
   async function handleSave() {
     setSaving(true)
     try {
-      await updateUserSettings({ timezone, emailBriefingEnabled: emailBriefing, reminderIntensity: reminderIntensity as 'GENTLE' | 'STANDARD' | 'RELENTLESS' })
+      await updateUserSettings({
+        timezone,
+        emailBriefingEnabled: emailBriefing,
+        reminderIntensity: reminderIntensity as 'GENTLE' | 'STANDARD' | 'RELENTLESS',
+        shareCardEnabled,
+      })
       toast({ title: 'Settings saved', description: 'Your preferences have been updated.' })
     } catch {
       toast({ title: 'Error', description: 'Failed to save settings.', variant: 'destructive' })
@@ -206,6 +212,26 @@ export function SettingsView({ user }: SettingsViewProps) {
                   </p>
                 </div>
                 <Toggle checked={emailBriefing} onChange={setEmailBriefing} />
+              </div>
+
+              <Separator />
+
+              {/* Share-card opt-in. Default OFF on every account. When on,
+                  GET /api/share/[userId] returns a 1200×630 OG image with
+                  the user's first name + execution score + streak + wedge.
+                  When off, the endpoint 404s — used to make every previously
+                  shared link in the wild stop revealing data until the user
+                  explicitly opts in. Audit: see commit 6be9235 + the
+                  20260522020000_share_card_enabled migration. */}
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Share cards</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Allow COYL to render OG share images with your first name, execution score, and streak.
+                    Off by default — the public /api/share endpoint returns 404 until you enable it.
+                  </p>
+                </div>
+                <Toggle checked={shareCardEnabled} onChange={setShareCardEnabled} />
               </div>
             </div>
           </GlassCard>

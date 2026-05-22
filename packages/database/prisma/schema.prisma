@@ -80,6 +80,13 @@ model User {
   // Public profile
   profilePublic        Boolean           @default(false)
   profileSlug          String?           @unique
+  // Share-card opt-in. Gates GET /api/share/[userId] — the public OG
+  // image endpoint that renders first-name + executionScore +
+  // selfTrustScore + currentStreak + primaryWedge + excuseStyle.
+  // Default OFF so that even if a userId leaks (DM screenshot, web
+  // archive, OG preview cache), the endpoint returns 404 until the
+  // user explicitly toggles share cards on in /settings.
+  shareCardEnabled     Boolean           @default(false)
   // Autopilot Interruption System
   primaryWedge         PrimaryWedge      @default(PRODUCTIVITY)
   selfTrustScore       Int               @default(0)

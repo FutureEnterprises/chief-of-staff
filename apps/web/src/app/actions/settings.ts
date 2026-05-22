@@ -9,6 +9,7 @@ export async function updateUserSettings(data: {
   emailBriefingEnabled?: boolean
   emailBriefingDays?: string[]
   reminderIntensity?: 'GENTLE' | 'STANDARD' | 'RELENTLESS'
+  shareCardEnabled?: boolean
 }) {
   const user = await requireDbUser()
 

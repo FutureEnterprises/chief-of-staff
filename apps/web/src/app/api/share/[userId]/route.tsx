@@ -35,10 +35,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
       longestStreak: true,
       primaryWedge: true,
       excuseStyle: true,
+      shareCardEnabled: true,
     },
   })
 
-  if (!user) {
+  // Privacy gate: even when a userId is leaked (DM screenshot, web
+  // archive, OG-preview cache, etc.), the endpoint must not render the
+  // user's behavioral data unless they explicitly opted in via
+  // /settings → "Share cards". Default is OFF on every account
+  // (set in schema + 20260522020000_share_card_enabled migration).
+  // Return 404 (not 403) so the endpoint reveals nothing — a
+  // non-existent user and a non-opted-in user look identical to probes.
+  if (!user || !user.shareCardEnabled) {
     return new Response('Not found', { status: 404 })
   }
 
