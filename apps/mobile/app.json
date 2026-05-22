@@ -85,7 +85,8 @@
         {
           "package": "ai.coyl.app"
         }
-      ]
+      ],
+      "./plugins/with-coyl-live-activity"
     ],
     "experiments": {
       "typedRoutes": true
