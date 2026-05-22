@@ -1,6 +1,7 @@
 import path from 'path'
 import type { NextConfig } from 'next'
 import { withSentryConfig } from '@sentry/nextjs'
+import { withWorkflow } from 'workflow/next'
 
 const nextConfig: NextConfig = {
   turbopack: {},
@@ -94,6 +95,12 @@ const sentryOptions = {
   automaticVercelMonitors: true,
 }
 
+// Workflow DevKit enables `"use workflow"` and `"use step"` directives.
+// First production workflow lives at workflows/danger-window-learner.ts —
+// converts the same-named cron from best-effort to durable step-based
+// execution with automatic per-step retries.
+const configWithWorkflow = withWorkflow(nextConfig)
+
 export default process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
-  ? withSentryConfig(nextConfig, sentryOptions)
-  : nextConfig
+  ? withSentryConfig(configWithWorkflow, sentryOptions)
+  : configWithWorkflow

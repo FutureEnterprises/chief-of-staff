@@ -1777,3 +1777,22 @@ model PanicState {
 
   @@map("panic_states")
 }
+
+/**
+ * CronHeartbeat — last successful run per named cron / workflow.
+ *
+ * Surfaces staleness on the admin dashboard. Workflows write their
+ * final result here so an operator can spot a wedged job before the
+ * next scheduled invocation. One row per named job (upserted).
+ *
+ * Seeded by /api/cron/* routes that have migrated to the Workflow
+ * DevKit (see workflows/*.ts). Best-effort crons stay in their own
+ * audit channels until they migrate too.
+ */
+model CronHeartbeat {
+  name        String   @id
+  lastRunAt   DateTime
+  lastRunMeta Json?
+
+  @@map("cron_heartbeats")
+}

@@ -230,6 +230,9 @@ export default clerkConfigured ? handler : () => undefined // dev passthrough
 
 export const config = {
   matcher: [
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // `.well-known/workflow/` carries the Workflow DevKit's internal
+    // queue POSTs (e.g. POST /.well-known/workflow/v1/flow). Intercepting
+    // those with Clerk breaks step execution.
+    '/((?!_next|\\.well-known/workflow/|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
   ],
 }

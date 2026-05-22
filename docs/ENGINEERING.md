@@ -413,3 +413,56 @@ Every new cron or AI surface must land in this doc first.
 
 Aggressive-tier kinds are capped at 1 per user per 24h even if the
 overall 3/24h rate cap hasn't been hit.
+
+---
+
+## 13. Durable cron pattern (Workflow DevKit)
+
+Best-effort `/api/cron/*` routes that take >30s or process users in a
+loop should migrate to the Workflow DevKit (`workflow` package). The
+benefit is per-step retries on transient DB blips and a persisted
+execution log a crashed instance can resume from.
+
+### Pattern
+
+1. **Workflow** at `apps/web/src/workflows/<name>.ts` — exports an
+   async function with the `"use workflow"` directive on its first
+   line. Orchestration logic only; no `prisma`, `fetch`, or Node
+   built-ins (the workflow sandbox forbids them).
+2. **Steps** in the same file — async functions with `"use step"` on
+   the first line. All DB work, all I/O, all crypto. Each step is
+   independently retried on failure; results are cached so re-runs
+   skip already-succeeded steps.
+3. **Cron route** at `apps/web/src/app/api/cron/<name>/route.ts` —
+   thin shim that calls `start(workflowFn)` and returns 200 with the
+   `runId`. The route's `maxDuration` drops to 10s (was 120s for
+   inline handlers).
+4. **Heartbeat** — workflow's terminal step upserts to
+   `CronHeartbeat` so the admin dashboard can show last-success.
+5. **Config** — `next.config.ts` is wrapped with `withWorkflow()`.
+   The proxy matcher excludes `.well-known/workflow/` so Clerk
+   doesn't intercept the internal queue POSTs.
+
+### Migrated to durable
+
+- `danger-window-learner` (May 22, 2026) — chosen first because it
+  feeds the histogram model surfaced on `/how-coyl-knows-you` and
+  the precision-interrupt cron's firing schedule. Flaky retries =
+  stale predictions = the moat claim degrades.
+
+### Migrate next (priority order)
+
+1. `retrain-prediction-models` — longest-running cron, highest crash
+   probability under load
+2. `scheduled-interrupts` — affects per-user push delivery
+3. `self-trust-recompute` — daily, needs consistency guarantees
+4. `model-snapshot` — drives the autopilot-map weekly render
+
+### Observability
+
+- `npx workflow web` — dashboard at runtime
+- `npx workflow inspect runs --backend vercel --project coyl-web`
+  on Vercel deployments
+- Heartbeats query: `SELECT name, "lastRunAt" FROM cron_heartbeats
+  ORDER BY "lastRunAt" DESC`
+
