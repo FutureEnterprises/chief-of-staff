@@ -138,7 +138,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         {clerkReady
-          ? <ClerkProvider publishableKey={publishableKey!}>{children}</ClerkProvider>
+          ? <ClerkProvider publishableKey={publishableKey!} afterSignOutUrl="/">{children}</ClerkProvider>
           : children
         }
         <CookieConsent />
