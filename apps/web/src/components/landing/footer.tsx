@@ -35,6 +35,9 @@ export function LandingFooter() {
   ]
 
   const partners = [
+    { label: 'About', href: '/about' },
+    { label: 'Advisors', href: '/advisors' },
+    { label: 'Clinical board', href: '/clinical-board' },
     { label: 'Psyche AI', href: '/psyche' },
     { label: 'Protocol (BIP)', href: '/protocol' },
     { label: 'Developers', href: '/developers' },

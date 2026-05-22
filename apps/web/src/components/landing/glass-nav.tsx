@@ -67,6 +67,9 @@ const USE_CASES: DropdownLink[] = [
 ]
 
 const RESEARCH: DropdownLink[] = [
+  { label: 'About', href: '/about', description: 'Built by someone who needed it. The founder story, in one page.' },
+  { label: 'Advisors', href: '/advisors', description: 'The people in the room with us — operators across pharma, behavioral health, and mobile.' },
+  { label: 'Clinical board', href: '/clinical-board', description: 'The clinical eyes on the work — science, protocol, safety, regulatory.' },
   { label: 'The science', href: '/science', description: 'Pattern interrupts, JITAI, recovery psychology.' },
   { label: 'Clinical study', href: '/clinical-study', description: 'Study-readiness package — protocol drafted.' },
   { label: 'Research + outcomes', href: '/research', description: 'What we measure, what we will publish.' },
