@@ -12,7 +12,7 @@
  *     lines treated as remembered quotes.
  */
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
 import {
@@ -24,6 +24,36 @@ import {
   type ScriptId,
   type Archetype,
 } from '@/lib/audit-archetype'
+
+/**
+ * Map audit WedgeId → PrimaryWedge enum (server-side).
+ * Used by the /api/v1/audit/finalize handoff. The audit collects a
+ * narrative wedge ('weight', 'work', etc.); the DB stores the enum
+ * value ('WEIGHT_LOSS', 'PRODUCTIVITY', etc.). Keep this map in sync
+ * with the PrimaryWedge enum in schema.prisma.
+ */
+const WEDGE_TO_PRIMARY_WEDGE: Record<WedgeId, string> = {
+  weight: 'WEIGHT_LOSS',
+  work: 'PRODUCTIVITY',
+  destructive: 'DESTRUCTIVE_BEHAVIORS',
+  consistency: 'CONSISTENCY',
+  spending: 'SPENDING',
+  focus: 'FOCUS',
+}
+
+/** Shape returned by POST /api/v1/audit/finalize. */
+type FinalizeResponse = {
+  dangerWindowsCreated: Array<{
+    id: string
+    label: string
+    dayOfWeek: number
+    startHour: number
+    endHour: number
+    source: 'inferred'
+  }>
+  suggestedCommitments: Array<{ rule: string; domain: string; rationale: string }>
+  nextStep: string
+}
 
 /**
  * AuditView \u2014 the interactive quiz body for /audit.
@@ -426,6 +456,18 @@ export function AuditView() {
             </p>
           </div>
 
+          {/* Pre-built DangerWindows + suggested Commitments — the
+              input-dependence fix. Calls /api/v1/audit/finalize for
+              signed-in users only; anonymous visitors see nothing here
+              (and the rest of the page still works). The user lands on
+              /today already partially set up. */}
+          <FinalizePrebuildBlock
+            wedge={wedge}
+            windowChoice={windowChoice}
+            script={script}
+            archetypeSlug={archetype.family.slug}
+          />
+
           {/* First-hour interrupt scheduler — the retention engine.
               Per the May 2026 product blueprint, this replaces the
               "go to /sign-up" deferred-value path. The visitor leaves
@@ -675,6 +717,258 @@ function StepWrap({
       {children}
     </motion.div>
   )
+}
+
+/**
+ * FinalizePrebuildBlock — calls POST /api/v1/audit/finalize on mount and
+ * shows what was pre-built + one-tap activate for suggested commitments.
+ *
+ * Three states:
+ *   loading    — quiet loading row (no big spinner; keeps the page calm)
+ *   anonymous  — 401 from the endpoint means the visitor isn't signed in
+ *                yet. We render nothing — the existing ScheduleInterrupt
+ *                block handles anonymous-user capture downstream.
+ *   ready      — the section the strategist's brief asked for: "we've
+ *                already set up X windows + Y suggested commitments."
+ *
+ * Activation: each suggested commitment is a one-tap. We POST to the
+ * existing /api/v1/commitments endpoint. Activation is per-row optimistic
+ * and reverts on failure.
+ */
+function FinalizePrebuildBlock({
+  wedge,
+  windowChoice,
+  script,
+  archetypeSlug,
+}: {
+  wedge: WedgeId
+  windowChoice: WindowId
+  script: ScriptId
+  archetypeSlug: string
+}) {
+  const [state, setState] = useState<'loading' | 'anonymous' | 'ready' | 'error'>('loading')
+  const [data, setData] = useState<FinalizeResponse | null>(null)
+  // Track which suggested commitments the user has activated. Indexed by
+  // the rule string (suggestions are unique within an archetype).
+  const [activated, setActivated] = useState<Record<string, 'pending' | 'done' | 'failed'>>({})
+  // Guard against double-fire from React StrictMode / Fast Refresh.
+  const firedRef = useRef(false)
+
+  useEffect(() => {
+    if (firedRef.current) return
+    firedRef.current = true
+
+    const timezone =
+      typeof Intl !== 'undefined'
+        ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York'
+        : 'America/New_York'
+
+    const primaryWedge = WEDGE_TO_PRIMARY_WEDGE[wedge]
+
+    // Synthesize a Q&A pairing so the regex extractor on the server has
+    // something to chew on — the audit's structured answers don't carry
+    // free text yet, but the metadata is preserved for any downstream
+    // analyzer that wants to see what the user picked.
+    const auditAnswers: Array<{ q: string; a: string }> = [
+      { q: 'Which loop is eating you?', a: wedge },
+      { q: 'When does it usually fire?', a: windowChoice },
+      { q: 'What do you tell yourself right before?', a: script },
+    ]
+
+    let cancelled = false
+
+    fetch('/api/v1/audit/finalize', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        archetypeSlug,
+        primaryWedge,
+        auditAnswers,
+        timezone,
+      }),
+    })
+      .then(async (res) => {
+        if (cancelled) return
+        if (res.status === 401) {
+          // Anonymous visitor — no DB user. Hide this section gracefully;
+          // the schedule-interrupt block downstream still handles them.
+          setState('anonymous')
+          return
+        }
+        if (!res.ok) {
+          setState('error')
+          return
+        }
+        const json = (await res.json()) as FinalizeResponse
+        setData(json)
+        setState('ready')
+      })
+      .catch(() => {
+        if (cancelled) return
+        setState('error')
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [wedge, windowChoice, script, archetypeSlug])
+
+  async function activateCommitment(commitment: { rule: string; domain: string }) {
+    setActivated((prev) => ({ ...prev, [commitment.rule]: 'pending' }))
+    try {
+      const res = await fetch('/api/v1/commitments', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          rule: commitment.rule,
+          domain: commitment.domain,
+          frequency: 'DAILY',
+        }),
+      })
+      if (!res.ok) {
+        setActivated((prev) => ({ ...prev, [commitment.rule]: 'failed' }))
+        return
+      }
+      setActivated((prev) => ({ ...prev, [commitment.rule]: 'done' }))
+    } catch {
+      setActivated((prev) => ({ ...prev, [commitment.rule]: 'failed' }))
+    }
+  }
+
+  // Anonymous / error: render nothing so anonymous users still see the
+  // unchanged audit conclusion page.
+  if (state === 'anonymous' || state === 'error') return null
+
+  if (state === 'loading') {
+    return (
+      <div className="mb-10 rounded-3xl border border-gray-200 bg-white p-6">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
+          Pre-building your map…
+        </p>
+        <p className="mt-2 text-sm text-gray-500">
+          Wiring your archetype into windows + commitments.
+        </p>
+      </div>
+    )
+  }
+
+  if (!data) return null
+
+  const windows = data.dangerWindowsCreated
+  const suggestions = data.suggestedCommitments
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mb-10 rounded-3xl border border-emerald-300 bg-gradient-to-br from-emerald-50 via-white to-white p-6 shadow-[0_24px_60px_-12px_rgba(16,185,129,0.18)] md:p-8"
+    >
+      <div className="mb-4 flex items-center gap-3">
+        <span className="h-px w-8 bg-emerald-500" />
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-700">
+          Pre-built for you
+        </span>
+      </div>
+      <h3 className="text-2xl font-black leading-tight text-gray-900 md:text-3xl">
+        We&rsquo;ve already set up {windows.length} danger window
+        {windows.length === 1 ? '' : 's'} + {suggestions.length} suggested commitment
+        {suggestions.length === 1 ? '' : 's'} based on your archetype.
+      </h3>
+      <p className="mt-2 max-w-xl text-sm text-gray-600">
+        Tap a commitment to activate it. The windows are already saved —
+        you can edit them later from /today.
+      </p>
+
+      {windows.length > 0 && (
+        <div className="mt-6">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-gray-500">
+            Danger windows · saved
+          </p>
+          <ul className="mt-3 space-y-2">
+            {windows.map((w) => (
+              <li
+                key={w.id}
+                className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800"
+              >
+                <span className="font-semibold text-gray-900">{w.label}</span>
+                <span className="ml-2 text-gray-500">
+                  {formatWindowDayHours(w.dayOfWeek, w.startHour, w.endHour)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {suggestions.length > 0 && (
+        <div className="mt-6">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-gray-500">
+            Suggested commitments · tap to activate
+          </p>
+          <ul className="mt-3 space-y-2">
+            {suggestions.map((s) => {
+              const status = activated[s.rule] ?? 'idle'
+              const isPending = status === 'pending'
+              const isDone = status === 'done'
+              const isFailed = status === 'failed'
+              return (
+                <li
+                  key={s.rule}
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-3"
+                >
+                  <p className="text-sm font-semibold text-gray-900">{s.rule}</p>
+                  <p className="mt-1 text-xs text-gray-600">{s.rationale}</p>
+                  <div className="mt-3 flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => activateCommitment(s)}
+                      disabled={isPending || isDone}
+                      className={
+                        isDone
+                          ? 'rounded-full bg-emerald-500 px-4 py-1.5 text-xs font-bold text-white'
+                          : 'rounded-full bg-orange-500 px-4 py-1.5 text-xs font-bold text-white transition-colors hover:bg-orange-600 disabled:opacity-60'
+                      }
+                    >
+                      {isDone ? 'Activated' : isPending ? 'Activating…' : 'Activate'}
+                    </button>
+                    {isFailed && (
+                      <span className="text-xs font-semibold text-red-600">
+                        Could not activate. Try again.
+                      </span>
+                    )}
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      )}
+
+      <p className="mt-6 font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-gray-500">
+        Windows tagged &ldquo;inferred&rdquo; — edit them on /today.
+      </p>
+    </motion.div>
+  )
+}
+
+/**
+ * Small helper used by FinalizePrebuildBlock to render a window's
+ * day-of-week + hour band in human form.
+ */
+function formatWindowDayHours(dayOfWeek: number, startHour: number, endHour: number): string {
+  const dayLabel =
+    dayOfWeek === -1
+      ? 'Every day'
+      : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dayOfWeek] ?? 'Every day'
+  return `${dayLabel} · ${formatHour12(startHour)}–${formatHour12(endHour)}`
+}
+
+function formatHour12(h: number): string {
+  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h
+  const meridiem = h < 12 ? 'AM' : 'PM'
+  return `${h12} ${meridiem}`
 }
 
 /**
