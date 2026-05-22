@@ -121,38 +121,44 @@ model User {
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
 
-  tasks               Task[]
-  projects            Project[]
-  tags                Tag[]
-  checkins            Checkin[]
-  reminders           Reminder[]
-  productivityEvents  ProductivityEvent[]
-  aiInteractions      AiInteraction[]
-  billingSubscription BillingSubscription?
-  emailBriefings      EmailBriefing[]
-  badges              UserBadge[]
-  challengeEntries    ChallengeEntry[]
+  tasks                   Task[]
+  projects                Project[]
+  tags                    Tag[]
+  checkins                Checkin[]
+  reminders               Reminder[]
+  productivityEvents      ProductivityEvent[]
+  aiInteractions          AiInteraction[]
+  billingSubscription     BillingSubscription?
+  emailBriefings          EmailBriefing[]
+  badges                  UserBadge[]
+  challengeEntries        ChallengeEntry[]
   // Autopilot relations
-  excuses             Excuse[]
-  dangerWindowRecords DangerWindow[]
-  rescueSessions      RescueSession[]
-  decisionLogs        DecisionLog[]
-  commitments         Commitment[]
-  slipRecords         SlipRecord[]
-  scenarios           ScenarioSim[]
+  excuses                 Excuse[]
+  dangerWindowRecords     DangerWindow[]
+  rescueSessions          RescueSession[]
+  decisionLogs            DecisionLog[]
+  commitments             Commitment[]
+  slipRecords             SlipRecord[]
+  scenarios               ScenarioSim[]
   // Accountability + stakes
-  partnersAsOwner     AccountabilityPartner[]    @relation("PartnerOwner")
-  partnersAsPeer      AccountabilityPartner[]    @relation("PartnerPeer")
-  podMemberships      PodMember[]
-  podsOwned           ChallengePod[]             @relation("PodOwner")
-  stakes              Stake[]
+  partnersAsOwner         AccountabilityPartner[]    @relation("PartnerOwner")
+  partnersAsPeer          AccountabilityPartner[]    @relation("PartnerPeer")
+  podMemberships          PodMember[]
+  challengePodMemberships ChallengePodMember[]
+  podsOwned               ChallengePod[]             @relation("PodOwner")
+  stakes                  Stake[]
+  // Phase 1-4 moat layer relations
+  signalClusters          SignalCluster[]
+  predictionModels        PredictionModel[]
+  dailyNumbers            DailyNumber[]
+  redirectChoices         RedirectChoice[]
   // Referrals
-  referralsMade       Referral[]                 @relation("Referrer")
-  referralsReceived   Referral[]                 @relation("Referred")
+  referralsMade           Referral[]                 @relation("Referrer")
+  referralsReceived       Referral[]                 @relation("Referred")
   // iOS Live Activities — one row per ActivityKit Activity the user starts.
   // Server pushes interrupt updates here via APNs liveactivity-type pushes.
   // See apps/web/src/lib/live-activity-push.ts.
-  liveActivities      LiveActivityRegistration[]
+  liveActivities          LiveActivityRegistration[]
 
   @@map("users")
 }
@@ -439,13 +445,17 @@ model ChallengePod {
   active       Boolean   @default(true)
   createdAt    DateTime  @default(now())
 
-  owner   User        @relation("PodOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  members PodMember[]
+  owner   User                 @relation("PodOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members ChallengePodMember[]
 
   @@map("challenge_pods")
 }
 
-model PodMember {
+// Legacy challenge-pod membership (formerly `PodMember`). Renamed when
+// the Phase 1-4 accountability-pod stack introduced a new, distinct
+// `PodMember` model that maps to family/couples pods (see bottom of
+// file). This legacy model still backs the 14/30-day challenge pods.
+model ChallengePodMember {
   id       String    @id @default(cuid())
   podId    String
   userId   String
@@ -457,7 +467,7 @@ model PodMember {
   user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([podId, userId])
-  @@map("pod_members")
+  @@map("challenge_pod_members")
 }
 
 model Stake {
@@ -1158,4 +1168,249 @@ enum ScheduledInterruptStatus {
   SENT
   FAILED
   CANCELED
+}
+
+// ============================================================
+// PHASE 1-4 MOAT LAYER
+//
+// New tables for the passive-signal stack (SignalCluster, PredictionModel),
+// the daily-number ritual (DailyNumber), pre-approved redirects
+// (RedirectChoice), family/couples accountability pods (Pod, PodMember
+// — distinct from the legacy ChallengePodMember above), and Microsoft
+// Teams B2B provisioning (TeamsWorkspace).
+//
+// Eight backend agents in Wave 2 import these types. See migration
+// 20260521010000_phase_1_4_models for the corresponding SQL.
+// ============================================================
+
+/**
+ * SignalCluster — multivariate passive-signal snapshot captured at
+ * moment T. Combines physiological (HRV), behavioral (sedentary time,
+ * unlock rate, screen-on), and contextual (location, time, meeting
+ * load) signals into one row. Outcome fields are set retroactively
+ * once we observe whether a slip happened within the 30/60-min window
+ * — that paired data is what trains the per-user PredictionModel.
+ */
+model SignalCluster {
+  id         String   @id @default(cuid())
+  userId     String
+  capturedAt DateTime @default(now())
+
+  // Physiological
+  hrvSamples  Json? // last N HRV samples + computed delta
+  hrvBaseline Float? // user's rolling baseline
+  hrvDeltaPct Float? // % drop from baseline over last 60min
+
+  // Behavioral
+  sedentaryMins   Int? // contiguous sedentary minutes
+  unlockRateDelta Float? // % change in phone unlock rate vs daily avg
+  screenOnMins    Int? // continuous screen-on duration
+
+  // Contextual
+  locationKind   String? // 'home' | 'kitchen' | 'work' | 'unknown'
+  dayOfWeek      Int
+  hourOfDay      Int
+  meetingDensity Int? // # meetings today
+  weekdayStress  String? // 'high' | 'medium' | 'low' (derived)
+
+  // Outcome (set retroactively when slip or non-slip is observed)
+  outcomeWithin30Min String? // 'slip' | 'no_slip' | null (unresolved)
+  outcomeWithin60Min String?
+  outcomeRecordedAt  DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, capturedAt])
+  @@index([userId, outcomeWithin30Min])
+  @@map("signal_clusters")
+}
+
+/**
+ * PredictionModel — per-user logistic regression coefficients trained
+ * from paired SignalCluster outcomes. Coefficients are JSON for
+ * forward compatibility with future model types (boosted trees, small
+ * neural nets) without requiring a schema migration. Exactly one model
+ * per user should be `active = true` at a time; older versions are
+ * retained for rollback and A/B comparison.
+ */
+model PredictionModel {
+  id      String @id @default(cuid())
+  userId  String
+  version Int    @default(1)
+
+  // Logistic regression coefficients (JSON for forward compatibility)
+  coefficients Json // { hrvDeltaPct: -0.42, sedentaryMins: 0.18, ... }
+  intercept    Float
+
+  // Training metadata
+  trainedOn   DateTime @default(now())
+  sampleCount Int // N paired examples used to train
+  accuracy    Float? // measured against held-out set (if any)
+  precision   Float?
+  recall      Float?
+
+  // Active flag — exactly one model active per user at a time
+  active Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, version])
+  @@index([userId, active])
+  @@map("prediction_models")
+}
+
+/**
+ * DailyNumber — the Wrapped-style daily ritual record. One row per
+ * user per local day; stores the single number (selfTrustScore) and
+ * single sentence (identitySentence) that ship to the home screen and
+ * the share card. `shareCode` powers the public share URL so the link
+ * isn't guessable from the row id.
+ */
+model DailyNumber {
+  id     String   @id @default(cuid())
+  userId String
+  date   DateTime // user-local date at midnight UTC
+
+  // The single number that ships
+  selfTrustScore Int // 0-100
+  selfTrustDelta Int // change from yesterday
+
+  // The single sentence
+  identitySentence String // "Day 47. You held a 9 PM moment last night."
+  dayNumber        Int // day N of usage
+
+  // Pattern context
+  archetype       String? // family slug at time of computation
+  topWindowHeld   String? // last night's window the user held, if any
+  topWindowMissed String? // last night's window the user missed, if any
+
+  // Share tracking
+  shareCount   Int       @default(0)
+  lastSharedAt DateTime?
+  shareCode    String    @unique @default(cuid())
+
+  generatedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@index([shareCode])
+  @@map("daily_numbers")
+}
+
+/**
+ * RedirectChoice — the user's 3 pre-approved alternatives picked at
+ * audit time. When the autopilot fires an interrupt, the rescue UI
+ * surfaces these instead of generic suggestions. servedCount and
+ * acceptedCount feed a lazy effectiveness computation so the top-rank
+ * slot can rotate toward what actually works for this user.
+ */
+model RedirectChoice {
+  id     String @id @default(cuid())
+  userId String
+
+  rank     Int // 1, 2, or 3 (priority ordering)
+  text     String // "Text the person I've been meaning to text"
+  category String? // 'connection' | 'creative' | 'physical' | 'rest' | 'other'
+
+  // How well it has worked in practice
+  servedCount      Int    @default(0) // times surfaced as intervention
+  acceptedCount    Int    @default(0) // times user took the redirect
+  effectivenessPct Float? // computed lazily
+
+  createdAt  DateTime  @default(now())
+  archivedAt DateTime?
+  active     Boolean   @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, active])
+  @@map("redirect_choices")
+}
+
+/**
+ * Pod — a family or couples accountability pod. Distinct from the
+ * legacy `ChallengePod` (14/30-day cohort challenges); a Pod is a
+ * persistent small group (≤6 members default) where members opt into
+ * a shareLevel that controls how much of their pattern data the rest
+ * of the pod can see. Invite is by `inviteCode` (random, not the id).
+ */
+model Pod {
+  id          String @id @default(cuid())
+  name        String // "The Smiths" or whatever the owner sets
+  createdById String
+
+  // Privacy
+  inviteCode String @unique @default(cuid())
+  maxMembers Int    @default(6)
+
+  createdAt  DateTime  @default(now())
+  archivedAt DateTime?
+
+  members PodMember[]
+
+  @@index([createdById])
+  @@index([inviteCode])
+  @@map("pods")
+}
+
+/**
+ * PodMember — membership row joining a User to a Pod. shareLevel is
+ * the per-member privacy dial: 'counts_only' (just totals), 'patterns'
+ * (archetype + windows), 'full' (the daily number too). archetype is
+ * surfaced to other pod members at the patterns/full level.
+ * Distinct from the legacy `ChallengePodMember` above, which backs the
+ * older time-boxed cohort challenges.
+ */
+model PodMember {
+  id     String @id @default(cuid())
+  podId  String // shared by all members of one pod
+  userId String
+
+  role       String  @default("member") // 'owner' | 'member'
+  archetype  String? // visible to other pod members
+  shareLevel String  @default("counts_only") // 'counts_only' | 'patterns' | 'full'
+
+  invitedBy String? // userId of the inviter
+  joinedAt  DateTime  @default(now())
+  leftAt    DateTime?
+  active    Boolean   @default(true)
+
+  pod  Pod  @relation(fields: [podId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([podId, userId])
+  @@index([podId])
+  @@index([userId, active])
+  @@map("pod_members")
+}
+
+/**
+ * TeamsWorkspace — Microsoft Teams enterprise mapping. One row per
+ * Azure AD tenant that has installed the Teams app. defaultPlan is
+ * the entitlement applied to users provisioned via SCIM or just-in-
+ * time SSO. paymentStatus tracks the per-tenant subscription independent
+ * of any single user's billing.
+ */
+model TeamsWorkspace {
+  id            String @id @default(cuid())
+  tenantId      String @unique // Microsoft Azure AD tenant
+  workspaceName String
+
+  // Provisioning
+  installedById String // userId of the IT admin who installed
+  installedAt   DateTime @default(now())
+
+  // Configuration
+  defaultPlan String  @default("CORE") // entitlement for newly-provisioned users
+  ssoProvider String  @default("azure_ad")
+  scimEnabled Boolean @default(false)
+
+  // Status
+  active        Boolean @default(true)
+  paymentStatus String  @default("pending") // 'pending' | 'paid' | 'overdue' | 'cancelled'
+
+  @@index([tenantId])
+  @@map("teams_workspaces")
 }
