@@ -36,6 +36,7 @@ import { formatDate } from '@/lib/utils'
 import { CalloutPanel } from '@/components/callout/callout-panel'
 import { WebPushEnableBanner } from '@/components/web-push/enable-banner'
 import { InterruptHistory } from '@/components/interrupt-history/interrupt-history'
+import { QuickSlipButton } from '@/components/slip/quick-slip-button'
 import { identitySentence } from '@/lib/identity-sentence'
 
 type TaskWithRelations = Task & {
@@ -328,6 +329,15 @@ export function TodayView({
           </Link>
         </motion.div>
       )}
+
+      {/* QUICK SLIP — the one-tap zero-friction confession affordance.
+          Slip logging was 3-8 taps; we removed the form. Sits right above
+          the three-primitives grid so that when a user is mid-slip or
+          inside an active danger window, the FIRST thing they can do is
+          confess in a single click. POST is fully inferred server-side
+          (trigger from active window, optional commitment link), and
+          the 90-second rescue ritual is one link away if they want it. */}
+      <QuickSlipButton />
 
       {/* THREE PRIMITIVES — quiet, equal-weight. The Today's Rule callout
           already owns the orange spotlight, so these recede into refined

@@ -42,6 +42,15 @@
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"
   },
+  "commands": {
+    "quick-slip": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Log a slip — one-tap confession to coyl.ai"
+    }
+  },
   "options_page": "options.html",
   "web_accessible_resources": [
     {

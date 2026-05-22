@@ -156,6 +156,39 @@ async function handleTabUpdate(tabId, changeInfo, tab) {
 chrome.tabs.onUpdated.addListener(handleTabUpdate)
 
 /**
+ * Keyboard shortcut — Cmd+Shift+L (Mac) / Ctrl+Shift+L (Win) fires a
+ * one-tap slip log against coyl.ai. credentials: 'include' picks up the
+ * Clerk session cookie if the user is signed in; on 401 we open the
+ * sign-in popup. Removes the last bit of friction for the user who's
+ * already inside a doom-scroll tab — no app switch, no modal, just confess.
+ */
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command !== 'quick-slip') return
+  try {
+    const res = await fetch('https://coyl.ai/api/v1/slip/quick', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    })
+    if (res.status === 401) {
+      await chrome.tabs.create({ url: 'https://coyl.ai/sign-in?from=extension' })
+      return
+    }
+    if (res.ok) {
+      chrome.notifications?.create({
+        type: 'basic',
+        iconUrl: 'icons/icon-48.png',
+        title: 'Slip logged.',
+        message: 'Streak preserved. Tap the COYL tab if you need rescue.',
+      })
+    }
+  } catch {
+    // network or extension-context error — silent, user can retry
+  }
+})
+
+/**
  * Inbound messages from content script — user reactions to the
  * interrupt overlay. Mute decisions, feedback, "open rescue" routing.
  */
