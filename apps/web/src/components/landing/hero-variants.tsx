@@ -101,7 +101,7 @@ const COPY: Record<Variant, {
     primaryCta: 'Stop the spiral',
   },
   b: {
-    label: 'The behavioral interface for AI',
+    label: 'The AI wrapped around your psyche',
     // Category-launch positioning per the May 2026 strategist brief:
     // COYL is not a habit app, not a GLP-1 app, not a productivity app —
     // it's the first AI that meets you at the real-world moment when the

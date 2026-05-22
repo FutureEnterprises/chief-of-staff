@@ -242,7 +242,7 @@ export default function ChangelogPage() {
             Want updates <span className="italic text-orange-600">as we ship?</span>
           </h2>
           <p className="mt-6 max-w-2xl text-base leading-[1.7] text-gray-700">
-            One email a week. Tactics for catching your autopilot + new product drops.
+            One email a week. The pattern playbook — tactics, research, and what shipped.
             Unsubscribe anytime.
           </p>
           <Link

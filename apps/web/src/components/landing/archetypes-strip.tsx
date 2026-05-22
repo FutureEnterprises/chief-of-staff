@@ -182,6 +182,17 @@ export function ArchetypesStrip() {
           Three questions. No signup. Your archetype on the other side.
         </p>
       </motion.div>
+
+      {/* Attribution — small, factual, sits below the family grid the same
+          way data attribution sits on /science. Per the May 2026 brief. */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={inView ? { opacity: 1 } : {}}
+        transition={{ delay: 0.7, duration: 0.6 }}
+        className="mt-10 font-mono text-xs uppercase tracking-[0.18em] text-gray-500"
+      >
+        From COYL audit responses, May 2026.
+      </motion.p>
     </section>
   )
 }

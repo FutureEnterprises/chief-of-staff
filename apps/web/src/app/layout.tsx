@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     template: '%s | COYL',
   },
   description:
-    "COYL is the first AI built for the moment before behavior happens. It detects your autopilot patterns and interrupts them in real time \u2014 before the fridge opens, before the tab wins, before one slip becomes the night.",
+    "COYL \u2014 AI that wraps around the behavioral layer of the human psyche. Real-time interrupts before the script runs. The missing interface between who you intend to be and what you actually do.",
   keywords: [
     'decision interrupt layer',
     'autopilot interruption',
@@ -84,7 +84,7 @@ export const metadata: Metadata = {
     url: 'https://coyl.ai',
     title: "COYL \u2014 Catch yourself before you do it again",
     description:
-      "The first AI built for the moment before behavior happens. Catches autopilot patterns in real time \u2014 the fridge, the tab, the spiral \u2014 before they run the night.",
+      "AI that wraps around the behavioral layer of the human psyche. Real-time interrupts before the script runs. The missing interface between who you intend to be and what you actually do.",
     images: [
       {
         url: OG_DEFAULT,
@@ -100,7 +100,7 @@ export const metadata: Metadata = {
     creator: '@coylapp',
     title: "COYL \u2014 Catch yourself before you do it again",
     description:
-      "The first AI for the moment before behavior happens. Catches the autopilot pattern in real time — not after the journal.",
+      "AI that wraps around the behavioral layer of the human psyche. Real-time interrupts before the script runs. The missing interface between who you intend to be and what you actually do.",
     images: [OG_DEFAULT],
   },
   robots: {

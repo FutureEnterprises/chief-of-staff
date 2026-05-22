@@ -108,7 +108,7 @@ export function YouArePatterned() {
                 LLMs organized language.
               </p>
               <p className="mt-3 font-serif text-2xl font-normal italic leading-[1.25] text-orange-600 md:text-[1.625rem]">
-                COYL organizes intervention.
+                COYL organizes the 3 seconds between impulse and action.
               </p>
             </figure>
           </div>

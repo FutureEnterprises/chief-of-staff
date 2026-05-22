@@ -118,9 +118,39 @@ export default async function HomePage({
             <RescueDemo />
           </div>
 
+          {/* 5b. Section break — the footer tagline, promoted to the spine
+              per the May 2026 brief. Sits as a full-bleed breath between
+              the 3-step product flow / rescue demo and the Six Families.
+              No card chrome, no CTA, no decoration. One line, in serif,
+              orange accent on the verb. */}
+          <section className="relative mx-auto max-w-6xl px-6 py-32 md:px-12 md:py-40">
+            <p className="text-center font-serif text-4xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-7xl">
+              <span className="italic text-orange-600">Catch yourself</span> before you do it again.
+            </p>
+          </section>
+
           {/* 6. The six families — the viral surface. People recognise
               themselves here BEFORE taking the audit; the audit confirms. */}
           <ArchetypesStrip />
+
+          {/* 6b. Autopilot map teaser — Spotify Wrapped for self-sabotage.
+              Promoted from /autopilot-map per the May 2026 brief: this
+              line earns a home on the spine because it is the single
+              most shareable framing of the product. Sits as a quiet
+              full-bleed callout, micro-eyebrow + serif italic, no card. */}
+          <section className="relative mx-auto max-w-5xl px-6 py-32 md:px-12 md:py-40">
+            <div className="flex flex-col items-start gap-6">
+              <div className="flex items-center gap-3">
+                <span className="h-px w-10 bg-orange-500" />
+                <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                  Your year, mapped
+                </span>
+              </div>
+              <p className="font-serif text-4xl font-normal italic leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-6xl">
+                Spotify Wrapped <span className="text-orange-600">for self-sabotage</span> — the map of your year&rsquo;s autopilot.
+              </p>
+            </div>
+          </section>
 
           {/* 7. Why now — three pillars of category arrival. The
               press-grade "AI is leaving the prompt box" framing. */}
