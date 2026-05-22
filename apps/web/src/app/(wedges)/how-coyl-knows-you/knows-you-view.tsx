@@ -359,6 +359,11 @@ export function KnowsYouView() {
             </div>
           </div>
 
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gray-400">
+            Projected trajectory based on early cohort behavior. We will publish actuals as
+            the dataset grows.
+          </p>
+
           {/* Stop detail */}
           <AnimatePresence mode="wait">
             <motion.div
@@ -402,9 +407,9 @@ export function KnowsYouView() {
           What COYL sees at <span className="italic text-orange-600">9:47 PM.</span>
         </h2>
         <p className="max-w-2xl text-base leading-[1.65] text-gray-700">
-          A real timeline. Tuesday night, month 3 of using COYL. Tap to reveal each layer
-          as it lands in the model. The order is the order events fire — not what you would
-          report after the fact.
+          An illustrative timeline. Example user, month 3 of using COYL — not a real
+          session. Tap to reveal each layer as it lands in the model. The order is the
+          order events fire, not what you would report after the fact.
         </p>
 
         <div className="space-y-2 border-t border-gray-200 pt-8">
