@@ -24,6 +24,7 @@ export function LandingFooter() {
   const product = [
     { label: 'Manifesto', href: '/manifesto' },
     { label: 'How it works', href: '/how-it-works' },
+    { label: 'How COYL knows you', href: '/how-coyl-knows-you' },
     { label: 'Autopilot audit', href: '/audit' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Procrastination + focus', href: '/procrastination' },
