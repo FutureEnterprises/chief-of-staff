@@ -164,6 +164,13 @@ export default function ProcrastinationWedgePage() {
           </div>
         </header>
 
+        {/* Brand anchor — recurring pullquote across consumer surfaces */}
+        <section className="border-t border-gray-200 pt-16">
+          <p className="mx-auto max-w-3xl text-center font-serif text-3xl font-normal italic leading-[1.2] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            AI for the moment <span className="text-orange-600">before behavior happens.</span>
+          </p>
+        </section>
+
         {/* Moment-pairs gallery */}
         <section className="grid grid-cols-1 gap-10 md:grid-cols-2">
           {MOMENTS.map((m, i) => (
@@ -265,7 +272,7 @@ export default function ProcrastinationWedgePage() {
             cost: Mark et al., 2008 (UC Irvine).
           </p>
           <Link
-            href="/research"
+            href="/teams"
             className="mt-8 inline-flex items-center gap-1.5 font-serif text-base italic text-orange-600 underline-offset-4 hover:underline"
           >
             For partners &rarr;

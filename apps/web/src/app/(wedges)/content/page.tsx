@@ -15,9 +15,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Writing — behavior, AI, and habit — COYL',
+  title: 'How COYL talks. Copy it. — COYL',
   description:
-    'Long-form on the behavioral interface between AI and real life. The pattern interrupt thesis, the autopilot loop, the moments behind every habit. Plus ready-to-post hooks and scripts in the COYL voice.',
+    'The COYL voice — hook library, channel scripts, the patterns the brand uses. Adapt for your work.',
 }
 
 /**
@@ -268,8 +268,8 @@ export default function ContentPlaybookPage() {
           </span>
         </div>
         <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
-          On behavior, AI,<br />
-          <span className="italic text-orange-600">and the loop you keep running.</span>
+          How COYL talks.<br />
+          <span className="italic text-orange-600">Copy it.</span>
         </h1>
         <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
           Long-form notes on the behavioral interface between AI and real life. Below:
