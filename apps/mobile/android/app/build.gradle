@@ -1,0 +1,98 @@
+apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "com.facebook.react"
+
+/**
+ * COYL Android — app module build.gradle.
+ *
+ * Most of this is the Expo-managed template that `expo prebuild`
+ * regenerates. COYL-specific bits (Health Connect + Google Fit
+ * dependencies, permission-bearing version code) are injected by the
+ * plugins/with-coyl-android.ts config plugin during prebuild and
+ * mirrored here so a manual Android Studio open without prebuild
+ * still builds.
+ */
+
+react {
+    // The root of the React Native project.
+    root = file("../../")
+    reactNativeDir = file("../../node_modules/react-native")
+    codegenDir = file("../../node_modules/@react-native/codegen")
+    cliFile = file("../../node_modules/react-native/cli.js")
+    // Use Hermes JS engine (default for Expo / RN 0.74+).
+    enableHermes = true
+}
+
+android {
+    namespace "ai.coyl.app"
+    compileSdkVersion 35
+
+    defaultConfig {
+        applicationId "ai.coyl.app"
+        minSdkVersion 26          // Android 8.0 — minimum that supports
+                                  // notification channels + JobScheduler
+                                  // patterns we rely on.
+        targetSdkVersion 35
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.debug
+        }
+        debug {
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+}
+
+dependencies {
+    implementation "com.facebook.react:react-android"
+    implementation "androidx.appcompat:appcompat:1.7.0"
+    implementation "androidx.core:core-ktx:1.13.1"
+    implementation "androidx.preference:preference-ktx:1.2.1"
+
+    // COYL voice + health bridge requires Kotlin coroutines.
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+
+    // ---- Health Connect (modern HealthKit equivalent) -----------------
+    //
+    // Reads HRV, steps, sleep, active calories from devices that
+    // bridge into Health Connect: Pixel Watch, Galaxy Watch, Fitbit
+    // (post-Google acquisition), Garmin (via Garmin's bridge),
+    // Whoop, Oura. Apple Watch is NOT supported here — Apple does
+    // not provide a Health Connect bridge.
+    implementation "androidx.health.connect:connect-client:1.1.0-alpha07"
+
+    // ---- Google Fit (legacy fallback) ---------------------------------
+    //
+    // Used on Android <14 / devices where Health Connect is not
+    // installed. Sensors and history APIs cover steps + heart rate
+    // but not HRV — HRV access requires Health Connect.
+    implementation "com.google.android.gms:play-services-fitness:21.1.0"
+
+    if (hermesEnabled.toBoolean()) {
+        implementation "com.facebook.react:hermes-android"
+    }
+}
+
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

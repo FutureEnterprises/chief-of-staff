@@ -1,0 +1,9 @@
+{
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["CoylVoice"]
+  },
+  "android": {
+    "modules": ["ai.coyl.voice.CoylVoiceModule"]
+  }
+}
