@@ -12,7 +12,7 @@ import { AlertTriangle } from 'lucide-react'
  * the first thing they see.
  *
  * Used on:
- *   - /destructive-behaviors  (variant="prominent", top of body)
+ *   - /recurring-loops        (variant="prominent", top of body)
  *   - /recovery               (variant="inline",   above final CTA)
  *   - /manifesto              (variant="inline",   replaces the
  *                              "behavioral support, not medical

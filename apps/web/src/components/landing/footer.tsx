@@ -43,7 +43,7 @@ export function LandingFooter() {
     { label: 'Clinical study', href: '/clinical-study' },
     { label: 'The science', href: '/science' },
     { label: 'Decision support', href: '/decision-support' },
-    { label: 'Recurring loops', href: '/destructive-behaviors' },
+    { label: 'Recurring loops', href: '/recurring-loops' },
     { label: 'Autopilot map', href: '/autopilot-map' },
     { label: 'Changelog', href: '/changelog' },
     { label: 'Content playbook', href: '/content' },

@@ -45,12 +45,12 @@ export const metadata: Metadata = {
     'behavioral pattern app',
     'pattern interrupt',
   ],
-  alternates: { canonical: '/destructive-behaviors' },
+  alternates: { canonical: '/recurring-loops' },
   openGraph: {
     title: 'Patterns COYL catches — recurring autopilot loops',
     description:
       'Cravings, scrolling, impulse spending, the tab you reopened. COYL catches the moment of drift.',
-    url: 'https://coyl.ai/destructive-behaviors',
+    url: 'https://coyl.ai/recurring-loops',
     images: [
       {
         url: '/api/og?title=The+patterns+COYL+catches.&kicker=Recurring+autopilot+loops',

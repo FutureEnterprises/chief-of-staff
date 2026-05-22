@@ -179,7 +179,7 @@ research@coyl.ai
   Outreach claims must match `/clinical-study` exactly.
 - **Never use the word "addiction"** in any partner email. Use "behavioral
   patterns" or "destructive loops." This is a regulatory and platform-safety
-  posture; see `/destructive-behaviors` for the public-facing version of the
+  posture; see `/recurring-loops` for the public-facing version of the
   same constraint.
 - **Track every send in a single spreadsheet** with columns: org, contact,
   template, sent date, response date, outcome, notes. Not Salesforce.

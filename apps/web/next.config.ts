@@ -66,6 +66,10 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: '/favicon.ico', destination: '/favicon.svg', permanent: false },
+      // May 2026 slug rename: the old URL signaled clinical pathology
+      // the page explicitly disclaims. Footer/nav labels were already
+      // "Recurring loops"; URL now matches. 301 preserves SEO equity.
+      { source: '/destructive-behaviors', destination: '/recurring-loops', permanent: true },
     ]
   },
   experimental: {

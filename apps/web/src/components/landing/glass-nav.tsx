@@ -60,7 +60,7 @@ const USE_CASES: DropdownLink[] = [
   { label: 'GLP-1 companion', href: '/glp1', description: 'For the moments medication does not touch.' },
   { label: 'Weight loss', href: '/weight-loss', description: 'The 9 PM kitchen, not the diet plan.' },
   { label: 'Procrastination + focus', href: '/procrastination', description: 'The tab switch, before it wins.' },
-  { label: 'Recurring loops', href: '/destructive-behaviors', description: 'Autopilot patterns you keep returning to — not clinical crisis.' },
+  { label: 'Recurring loops', href: '/recurring-loops', description: 'Autopilot patterns you keep returning to — not clinical crisis.' },
   { label: 'Work follow-through', href: '/work', description: 'The shower-thought that derails the deep-work block.' },
   { label: 'Caught moments', href: '/caught', description: 'Shareable archetype cards.' },
 ]

@@ -88,7 +88,7 @@ const QUOTABLES = [
 const WEDGES = [
   { href: '/weight-loss', label: 'Weight loss', body: '9pm kitchen. Weekend spirals. Skipped weigh-ins.' },
   { href: '/work', label: 'Work follow-through', body: 'The follow-up you said you’d send. Didn’t.' },
-  { href: '/destructive-behaviors', label: 'Destructive patterns', body: 'The loop you keep returning to. Even when you know better.' },
+  { href: '/recurring-loops', label: 'Destructive patterns', body: 'The loop you keep returning to. Even when you know better.' },
   { href: '/decision-support', label: 'Decision support', body: 'You already know. You just need something to make you decide.' },
 ]
 

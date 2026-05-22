@@ -191,7 +191,7 @@ multiple at the same time.*
 
 **Public surface (13 pages):**
 - `/`, `/how-it-works`, `/pricing`, `/research`, `/clinical-study`
-- `/glp1`, `/weight-loss`, `/procrastination`, `/teams`, `/destructive-behaviors`
+- `/glp1`, `/weight-loss`, `/procrastination`, `/teams`, `/recurring-loops`
 - `/decision-support`, `/recovery`, `/autopilot-map`, `/science`, `/changelog`
 
 **Clinical:**

@@ -51,7 +51,7 @@ export function WhatItCatches() {
       eyebrow: 'RECURRING LOOPS',
       title: '"Just this once."',
       body: 'The scroll. The checking. The same exact decision at the same exact time. Behavioral support — not clinical crisis.',
-      href: '/destructive-behaviors',
+      href: '/recurring-loops',
       cta: 'Recurring loops',
     },
   ]

@@ -5,7 +5,7 @@ import { GlassNav } from '@/components/landing/glass-nav'
  * Wedge layout — shared frame for every public marketing page that
  * isn't the homepage (/pricing, /clinical-study, /glp1, /procrastination,
  * /teams, /weight-loss, /work, /research, /science, /audit, /catch-me,
- * /how-it-works, /destructive-behaviors, /decision-support, /recovery,
+ * /how-it-works, /recurring-loops, /decision-support, /recovery,
  * /caught, /autopilot-map, /content, /changelog).
  *
  * Uses the SAME GlassNav as the homepage so a visitor clicking from
