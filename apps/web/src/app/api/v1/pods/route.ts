@@ -31,7 +31,7 @@ export async function GET() {
   const user = await prisma.user.findUnique({ where: { clerkId }, select: { id: true } })
   if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
 
-  const memberships = await prisma.podMember.findMany({
+  const memberships = await prisma.challengePodMember.findMany({
     where: { userId: user.id, leftAt: null },
     include: {
       pod: {
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     },
   })
 
-  await prisma.podMember.create({
+  await prisma.challengePodMember.create({
     data: { podId: pod.id, userId: user.id, role: 'owner' },
   })
 
@@ -105,15 +105,15 @@ export async function PATCH(req: Request) {
   const pod = await prisma.challengePod.findUnique({ where: { joinCode: parsed.data.joinCode.toUpperCase() } })
   if (!pod || !pod.active) return Response.json({ error: 'Pod not found' }, { status: 404 })
 
-  const memberCount = await prisma.podMember.count({ where: { podId: pod.id, leftAt: null } })
+  const memberCount = await prisma.challengePodMember.count({ where: { podId: pod.id, leftAt: null } })
   if (memberCount >= pod.maxMembers) return Response.json({ error: 'Pod full' }, { status: 409 })
 
-  const existing = await prisma.podMember.findUnique({
+  const existing = await prisma.challengePodMember.findUnique({
     where: { podId_userId: { podId: pod.id, userId: user.id } },
   })
   if (existing && !existing.leftAt) return Response.json({ error: 'Already a member' }, { status: 409 })
 
-  await prisma.podMember.upsert({
+  await prisma.challengePodMember.upsert({
     where: { podId_userId: { podId: pod.id, userId: user.id } },
     update: { leftAt: null, joinedAt: new Date() },
     create: { podId: pod.id, userId: user.id },
