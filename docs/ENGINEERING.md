@@ -466,3 +466,63 @@ execution log a crashed instance can resume from.
 - Heartbeats query: `SELECT name, "lastRunAt" FROM cron_heartbeats
   ORDER BY "lastRunAt" DESC`
 
+---
+
+## 14. Cache Components migration plan (Next 16)
+
+The v2 strategy brief listed Cache Components migration as a deferred
+engineering item. The conservative "one page at a time" plan from the
+original spec doesn't work in Next 16 — `"use cache"` is gated on the
+global `cacheComponents: true` flag in next.config.ts. There is no
+per-page opt-in.
+
+**Status (May 22, 2026): deferred.** A trial enable surfaced ~20 files
+that need coordinated changes before the flag can stay on. The flag is
+intentionally off until those land.
+
+### What enabling `cacheComponents: true` requires
+
+Run from project root to reproduce the audit:
+
+```bash
+# Pages with `export const revalidate = N` — must convert to
+# `"use cache" + cacheLife()`. Eleven files today.
+grep -rln "export const revalidate" apps/web/src/app --include="*.tsx" --include="*.ts"
+
+# Routes with `runtime = 'edge'` — must be removed. Edge runtime is
+# incompatible with cacheComponents. Five files today, mostly OG
+# image renderers (api/og, api/share, d/[code]/og, d/[code]/social,
+# opengraph-image.tsx). Moving these to Node has cold-start
+# implications — measure before committing.
+grep -rln "export const runtime = 'edge'" apps/web/src/app --include="*.tsx" --include="*.ts"
+
+# Pages reading dynamic APIs at top level without Suspense — must
+# refactor so the dynamic read happens inside a Suspense'd child.
+grep -rln "await headers()\|await cookies()\|await searchParams" \
+  apps/web/src/app --include="*.tsx"
+```
+
+The third bucket today is `app/page.tsx` (variant cookie + searchParams)
+and `(admin)/admin/marketing/page.tsx` (filter searchParams).
+
+### Migration order when ready
+
+1. **Marketing wedges first** — convert each `revalidate = 86400` to
+   `'use cache' + cacheLife('days') + cacheTag('marketing-<slug>')`.
+   Wire `revalidateTag('marketing-<slug>')` into the admin marketing
+   save action so edits invalidate surgically rather than waiting 24h.
+2. **Edge route audit** — for each `runtime = 'edge'` route, decide:
+   move to Node (cold-start hit), or carve out as a non-cacheable
+   subdomain. The OG image routes are the highest-traffic of these and
+   need a perf budget before the move.
+3. **Dynamic API refactors** — wrap `app/page.tsx` variant selection
+   in a Suspense'd subcomponent so the cached shell stays static.
+   Same for `(admin)/admin/marketing/page.tsx` filter UI.
+4. **Flip the flag** — set `cacheComponents: true` in next.config.ts.
+   Run a clean build locally; address any remaining errors.
+5. **Verify in preview** — deploy to a preview URL, hit the migrated
+   pages with a fresh cache, confirm headers show the expected mix of
+   static + cached + dynamic segments.
+
+Reference: https://nextjs.org/docs/app/getting-started/cache-components
+
