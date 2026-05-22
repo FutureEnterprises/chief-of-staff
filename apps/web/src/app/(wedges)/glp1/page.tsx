@@ -203,7 +203,7 @@ export default function GLP1Page() {
         </div>
         <h2 className="mb-6 max-w-3xl font-serif text-4xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
           For users on or coming off the drug,<br />
-          <span className="italic text-orange-600">there&rsquo;s a sharper version.</span>
+          <span className="italic text-orange-600">keep what the shot started.</span>
         </h2>
         <p className="mb-10 max-w-2xl text-lg leading-[1.65] text-gray-700">
           GLP-1 Plus adds rebound-window protocol + clinician summary export +

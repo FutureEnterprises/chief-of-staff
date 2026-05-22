@@ -140,7 +140,7 @@ export function PricingView() {
             Free
           </p>
           <p className="mb-10 mt-4 max-w-md font-serif text-2xl font-normal italic leading-[1.2] text-gray-900">
-            The sample. It works.
+            Find your pattern.
           </p>
 
           <div className="mb-2 flex items-baseline gap-2">
@@ -189,7 +189,7 @@ export function PricingView() {
             Core
           </p>
           <p className="mb-10 mt-4 max-w-md font-serif text-2xl font-normal italic leading-[1.2] text-gray-900">
-            Less than one bad night.
+            Catch yourself.
           </p>
 
           <div className="mb-2 flex items-baseline gap-2">

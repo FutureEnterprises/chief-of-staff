@@ -33,13 +33,13 @@ export function PricingSnapshot() {
       name: 'Free',
       price: '$0',
       cadence: 'forever',
-      hook: 'Audit + archetype + 3 interrupts a week.',
+      hook: 'Find your pattern.',
     },
     {
       name: 'Core',
       price: '$12',
       cadence: '/mo',
-      hook: 'Everything. Cancel anytime.',
+      hook: 'Catch yourself.',
       featured: true,
     },
   ]
