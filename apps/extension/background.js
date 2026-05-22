@@ -6,6 +6,10 @@
  *  2. Count consecutive opens of the same domain within a window
  *  3. Trigger an interrupt overlay when the count crosses the threshold
  *  4. Sync interrupt feedback (helpful / not-the-moment) back to coyl.ai
+ *  5. Host the EAP coordinator — register the browser as an EAP edge
+ *     device, poll for pending LLM actions, dispatch to actuators,
+ *     publish sensor batches. See eap-coordinator.js for the spec
+ *     surface (docs/protocol/edge-ai-protocol.md).
  *
  * Design notes:
  *  - Service worker is event-driven; we can't keep persistent state in
@@ -14,11 +18,20 @@
  *    service worker just signals "fire" via chrome.tabs.sendMessage.
  *  - User can mute a domain for 1h / 1d / forever via the overlay; the
  *    mute list lives in storage.local.
+ *  - The EAP layer runs in parallel — same service worker, same
+ *    storage, but disjoint state keys (coyl_eap_*). Neither calls
+ *    into the other; they share only the COYL_FIRE_INTERRUPT message
+ *    channel into content.js (the 'overlay' EAP actuator reuses the
+ *    existing overlay surface).
  *
- * Auth + sync to coyl.ai: deferred to v0.2. v0.1 ships locally-only;
- * users get the interrupt mechanic without an account. v0.2 adds
- * OAuth via a popup flow + cross-device sync of the watchlist + mutes.
+ * Auth + sync to coyl.ai: deferred to v0.2 for the tab-counter half.
+ * EAP uses the user's existing Clerk cookie session (credentials:
+ * 'include') against https://coyl.ai/* — no popup flow needed because
+ * the user is already signed in via the web app.
  */
+
+import * as eapCoordinator from './eap-coordinator.js'
+import * as eapSensors from './eap-sensors.js'
 
 const STORAGE_KEYS = {
   WATCHLIST: 'coyl_watchlist',
@@ -45,7 +58,10 @@ const DEFAULT_WATCHLIST = [
   'news.ycombinator.com',
 ]
 
-// First-install bootstrap — populate the default watchlist + thresholds.
+// First-install bootstrap — populate the default watchlist + thresholds,
+// and bring the EAP coordinator online. Coordinator bootstrap runs on
+// BOTH install and update so re-published versions re-register their
+// manifest (sensors/actuators may have changed across versions).
 chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === 'install') {
     await chrome.storage.local.set({
@@ -55,6 +71,44 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       [STORAGE_KEYS.THRESHOLDS]: DEFAULT_THRESHOLDS,
     })
   }
+
+  // EAP: bootstrap on install AND update. registerDevice is idempotent
+  // on deviceFingerprint server-side; scheduleAlarms is idempotent on
+  // alarm name. Both safe to re-run.
+  try {
+    await eapCoordinator.bootstrap()
+  } catch (err) {
+    console.warn('[coyl-ext] EAP bootstrap failed', err)
+  }
+})
+
+// Service worker may start fresh on browser-launch even when nothing
+// was just installed; re-arm the EAP alarms so polling resumes.
+// scheduleAlarms is internal — we re-invoke bootstrap which calls it
+// and re-registers if needed.
+chrome.runtime.onStartup?.addListener(() => {
+  eapCoordinator.bootstrap().catch((err) => {
+    console.warn('[coyl-ext] EAP startup failed', err)
+  })
+})
+
+// Single alarm dispatcher for the EAP layer. Alarms registered with
+// names outside the EAP namespace are ignored here — the rest of the
+// extension can add its own alarms later without colliding.
+const EAP_ALARM_SET = new Set(Object.values(eapCoordinator.ALARM_NAMES))
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (!alarm || !alarm.name) return
+  if (EAP_ALARM_SET.has(alarm.name)) {
+    eapCoordinator.handleAlarm(alarm.name).catch((err) => {
+      console.warn('[coyl-ext] EAP alarm dispatch failed', alarm.name, err)
+    })
+  }
+})
+
+// Tab-open sensor: every tab.create event feeds the sliding-window
+// counter the sensor batch publishes. Cheap, fire-and-forget.
+chrome.tabs.onCreated.addListener(() => {
+  eapSensors.recordTabOpen().catch(() => {})
 })
 
 /**
@@ -218,6 +272,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'COYL_OPEN_RESCUE') {
       await chrome.tabs.create({ url: 'https://coyl.ai/rescue?from=extension' })
       sendResponse({ ok: true })
+      return
+    }
+
+    // Options page tells us the user changed their EAP scope grants.
+    // Re-POST the manifest so the backend's userGrantedScopes view
+    // catches up without waiting for the hourly re-register tick.
+    if (message.type === 'COYL_EAP_SCOPES_UPDATED') {
+      try {
+        await eapCoordinator.refreshAfterScopeChange()
+        sendResponse({ ok: true })
+      } catch (err) {
+        sendResponse({ ok: false, error: err instanceof Error ? err.message : 'refresh_failed' })
+      }
       return
     }
   })()

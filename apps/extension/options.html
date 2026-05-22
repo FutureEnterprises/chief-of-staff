@@ -78,6 +78,24 @@
       <h2>Muted</h2>
       <p class="muted">Domains you've snoozed. Expire automatically except for "forever" mutes.</p>
       <ul id="muted"></ul>
+
+      <h2>EAP — Proactive AI</h2>
+      <p class="muted">
+        Grant scopes to your default LLM partner so it can fire proactive
+        interventions through the COYL browser coordinator. Each scope
+        is granular and revocable. Disabling a scope here removes the
+        grant; the LLM will be denied at the coordinator until you grant
+        it again. See <a style="color: var(--accent);" href="https://coyl.ai/protocol" target="_blank" rel="noreferrer">coyl.ai/protocol</a>.
+      </p>
+      <div class="threshold-row" style="margin-bottom: 12px;">
+        <span style="color: var(--muted); font-size: 12px;">LLM partner</span>
+        <input id="eap-partner-slug" placeholder="anthropic-claude-sonnet-3.7" style="max-width: none; flex: 1; text-align: left;" />
+      </div>
+      <ul id="eap-scopes"></ul>
+      <div class="add-row" style="justify-content: flex-end;">
+        <span id="eap-save-status" class="muted" style="align-self: center;"></span>
+        <button class="add-btn" id="eap-save-scopes">Save scopes</button>
+      </div>
     </div>
 
     <script src="options.js"></script>
