@@ -106,7 +106,7 @@ const USE_CASES = [
   },
   {
     title: 'Lawyers, consultants, finance',
-    body: 'The shower-thought of "I should check the doc real quick" is the gateway. COYL detects the interruption shape and intervenes BEFORE.',
+    body: 'The shower-thought that becomes the 3 PM scroll. The follow-up that dies in the inbox. The commitment that felt real in the meeting and evaporated by Thursday. COYL catches all of it.',
   },
 ]
 
