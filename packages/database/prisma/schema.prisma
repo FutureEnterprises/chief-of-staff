@@ -159,6 +159,14 @@ model User {
   // Server pushes interrupt updates here via APNs liveactivity-type pushes.
   // See apps/web/src/lib/live-activity-push.ts.
   liveActivities          LiveActivityRegistration[]
+  // EAP + PAP coordinator relations
+  devices                 Device[]
+  scopeGrants             ScopeGrant[]
+  papProposals            PAPProposal[]
+  actionRequests          ActionRequest[]
+  orchestrations          Orchestration[]
+  sensorSubscriptions     SensorSubscription[]
+  panicState              PanicState?
 
   @@map("users")
 }
@@ -1413,4 +1421,352 @@ model TeamsWorkspace {
 
   @@index([tenantId])
   @@map("teams_workspaces")
+}
+
+// ============================================================
+// EAP + PAP COORDINATOR DATA SUBSTRATE
+//
+// Data layer for the proactive AI infrastructure. Five Wave 2 cloud
+// agents import these types: auth, EAP core, PAP core, coordinator
+// logic, and admin dashboard.
+//
+// EAP (Edge AI Protocol) = LLM-emitted device action requests +
+//   multi-device orchestrations + sensor pub/sub.
+// PAP (Proactive AI Protocol) = LLM-emitted intervention proposals
+//   scoped to user-level moments rather than specific devices.
+// Coordinator owns scope grants, audit log, and emergency panic state.
+//
+// See migration 20260522010000_eap_pap_coordinator for the SQL.
+// ============================================================
+
+/**
+ * LLMPartner — registered foundation-lab partner (e.g. Anthropic
+ * Claude Sonnet 3.7, OpenAI o3, Google Gemini 2.5). Every PAP
+ * proposal / EAP action / sensor subscription is attributable to a
+ * partner. API keys are bcrypt-hashed; only the last four chars are
+ * stored in plaintext for display in the admin UI.
+ */
+model LLMPartner {
+  id        String @id @default(cuid())
+  slug      String @unique // 'anthropic-claude-sonnet-3.7'
+  name      String // 'Anthropic Claude Sonnet 3.7'
+  publisher String // 'Anthropic'
+
+  // Auth
+  apiKeyHash       String  @unique // bcrypt of API key, never store plaintext
+  apiKeyLastFour   String // last 4 chars for display only
+  active           Boolean @default(true)
+  rateLimitPerHour Int     @default(1000)
+
+  // Commercial
+  pricingTier   String   @default("usage") // 'free' | 'usage' | 'enterprise' | 'strategic'
+  bundledScopes String[] // default scope packages they can request
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  proposals      PAPProposal[]
+  actionRequests ActionRequest[]
+  scopeGrants    ScopeGrant[]
+  subscriptions  SensorSubscription[]
+  orchestrations Orchestration[]
+
+  @@index([slug])
+  @@index([active])
+  @@map("llm_partners")
+}
+
+/**
+ * Device — a registered device in the user's fleet. The capability
+ * manifest is JSON so per-device-class shape (Apple Watch vs browser
+ * extension vs macOS laptop) doesn't require a migration. `paired`
+ * gates whether the device can receive actions; `online` + lastSeenAt
+ * power the offline-tolerant action queue.
+ */
+model Device {
+  id          String  @id @default(cuid())
+  userId      String
+  deviceClass String // 'ios_phone' | 'apple_watch' | 'macos_laptop' | 'browser_extension' | etc.
+  model       String? // 'iPhone 16 Pro'
+  os          String? // 'iOS 17.4'
+
+  // Identity
+  deviceFingerprint String    @unique // hashed per-device identifier
+  paired            Boolean   @default(false)
+  pairedAt          DateTime?
+
+  // Capabilities (JSON because per-device-class shape varies)
+  manifestJson     Json // { sensors: [], actuators: [], userGrantedScopes: [] }
+  operationalState Json? // last-known battery / DND / foreground app
+
+  // State
+  online     Boolean  @default(false)
+  lastSeenAt DateTime @default(now())
+  pushToken  String? // for waking the device when offline-tolerant action queued
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user           User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actionRequests ActionRequest[]
+  subscriptions  SensorSubscription[]
+
+  @@index([userId, paired])
+  @@index([deviceFingerprint])
+  @@map("devices")
+}
+
+/**
+ * ScopeGrant — per-LLM × per-user × per-scope authorization. Each
+ * grant is tied to a consent-screen-version so we can re-prompt if
+ * the consent UI for a scope materially changes. `bundleKey` lets us
+ * track whether a scope was granted individually or via a bundle
+ * (e.g. 'behavioral_package'). Revocations are soft (revokedAt) for
+ * audit; the unique constraint allows re-grants by toggling `active`.
+ */
+model ScopeGrant {
+  id           String @id @default(cuid())
+  userId       String
+  llmPartnerId String
+
+  scope     String // 'edge:watch:haptic' | 'proactive_food' | etc.
+  bundleKey String? // if granted via a bundle ('behavioral_package'), reference the bundle
+
+  grantedAt DateTime  @default(now())
+  expiresAt DateTime? // null = no expiration
+  revokedAt DateTime?
+  active    Boolean   @default(true)
+
+  // Audit
+  consentScreenVersion String // 'v1.2' — which consent UI fired the grant
+  ipAddress            String?
+  userAgent            String?
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  llmPartner LLMPartner @relation(fields: [llmPartnerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, llmPartnerId, scope])
+  @@index([userId, active])
+  @@index([llmPartnerId, active])
+  @@map("scope_grants")
+}
+
+/**
+ * PAPProposal — LLM-emitted intervention proposal (PAP layer). The
+ * LLM provides `proposalKey` for idempotency. Coordinator records the
+ * decision (allowed/denied/queued) + scheduledFor; on execution the
+ * `executionToken` is minted (unique, single-use) and the outcome is
+ * back-filled when the user tags it (`caught_me`, `ignored`, etc.).
+ * Distinct from ActionRequest in that a proposal is moment-scoped
+ * (the user) and may fan out into multiple ActionRequests downstream.
+ */
+model PAPProposal {
+  id          String @id @default(cuid())
+  proposalKey String @unique // LLM-provided idempotency key
+
+  llmPartnerId String
+  userId       String
+
+  // Proposal shape
+  scopeRequested String[] // multiple scopes possible
+  actionJson     Json // { kind, modality, mode, headline, subhead, etc. }
+  contextJson    Json // { trigger, confidence, reasoning }
+
+  // Coordinator decision
+  decision       String // 'allowed' | 'denied' | 'queued'
+  decisionReason String? // 'rate_limited' | 'scope_not_granted' | etc.
+  scheduledFor   DateTime?
+
+  // Execution
+  executionToken String?   @unique
+  executedAt     DateTime?
+
+  // Outcome
+  outcome       String? // 'caught_me' | 'ignored' | 'snoozed' | etc.
+  outcomeSource String? // 'user_tag' | 'inferred' | 'system_timeout'
+  outcomeAt     DateTime?
+
+  createdAt DateTime @default(now())
+
+  llmPartner LLMPartner @relation(fields: [llmPartnerId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([llmPartnerId, createdAt])
+  @@index([decision])
+  @@map("pap_proposals")
+}
+
+/**
+ * ActionRequest — LLM-emitted device action request (EAP layer). A
+ * single actuator (haptic, push, TTS) on a single device, scoped to
+ * a single scope. `orchestrationId` is nullable: single-action
+ * requests have no parent; multi-device flows link back to an
+ * Orchestration row. Outcome is observable (executed/failed/rejected
+ * /expired) — userInteracted flips true when the user engages with
+ * the resulting UI surface.
+ */
+model ActionRequest {
+  id        String @id @default(cuid())
+  actionKey String @unique // LLM-provided idempotency key
+
+  llmPartnerId String
+  userId       String
+  deviceId     String
+
+  // Action shape
+  actuator       String // 'haptic' | 'push_notification' | 'voice_tts' | etc.
+  paramsJson     Json
+  scopeRequested String // single scope per ActionRequest
+  reasoning      String // user-readable rationale (for audit + UI)
+  confidence     Float?
+
+  // Coordinator decision
+  decision       String // 'allowed' | 'denied' | 'queued' | 'pending_confirmation'
+  decisionReason String?
+
+  // Execution
+  executionToken String?   @unique
+  executedAt     DateTime?
+
+  // Outcome
+  outcome        String? // 'executed' | 'failed' | 'rejected' | 'expired'
+  outcomeReason  String?
+  outcomeAt      DateTime?
+  userInteracted Boolean   @default(false)
+
+  // Orchestration parent (nullable — single-action requests have no parent)
+  orchestrationId String?
+
+  createdAt DateTime @default(now())
+
+  llmPartner    LLMPartner     @relation(fields: [llmPartnerId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device        Device         @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  orchestration Orchestration? @relation(fields: [orchestrationId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([deviceId, createdAt])
+  @@index([llmPartnerId, createdAt])
+  @@map("action_requests")
+}
+
+/**
+ * Orchestration — multi-device composite flow (e.g. "haptic on watch
+ * + TTS on phone + dim screen on laptop"). `atomicity` controls
+ * rollback semantics: 'all_or_none' rolls back partial executions if
+ * any child action fails; 'best_effort' fires each child
+ * independently. `decision` resolves to 'allowed' / 'denied' /
+ * 'partial' once the coordinator has scored all child actions.
+ */
+model Orchestration {
+  id               String @id @default(cuid())
+  orchestrationKey String @unique
+
+  llmPartnerId String
+  userId       String
+
+  atomicity String @default("best_effort") // 'all_or_none' | 'best_effort'
+  decision  String // 'allowed' | 'denied' | 'partial'
+
+  // Status
+  startedAt    DateTime?
+  completedAt  DateTime?
+  rolledBackAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  llmPartner LLMPartner      @relation(fields: [llmPartnerId], references: [id], onDelete: Cascade)
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actions    ActionRequest[]
+
+  @@index([userId, createdAt])
+  @@index([llmPartnerId, createdAt])
+  @@map("orchestrations")
+}
+
+/**
+ * SensorSubscription — pub/sub sensor stream. LLM partners register
+ * for sensor deltas (HRV drop, motion, geofence enter/exit) and the
+ * coordinator POSTs to `webhookUrl` HMAC-signed with `webhookSecret`
+ * when the filter matches. `failureCount` is incremented on each
+ * non-2xx response; subscriptions auto-deactivate after a threshold.
+ * `deviceId` is nullable to allow "any device with this sensor".
+ */
+model SensorSubscription {
+  id              String @id @default(cuid())
+  subscriptionKey String @unique
+
+  llmPartnerId String
+  userId       String
+  deviceId     String? // null = any device with this sensor
+
+  sensor     String // 'hrv_proxy' | 'motion' | 'location_geofence' | etc.
+  filterJson Json // { deltaPctMin: 15, directionDown: true } etc.
+
+  webhookUrl    String
+  webhookSecret String // HMAC secret for outgoing webhook signing
+
+  rateLimitPerHour Int       @default(60)
+  active           Boolean   @default(true)
+  failureCount     Int       @default(0)
+  lastFiredAt      DateTime?
+
+  createdAt DateTime @default(now())
+
+  llmPartner LLMPartner @relation(fields: [llmPartnerId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device     Device?    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([userId, active])
+  @@index([llmPartnerId, active])
+  @@map("sensor_subscriptions")
+}
+
+/**
+ * EAPAuditEntry — append-only audit log for proposals, actions,
+ * scope grants/revokes, and panic triggers. No foreign-key relation
+ * back to user/llm_partner because audit rows must outlive the
+ * deletion of their referent (compliance / forensic trail). The
+ * referenceId is a soft pointer (ActionRequest.id / ScopeGrant.id /
+ * etc.) interpreted in light of `eventKind`.
+ */
+model EAPAuditEntry {
+  id           String  @id @default(cuid())
+  userId       String
+  llmPartnerId String?
+
+  eventKind   String // 'proposal_received' | 'action_executed' | 'scope_granted' | 'scope_revoked' | 'panic_triggered' | etc.
+  referenceId String? // foreign id (ActionRequest.id / ScopeGrant.id / etc.)
+
+  payloadJson Json
+  ipAddress   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([llmPartnerId, createdAt])
+  @@index([eventKind, createdAt])
+  @@map("eap_audit_entries")
+}
+
+/**
+ * PanicState — per-user emergency revoke state. When the user trips
+ * the panic switch (24h default expiry), every LLM partner sees all
+ * of that user's scope grants as inactive until `expiresAt`. Exactly
+ * one row per user (unique constraint on userId); coordinator
+ * upserts on each panic toggle.
+ */
+model PanicState {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  active      Boolean   @default(false)
+  activatedAt DateTime?
+  expiresAt   DateTime?
+  reason      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("panic_states")
 }
