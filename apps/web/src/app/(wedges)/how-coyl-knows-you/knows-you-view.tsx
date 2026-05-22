@@ -164,6 +164,45 @@ const LAYERS_947: Layer[] = [
   { time: '9:47:01 PM', signal: 'Behavioral model updates: this exact sequence now weights +2.3% as a high-leverage interrupt for your profile.', kind: 'derived' },
 ]
 
+/**
+ * Data-moat components surfaced in the "What COYL knows that Claude doesn't"
+ * section. Each row corresponds to a real field in the production schema:
+ *
+ *   field "Slip taxonomy"      → packages/database/prisma/schema.prisma enum ExcuseCategory
+ *   field "Recovery curve"     → SlipRecord.recoveredAt + RescueSession state machine
+ *   field "Danger windows"     → User.dangerWindows + cron/danger-window-learner
+ *   field "Longitudinal sequences" → 60+ day SlipRecord+RescueSession history
+ *
+ * If we ever add a category or rename one, this list must mirror the schema
+ * so the moat claim stays evidence-backed instead of marketing prose.
+ */
+const MOAT_COMPONENTS = [
+  {
+    field: 'Slip taxonomy',
+    what:
+      '8 excuse categories — DELAY, REWARD, MINIMIZATION, COLLAPSE, EXHAUSTION, EXCEPTION, COMPENSATION, SOCIAL_PRESSURE — classified from your actual in-session language at the moment of the slip.',
+    why: 'Not in HealthKit. Not in Google Calendar. Not in any LLM chat log. Requires moment-of-slip capture that only the interrupt surface provides.',
+  },
+  {
+    field: 'Recovery curve',
+    what:
+      'The time and shape between a slip and a recovery — including same-night recovery, streak resets, and return-to-baseline events. Not just binary slip/no-slip.',
+    why: 'Wearables capture the slip (HRV spike, location). They do not encode the arc back. Only a product that lives through the full cycle can build this.',
+  },
+  {
+    field: 'Danger windows',
+    what:
+      'A day-of-week × hour-of-day × context histogram, computed per user from the last 30 days of slip records. Your 9:43 PM Tuesday — not the average person’s late-night.',
+    why: 'Foundation-lab models describe the 9PM Negotiator archetype. They cannot predict your specific window without longitudinal access to your behavioral history.',
+  },
+  {
+    field: 'Longitudinal sequences',
+    what:
+      '60+ day sequences of slip → recovery → re-relapse → re-recovery. The pattern, not a single event.',
+    why: 'One slip is noise. The pattern requires the user to have stayed in product. Retention is the moat — and the moat compounds with time-in-product, not with sign-ups.',
+  },
+]
+
 const RISKS = [
   {
     title: 'Onboarding drop-off',
@@ -500,6 +539,62 @@ export function KnowsYouView() {
             any LLM can consume. The platform play.
           </p>
         </div>
+      </section>
+
+      {/* WHAT COYL KNOWS THAT CLAUDE DOESN'T — structured moat table.
+          Per the strategy-doc v2 critique: the prose moat claim above is
+          a phrase until we name the specific fields. This section names
+          them. Schema-backed — the ExcuseCategory enum + dangerWindows
+          field + SlipRecord model in packages/database/prisma/schema.prisma
+          are the source of truth. */}
+      <section className="space-y-10 border-t border-gray-200 pt-16">
+        <div className="flex items-center gap-3">
+          <span className="h-px w-10 bg-orange-500" />
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            What COYL knows that Claude doesn&apos;t
+          </span>
+        </div>
+        <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+          The four fields. <span className="italic text-orange-600">Specific, not asserted.</span>
+        </h2>
+        <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+          &ldquo;Behavioral dataset that no LLM can synthesize&rdquo; is a phrase. Below is
+          the argument — what is in the dataset, and why a foundation model without
+          longitudinal access to one specific human cannot derive it.
+        </p>
+
+        <div className="space-y-10 pt-4">
+          {MOAT_COMPONENTS.map((c) => (
+            <div
+              key={c.field}
+              className="grid grid-cols-1 gap-6 border-t border-gray-200 pt-6 md:grid-cols-[180px_1fr_1fr]"
+            >
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-orange-600 md:text-[11px]">
+                {c.field}
+              </p>
+              <div>
+                <p className="mb-2 font-serif text-base font-normal italic text-gray-900">
+                  What it is
+                </p>
+                <p className="text-sm leading-[1.65] text-gray-700">{c.what}</p>
+              </div>
+              <div>
+                <p className="mb-2 font-serif text-base font-normal italic text-gray-900">
+                  Why Claude can&apos;t synthesize it
+                </p>
+                <p className="text-sm leading-[1.65] text-gray-700">{c.why}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className="max-w-2xl border-t border-orange-500 pt-6 text-base leading-[1.7] text-gray-700">
+          A foundation-lab model trained on the open web can describe the{' '}
+          <em>9PM Negotiator</em> archetype. It cannot predict <em>your</em> specific
+          window with the accuracy a model trained on your last 30 days of slips and
+          recoveries can. That gap compounds with time-in-product. Retention is the
+          moat.
+        </p>
       </section>
 
       {/* RISKS */}
