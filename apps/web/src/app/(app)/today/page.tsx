@@ -1,6 +1,8 @@
 import { Suspense } from 'react'
+import { randomBytes } from 'node:crypto'
 import { requireDbUser } from '@/lib/auth'
 import { prisma } from '@repo/database'
+import { proposeAsCoylInternal } from '@/lib/coyl-internal-pap'
 import { TodayView } from './today-view'
 
 export const metadata = { title: 'Today' }
@@ -218,6 +220,38 @@ function formatHour(h: number): string {
 export default async function TodayPage() {
   const user = await requireDbUser()
   const data = await getTodayData(user.id, user.timezone ?? 'UTC')
+
+  // First production PAP self-integration. Every /today render emits a
+  // real PAPProposal row through the COYL Internal partner. The
+  // coordinator evaluates against the user's real state (panic, quiet
+  // hours, rate limit, dedup, confidence). Wrapped in try/catch so a
+  // coordinator failure never blocks the user's render — fire-and-forget
+  // by design.
+  try {
+    const scope =
+      user.primaryWedge === 'WEIGHT_LOSS' ? 'proactive_food' : 'proactive_focus'
+    const activeWindow = data.activeDangerWindow
+    await proposeAsCoylInternal({
+      userId: user.id,
+      proposalKey: `today_render_${user.id}_${randomBytes(8).toString('hex')}`,
+      scopeRequested: [scope],
+      action: {
+        kind: 'callout',
+        modality: 'in_app',
+        mode: activeWindow ? 'live_window_callout' : 'today_heartbeat',
+        headline: activeWindow
+          ? `Active danger window: ${activeWindow.label}`
+          : 'Today render checkpoint',
+        subhead: 'COYL Internal heartbeat — first production PAP integration.',
+      },
+      context: {
+        trigger: '/today server render',
+        confidence: activeWindow ? 0.92 : 0.85,
+      },
+    })
+  } catch (err) {
+    console.error('[coyl-internal-pap] propose failed', err)
+  }
 
   return (
     <div className="h-full">

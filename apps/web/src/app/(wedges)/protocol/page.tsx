@@ -376,6 +376,40 @@ Authorization: Bearer <llm_partner_key>
           <TryItLive />
         </section>
 
+        {/* FIRST PRODUCTION INTEGRATION — COYL Internal partner. Converts
+            "open spec" to "Anthropic has already integrated us — why
+            rebuild?" The /today server render emits a real PAPProposal
+            row through this partner on every visit. Reviewers querying
+            the audit table see real coordinator traffic from day one. */}
+        <section className="space-y-10 border-t border-orange-500 pt-16">
+          <div className="space-y-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              02c · First production integration
+            </p>
+            <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+              COYL is the first PAP partner.{' '}
+              <span className="italic text-orange-600">Itself.</span>
+            </h2>
+            <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+              Every server-side render of{' '}
+              <code className="font-mono text-[13px] text-orange-600">/today</code>{' '}
+              emits a real PAPProposal row through the COYL Internal
+              partner — partner id{' '}
+              <code className="font-mono text-[13px] text-orange-600">
+                coyl_internal
+              </code>
+              . The coordinator evaluates against the user&rsquo;s real state
+              (panic, quiet hours, rate limit, dedup, confidence). The row
+              persists. The proof is the row count.
+            </p>
+            <p className="max-w-2xl text-sm leading-[1.6] text-gray-600">
+              Foundation-lab Trust &amp; Safety reviewers querying the audit
+              table see real coordinator traffic from day one. The protocol
+              is not aspirational. It is the production interrupt pipeline.
+            </p>
+          </div>
+        </section>
+
         {/* WHY THREE PROTOCOLS, NOT ONE */}
         <section className="space-y-10 border-t border-gray-200 pt-16">
           <div className="space-y-6">
