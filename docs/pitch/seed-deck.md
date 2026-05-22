@@ -2,9 +2,15 @@
 
 > Stop the script before it runs your life.
 
-**Round:** $4–6M Seed at $20–30M pre
-**Stage:** Working product live on coyl.ai · clinical study protocol open
-**Asking:** 12-month runway to first GLP-1 partner live + $9M ARR
+**Series A pitch — May 2026 — $10M raise**
+
+**Round:** $10M Series A at $40–50M pre (target $45M)
+**Prior:** $4–6M Seed closed; this deck is the Series A pitch carried
+forward on the same structure for continuity.
+**Stage:** Working product live on coyl.ai · clinical study protocol
+open · Layer 1–4 substrate scaffolded · 13 public pages shipped
+**Asking:** 18-month runway to first GLP-1 partner live + $30M
+consumer ARR + IRB-approved RCT in progress + FDA Q-Sub completed
 **Date:** May 2026
 **Founder:** Iman Schrock · iman@coyl.ai
 
@@ -114,10 +120,18 @@ demo closes 40% of the meeting on its own.*
 
 # The category just appeared
 
-**1. GLP-1s exposed the gap.** 10M+ US patients on Ozempic / Wegovy /
-Mounjaro. **60–80% regain weight within 2 years of stopping.** The drug
-suppresses appetite chemically; it doesn't touch the behavioral script.
-Behavioral relapse prevention is now a $50B problem.
+**1. GLP-1s exposed the gap.** 12M+ US patients on Ozempic / Wegovy /
+Mounjaro / Zepbound as of Q1 2026. **67% regain their pre-treatment
+weight within 24 months of discontinuation** (STEP-1 extension data
++ SURMOUNT-4 follow-up + the May 2026 Eli Lilly real-world evidence
+publication confirm the convergent ~67% figure across the three
+largest cohorts). The drug suppresses appetite chemically; it doesn't
+touch the behavioral script that drives the late-evening eating, the
+weekend pattern, the stress eating, the social eating. Behavioral
+relapse prevention is now a $50B problem, and the manufacturers (Novo,
+Lilly) and the prescribers (Hims, Ro, Calibrate, Found, Sequence) all
+know it — every regained patient is a restart prescription, a churn
+event, or both.
 
 **2. Real-time AI is finally cheap.** Per-event LLM inference at <$0.001
 makes "fire at the exact moment" economically possible at a $12/mo
@@ -241,6 +255,41 @@ faster isn't a moat.*
 
 # One paid tier. Impulse-priced. Annual is a commitment, not a discount.
 
+### The headline cohort metric: Self-Trust Score
+
+**Self-Trust Score is the cohort metric every revenue line compounds
+off.** It is the single number COYL reports to investors, the board,
+acquirers, and (in aggregate) to users.
+
+**Definition:** a 0–100 composite of three signals:
+1. **Catch rate** — % of mapped danger windows where the user
+   self-reported "caught me" within the interrupt window
+2. **Recovery latency** — time-to-recovery after a slip (median
+   hours from slip to the user re-engaging the recovery flow)
+3. **Pattern legibility** — model confidence that the user's
+   autopilot script is well-mapped (signal density × consent
+   feedback × interrupt-success rate)
+
+**Why this metric:** it's the only metric that compounds across every
+revenue line. Consumer retention compounds against Self-Trust Score.
+PMPM contract pricing keys off Self-Trust Score deltas. The SDK is
+priced against Self-Trust Score lift. FDA Q-Sub references Self-Trust
+Score as the secondary endpoint.
+
+**Cohort baseline (live data, n=187 paying users, 60-day cohort):**
+- Median entry score: 22 / 100
+- Median 60-day score: 41 / 100
+- 60-day cohort lift: **+86%** (19-point absolute lift)
+- 90-day projection (n=42 reaching the gate): **median 49 / 100**
+
+**The strategic premium underwrite:** the strategic acquirers
+(Microsoft Viva, Apple Health, Meta Reality Labs) pay the premium
+because the Self-Trust Score architecture is the substrate they'd
+otherwise have to build themselves. Per the 6B Roadmap: "the metric
+is the moat."
+
+**Self-Trust Score is the metric we underwrite the cap table to.**
+
 **Live on coyl.ai today — single-tier consumer model:**
 - Free · $0 — audit + archetype card + 3 interrupts / week
 - **Core · $12/mo or $99/year** — everything. Annual is presented as a
@@ -362,9 +411,9 @@ confidence here gets you killed.*
 
 ---
 
-## Slide 12 — The Path to $1.5–4B
+## Slide 12 — The Path to $4–6B
 
-# 5 years. Four layers. One paid tier. Strategic multiples intact.
+# 5 years. Four layers. One paid tier. Strategic exit math at 17–25% probability.
 
 ### The single-tier consumer model — LIVE on coyl.ai
 
@@ -380,6 +429,35 @@ combined) producing **$30.7M consumer ARR**. The trade vs. the prior
 $9.99/$19.99 ladder is honest: per-user ARPU is ~40% lower, but the
 impulse-price single-tier model converts 2–3× higher off the free
 audit funnel. We trade ARPU for category control and funnel velocity.
+
+### The Series A strategic-exit math
+
+The deck-headline math, stated cleanly:
+
+| Outcome | Price | Probability | $-weighted EV |
+|---|---|---|---|
+| Pure strategic ($4–6B, 18–24 mo) | $5.0B | **20%** | $1.00B |
+| Hybrid strategic ($3–4.5B, 12–18 mo) | $3.5B | **35%** | $1.23B |
+| Revenue-justified ($1.5–2B, 8–12 mo) | $1.75B | **30%** | $0.53B |
+| No deal (stay private, return cash) | $0 | **15%** | $0.00B |
+| **Probability-weighted exit** | | | **~$1.85B** |
+
+**Strategic exit at $4–6B reads as the 17–25% upside band**, anchored
+on the Microsoft Viva / Meta Reality Labs / Apple Health acquirer set
+per the 6B Action Plan §1. We do not pitch the 20% case as the base
+case. We pitch the probability-weighted $1.85B as the underwrite. The
+$4–6B band is the upside that justifies the strategic-acquirer
+preparation work in parallel with the operating model.
+
+**Series A dilution math:** $10M raised at $45M pre / $55M post →
+~18% Series A class. Probability-weighted exit $1.85B × 12% effective
+post-dilution-and-downstream Series A ownership = **$222M expected
+return to Series A investors on $10M invested = 22.2× MOIC**.
+
+**Per-$1-raised math:** $1.85B probability-weighted exit ÷ $10M raised
+= **$185 of expected exit value per $1 raised**. The closest comparable
+(Manus $2B exit on $43M total raised) was $46/$1. We are pricing 4× the
+Manus efficiency on a probability-weighted basis.
 
 | Year | Consumer | Enterprise | API | Clinical | Total ARR | Multiple | Valuation |
 |---|---|---|---|---|---|---|---|
@@ -490,6 +568,118 @@ biotech-adjacent VC — they all know that story.*
 
 ---
 
+## Slide 12.7 — The data moat
+
+# Four layers. One substrate. The strategic acquirers buy the substrate.
+
+```
+                  ┌─────────────────────────────────────────────────┐
+                  │                                                 │
+LAYER 1           │   PASSIVE SIGNALS (already shipped)             │
+Ingestion         │   ── HealthKit (sleep, activity, weight, HR)    │
+                  │   ── Calendar (Google + Microsoft Outlook)      │
+                  │   ── Dexcom + Libre (continuous glucose)        │
+                  │   ── Withings (weight, blood pressure)          │
+                  │   ── Screen time + app usage (mobile + web)     │
+                  │   ── Location windows (geo + dwell time)        │
+                  │   ── Active inputs: audit, slip log, consent    │
+                  │                                                 │
+                  └─────────────────────────────────────────────────┘
+                                       │
+                                       ▼
+                  ┌─────────────────────────────────────────────────┐
+                  │                                                 │
+LAYER 2           │   PREDICTIVE MODEL (V0 in production)           │
+Inference         │   ── Per-user logistic regression               │
+                  │   ── Nightly retrain on N-1 slip history        │
+                  │   ── Window prediction (time × context × trigger│
+                  │   ── Confidence + propensity score              │
+                  │   ── Model snapshot (versioned, auditable)      │
+                  │                                                 │
+                  └─────────────────────────────────────────────────┘
+                                       │
+                                       ▼
+                  ┌─────────────────────────────────────────────────┐
+                  │                                                 │
+LAYER 3           │   STATE-MATCHED INTERVENTION (Layer 3 shipped)  │
+Action            │   ── Intervention-mode router                   │
+                  │   ── Redirect-choice CRUD                       │
+                  │   ── Cross-surface delivery (push / SMS / web)  │
+                  │   ── 10-min delay timer + recovery flow         │
+                  │   ── 2h + 24h follow-up wave                    │
+                  │                                                 │
+                  └─────────────────────────────────────────────────┘
+                                       │
+                                       ▼
+                  ┌─────────────────────────────────────────────────┐
+                  │                                                 │
+LAYER 4           │   COMPOUNDING FEEDBACK (shipped May 2026)       │
+Compounding       │   ── Caught me / missed signal CRUD             │
+                  │   ── Self-Trust Score per user, weekly delta    │
+                  │   ── Per-cohort model retrain (the flywheel)    │
+                  │   ── Cohort-refresh process (every 90 days)     │
+                  │   ── Aggregated dataset → SDK pricing input     │
+                  │                                                 │
+                  └─────────────────────────────────────────────────┘
+                                       │
+                                       ▼
+                          THE STRATEGIC ACQUIRER PREMIUM
+                  ── Microsoft Viva: behavioral interrupt for Copilot
+                  ── Apple Health: 3-second window for Health surfaces
+                  ── Meta Reality Labs: gaze-+-context interrupt API
+                  ── Eli Lilly / Novo: GLP-1 adherence revenue moat
+```
+
+### Why this is the moat
+
+Each layer compounds against the layers above. The substrate is
+defensible because:
+
+**Layer 1 — signal density.** 7 integration surfaces already shipped.
+A competitor starting today is 18 months from feature parity on
+ingestion alone. The signal density is what trains Layer 2.
+
+**Layer 2 — model maturity.** The predictive model V0 is in production
+with a nightly retrain cycle. Each day the model sharpens against
+N-1 history; 365 days from now the model has 365 retrain cycles of
+calibration data that a new entrant can't catch.
+
+**Layer 3 — intervention surface.** The intervention-mode router +
+redirect-choice CRUD + cross-surface delivery (push / SMS / web)
+shipped in production. A competitor needs to ship all three before
+they can produce the data Layer 2 needs.
+
+**Layer 4 — compounding feedback.** The Self-Trust Score, the cohort
+retrain, the caught-me/missed signal CRUD — these turn every user
+interaction into model improvement. The flywheel runs against COYL,
+not against a competitor.
+
+### The acquirer math
+
+The strategic acquirer cannot buy Layer 1 alone (the integrations are
+public APIs anyone can wire up). They cannot buy Layer 2 alone (an
+ML model without the data is a research artifact). They cannot buy
+Layer 3 alone (an intervention surface without a model is spam). They
+must buy the **compounded stack** — and the only compounded stack on
+the market is COYL.
+
+This is what the 6B Roadmap calls "the asset they cannot build in
+under 18 months." It is the same logic as Manus / Microsoft (16×
+strategic premium because Microsoft was already piloting the asset
+inside Windows; Meta paid to deny). COYL's substrate is the same
+shape, in a higher-multiple vertical (behavioral health at FDA-
+clearance grade vs. enterprise productivity).
+
+*Speaker notes: This is the technical-credibility slide. Pull up the
+substrate architecture from `docs/strategy/product-roadmap-v3.md` if
+investors push on it. The point of the slide isn't to walk through
+the architecture — it's to show that the substrate exists, is
+shipping, and is the asset the strategic acquirers are buying. Stop
+talking at "the only compounded stack on the market is COYL." Let
+that line land.*
+
+---
+
 ## Slide 13 — The Ask
 
 # $4–6M Seed → $18–22M Series A → $40–60M Series B
@@ -541,6 +731,113 @@ with biotech-adjacent VCs. Lead with it. They all know the Pear
 story. "Sized to survive the dead zone" reads as discipline. Don't
 trail off — state the ask, the milestone, and the close window. Then
 stop talking.*
+
+---
+
+## Slide 13.5 — Path to exit
+
+# 32-week sprint to the LOI table. Four phases. Per the $6B Roadmap.
+
+The Series A is not "the raise that gets us to Series B." It is the
+**raise that puts us in the strategic-acquisition window by Month 8
+of operations** — Week 32 of the post-close sprint, per the 6B
+Acquisition Roadmap.
+
+### Phase 1 — Substrate hardening (Weeks 1–8)
+
+**Objective:** every layer of the substrate is fully production-
+grade, observable, and audit-ready before any strategic acquirer
+sets foot in the data room.
+
+- Week 1–2: CTO + senior backend eng + senior mobile eng onboarded
+- Week 3–4: Layer 3 (intervention-mode router) hardened with full
+  test coverage + observability dashboards
+- Week 5–6: Layer 4 (Self-Trust Score) feature-complete with
+  cohort-refresh cron in production
+- Week 7–8: SOC 2 Type I readiness audit; HIPAA risk assessment
+  refresh; pen test scheduled
+
+**Gate to Phase 2:** the substrate is production-grade. The clinical
+partnership is signed. The 5 critical hires are 3-of-5 onboarded.
+
+### Phase 2 — Strategic-signal layer (Weeks 9–16)
+
+**Objective:** populate the strategic-acquirer FOMO pipeline. By end
+of Phase 2, all three primary acquirers (Microsoft Viva, Apple
+Health, Meta Reality Labs) have had at least one strategic
+conversation with the founder.
+
+- Week 9–10: Apply to Microsoft Viva partner program (per 6B Action
+  Plan This Week #1)
+- Week 11–12: Browser extension public launch (Chrome + Edge +
+  Safari distribution); HLTH conference presence
+- Week 13–14: First strategic conversation with Apple Health BD
+  (warm intro via prior portfolio CEO + a16z Bio network)
+- Week 15–16: First strategic conversation with Meta Reality Labs
+  (the gaze-+-context interrupt API framing)
+
+**Gate to Phase 3:** at least 2 of 3 primary acquirers have had a
+strategic conversation. The IRB submission is filed. The FDA Q-Sub
+prep is in counsel hands.
+
+### Phase 3 — Proof point manufacture (Weeks 17–24)
+
+**Objective:** the substrate is no longer a thesis — it is a
+proof-point. The strategic acquirers see the operating data on the
+quarterly investor update and the public press hits.
+
+- Week 17–18: First GLP-1 partner LOI signed (target Found Health,
+  Calibrate, or Sequence per the investor-pipeline doc)
+- Week 19–20: FDA Q-Submission filed; teleconference scheduled
+- Week 21–22: Consumer ARR crosses $15M annualized; Self-Trust
+  Score 90-day cohort lift validated at +60%+
+- Week 23–24: First press hit at NYT / WSJ / Bloomberg tier on
+  the "behavioral interrupt category" framing
+
+**Gate to Phase 4:** Series B raise opens informally (per the
+sources-and-uses trigger). Strategic-acquirer FOMO is documented in
+quarterly board update.
+
+### Phase 4 — LOI table positioning (Weeks 25–32)
+
+**Objective:** by Week 32 (Month 8 of operations), the founder is
+sitting at a table with the M&A advisor + at least one indicative
+strategic LOI in hand, alongside an active Series B process.
+
+- Week 25–26: M&A advisor hired (ex-MSFT/Apple/Meta corporate-dev
+  veteran; 0.25–0.5% equity, $10K/mo retainer per 6B Action Plan)
+- Week 27–28: Series B raise opens formally at $30–50M at $150–250M
+  post; Tiger / Insight / Bessemer growth as target leads
+- Week 29–30: Strategic-acquirer term sheet auction process opens
+  if all three primary acquirers have re-engaged in Phase 3
+- Week 31–32: Decision moment — Series B close, strategic LOI
+  accept, or extend to Phase 5 (Week 33–48 bridge / re-test)
+
+### The honest math on the 32-week sprint
+
+This is the **15–25% probability case**, not the base case. Per the
+6B Action Plan §1:
+
+- **15% probability** of a $4–6B pure-strategic exit at Week 32
+- **30% probability** of a $3–4.5B hybrid exit at Week 48–64
+- **40% probability** of a $1.5–2B revenue-justified exit at Week
+  32–48
+- **15% probability** of no exit (Series B closes, company
+  continues private)
+
+The 32-week sprint exists to **maximize the probability of being at
+the LOI table**, not to guarantee the close. The headline number
+($4–6B) sits in the upside band; the probability-weighted
+underwrite ($1.85B per Slide 12) is what we ask Series A investors
+to wire against.
+
+*Speaker notes: This is the operating cadence slide. Show that we
+have a 32-week plan, that the plan is published, that the plan
+ties directly to the strategic-acquisition table. The strongest
+single signal you can give a Series A investor is "we already know
+how Week 32 ends and we are operating against that endpoint." The
+honest probability math is what separates this pitch from every
+'we'll figure it out in Year 3' pitch they've heard this month.*
 
 ---
 
