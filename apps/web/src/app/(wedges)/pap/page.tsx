@@ -22,6 +22,9 @@ import { BreadcrumbSchema } from '@/app/structured-data'
 const DESCRIPTION =
   'The Proactive AI Protocol v0.1. Apache 2.0 open spec for LLMs to propose behavioral interventions in users’ lives — under rate limits, consent scopes, and an audit trail the user controls.'
 
+// ISR — static editorial content; 1-day revalidate window. Full cacheComponents migration with cacheTag-based surgical invalidation tracked as a follow-up.
+export const revalidate = 86400
+
 export const metadata: Metadata = {
   title: 'PAP — the trust infrastructure for proactive AI · COYL',
   description: DESCRIPTION,

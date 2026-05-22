@@ -503,6 +503,89 @@ Print this. Tape it to your monitor.
 
 ---
 
+## Engineering follow-ups (post-Series-A, before pharma diligence)
+
+Two real technical-debt items surfaced when I honestly engaged with the
+Vercel + Next.js skill nudges this session. Not blocking the raise but
+worth scheduling in the engineering roadmap before pharma diligence
+teams pen-test the platform.
+
+### 1. Vercel Workflow migration for orchestration + scheduled interrupts
+
+The current `/api/eap/v1/orchestration` endpoint (commit `ddabbc1`)
+handles multi-device atomic flows with `all_or_none` vs `best_effort`
+semantics — but lacks:
+
+- Auto-rollback of prior steps when `all_or_none` violations occur
+- Retry semantics on failed step delivery
+- Crash-safe step recovery if a Vercel function dies mid-orchestration
+- Durable timer for scheduled fires ("fire at user's local 8 PM")
+
+Today: works for n=1-1,000 users. Becomes a real liability at n=100K
+with multi-step orchestrations.
+
+The right primitive: **Vercel Workflow DevKit** — durable workflows
+with pause/resume, retries, step-based execution, `step.sleepUntil()`
+for user-local-time firings.
+
+Migration scope:
+- `/api/eap/v1/orchestration` → durable workflow with per-step retry +
+  compensating-action rollback for `all_or_none` failures
+- `/api/cron/scheduled-interrupts` (commit `11e0518`) → replace
+  hourly-poll-then-match-timezone pattern with
+  `step.sleepUntil(scheduledForLocal)`
+- `/api/cron/daily-number` (commit `d690993`) → same; durable
+  per-user "fire at local 8 PM" timer
+
+Effort estimate: 1-2 weeks of one backend engineer post-Series-A.
+Schedule for Month 2-3.
+
+### 2. Cache Components migration (Next.js 16)
+
+This session shipped `export const revalidate = 86400` on 10 marketing
+pages — the LEGACY ISR pattern. Provides 1-day cache TTL but NOT the
+surgical tag-based invalidation the new Cache Components system
+enables.
+
+Next.js 16 introduced `cacheComponents: true` config flag + `'use cache'`
+directive + `cacheLife()` + `cacheTag()` + `updateTag()` /
+`revalidateTag()`. The full migration would let you ship a copy edit
+to `/pap` and surgically invalidate just that page's cache without a
+full deploy.
+
+Why I didn't do it this session:
+- Enabling `cacheComponents: true` is project-wide; affects all 81
+  page.tsx files
+- 5 pages currently use `cookies()` / `headers()` / `searchParams`
+  outside Suspense boundaries (homepage variant-picker, onboarding,
+  3 admin pages) — would break at build time
+- Full audit + Suspense refactor + build verify = 4-6 hours, not
+  the "1 hour" I optimistically promised
+
+Migration scope:
+- Enable `cacheComponents: true` in `apps/web/next.config.ts`
+- Wrap dynamic-data fetches on homepage + onboarding + admin pages
+  in `<Suspense>` boundaries (or mark `force-dynamic` explicitly)
+- Replace `export const revalidate = N` on marketing pages with
+  `'use cache'` + `cacheLife('weeks')` + `cacheTag('marketing:<slug>')`
+- Add `updateTag()` calls in any future copy-edit server actions
+
+Effort estimate: ~1 day of one engineer once you have one. Schedule
+for Month 2.
+
+### 3. Server-side EAP endpoints missing
+
+The macOS coordinator (and the Safari + browser coordinators) poll
+these endpoints which the cloud wave's EAP core agent didn't ship:
+- `GET /api/eap/v1/devices/<deviceId>/pending-actions` — 30s poll target
+- `POST /api/eap/v1/sensor/<deviceId>/publish` — periodic sensor snapshot
+
+Both are 1-2 hour additions. Required before any platform coordinator
+is functional in production. Schedule for Week 1 of post-Series-A
+engineering.
+
+---
+
 ## Sources
 
 This document synthesizes from:

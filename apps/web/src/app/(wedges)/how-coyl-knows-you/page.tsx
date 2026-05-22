@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import { KnowsYouView } from './knows-you-view'
 
+// ISR — static editorial content; 1-day revalidate window. Full cacheComponents migration with cacheTag-based surgical invalidation tracked as a follow-up.
+export const revalidate = 86400
+
 export const metadata: Metadata = {
   title: 'How COYL knows you — the honest answer',
   description:

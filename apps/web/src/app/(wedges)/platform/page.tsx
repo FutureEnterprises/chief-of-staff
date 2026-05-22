@@ -27,6 +27,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
 
+// ISR — static editorial content; 1-day revalidate window. Full cacheComponents migration with cacheTag-based surgical invalidation tracked as a follow-up.
+export const revalidate = 86400
+
 export const metadata: Metadata = {
   title: 'Platform — three protocols, one reference engine · COYL',
   description:

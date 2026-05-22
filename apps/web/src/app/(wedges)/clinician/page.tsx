@@ -25,6 +25,9 @@ import { BreadcrumbSchema } from '@/app/structured-data'
  * phone between patients; the page has to feel inevitable, not
  * brochure-y.
  */
+// ISR — static editorial content; 1-day revalidate window. Full cacheComponents migration with cacheTag-based surgical invalidation tracked as a follow-up.
+export const revalidate = 86400
+
 export const metadata: Metadata = {
   title:
     'COYL for clinicians — the behavioral layer your GLP-1 patients are missing.',
