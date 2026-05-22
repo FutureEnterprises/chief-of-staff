@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  COYL :auto module manifest.
+
+  This manifest is merged into the host :app manifest by the Android
+  Gradle Plugin's manifest merger. It declares two things:
+
+  1. <uses-feature android:name="android.hardware.type.automotive"
+     android:required="false"/>
+     — Marks the parent APK as Android-Auto-aware. `required=false`
+     is important: COYL primarily ships to phones, and Auto support
+     is opportunistic. Setting required=true would gate the entire
+     app on car-projection presence, which is wrong.
+
+  2. <meta-data android:name="androidx.car.app.minCarApiLevel"
+     android:value="1"/>
+     — The minimum car API level we support. Level 1 is the floor
+     for PaneTemplate, which is what we use. If we ever upgrade to
+     templates that need level 2+ (e.g. SignInTemplate), bump this.
+
+  3. The <service> entry for CoylCarAppService — Google's
+     CarConnection looks for this service via the intent action
+     androidx.car.app.CarAppService when the head unit connects.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+      Automotive feature declaration — required=false so phones
+      without car projection can still install the app.
+    -->
+    <uses-feature
+        android:name="android.hardware.type.automotive"
+        android:required="false" />
+
+    <!--
+      Required by androidx.car.app for runtime template rendering.
+      Without this, the car host throws SecurityException on Session
+      creation.
+    -->
+    <uses-permission android:name="androidx.car.app.ACCESS_SURFACE" />
+
+    <!--
+      Internet is needed for the slip/quick + panic + status calls;
+      the parent :app manifest already declares this but the merger
+      is happier when each module declares what it actually uses.
+    -->
+    <uses-permission android:name="android.permission.INTERNET"
+        tools:node="merge" />
+
+    <application>
+        <!--
+          Min car API level. PaneTemplate is API level 1.
+        -->
+        <meta-data
+            android:name="androidx.car.app.minCarApiLevel"
+            android:value="1" />
+
+        <!--
+          The CarAppService — Google's CarConnection binds to this
+          service when the user opens COYL on the head unit.
+
+          Category set:
+            - androidx.car.app.category.IOT        — internet-of-
+              things / connected-device companion. This is the
+              category that best fits COYL: we are NOT navigation,
+              audio, messaging, or POI. The IOT category was added
+              specifically for companions like ours that show a
+              status read-out + a small set of hands-free actions.
+
+          If Apps for Cars review pushes back on IOT and asks for
+          a different category, the leading alternative is
+          androidx.car.app.category.MESSAGING (framed as voice-
+          confirmed self-check-in messaging). See
+          CARPLAY_ANDROID_AUTO.md for the review-application
+          playbook.
+
+          exported=true is required — the car host is a separate
+          process and binds across the IPC boundary.
+        -->
+        <service
+            android:name="ai.coyl.auto.CoylCarAppService"
+            android:exported="true"
+            android:label="COYL">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService" />
+                <category android:name="androidx.car.app.category.IOT" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>
