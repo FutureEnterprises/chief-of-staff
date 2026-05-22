@@ -130,3 +130,84 @@ silently drops.
 - Notification scene. We use raw haptics rather than UNNotifications
   so the wrist surface is *haptic-only* and never shows visual
   notification cards.
+
+## EAP coordinator additions
+
+The Watch app now functions as an EAP edge device. Additional Xcode steps:
+
+1. Add HealthKit capability to Watch target (Background Delivery: ON)
+2. Add Background Modes: workout-processing, remote-notification
+3. Add Info.plist permission: NSHealthShareUsageDescription
+4. Verify WKApplicationRefreshBackgroundTask is in the Xcode background-tasks list
+5. The watch app calls /api/eap/v1/device/register on first launch using the auth token from the shared App Group (written by phone app)
+
+Build target: watchOS 10+. ~50% actuator coverage on Watch — limited
+to haptic, voice TTS, complication updates, notifications (watch can't
+open arbitrary URLs without phone).
+
+### New files in this PR
+
+| File | Purpose |
+|---|---|
+| `EAPCoordinator.swift` | Talks to `/api/eap/v1/*` via URLSession; dispatches actions to haptic / voice / complication / notification |
+| `SensorPublisher.swift` | HealthKit batches (HRV / resting HR / active energy / stand hours) via background refresh + workout extended runtime |
+| `HealthSubscription.swift` | HKObserverQuery wrapper for HRV-spike detection (15% drop vs 14-day rolling median, 60-min cool-down) |
+| `PanicCommand.swift` | Long-press + crown-rotate panic gesture → `POST /api/eap/v1/panic` |
+
+### App Group keys consumed by EAP
+
+In addition to the existing `coyl.selfTrustScore` / `coyl.dayNumber` /
+`coyl.identitySentence`, the EAP path reads:
+
+- `coyl.authToken` (String) — written by phone after Clerk sign-in
+- `coyl.userId` (String) — written by phone after Clerk sign-in
+- `coyl.eap.watchScopes` (JSON string array) — written by phone consent UI
+- `coyl.watch.deviceFingerprint` (String) — written on first launch by
+  EAPCoordinator; opaque per-install identifier
+
+And writes back:
+
+- `coyl.eap.panicActive` (Bool) — set when panic gesture trips
+- `coyl.eap.panicActivatedAt` (TimeInterval) — Unix seconds when tripped
+
+### Wiring it on the app side
+
+In a future commit, COYLWatchApp.swift should call on launch:
+
+```swift
+.onAppear {
+    intervention.activate()
+    EAPCoordinator.shared.bootstrap()
+    SensorPublisher.shared.bootstrap()
+}
+```
+
+And the SwiftUI background-task handler should forward to the
+publisher:
+
+```swift
+.backgroundTask(.appRefresh("coyl.sensor.refresh")) { task in
+    await withCheckedContinuation { cont in
+        SensorPublisher.shared.handleBackgroundRefresh(task)
+        cont.resume()
+    }
+}
+```
+
+Drop `.panicGesture()` on `COYLWatchView()` to enable the panic combo.
+
+### Actuator coverage gap
+
+| Actuator | Watch supports? | Fallback |
+|---|---|---|
+| `haptic` | yes | — |
+| `voice_tts` | yes (AVSpeechSynthesizer since watchOS 6) | — |
+| `complication_update` | yes (WidgetCenter) | — |
+| `show_notification` | yes (UNUserNotificationCenter) | — |
+| `open_url` | no — Watch can't open arbitrary URLs | EAPCoordinator returns `outcome=rejected, outcomeReason=unsupported_actuator_on_watch`; cloud re-routes to phone |
+| `live_activity` | n/a (Watch native) | phone |
+| `dim_screen` / `do_not_disturb` / `lights_dim` | no | macOS / phone / HomeKit |
+
+When an actuator is unsupported, we explicitly report
+`outcome=rejected` so the cloud coordinator can re-route to a
+different device in the user's fleet rather than time out.
