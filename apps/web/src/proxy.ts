@@ -65,6 +65,10 @@ const isPublicRoute = createRouteMatcher([
   '/api/v1/integrations/libre/webhook',
   '/api/v1/integrations/withings/callback',
   '/api/v1/integrations/withings/webhook',
+  '/api/v1/teams/bot/messages',
+  '/api/v1/teams/install',
+  '/api/v1/slack/events',
+  '/api/v1/slack/install',
 ])
 
 /**
@@ -135,6 +139,10 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/api/v1/integrations/libre/webhook',
   '/api/v1/integrations/withings/callback',
   '/api/v1/integrations/withings/webhook',
+  '/api/v1/teams/bot/messages',
+  '/api/v1/teams/install',
+  '/api/v1/slack/events',
+  '/api/v1/slack/install',
 ])
 
 const secretKey = process.env.CLERK_SECRET_KEY
