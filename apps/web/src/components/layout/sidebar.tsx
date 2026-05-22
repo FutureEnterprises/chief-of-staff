@@ -40,7 +40,6 @@ export function Sidebar() {
         </div>
         <span className="text-sm font-semibold tracking-tight">COYL</span>
       </div>
-
       {/* Main Nav */}
       <nav className="flex-1 space-y-0.5 p-2 pt-3">
         {navigation.map((item) => {
@@ -62,7 +61,6 @@ export function Sidebar() {
           )
         })}
       </nav>
-
       {/* Secondary Nav + User */}
       <div className="border-t p-2">
         {secondary.map((item) => {
@@ -84,10 +82,10 @@ export function Sidebar() {
           )
         })}
         <div className="mt-2 flex items-center gap-2 rounded-md px-3 py-2">
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
           <span className="text-xs text-zinc-500">Account</span>
         </div>
       </div>
     </div>
-  )
+  );
 }
