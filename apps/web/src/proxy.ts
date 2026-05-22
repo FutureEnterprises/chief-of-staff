@@ -52,6 +52,16 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks/(.*)',
   '/api/cron/(.*)',
   '/api/health',
+  // Third-party OAuth callbacks & webhooks — providers redirect/POST here
+  // without a Clerk session cookie, so Clerk's protect would 302 them to
+  // sign-in and break the integration handshake. /auth subroutes stay
+  // Clerk-protected so we can mint OAuth state with a real user id.
+  '/api/v1/integrations/dexcom/callback',
+  '/api/v1/integrations/dexcom/webhook',
+  '/api/v1/integrations/libre/callback',
+  '/api/v1/integrations/libre/webhook',
+  '/api/v1/integrations/withings/callback',
+  '/api/v1/integrations/withings/webhook',
 ])
 
 /**
@@ -111,6 +121,14 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/api/v1/sms/intro',
   '/api/health',
   '/profile/(.*)',
+  // Integration OAuth callbacks + webhook receivers must also bypass the
+  // dev-instance Clerk handshake so Dexcom/Libre/Withings can POST back.
+  '/api/v1/integrations/dexcom/callback',
+  '/api/v1/integrations/dexcom/webhook',
+  '/api/v1/integrations/libre/callback',
+  '/api/v1/integrations/libre/webhook',
+  '/api/v1/integrations/withings/callback',
+  '/api/v1/integrations/withings/webhook',
 ])
 
 const secretKey = process.env.CLERK_SECRET_KEY
