@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Empty backup/transfer rules — we do NOT want auth tokens or scope state
+     to leak via cloud backup or device-to-device transfer. EncryptedSharedPreferences
+     are explicitly excluded so the master key stays device-local. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="." />
+    </device-transfer>
+</data-extraction-rules>

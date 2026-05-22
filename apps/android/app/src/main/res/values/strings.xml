@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">COYL EAP</string>
+    <string name="eap_channel_id">eap_default</string>
+    <string name="eap_channel_name">EAP coordinator</string>
+    <string name="eap_channel_description">Background coordinator for cross-device LLM action protocol</string>
+    <string name="eap_service_running">EAP coordinator running</string>
+    <string name="eap_service_running_subtext">Edge AI coordinator listening for actions</string>
+    <string name="consent_title">EAP scope grants</string>
+    <string name="consent_intro">Each scope allows an LLM partner to fire one category of action on this device. Revoke at any time. Hitting the panic switch revokes all scopes for 24 hours.</string>
+    <string name="consent_save">Save grants</string>
+    <string name="consent_panic">Panic — revoke all</string>
+    <string name="main_intro">COYL EAP coordinator. This app runs a background service that lets approved LLM partners fire actions on this device — only with your explicit scope grants.</string>
+    <string name="main_start_service">Start coordinator</string>
+    <string name="main_open_consent">Open consent screen</string>
+    <string name="main_open_health_connect">Health Connect grants</string>
+</resources>

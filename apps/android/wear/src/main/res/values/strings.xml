@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">COYL EAP</string>
+    <string name="wear_intro">Coordinator on the wrist.</string>
+    <string name="wear_score_label">Self-Trust</string>
+    <string name="wear_score_unknown">—</string>
+</resources>

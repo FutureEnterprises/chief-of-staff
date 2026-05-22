@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Network -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Notifications (Android 13+ runtime permission) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Foreground Service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+    <!-- Sensors -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- Actuators -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Health Connect — granular grants are negotiated at runtime via
+         HealthConnectClient.permissionController. The intent-filter on the
+         MainActivity below declares the rationale screen for Health Connect. -->
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY" />
+    <uses-permission android:name="android.permission.health.READ_STEPS" />
+    <uses-permission android:name="android.permission.health.READ_SLEEP" />
+    <uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.READ_SKIN_TEMPERATURE" />
+
+    <!-- Optional advanced actuators — only request if founder enables. -->
+    <uses-permission android:name="android.permission.BIND_DEVICE_ADMIN"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+
+    <queries>
+        <!-- Required for Health Connect package visibility on Android 11+ -->
+        <package android:name="com.google.android.apps.healthdata" />
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
+    <!-- Signature-level permission so only this app (or a signature-matched
+         caller, e.g. the Wear OS module signed with the same key) can fire
+         the panic broadcast. Blocks arbitrary apps from invoking exported
+         receivers. -->
+    <permission
+        android:name="ai.coyl.eap.permission.PANIC"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="ai.coyl.eap.permission.PANIC" />
+
+    <application
+        android:name=".EAPApplication"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.CoylEAP"
+        tools:targetApi="33">
+
+        <!-- Main launcher. Exported because it carries the LAUNCHER intent
+             filter, which is required for the app icon to appear in the home
+             screen launcher. The activity has no privileged surface — it
+             only renders an info screen + a button that calls into our own
+             internal Foreground Service / ConsentActivity. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Health Connect rationale screen (Android 13 and below) -->
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Health Connect rationale screen (Android 14+). Must be exported
+             because the Health Connect system app (com.google.android.apps.
+             healthdata) launches it via the VIEW_PERMISSION_USAGE intent.
+             The alias just forwards to MainActivity, which only renders an
+             info screen — no privileged action is reachable from this entry
+             point. -->
+        <activity-alias
+            android:name=".HealthConnectRationaleAlias"
+            android:exported="true"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Scope-grant consent UI -->
+        <activity
+            android:name=".ConsentActivity"
+            android:exported="false"
+            android:label="@string/consent_title" />
+
+        <!-- EAP Foreground Service -->
+        <service
+            android:name=".EAPCoordinatorService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <!-- FCM push receiver — delivers EAP actions from coyl.ai -->
+        <service
+            android:name=".EAPFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Panic receiver — bound to a custom action; can also be wired to an
+             accessibility gesture in a follow-up. Guarded by a signature-
+             level permission so only this app (and signature-matched
+             companions like the Wear OS module) can broadcast PANIC. -->
+        <receiver
+            android:name=".PanicReceiver"
+            android:exported="true"
+            android:permission="ai.coyl.eap.permission.PANIC">
+            <intent-filter>
+                <action android:name="ai.coyl.eap.PANIC" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Boot receiver — restart Foreground Service after reboot. Must
+             be exported because the system delivers BOOT_COMPLETED from
+             outside the app package. The receiver only re-starts our own
+             Foreground Service; no privileged data path. -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/eap_channel_id" />
+    </application>
+</manifest>

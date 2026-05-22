@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="coyl_primary">#0F172A</color>
+    <color name="coyl_accent">#22D3EE</color>
+    <color name="coyl_surface">#FFFFFF</color>
+</resources>

@@ -1,0 +1,3 @@
+-keep class ai.coyl.eap.wear.** { *; }
+-keep class androidx.health.services.client.** { *; }
+-keepattributes *Annotation*, InnerClasses
