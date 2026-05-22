@@ -64,6 +64,22 @@ ext.runtime.onInstalled.addListener(async (details) => {
   }
 })
 
+// EAP coordinator bootstrap — the eap-sensors.js + eap-actuators.js +
+// eap-coordinator.js modules are loaded ahead of this file via the
+// manifest's background.scripts array. We invoke bootstrap() on
+// startup AND on install so the device announces itself to COYL Cloud
+// as soon as the user has paired + granted scopes (idempotent).
+;(function startEapCoordinator() {
+  const eap = globalThis.__coylEapCoordinator
+  if (eap && typeof eap.bootstrap === 'function') {
+    void eap.bootstrap()
+  } else {
+    // Module ordering issue — log so it surfaces in Safari's extension
+    // background-page console rather than failing silently.
+    console.warn('[coyl-safari-ext] EAP coordinator not loaded')
+  }
+})()
+
 /**
  * Pull a clean hostname (no www., no path) from a tab URL. Returns
  * null if the URL is internal (chrome://, about:, file:).
@@ -201,6 +217,20 @@ ext.commands.onCommand.addListener(async (command) => {
  */
 ext.runtime.onMessage.addListener((message, sender, sendResponse) => {
   ;(async () => {
+    // EAP control plane — options.js (scope grants, pairing) + popup
+    // (status checks) speak this envelope. Anything starting with
+    // COYL_EAP_ is delegated to the coordinator module.
+    if (typeof message?.type === 'string' && message.type.startsWith('COYL_EAP_')) {
+      const eap = globalThis.__coylEapCoordinator
+      if (!eap || typeof eap.handleEapMessage !== 'function') {
+        sendResponse({ ok: false, reason: 'eap_not_loaded' })
+        return
+      }
+      const result = await eap.handleEapMessage(message)
+      sendResponse(result ?? { ok: true })
+      return
+    }
+
     if (message.type === 'COYL_MUTE') {
       const { host, duration } = message
       const { [STORAGE_KEYS.MUTES]: mutes = {} } = await ext.storage.local.get(STORAGE_KEYS.MUTES)

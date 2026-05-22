@@ -108,4 +108,130 @@ function escapeHtml(s) {
   }[c]))
 }
 
+// ---------- EAP scope-grant toggles ----------
+
+const EAP_SCOPES = [
+  {
+    scope: 'edge:browser:notification',
+    label: 'Show notifications',
+    desc: 'macOS Notification Center pings. Requires per-site grant in System Settings.',
+  },
+  {
+    scope: 'edge:browser:overlay',
+    label: 'Fire interrupt overlays',
+    desc: 'Render an LLM-composed message over the active tab.',
+  },
+  {
+    scope: 'edge:browser:tab_close',
+    label: 'Close tabs',
+    desc: 'Programmatically close tabs (e.g. close a Reddit tab during a focus block).',
+  },
+  {
+    scope: 'edge:browser:tab_open',
+    label: 'Open and navigate tabs',
+    desc: 'Create new tabs or navigate the active tab to a URL.',
+  },
+  {
+    scope: 'edge:browser:read:active_url',
+    label: 'Read active URL host',
+    desc: 'Host-only — never the path or query string. e.g. "reddit.com".',
+  },
+  {
+    scope: 'edge:browser:read:tab_count',
+    label: 'Read open-tab count',
+    desc: 'Total tab count for context. No URLs.',
+  },
+]
+
+function renderEapScopes(granted) {
+  const container = document.getElementById('eap-scopes')
+  if (!container) return
+  const grantedSet = new Set(Array.isArray(granted) ? granted : [])
+  container.innerHTML = ''
+  for (const s of EAP_SCOPES) {
+    const row = document.createElement('div')
+    row.className = 'eap-row'
+    row.innerHTML = `
+      <label>
+        <span class="scope">${escapeHtml(s.label)}</span>
+        <span class="desc">${escapeHtml(s.scope)} — ${escapeHtml(s.desc)}</span>
+      </label>
+      <input type="checkbox" data-eap-scope="${escapeHtml(s.scope)}" ${grantedSet.has(s.scope) ? 'checked' : ''} />
+    `
+    container.appendChild(row)
+  }
+  container.querySelectorAll('input[data-eap-scope]').forEach((input) => {
+    input.addEventListener('change', async (e) => {
+      const target = e.currentTarget
+      const scope = target.dataset.eapScope
+      const checked = target.checked
+      const current = new Set(Array.isArray(granted) ? granted : [])
+      if (checked) current.add(scope)
+      else current.delete(scope)
+      granted = Array.from(current)
+      await ext.runtime.sendMessage({ type: 'COYL_EAP_SET_SCOPES', scopes: granted })
+      void refreshEapStatus()
+    })
+  })
+}
+
+async function refreshEapStatus() {
+  const status = await ext.runtime.sendMessage({ type: 'COYL_EAP_STATUS' })
+  const el = document.getElementById('eap-status')
+  if (!el || !status) return
+  if (!status.enabled) {
+    el.innerHTML = 'EAP status: <strong>disabled</strong>.'
+    return
+  }
+  if (!status.paired) {
+    el.innerHTML = 'EAP status: <strong>enabled but not paired</strong> — set userId + token above.'
+    return
+  }
+  const lastPoll = status.lastPollAt ? new Date(status.lastPollAt).toLocaleTimeString() : 'never'
+  const lastReg = status.lastRegisterAt ? new Date(status.lastRegisterAt).toLocaleTimeString() : 'never'
+  el.innerHTML =
+    `EAP status: <strong>active</strong>. Device <code>${escapeHtml(status.deviceId ?? 'pending')}</code>. ` +
+    `Last poll: ${escapeHtml(lastPoll)}. Last register: ${escapeHtml(lastReg)}. ` +
+    `Granted scopes: ${status.scopes.length}.`
+}
+
+async function loadEapState() {
+  const status = await ext.runtime.sendMessage({ type: 'COYL_EAP_STATUS' })
+  const enabledInput = document.getElementById('eap-enabled')
+  if (status && enabledInput) {
+    enabledInput.checked = status.enabled === true
+  }
+  renderEapScopes(status?.scopes ?? [])
+  void refreshEapStatus()
+}
+
+const enabledToggle = document.getElementById('eap-enabled')
+if (enabledToggle) {
+  enabledToggle.addEventListener('change', async (e) => {
+    const checked = e.currentTarget.checked
+    await ext.runtime.sendMessage({
+      type: checked ? 'COYL_EAP_ENABLE' : 'COYL_EAP_DISABLE',
+    })
+    void refreshEapStatus()
+  })
+}
+
+const pairingBtn = document.getElementById('eap-save-pairing')
+if (pairingBtn) {
+  pairingBtn.addEventListener('click', async () => {
+    const userId = document.getElementById('eap-user-id').value.trim()
+    const partnerToken = document.getElementById('eap-partner-token').value.trim()
+    if (!userId || !partnerToken) return
+    await ext.runtime.sendMessage({
+      type: 'COYL_EAP_SET_PAIRING',
+      userId,
+      partnerToken,
+    })
+    // Clear the token field — never display the token after save.
+    document.getElementById('eap-partner-token').value = ''
+    void refreshEapStatus()
+  })
+}
+
 load()
+void loadEapState()

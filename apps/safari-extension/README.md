@@ -176,3 +176,25 @@ browser.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
 ---
 
 *Safari extension v0.1 — May 2026. Same overlay, Apple distribution.*
+
+---
+
+## EAP coordinator additions (Safari)
+
+The Safari Web Extension now ALSO functions as an EAP edge device.
+
+Safari-specific limitations:
+- No browser.idle API → screen_state sensor unavailable
+- Tab event history not persisted by Safari → sliding-window rate
+  computation is best-effort on background.js memory
+- Notifications require per-site user grant (Chrome has a global grant)
+- Polling interval extended from 30s (Chrome) to 60s to respect
+  Safari's stricter idle timeout for persistent background contexts
+
+~50% actuator coverage on Safari (vs ~70% on Chrome/Edge/Firefox).
+
+Founder Xcode steps — no changes to the existing Safari Web Extension
+target setup (commit a08f58e). The new eap-*.js files load
+automatically via background.js imports + manifest.json
+background.scripts inclusion.
+

@@ -52,6 +52,44 @@
       }
       .threshold-row input { max-width: 80px; text-align: center; }
       .muted { color: var(--muted); font-size: 12px; line-height: 1.5; }
+      .eap-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 12px 14px; background: var(--surface);
+        border: 1px solid var(--border); border-radius: 8px;
+        margin-bottom: 6px;
+      }
+      .eap-row label { display: flex; flex-direction: column; gap: 2px; }
+      .eap-row .scope { font-size: 13px; font-weight: 600; }
+      .eap-row .desc { font-size: 11px; color: var(--muted); }
+      .eap-row input[type="checkbox"] {
+        appearance: none; width: 36px; height: 20px; border-radius: 10px;
+        background: #23252a; position: relative; cursor: pointer; flex-shrink: 0;
+        transition: background 120ms ease;
+      }
+      .eap-row input[type="checkbox"]::after {
+        content: ''; position: absolute; width: 16px; height: 16px;
+        border-radius: 50%; background: white; top: 2px; left: 2px;
+        transition: left 120ms ease;
+      }
+      .eap-row input[type="checkbox"]:checked { background: var(--accent); }
+      .eap-row input[type="checkbox"]:checked::after { left: 18px; }
+      .eap-pairing {
+        display: flex; flex-direction: column; gap: 8px;
+        padding: 14px; background: var(--surface);
+        border: 1px solid var(--border); border-radius: 8px;
+      }
+      .eap-pairing input { width: 100%; }
+      .eap-status {
+        font-size: 12px; color: var(--muted);
+        padding: 8px 0;
+      }
+      .eap-status strong { color: var(--text); }
+      .eap-gap {
+        border-left: 2px solid var(--accent);
+        padding: 8px 12px; margin: 8px 0;
+        background: rgba(255,102,0,0.08);
+        font-size: 11px; color: var(--muted);
+      }
     </style>
   </head>
   <body>
@@ -78,6 +116,42 @@
       <h2>Muted</h2>
       <p class="muted">Domains you've snoozed. Expire automatically except for "forever" mutes.</p>
       <ul id="muted"></ul>
+
+      <h2>Edge AI Protocol</h2>
+      <p class="muted">Let foundation-lab LLMs (Claude, ChatGPT, Gemini) propose
+        actions on this device through the COYL EAP coordinator. Every
+        action is governed by the scope grants below — nothing fires
+        without an explicit toggle here.</p>
+
+      <div class="eap-row" style="margin-bottom: 12px;">
+        <label>
+          <span class="scope">Enable EAP on this device</span>
+          <span class="desc">Off by default. Required before any LLM-initiated action can fire.</span>
+        </label>
+        <input type="checkbox" id="eap-enabled" />
+      </div>
+
+      <div class="eap-pairing" id="eap-pairing">
+        <label class="muted" for="eap-user-id">COYL user ID (from coyl.ai/settings/devices)</label>
+        <input id="eap-user-id" placeholder="u_xxxxxxxxxxxx" />
+        <label class="muted" for="eap-partner-token">Partner pairing token</label>
+        <input id="eap-partner-token" placeholder="coyl_pap_…" type="password" />
+        <button class="add-btn" id="eap-save-pairing" style="align-self: flex-start;">Pair device</button>
+      </div>
+
+      <p class="muted" style="margin-top: 16px;">Scope grants — each toggle is one EAP scope. Granular by design (per the EAP v0.1 spec). Revoke anytime.</p>
+
+      <div id="eap-scopes"></div>
+
+      <div class="eap-gap">
+        Safari-specific gaps: screen_state sensor is unavailable
+        (Safari does not expose <code>browser.idle</code>). Notifications
+        require a per-site grant in macOS System Settings → Notifications.
+        Tab-event history is best-effort because Safari does not persist
+        background-page memory across suspensions.
+      </div>
+
+      <div class="eap-status" id="eap-status">EAP status: not initialized.</div>
     </div>
 
     <script src="options.js"></script>

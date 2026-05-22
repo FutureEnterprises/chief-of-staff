@@ -14,6 +14,12 @@
     "https://coyl.ai/*"
   ],
   "background": {
+    "scripts": [
+      "eap-sensors.js",
+      "eap-actuators.js",
+      "eap-coordinator.js",
+      "background.js"
+    ],
     "service_worker": "background.js",
     "type": "module"
   },
