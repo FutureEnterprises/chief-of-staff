@@ -137,7 +137,7 @@ export default function PressPage() {
               Search engines organized information.<br />
               Social networks organized attention.<br />
               Large language models organized language.<br />
-              <span className="italic text-orange-600">COYL organizes intervention.</span>
+              <span className="italic text-orange-600">COYL organizes the 3 seconds between impulse and action.</span>
             </p>
           </blockquote>
         </section>

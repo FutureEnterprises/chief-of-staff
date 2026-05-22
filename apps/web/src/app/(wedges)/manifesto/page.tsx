@@ -41,7 +41,7 @@ import { SafetyBanner } from '@/components/safety/safety-banner'
 export const metadata: Metadata = {
   title: 'Manifesto — AI has never met human behavior before',
   description:
-    'COYL is the missing behavioral interface between AI and real life. Search engines organized information. Social networks organized attention. LLMs organized language. COYL organizes intervention.',
+    'COYL is the missing behavioral interface between AI and real life. Search engines organized information. Social networks organized attention. LLMs organized language. COYL organizes the 3 seconds between impulse and action.',
   keywords: [
     'behavioral interface',
     'behavioral interface for ai',
@@ -151,7 +151,7 @@ export default function ManifestoPage() {
               <p>Search engines organized information.</p>
               <p>Social networks organized attention.</p>
               <p>Large language models organized language.</p>
-              <p className="italic text-orange-600">COYL organizes intervention.</p>
+              <p className="italic text-orange-600">COYL organizes the 3 seconds between impulse and action.</p>
             </blockquote>
             <figcaption className="mt-8 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">
               The four-line stanza
