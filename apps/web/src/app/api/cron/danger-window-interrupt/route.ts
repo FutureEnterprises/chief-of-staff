@@ -7,6 +7,10 @@ import { classifyState } from '@/lib/user-state'
 import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
 import { sendWebPushForUser } from '@/lib/web-push'
 import { shouldFire } from '@/lib/notification-prefs'
+import {
+  pushLiveActivityUpdate,
+  isLiveActivityTokenDead,
+} from '@/lib/live-activity-push'
 
 export const maxDuration = 120
 
@@ -145,6 +149,16 @@ export async function GET(req: Request) {
         },
       })
 
+      // Pre-flight the Live Activity registration so the channel string
+      // can include 'live_activity' before recordInterrupt freezes it.
+      // The actual APNs push happens further down alongside the other
+      // wires; here we're only checking eligibility.
+      const liveActivity = await prisma.liveActivityRegistration.findFirst({
+        where: { userId: user.id, active: true },
+        orderBy: { startedAt: 'desc' },
+        select: { id: true, activityId: true, pushToken: true },
+      })
+
       // Channel string reflects every wire the interrupt will be sent on.
       // Used by the autopilot-autopsy analytics + interrupt-feedback
       // weighting; an interrupt that fired on push+web+email gets the
@@ -152,6 +166,7 @@ export async function GET(req: Request) {
       const channels: string[] = []
       if (user.expoPushToken) channels.push('expo')
       if (user.webPushSubscription) channels.push('web')
+      if (liveActivity?.pushToken) channels.push('live_activity')
       if (resend) channels.push('email')
 
       // Record the interrupt FIRST so we can include its id in the
@@ -213,6 +228,50 @@ export async function GET(req: Request) {
         subscription: user.webPushSubscription,
         payload: { title: pushTitle, body: pushBody, data: pushData },
       })
+
+      // iOS Live Activity update — uses the pre-flighted `liveActivity`
+      // row (queried above so the channel string could include it).
+      // APNs Live Activity pushes use a separate auth channel (token-auth
+      // JWT with .p8 key) from Expo's push gateway.
+      //
+      // Silent skip when:
+      //   • the user has no active LiveActivityRegistration row
+      //     (most users; they're on web or pre-iOS-release)
+      //   • the row has no pushToken yet (iOS hasn't finished the
+      //     pushTokenUpdates handshake)
+      //   • APNS_* env vars aren't configured yet (founder pre-launch
+      //     state — the helper returns apns_not_configured and we
+      //     swallow it here).
+      if (liveActivity?.pushToken) {
+        // Compute a coarse minutes-remaining for the widget timer. The
+        // window has integer-hour bounds; using the end-of-current-hour
+        // as the floor gives us at least one tick of "59 min" and
+        // counts down naturally as the cron re-fires every 15 min.
+        const minutesRemaining = Math.max(0, (window.endHour - currentHour) * 60)
+        const result = await pushLiveActivityUpdate({
+          pushToken: liveActivity.pushToken,
+          activityId: liveActivity.activityId,
+          contentState: {
+            headline: pushTitle,
+            subhead: pushBody,
+            timeRemainingSec: minutesRemaining * 60,
+          },
+          event: 'update',
+          staleAfterSec: 60 * 60,
+        })
+        if (!result.ok && isLiveActivityTokenDead(result)) {
+          // APNs says the token is dead — flip the row inactive so
+          // the next cron tick doesn't keep trying the same dead
+          // endpoint. The user's next /api/v1/live-activity/register
+          // call will create a fresh active row.
+          await prisma.liveActivityRegistration
+            .update({
+              where: { id: liveActivity.id },
+              data: { active: false, endedAt: new Date() },
+            })
+            .catch(() => {})
+        }
+      }
 
       // Email fallback — same voice, slightly longer form
       if (resend) {

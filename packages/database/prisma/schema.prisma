@@ -15,31 +15,31 @@ datasource db {
 // ============================================================
 
 model User {
-  id                    String    @id @default(cuid())
-  clerkId               String    @unique
-  email                 String    @unique
-  name                  String
-  avatarUrl             String?
-  timezone              String    @default("America/New_York")
-  morningCheckinTime    String    @default("08:00")
-  nightCheckinTime      String    @default("21:00")
-  briefingTime          String    @default("07:00")
-  reminderIntensity     ReminderIntensity @default(STANDARD)
-  emailBriefingEnabled  Boolean   @default(true)
-  emailBriefingDays     String[]  @default(["MON", "TUE", "WED", "THU", "FRI"])
-  planType              PlanType  @default(FREE)
-  aiAssistsUsed         Int       @default(0)
-  aiAssistsResetAt      DateTime  @default(now())
-  trialEndsAt           DateTime?
-  onboardingCompleted   Boolean   @default(false)
-  expoPushToken         String?
+  id                   String            @id @default(cuid())
+  clerkId              String            @unique
+  email                String            @unique
+  name                 String
+  avatarUrl            String?
+  timezone             String            @default("America/New_York")
+  morningCheckinTime   String            @default("08:00")
+  nightCheckinTime     String            @default("21:00")
+  briefingTime         String            @default("07:00")
+  reminderIntensity    ReminderIntensity @default(STANDARD)
+  emailBriefingEnabled Boolean           @default(true)
+  emailBriefingDays    String[]          @default(["MON", "TUE", "WED", "THU", "FRI"])
+  planType             PlanType          @default(FREE)
+  aiAssistsUsed        Int               @default(0)
+  aiAssistsResetAt     DateTime          @default(now())
+  trialEndsAt          DateTime?
+  onboardingCompleted  Boolean           @default(false)
+  expoPushToken        String?
   // Web Push subscription for users who don't have the mobile app yet.
   // PushSubscription JSON from the browser's PushManager.subscribe() —
   // shape: { endpoint, expirationTime, keys: { p256dh, auth } }.
   // The danger-window-interrupt cron sends web push to any user with
   // this set, in parallel with Expo push for the mobile cohort. Lets
   // web-only and pre-App-Store-launch users get real-time interrupts.
-  webPushSubscription   Json?
+  webPushSubscription  Json?
   // Per-interrupt-channel opt-out + quiet hours. Single Json blob so
   // adding a new interrupt class (SMS, accountability partner ping,
   // etc.) doesn't require a migration. Shape:
@@ -52,52 +52,52 @@ model User {
   //   }
   // Crons read this before firing. Quiet hours are interpreted in the
   // user's timezone — same logic the danger-window match already uses.
-  notificationPrefs     Json?
+  notificationPrefs    Json?
   // GLP-1 companion profile — set during onboarding for users on
   // Ozempic / Wegovy / Mounjaro / Zepbound / etc. Drives the day-3
   // post-injection intervention timing in the precision-interrupt
   // cron and unlocks the clinician-shareable summary feature for B2B
   // partners. All fields nullable so non-GLP-1 users are unaffected.
-  glp1Drug              String?     // Ozempic, Wegovy, Mounjaro, Zepbound, "compounded", or other free-text
-  glp1InjectionWeekday  Int?        // 0=Sun..6=Sat — day the user injects, in their local timezone
-  glp1StartedAt         DateTime?   // approximate start date for the prescription
-  glp1EndedAt           DateTime?   // null while still on the drug; set when user comes off (triggers 90-day relapse-prevention protocol)
+  glp1Drug             String? // Ozempic, Wegovy, Mounjaro, Zepbound, "compounded", or other free-text
+  glp1InjectionWeekday Int? // 0=Sun..6=Sat — day the user injects, in their local timezone
+  glp1StartedAt        DateTime? // approximate start date for the prescription
+  glp1EndedAt          DateTime? // null while still on the drug; set when user comes off (triggers 90-day relapse-prevention protocol)
   // Intent data (collected during onboarding)
-  role                  String?
-  useCase               String?
-  referralSource        String?
-  biggestGoal           String?
-  failurePattern        String?
-  lastActiveAt          DateTime  @default(now())
+  role                 String?
+  useCase              String?
+  referralSource       String?
+  biggestGoal          String?
+  failurePattern       String?
+  lastActiveAt         DateTime          @default(now())
   // Execution Score & Streaks
-  executionScore        Int       @default(0)
-  currentStreak         Int       @default(0)
-  longestStreak         Int       @default(0)
-  lastCompletionDate    DateTime?
+  executionScore       Int               @default(0)
+  currentStreak        Int               @default(0)
+  longestStreak        Int               @default(0)
+  lastCompletionDate   DateTime?
   // Gamification
-  level                 Int       @default(1)
-  xp                    Int       @default(0)
+  level                Int               @default(1)
+  xp                   Int               @default(0)
   // Public profile
-  profilePublic         Boolean   @default(false)
-  profileSlug           String?   @unique
+  profilePublic        Boolean           @default(false)
+  profileSlug          String?           @unique
   // Autopilot Interruption System
-  primaryWedge          PrimaryWedge  @default(PRODUCTIVITY)
-  selfTrustScore        Int       @default(0)
-  dangerWindows         Json?     // { "mon": ["21:00-23:00"], "sat": ["14:00-18:00"] }
-  excuseStyle           ExcuseCategory?
-  recoveryState         RecoveryState @default(ACTIVE)
-  identityState         IdentityState @default(SLEEPWALKING)
-  toneMode              ToneMode  @default(MENTOR)
-  lastSlipAt            DateTime?
-  slipsThisMonth        Int       @default(0)
+  primaryWedge         PrimaryWedge      @default(PRODUCTIVITY)
+  selfTrustScore       Int               @default(0)
+  dangerWindows        Json? // { "mon": ["21:00-23:00"], "sat": ["14:00-18:00"] }
+  excuseStyle          ExcuseCategory?
+  recoveryState        RecoveryState     @default(ACTIVE)
+  identityState        IdentityState     @default(SLEEPWALKING)
+  toneMode             ToneMode          @default(MENTOR)
+  lastSlipAt           DateTime?
+  slipsThisMonth       Int               @default(0)
   // Referral / growth
-  referralCode          String?   @unique
-  referredByUserId      String?
+  referralCode         String?           @unique
+  referredByUserId     String?
   // Pending referral credit, in whole months. Each successful referral
   // grants +1 to both referrer and referred (when the referred user
   // starts paying). Credits are redeemed at next Stripe checkout as a
   // 100%-off one-cycle coupon; decremented atomically when applied.
-  referralCreditMonths  Int       @default(0)
+  referralCreditMonths Int               @default(0)
   // Drive profile + personalized replacement menu. Per product-roadmap
   // v3 §"Gap 2 — Replacement Problem", generic "drink water + walk 5
   // min" doesn't satisfy the cortisol+craving loop. The user picks a
@@ -112,45 +112,91 @@ model User {
   //     { label: "Voice memo to Sam", drive: "STIMULATION", est_minutes: 2 },
   //     { label: "3-min mobile chess", drive: "RELIEF", est_minutes: 3 }
   //   ]
-  driveProfile          DriveProfile?
-  replacementMenu       Json?
+  driveProfile         DriveProfile?
+  replacementMenu      Json?
   // Stripe Connect for stakes
-  stripeConnectId       String?
+  stripeConnectId      String?
   // Integrations
-  healthIntegrations    Json?     // { apple: true, google: false, calendar: "google" }
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  healthIntegrations   Json? // { apple: true, google: false, calendar: "google" }
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
 
-  tasks                 Task[]
-  projects              Project[]
-  tags                  Tag[]
-  checkins              Checkin[]
-  reminders             Reminder[]
-  productivityEvents    ProductivityEvent[]
-  aiInteractions        AiInteraction[]
-  billingSubscription   BillingSubscription?
-  emailBriefings        EmailBriefing[]
-  badges                UserBadge[]
-  challengeEntries      ChallengeEntry[]
+  tasks               Task[]
+  projects            Project[]
+  tags                Tag[]
+  checkins            Checkin[]
+  reminders           Reminder[]
+  productivityEvents  ProductivityEvent[]
+  aiInteractions      AiInteraction[]
+  billingSubscription BillingSubscription?
+  emailBriefings      EmailBriefing[]
+  badges              UserBadge[]
+  challengeEntries    ChallengeEntry[]
   // Autopilot relations
-  excuses               Excuse[]
-  dangerWindowRecords   DangerWindow[]
-  rescueSessions        RescueSession[]
-  decisionLogs          DecisionLog[]
-  commitments           Commitment[]
-  slipRecords           SlipRecord[]
-  scenarios             ScenarioSim[]
+  excuses             Excuse[]
+  dangerWindowRecords DangerWindow[]
+  rescueSessions      RescueSession[]
+  decisionLogs        DecisionLog[]
+  commitments         Commitment[]
+  slipRecords         SlipRecord[]
+  scenarios           ScenarioSim[]
   // Accountability + stakes
-  partnersAsOwner       AccountabilityPartner[] @relation("PartnerOwner")
-  partnersAsPeer        AccountabilityPartner[] @relation("PartnerPeer")
-  podMemberships        PodMember[]
-  podsOwned             ChallengePod[]          @relation("PodOwner")
-  stakes                Stake[]
+  partnersAsOwner     AccountabilityPartner[]    @relation("PartnerOwner")
+  partnersAsPeer      AccountabilityPartner[]    @relation("PartnerPeer")
+  podMemberships      PodMember[]
+  podsOwned           ChallengePod[]             @relation("PodOwner")
+  stakes              Stake[]
   // Referrals
-  referralsMade         Referral[]              @relation("Referrer")
-  referralsReceived     Referral[]              @relation("Referred")
+  referralsMade       Referral[]                 @relation("Referrer")
+  referralsReceived   Referral[]                 @relation("Referred")
+  // iOS Live Activities — one row per ActivityKit Activity the user starts.
+  // Server pushes interrupt updates here via APNs liveactivity-type pushes.
+  // See apps/web/src/lib/live-activity-push.ts.
+  liveActivities      LiveActivityRegistration[]
 
   @@map("users")
+}
+
+// ============================================================
+// LIVE ACTIVITIES (iOS)
+// ============================================================
+
+/**
+ * LiveActivityRegistration — tracks an active iOS ActivityKit Live
+ * Activity so the server can push updates to it via APNs.
+ * When the iOS app starts a Live Activity, ActivityKit emits two
+ * push tokens via async sequences:
+ * 1. The activity-scoped `pushToken` (per-activity) — used here.
+ * 2. The user-scoped `pushToStartToken` — used to start NEW Live
+ * Activities remotely (out of scope for this row).
+ * The Expo bridge POSTs the activity-scoped token to
+ * /api/v1/live-activity/register, which upserts a row here. The
+ * danger-window-interrupt cron reads this table to decide whether
+ * to fan an interrupt out as a Live Activity update in addition to
+ * the existing Expo/Web push channels.
+ * Only ONE active registration per user at a time — when a new
+ * registration arrives, prior rows are flipped to active=false. This
+ * mirrors the iOS spec: a user can only have one Live Activity for
+ * a given attribute type running on the lock screen at once.
+ */
+model LiveActivityRegistration {
+  id          String    @id @default(cuid())
+  userId      String
+  activityId  String // the iOS Activity.id returned by ActivityKit
+  pushToken   String? // APNs push token for this specific activity (hex-encoded)
+  interruptId String? // ProductivityEvent id this activity is associated with
+  archetype   String?
+  startedAt   DateTime  @default(now())
+  endedAt     DateTime?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, activityId])
+  @@index([userId, active])
+  @@index([pushToken])
+  @@map("live_activity_registrations")
 }
 
 // ============================================================
@@ -158,19 +204,19 @@ model User {
 // ============================================================
 
 model Excuse {
-  id           String          @id @default(cuid())
-  userId       String
-  text         String
-  category     ExcuseCategory
-  source       ExcuseSource    @default(CHAT)
-  context      Json?
-  createdAt    DateTime        @default(now())
+  id        String         @id @default(cuid())
+  userId    String
+  text      String
+  category  ExcuseCategory
+  source    ExcuseSource   @default(CHAT)
+  context   Json?
+  createdAt DateTime       @default(now())
 
-  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("excuses")
   @@index([userId, category])
   @@index([userId, createdAt])
+  @@map("excuses")
 }
 
 /**
@@ -181,20 +227,20 @@ model Excuse {
  * reward. Three profiles cover ~90% of cases.
  */
 enum DriveProfile {
-  COMFORT       // warmth, soothing, safety-seeking
-  STIMULATION   // novelty, dopamine, distraction-seeking
-  RELIEF        // boredom relief, mental break, escape
+  COMFORT // warmth, soothing, safety-seeking
+  STIMULATION // novelty, dopamine, distraction-seeking
+  RELIEF // boredom relief, mental break, escape
 }
 
 enum ExcuseCategory {
-  DELAY                // "I'll start tomorrow"
-  REWARD               // "I deserve it"
-  MINIMIZATION         // "one time won't matter"
-  COLLAPSE             // "I already blew it"
-  EXHAUSTION           // "I'm too tired"
-  EXCEPTION            // "this week is weird"
-  COMPENSATION         // "I'll make up for it later"
-  SOCIAL_PRESSURE      // "I can't say no here"
+  DELAY // "I'll start tomorrow"
+  REWARD // "I deserve it"
+  MINIMIZATION // "one time won't matter"
+  COLLAPSE // "I already blew it"
+  EXHAUSTION // "I'm too tired"
+  EXCEPTION // "this week is weird"
+  COMPENSATION // "I'll make up for it later"
+  SOCIAL_PRESSURE // "I can't say no here"
 }
 
 enum ExcuseSource {
@@ -205,43 +251,43 @@ enum ExcuseSource {
 }
 
 model DangerWindow {
-  id           String    @id @default(cuid())
-  userId       String
-  label        String    // "Late-night kitchen", "Friday happy hour"
-  dayOfWeek    Int       // 0 (Sun) through 6 (Sat), -1 = all days
-  startHour    Int       // 0-23 local time
-  endHour      Int       // 0-23 local time
-  triggerType  String?   // "stress", "social", "idle", "post-work"
-  source       String    @default("user") // "user", "inferred"
-  active       Boolean   @default(true)
-  createdAt    DateTime  @default(now())
+  id          String   @id @default(cuid())
+  userId      String
+  label       String // "Late-night kitchen", "Friday happy hour"
+  dayOfWeek   Int // 0 (Sun) through 6 (Sat), -1 = all days
+  startHour   Int // 0-23 local time
+  endHour     Int // 0-23 local time
+  triggerType String? // "stress", "social", "idle", "post-work"
+  source      String   @default("user") // "user", "inferred"
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
 
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("danger_windows")
   @@index([userId, active])
+  @@map("danger_windows")
 }
 
 model RescueSession {
-  id            String         @id @default(cuid())
-  userId        String
-  trigger       RescueTrigger
-  customText    String?
-  intervention  Json           // AI response
-  outcome       RescueOutcome  @default(PENDING)
-  startedAt     DateTime       @default(now())
-  resolvedAt    DateTime?
+  id           String        @id @default(cuid())
+  userId       String
+  trigger      RescueTrigger
+  customText   String?
+  intervention Json // AI response
+  outcome      RescueOutcome @default(PENDING)
+  startedAt    DateTime      @default(now())
+  resolvedAt   DateTime?
   // Public-share token for the Autopilot Interrupted card. Generated
   // when the user marks a rescue as PULLED_THROUGH and taps "share."
   // Distinct from id so the share URL can't be guessed from sequential
   // session IDs. Optional — most rescues will never be shared.
-  shareCode     String?        @unique
+  shareCode    String?       @unique
 
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("rescue_sessions")
   @@index([userId, startedAt])
   @@index([shareCode])
+  @@map("rescue_sessions")
 }
 
 enum RescueTrigger {
@@ -260,52 +306,52 @@ enum RescueTrigger {
 
 enum RescueOutcome {
   PENDING
-  INTERRUPTED    // user pulled back
-  SLIPPED        // user did the thing anyway
-  UNRESOLVED     // no follow-up
+  INTERRUPTED // user pulled back
+  SLIPPED // user did the thing anyway
+  UNRESOLVED // no follow-up
 }
 
 model DecisionLog {
-  id              String    @id @default(cuid())
-  userId          String
-  context         String    // what the user was deciding
-  bestMove        String?
-  worstCase       String?
-  excuseDetected  String?
-  smallestStep    String?
-  userChose       String?
-  outcome         String?   // "followed", "slipped", "unresolved"
-  savedAsTaskId   String?
-  createdAt       DateTime  @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  context        String // what the user was deciding
+  bestMove       String?
+  worstCase      String?
+  excuseDetected String?
+  smallestStep   String?
+  userChose      String?
+  outcome        String? // "followed", "slipped", "unresolved"
+  savedAsTaskId  String?
+  createdAt      DateTime @default(now())
 
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("decision_logs")
   @@index([userId, createdAt])
+  @@map("decision_logs")
 }
 
 model Commitment {
-  id            String              @id @default(cuid())
-  userId        String
-  rule          String              // "no food after 9 PM"
-  domain        CommitmentDomain    @default(OTHER)
-  frequency     CommitmentFrequency @default(DAILY)
-  active        Boolean             @default(true)
-  startedAt     DateTime            @default(now())
-  endsAt        DateTime?
-  stakeAmountCents Int?             // optional financial stake
-  stakeId       String?             @unique
-  keepCount     Int                 @default(0)
-  breakCount    Int                 @default(0)
-  lastCheckedAt DateTime?
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
+  id               String              @id @default(cuid())
+  userId           String
+  rule             String // "no food after 9 PM"
+  domain           CommitmentDomain    @default(OTHER)
+  frequency        CommitmentFrequency @default(DAILY)
+  active           Boolean             @default(true)
+  startedAt        DateTime            @default(now())
+  endsAt           DateTime?
+  stakeAmountCents Int? // optional financial stake
+  stakeId          String?             @unique
+  keepCount        Int                 @default(0)
+  breakCount       Int                 @default(0)
+  lastCheckedAt    DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
 
-  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stake         Stake?              @relation(fields: [stakeId], references: [id])
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stake Stake? @relation(fields: [stakeId], references: [id])
 
-  @@map("commitments")
   @@index([userId, active])
+  @@map("commitments")
 }
 
 enum CommitmentDomain {
@@ -336,26 +382,26 @@ model SlipRecord {
   recoveredAt   DateTime?
   createdAt     DateTime  @default(now())
 
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("slip_records")
   @@index([userId, createdAt])
+  @@map("slip_records")
 }
 
 model ScenarioSim {
-  id           String    @id @default(cuid())
-  userId       String
-  scenario     String    // the hypothetical
-  immediate    String?
-  behavioral   String?
-  identityHit  String?
-  alternative  String?
-  createdAt    DateTime  @default(now())
+  id          String   @id @default(cuid())
+  userId      String
+  scenario    String // the hypothetical
+  immediate   String?
+  behavioral  String?
+  identityHit String?
+  alternative String?
+  createdAt   DateTime @default(now())
 
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("scenario_sims")
   @@index([userId, createdAt])
+  @@map("scenario_sims")
 }
 
 // ============================================================
@@ -363,21 +409,21 @@ model ScenarioSim {
 // ============================================================
 
 model AccountabilityPartner {
-  id           String    @id @default(cuid())
-  ownerId      String
-  peerId       String?
-  peerEmail    String    // for pending invites
-  status       String    @default("pending") // "pending", "accepted", "declined"
-  invitedAt    DateTime  @default(now())
-  acceptedAt   DateTime?
+  id         String    @id @default(cuid())
+  ownerId    String
+  peerId     String?
+  peerEmail  String // for pending invites
+  status     String    @default("pending") // "pending", "accepted", "declined"
+  invitedAt  DateTime  @default(now())
+  acceptedAt DateTime?
 
-  owner        User      @relation("PartnerOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  peer         User?     @relation("PartnerPeer", fields: [peerId], references: [id], onDelete: SetNull)
+  owner User  @relation("PartnerOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  peer  User? @relation("PartnerPeer", fields: [peerId], references: [id], onDelete: SetNull)
 
-  @@map("accountability_partners")
   @@index([ownerId])
   @@index([peerId])
   @@index([peerEmail])
+  @@map("accountability_partners")
 }
 
 model ChallengePod {
@@ -393,64 +439,64 @@ model ChallengePod {
   active       Boolean   @default(true)
   createdAt    DateTime  @default(now())
 
-  owner        User      @relation("PodOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  members      PodMember[]
+  owner   User        @relation("PodOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members PodMember[]
 
   @@map("challenge_pods")
 }
 
 model PodMember {
-  id         String   @id @default(cuid())
-  podId      String
-  userId     String
-  joinedAt   DateTime @default(now())
-  leftAt     DateTime?
-  role       String   @default("member") // "owner", "member"
+  id       String    @id @default(cuid())
+  podId    String
+  userId   String
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
+  role     String    @default("member") // "owner", "member"
 
-  pod        ChallengePod @relation(fields: [podId], references: [id], onDelete: Cascade)
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pod  ChallengePod @relation(fields: [podId], references: [id], onDelete: Cascade)
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([podId, userId])
   @@map("pod_members")
 }
 
 model Stake {
-  id              String    @id @default(cuid())
-  userId          String
-  amountCents     Int
-  currency        String    @default("USD")
-  charityLabel    String    @default("GiveDirectly")
-  stripeIntentId  String?   // Stripe payment intent (pre-auth)
-  status          String    @default("active") // "active", "released", "charged", "refunded"
-  chargedAt       DateTime?
-  refundedAt      DateTime?
-  createdAt       DateTime  @default(now())
+  id             String    @id @default(cuid())
+  userId         String
+  amountCents    Int
+  currency       String    @default("USD")
+  charityLabel   String    @default("GiveDirectly")
+  stripeIntentId String? // Stripe payment intent (pre-auth)
+  status         String    @default("active") // "active", "released", "charged", "refunded"
+  chargedAt      DateTime?
+  refundedAt     DateTime?
+  createdAt      DateTime  @default(now())
 
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  commitment      Commitment?
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commitment Commitment?
 
-  @@map("stakes")
   @@index([userId])
+  @@map("stakes")
 }
 
 model Referral {
-  id              String    @id @default(cuid())
-  referrerId      String
-  referredId      String?   // null until signup
-  referredEmail   String?
-  code            String    @unique
-  converted       Boolean   @default(false)
-  convertedAt     DateTime?
-  referrerCredit  Int       @default(0)  // cents
-  referredCredit  Int       @default(0)
-  createdAt       DateTime  @default(now())
+  id             String    @id @default(cuid())
+  referrerId     String
+  referredId     String? // null until signup
+  referredEmail  String?
+  code           String    @unique
+  converted      Boolean   @default(false)
+  convertedAt    DateTime?
+  referrerCredit Int       @default(0) // cents
+  referredCredit Int       @default(0)
+  createdAt      DateTime  @default(now())
 
-  referrer        User      @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
-  referred        User?     @relation("Referred", fields: [referredId], references: [id], onDelete: SetNull)
+  referrer User  @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred User? @relation("Referred", fields: [referredId], references: [id], onDelete: SetNull)
 
-  @@map("referrals")
   @@index([code])
   @@index([referrerId])
+  @@map("referrals")
 }
 
 // ============================================================
@@ -468,17 +514,17 @@ enum PrimaryWedge {
 }
 
 enum RecoveryState {
-  ACTIVE       // in normal flow
-  SLIPPED      // just slipped, needs recovery
-  RECOVERING   // in recovery protocol
-  SILENT       // inactive 3+ days
+  ACTIVE // in normal flow
+  SLIPPED // just slipped, needs recovery
+  RECOVERING // in recovery protocol
+  SILENT // inactive 3+ days
 }
 
 enum IdentityState {
-  SLEEPWALKING          // pre-awareness
-  AVOIDANT              // dodging data
-  RECOVERING            // post-slip
-  UNSTABLE_BUT_TRYING   // trying, inconsistent
+  SLEEPWALKING // pre-awareness
+  AVOIDANT // dodging data
+  RECOVERING // post-slip
+  UNSTABLE_BUT_TRYING // trying, inconsistent
   INCREASINGLY_CONSCIOUS
   RESILIENT
   DISCIPLINED
@@ -486,70 +532,70 @@ enum IdentityState {
 }
 
 enum ToneMode {
-  MENTOR        // warm, supportive
-  STRATEGIST    // analytical, crisp
-  NO_BS         // blunt, calls out avoidance
-  BEAST         // high-pressure, confrontational
+  MENTOR // warm, supportive
+  STRATEGIST // analytical, crisp
+  NO_BS // blunt, calls out avoidance
+  BEAST // high-pressure, confrontational
 }
 
 model Badge {
-  id            String      @id @default(cuid())
-  slug          String      @unique
-  name          String
-  description   String
-  emoji         String
-  category      String      // "streak", "completion", "enforcement", "social"
-  xpReward      Int         @default(10)
-  requirement   Json        // e.g. { type: "streak", value: 7 }
-  createdAt     DateTime    @default(now())
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  emoji       String
+  category    String // "streak", "completion", "enforcement", "social"
+  xpReward    Int      @default(10)
+  requirement Json // e.g. { type: "streak", value: 7 }
+  createdAt   DateTime @default(now())
 
-  users         UserBadge[]
+  users UserBadge[]
 
   @@map("badges")
 }
 
 model UserBadge {
-  id        String   @id @default(cuid())
-  userId    String
-  badgeId   String
-  earnedAt  DateTime @default(now())
+  id       String   @id @default(cuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
 
   @@unique([userId, badgeId])
   @@map("user_badges")
 }
 
 model Challenge {
-  id            String    @id @default(cuid())
-  slug          String    @unique
-  name          String
-  description   String
-  emoji         String
-  durationDays  Int       // 7, 14, 30
-  rules         Json      // { type: "daily_completions", min: 1 } or { type: "streak", min: 7 }
-  xpReward      Int       @default(50)
-  badgeSlug     String?   // badge awarded on completion
-  active        Boolean   @default(true)
-  createdAt     DateTime  @default(now())
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  description  String
+  emoji        String
+  durationDays Int // 7, 14, 30
+  rules        Json // { type: "daily_completions", min: 1 } or { type: "streak", min: 7 }
+  xpReward     Int      @default(50)
+  badgeSlug    String? // badge awarded on completion
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
 
-  entries       ChallengeEntry[]
+  entries ChallengeEntry[]
 
   @@map("challenges")
 }
 
 model ChallengeEntry {
-  id            String    @id @default(cuid())
-  userId        String
-  challengeId   String
-  startedAt     DateTime  @default(now())
-  completedAt   DateTime?
-  progress      Int       @default(0) // days completed
-  status        String    @default("active") // "active", "completed", "failed"
+  id          String    @id @default(cuid())
+  userId      String
+  challengeId String
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  progress    Int       @default(0) // days completed
+  status      String    @default("active") // "active", "completed", "failed"
 
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  challenge     Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
 
   @@unique([userId, challengeId])
   @@map("challenge_entries")
@@ -560,8 +606,8 @@ enum PlanType {
   CORE
   PLUS
   PREMIUM
-  PRO          // legacy — maps to CORE for existing subscribers
-  TEAM         // legacy — maps to PLUS for existing subscribers
+  PRO // legacy — maps to CORE for existing subscribers
+  TEAM // legacy — maps to PLUS for existing subscribers
 }
 
 enum ReminderIntensity {
@@ -575,48 +621,47 @@ enum ReminderIntensity {
 // ============================================================
 
 model Task {
-  id                   String       @id @default(cuid())
-  userId               String
-  projectId            String?
-  parentTaskId         String?
-  title                String
-  description          String?
-  status               TaskStatus   @default(INBOX)
-  priority             TaskPriority @default(MEDIUM)
-  effortEstimate       EffortLevel?
-  dueAt                DateTime?
-  nextActionAt         DateTime?
-  followUpRequired     Boolean      @default(false)
-  nextFollowUpAt       DateTime?
-  followUpIntervalDays Int?
-  followUpMode         FollowUpMode?
+  id                    String        @id @default(cuid())
+  userId                String
+  projectId             String?
+  parentTaskId          String?
+  title                 String
+  description           String?
+  status                TaskStatus    @default(INBOX)
+  priority              TaskPriority  @default(MEDIUM)
+  effortEstimate        EffortLevel?
+  dueAt                 DateTime?
+  nextActionAt          DateTime?
+  followUpRequired      Boolean       @default(false)
+  nextFollowUpAt        DateTime?
+  followUpIntervalDays  Int?
+  followUpMode          FollowUpMode?
   followUpStopCondition String?
-  blockedReason        String?
-  snoozedUntil         DateTime?
-  completedAt          DateTime?
-  archivedAt           DateTime?
-  archiveReason        String?
-  source               TaskSource   @default(MANUAL)
-  aiConfidence         Float?
-  aiSuggestions        Json?
-  recurrenceRule       String?
-  isRecurring          Boolean      @default(false)
-  notes                String?
-  lastTouchedAt        DateTime?
-  snoozeCount          Int          @default(0)
-  createdAt            DateTime     @default(now())
-  updatedAt            DateTime     @updatedAt
+  blockedReason         String?
+  snoozedUntil          DateTime?
+  completedAt           DateTime?
+  archivedAt            DateTime?
+  archiveReason         String?
+  source                TaskSource    @default(MANUAL)
+  aiConfidence          Float?
+  aiSuggestions         Json?
+  recurrenceRule        String?
+  isRecurring           Boolean       @default(false)
+  notes                 String?
+  lastTouchedAt         DateTime?
+  snoozeCount           Int           @default(0)
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 
-  user                 User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  project              Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  parentTask           Task?        @relation("SubTasks", fields: [parentTaskId], references: [id], onDelete: SetNull)
-  subtasks             Task[]       @relation("SubTasks")
-  tags                 TaskTag[]
-  reminders            Reminder[]
-  productivityEvents   ProductivityEvent[]
-  aiInteractions       AiInteraction[]
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project            Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  parentTask         Task?               @relation("SubTasks", fields: [parentTaskId], references: [id], onDelete: SetNull)
+  subtasks           Task[]              @relation("SubTasks")
+  tags               TaskTag[]
+  reminders          Reminder[]
+  productivityEvents ProductivityEvent[]
+  aiInteractions     AiInteraction[]
 
-  @@map("tasks")
   @@index([userId, status])
   @@index([userId, status, dueAt])
   @@index([userId, status, completedAt])
@@ -624,6 +669,7 @@ model Task {
   @@index([userId, followUpRequired, nextFollowUpAt])
   @@index([userId, dueAt])
   @@index([userId, nextFollowUpAt])
+  @@map("tasks")
 }
 
 enum TaskStatus {
@@ -687,11 +733,11 @@ model Project {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tasks       Task[]
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks Task[]
 
-  @@map("projects")
   @@index([userId])
+  @@map("projects")
 }
 
 enum ProjectStatus {
@@ -714,21 +760,21 @@ model Tag {
   icon        String?
   createdAt   DateTime @default(now())
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  parentTag   Tag?     @relation("SubTags", fields: [parentTagId], references: [id], onDelete: SetNull)
-  subTags     Tag[]    @relation("SubTags")
-  tasks       TaskTag[]
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentTag Tag?      @relation("SubTags", fields: [parentTagId], references: [id], onDelete: SetNull)
+  subTags   Tag[]     @relation("SubTags")
+  tasks     TaskTag[]
 
-  @@map("tags")
   @@unique([userId, name])
+  @@map("tags")
 }
 
 model TaskTag {
   taskId String
   tagId  String
 
-  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([taskId, tagId])
   @@map("task_tags")
@@ -739,7 +785,7 @@ model TaskTag {
 // ============================================================
 
 model Checkin {
-  id            String       @id @default(cuid())
+  id            String      @id @default(cuid())
   userId        String
   type          CheckinType
   promptedAt    DateTime
@@ -748,12 +794,12 @@ model Checkin {
   summaryJson   Json?
   rawTranscript Json?
   taskIds       String[]
-  createdAt     DateTime     @default(now())
+  createdAt     DateTime    @default(now())
 
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("checkins")
   @@index([userId, type])
+  @@map("checkins")
 }
 
 enum CheckinType {
@@ -766,22 +812,22 @@ enum CheckinType {
 // ============================================================
 
 model Reminder {
-  id             String         @id @default(cuid())
-  userId         String
-  taskId         String?
-  reminderType   ReminderType
-  scheduledAt    DateTime
-  sentAt         DateTime?
-  channel        ReminderChannel
-  status         ReminderStatus  @default(PENDING)
-  metadataJson   Json?
-  createdAt      DateTime        @default(now())
+  id           String          @id @default(cuid())
+  userId       String
+  taskId       String?
+  reminderType ReminderType
+  scheduledAt  DateTime
+  sentAt       DateTime?
+  channel      ReminderChannel
+  status       ReminderStatus  @default(PENDING)
+  metadataJson Json?
+  createdAt    DateTime        @default(now())
 
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  task           Task?           @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
-  @@map("reminders")
   @@index([scheduledAt, status])
+  @@map("reminders")
 }
 
 enum ReminderType {
@@ -825,12 +871,12 @@ model ProductivityEvent {
   metadataJson Json?
   createdAt    DateTime  @default(now())
 
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  task         Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task Task? @relation(fields: [taskId], references: [id], onDelete: SetNull)
 
-  @@map("productivity_events")
   @@index([userId, createdAt])
   @@index([userId, eventType])
+  @@map("productivity_events")
 }
 
 enum EventType {
@@ -908,7 +954,7 @@ enum EventType {
 // ============================================================
 
 model AiInteraction {
-  id              String          @id @default(cuid())
+  id              String            @id @default(cuid())
   userId          String
   taskId          String?
   interactionType AiInteractionType
@@ -918,13 +964,13 @@ model AiInteraction {
   outputJson      Json
   tokenUsage      Json?
   durationMs      Int?
-  createdAt       DateTime        @default(now())
+  createdAt       DateTime          @default(now())
 
-  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  task            Task?           @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task Task? @relation(fields: [taskId], references: [id], onDelete: SetNull)
 
-  @@map("ai_interactions")
   @@index([userId, createdAt])
+  @@map("ai_interactions")
 }
 
 enum AiInteractionType {
@@ -943,18 +989,18 @@ enum AiInteractionType {
 // ============================================================
 
 model EmailBriefing {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   userId      String
   subject     String
   htmlContent String
   sentAt      DateTime?
-  status      String   @default("PENDING")
-  createdAt   DateTime @default(now())
+  status      String    @default("PENDING")
+  createdAt   DateTime  @default(now())
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("email_briefings")
   @@index([userId, createdAt])
+  @@map("email_briefings")
 }
 
 // ============================================================
@@ -976,7 +1022,7 @@ model BillingSubscription {
   trialEndsAt          DateTime?
   metadataJson         Json?
 
-  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("billing_subscriptions")
 }
@@ -985,30 +1031,28 @@ model BillingSubscription {
  * SmsSignup — captures phone numbers from the /catch-me funnel-
  * compression landing page. These are not full users yet; they've just
  * opted into a one-shot SMS "we'll text you tonight at 9pm" intro.
- *
  * The flow:
- *   TikTok bio link → /catch-me → user enters phone → row created
- *   → cron fires at user's local 9pm → introSentAt populated
- *   → SMS contains a deep link back to /sign-up?ref=sms
- *
+ * TikTok bio link → /catch-me → user enters phone → row created
+ * → cron fires at user's local 9pm → introSentAt populated
+ * → SMS contains a deep link back to /sign-up?ref=sms
  * Distinct from full users because (a) they haven't agreed to anything
  * beyond a single SMS, (b) we shouldn't pollute User analytics with
  * phone-only prospects, (c) GDPR right-to-erasure is cleaner on a
  * separate model.
  */
 model SmsSignup {
-  id          String    @id @default(cuid())
-  phoneNumber String    @unique
-  source      String?
+  id              String    @id @default(cuid())
+  phoneNumber     String    @unique
+  source          String?
   // ISO-3166 timezone string captured at signup (browser TZ). Used by
   // the SMS-send cron to fire intro messages at the user's local 9pm.
-  timezone    String?
-  introSentAt DateTime?
+  timezone        String?
+  introSentAt     DateTime?
   // Did this signup convert to a paid or free account? Populated by the
   // sign-up flow when the SMS deep-link is followed.
-  convertedAt DateTime?
+  convertedAt     DateTime?
   convertedUserId String?
-  createdAt   DateTime  @default(now())
+  createdAt       DateTime  @default(now())
 
   @@index([createdAt])
   @@map("sms_signups")
@@ -1021,16 +1065,13 @@ model SmsSignup {
 
 /**
  * MarketingPost — a draft / approved / posted marketing artifact.
- *
  * Drafts are generated via apps/web/src/lib/marketing/templates.ts
  * (composePrompt) and persisted here so the founder can edit, approve,
  * and (eventually) auto-post via Phase-3 platform adapters.
- *
  * Statuses move in roughly this order:
- *   DRAFT → APPROVED → POSTED
- *   DRAFT → REJECTED (terminal)
- *   APPROVED → ERRORED (auto-post failure; can flip back to APPROVED)
- *
+ * DRAFT → APPROVED → POSTED
+ * DRAFT → REJECTED (terminal)
+ * APPROVED → ERRORED (auto-post failure; can flip back to APPROVED)
  * finalBody is the human-edited version of draftBody. When null, the
  * draftBody is what gets posted. approvedBy stores the Clerk userId of
  * whoever flipped the post to APPROVED (single-admin model for v1).
@@ -1038,12 +1079,12 @@ model SmsSignup {
 model MarketingPost {
   id              String              @id @default(cuid())
   platform        MarketingPlatform
-  archetype       String?             // family slug or "category-launch" / "why-now" / "product-update"
+  archetype       String? // family slug or "category-launch" / "why-now" / "product-update"
   topic           String              @db.Text
   draftBody       String              @db.Text
   finalBody       String?             @db.Text
   status          MarketingPostStatus @default(DRAFT)
-  approvedBy      String?             // Clerk userId of the approver
+  approvedBy      String? // Clerk userId of the approver
   postedAt        DateTime?
   postedUrl       String?
   rejectionReason String?             @db.Text
@@ -1094,10 +1135,10 @@ enum MarketingPostStatus {
 // ============================================================
 
 model ScheduledInterrupt {
-  id              String   @id @default(cuid())
+  id              String                   @id @default(cuid())
   phoneNumber     String?
   email           String?
-  archetypeFamily String   // family slug, e.g. "the-9pm-negotiator"
+  archetypeFamily String // family slug, e.g. "the-9pm-negotiator"
   wedge           String
   window          String
   script          String
@@ -1106,10 +1147,10 @@ model ScheduledInterrupt {
   status          ScheduledInterruptStatus @default(PENDING)
   sentAt          DateTime?
   errorMessage    String?
-  createdAt       DateTime @default(now())
+  createdAt       DateTime                 @default(now())
 
-  @@map("scheduled_interrupts")
   @@index([status, scheduledFor])
+  @@map("scheduled_interrupts")
 }
 
 enum ScheduledInterruptStatus {
