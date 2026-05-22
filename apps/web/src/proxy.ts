@@ -33,6 +33,7 @@ const isPublicRoute = createRouteMatcher([
   '/glp1',
   '/pricing',
   '/research',
+  '/research/(.*)',
   '/clinical-study',
   '/procrastination',
   '/teams',
@@ -66,6 +67,11 @@ const isPublicRoute = createRouteMatcher([
   // API keys (coyl_pap_<id>_<secret>) instead of Clerk session cookies.
   '/api/eap/v1/(.*)',
   '/api/pap/v1/(.*)',
+  // Live coordinator simulator — public read-only POST endpoint that
+  // backs the /protocol "Try the protocol" interactive section. Runs
+  // the production confidence-gate function in-process with no DB writes.
+  // See apps/web/src/app/api/v1/protocol/demo/route.ts.
+  '/api/v1/protocol/demo',
   // Third-party OAuth callbacks & webhooks — providers redirect/POST here
   // without a Clerk session cookie, so Clerk's protect would 302 them to
   // sign-in and break the integration handshake. /auth subroutes stay
@@ -117,6 +123,7 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/glp1',
   '/pricing',
   '/research',
+  '/research/(.*)',
   '/clinical-study',
   '/procrastination',
   '/teams',
@@ -143,6 +150,7 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/api/cron/(.*)',
   '/api/v1/newsletter',
   '/api/v1/sms/intro',
+  '/api/v1/protocol/demo',
   '/api/health',
   '/profile/(.*)',
   // Integration OAuth callbacks + webhook receivers must also bypass the

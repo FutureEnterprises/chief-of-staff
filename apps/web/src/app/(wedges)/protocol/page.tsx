@@ -25,6 +25,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
+import { TryItLive } from './try-it-live'
 
 // ISR — static editorial content; 1-day revalidate window. Full cacheComponents migration with cacheTag-based surgical invalidation tracked as a follow-up.
 export const revalidate = 86400
@@ -341,6 +342,38 @@ Authorization: Bearer <llm_partner_key>
               },
             ]}
           />
+        </section>
+
+        {/* LIVE PROTOCOL SIMULATOR — per v2 strategy brief, the highest-leverage
+            move on this page is converting the spec from "open doc" to "running
+            integration you can hit right now." TryItLive POSTs to
+            /api/v1/protocol/demo, which executes the production confidence-gate
+            function in-process. Real coordinator decision, no auth, no DB writes. */}
+        <section className="space-y-10 border-t border-orange-500 pt-16">
+          <div className="space-y-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              02b · Live
+            </p>
+            <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+              The coordinator. <span className="italic text-orange-600">Not a diagram.</span>
+            </h2>
+            <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+              Pick a scenario. Slide a confidence. POST hits{' '}
+              <code className="font-mono text-[13px] text-orange-600">
+                /api/v1/protocol/demo
+              </code>{' '}
+              — which runs the same{' '}
+              <code className="font-mono text-[13px] text-orange-600">
+                isAboveConfidenceThreshold
+              </code>{' '}
+              function the production endpoint at{' '}
+              <code className="font-mono text-[13px] text-orange-600">
+                /api/pap/v1/proposal
+              </code>{' '}
+              uses. The decision you see is what the real coordinator returns.
+            </p>
+          </div>
+          <TryItLive />
         </section>
 
         {/* WHY THREE PROTOCOLS, NOT ONE */}
