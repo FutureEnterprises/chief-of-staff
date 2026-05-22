@@ -34,6 +34,7 @@ export function LandingFooter() {
   ]
 
   const partners = [
+    { label: 'Psyche AI', href: '/psyche' },
     { label: 'Protocol (BIP)', href: '/protocol' },
     { label: 'Developers', href: '/developers' },
     { label: 'Press kit', href: '/press' },

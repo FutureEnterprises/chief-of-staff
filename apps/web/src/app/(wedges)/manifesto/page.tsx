@@ -336,6 +336,42 @@ export default function ManifestoPage() {
           </div>
         </section>
 
+        {/* PSYCHE AI — name the category. Per the May 2026 audit brief
+            the manifesto closes with a condensed callout to /psyche so
+            readers leave with the noun ("Psyche AI") in their head, not
+            just the verb ("behavioral interface"). Full thinking lives
+            on /psyche; this is the bridge. */}
+        <section className="space-y-6 border-t border-gray-200 pt-16">
+          <BeatKicker n="06" label="Psyche AI" />
+          <h3 className="max-w-3xl font-serif text-4xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-6xl">
+            We named it.{' '}
+            <span className="italic text-orange-600">
+              The behavioral interface layer.
+            </span>
+          </h3>
+          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+            Every AI before COYL wrapped around external reality. Claude
+            wrapped around documents. ChatGPT wrapped around language.
+            MCP wrapped around software. Cursor wrapped around code.
+            None of them touched the part of you that runs underneath
+            conscious thought.
+          </p>
+          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+            We wrapped around the internal one &mdash; the psyche. The
+            pattern layer that opens the fridge before you&rsquo;ve
+            decided to. The category name is Psyche AI, and COYL is the
+            first product in it.
+          </p>
+          <p className="pt-2">
+            <Link
+              href="/psyche"
+              className="font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-orange-600 underline-offset-4 hover:underline"
+            >
+              Read the full thinking &rarr;
+            </Link>
+          </p>
+        </section>
+
         {/* SIGN-OFF — the editorial founder note */}
         <section className="border-t border-gray-200 pt-16">
           <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500">

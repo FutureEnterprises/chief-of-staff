@@ -47,6 +47,7 @@ type DropdownKey = 'product' | 'use-cases' | 'research' | null
 
 const PRODUCT: DropdownLink[] = [
   { label: 'Manifesto', href: '/manifesto', description: 'AI has never met human behavior before. Read the category claim.' },
+  { label: 'Psyche AI', href: '/psyche', description: 'The first AI wrapped around the human psyche. The category, named.' },
   { label: 'How it works', href: '/how-it-works', description: 'Detect, interrupt, recover — the three-step loop.' },
   { label: 'Autopilot audit', href: '/audit', description: '60 seconds. Find your archetype. Share the card.' },
   { label: 'Autopilot map', href: '/autopilot-map', description: 'Your danger windows visualised over the week.' },
