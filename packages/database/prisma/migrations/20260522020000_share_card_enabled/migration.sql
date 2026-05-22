@@ -11,4 +11,4 @@
 -- (DM screenshots, web archive crawls, link-preview caches) — the
 -- privacy default is correct, and re-enabling is one click away.
 
-ALTER TABLE "User" ADD COLUMN "shareCardEnabled" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "users" ADD COLUMN "shareCardEnabled" BOOLEAN NOT NULL DEFAULT false;
