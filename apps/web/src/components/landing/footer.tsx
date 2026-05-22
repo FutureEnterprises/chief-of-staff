@@ -38,6 +38,7 @@ export function LandingFooter() {
     { label: 'About', href: '/about' },
     { label: 'Advisors', href: '/advisors' },
     { label: 'Clinical board', href: '/clinical-board' },
+    { label: 'For clinicians', href: '/clinician' },
     { label: 'Psyche AI', href: '/psyche' },
     { label: 'Protocol (BIP)', href: '/protocol' },
     { label: 'Developers', href: '/developers' },
