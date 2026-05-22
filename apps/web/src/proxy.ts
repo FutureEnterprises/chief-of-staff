@@ -1,6 +1,14 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// Provider dashboard routes (/provider, /provider/cohort, /provider/[id])
+// and the matching /api/v1/provider/* data routes are intentionally NOT
+// listed in isPublicRoute below — they fall through to Clerk's default
+// auth.protect() gate, which rejects unauthenticated requests with a
+// sign-in redirect. The second gate (provider-tier check, patient
+// authorization) lives inside lib/provider-rbac.ts and runs on every
+// request in (provider)/layout.tsx + each API route. This file is left
+// unchanged on purpose for the provider milestone — see lib/provider-rbac.ts.
 const isPublicRoute = createRouteMatcher([
   '/',
   '/sign-in(.*)',
