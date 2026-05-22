@@ -154,6 +154,26 @@ export async function GET(req: Request) {
       ].join('\n')
     }
 
+    // Channel string reflects every wire used. Unified format with the
+    // danger-window-interrupt cron: "expo+web+email", "web+email", etc.
+    const channels: string[] = []
+    if (slip.user.expoPushToken) channels.push('expo')
+    if (slip.user.webPushSubscription) channels.push('web')
+    if (resendKey) channels.push('email')
+
+    // Record FIRST so the new ProductivityEvent id can be embedded in
+    // the outgoing push as `interruptId`. The mobile app's lock-screen
+    // action buttons (COYL_INTERRUPT category) POST that id back to
+    // /api/v1/interrupts/<id>/feedback for one-tap tagging without
+    // opening the app.
+    const interrupt = await recordInterrupt({
+      userId: slip.user.id,
+      kind: wave === '2h_check' ? 'POST_SLIP_2H' : 'POST_SLIP_24H',
+      idempotencyKey: `${slip.id}:${wave}`,
+      channel: channels.join('+') || 'none',
+      metadata: { wave, slipId: slip.id },
+    })
+
     // Push payload — shared between Expo and Web push so the deep link
     // and notification copy stay identical regardless of delivery wire.
     const pushData = {
@@ -161,6 +181,7 @@ export async function GET(req: Request) {
       slipId: slip.id,
       wave,
       deepLinkPath: '/slip',
+      interruptId: interrupt.id,
     }
 
     // Expo push
@@ -176,6 +197,9 @@ export async function GET(req: Request) {
             body: pushBody,
             data: pushData,
             priority: 'high',
+            // Lock-screen action buttons: see apps/mobile/lib/notifications.ts.
+            categoryId: 'COYL_INTERRUPT',
+            channelId: 'coyl-interrupts',
           }),
         })
       } catch (err) {
@@ -209,21 +233,6 @@ export async function GET(req: Request) {
         errors++
       }
     }
-
-    // Channel string reflects every wire used. Unified format with the
-    // danger-window-interrupt cron: "expo+web+email", "web+email", etc.
-    const channels: string[] = []
-    if (slip.user.expoPushToken) channels.push('expo')
-    if (slip.user.webPushSubscription) channels.push('web')
-    if (resendKey) channels.push('email')
-
-    await recordInterrupt({
-      userId: slip.user.id,
-      kind: wave === '2h_check' ? 'POST_SLIP_2H' : 'POST_SLIP_24H',
-      idempotencyKey: `${slip.id}:${wave}`,
-      channel: channels.join('+') || 'none',
-      metadata: { wave, slipId: slip.id },
-    })
 
     fired++
   }

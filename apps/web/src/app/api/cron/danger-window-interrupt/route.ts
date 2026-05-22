@@ -145,12 +145,39 @@ export async function GET(req: Request) {
         },
       })
 
+      // Channel string reflects every wire the interrupt will be sent on.
+      // Used by the autopilot-autopsy analytics + interrupt-feedback
+      // weighting; an interrupt that fired on push+web+email gets the
+      // same dedupe key but the cost-accounting recognizes the fanout.
+      const channels: string[] = []
+      if (user.expoPushToken) channels.push('expo')
+      if (user.webPushSubscription) channels.push('web')
+      if (resend) channels.push('email')
+
+      // Record the interrupt FIRST so we can include its id in the
+      // outgoing push payload. iOS lock-screen action buttons
+      // (COYL_INTERRUPT category) POST back to
+      // /api/v1/interrupts/<id>/feedback — they need the id pre-baked
+      // into the push data, hence the reorder. If push delivery later
+      // fails the record is still useful for cooldown/rate-cap.
+      const interrupt = await recordInterrupt({
+        userId: user.id,
+        kind: 'DANGER_WINDOW',
+        channel: channels.join('+') || 'none',
+        metadata: { windowId: window.id, label: window.label, hour: currentHour },
+      })
+
       // Expo push notification — pattern-calling tone.
       // The push IS the interruption. Copy has to land in the 3 seconds
       // it takes a person to read a lock-screen notification.
       const pushTitle = `${firstName}. This is the moment.`
       const pushBody = `${window.label}. You already know how this ends. Open before it does.`
-      const pushData = { type: 'danger_window', windowId: window.id }
+      const pushData = {
+        type: 'danger_window',
+        windowId: window.id,
+        interruptId: interrupt.id,
+        screen: 'rescue',
+      }
 
       if (user.expoPushToken) {
         try {
@@ -164,6 +191,12 @@ export async function GET(req: Request) {
               body: pushBody,
               data: pushData,
               priority: 'high',
+              // categoryId tells iOS to render the three action buttons
+              // registered under COYL_INTERRUPT in apps/mobile/lib/notifications.ts.
+              // Without this, the same push arrives without action buttons
+              // and the user has to unlock + open the app to tag it.
+              categoryId: 'COYL_INTERRUPT',
+              channelId: 'coyl-interrupts',
             }),
           })
         } catch {
@@ -209,22 +242,6 @@ export async function GET(req: Request) {
           // silent
         }
       }
-
-      // Channel string reflects every wire the interrupt was sent on.
-      // Used by the autopilot-autopsy analytics + interrupt-feedback
-      // weighting; an interrupt that fired on push+web+email gets the
-      // same dedupe key but the cost-accounting recognizes the fanout.
-      const channels: string[] = []
-      if (user.expoPushToken) channels.push('expo')
-      if (user.webPushSubscription) channels.push('web')
-      if (resend) channels.push('email')
-
-      await recordInterrupt({
-        userId: user.id,
-        kind: 'DANGER_WINDOW',
-        channel: channels.join('+') || 'none',
-        metadata: { windowId: window.id, label: window.label, hour: currentHour },
-      })
 
       fired++
     })

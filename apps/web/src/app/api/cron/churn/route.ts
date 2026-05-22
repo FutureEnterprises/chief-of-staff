@@ -159,6 +159,17 @@ export async function GET(req: Request) {
       ].join('\n')
     }
 
+    // Record FIRST so we can embed the new ProductivityEvent id as
+    // `interruptId` in the push payload. Lock-screen action buttons
+    // (COYL_INTERRUPT category) POST back to
+    // /api/v1/interrupts/<id>/feedback for one-tap tagging.
+    const interrupt = await recordInterrupt({
+      userId: user.id,
+      kind,
+      channel: user.expoPushToken ? 'push+email' : 'email',
+      metadata: { tier, daysSilent, wedge: user.primaryWedge },
+    })
+
     // Expo push — primary channel for engaged mobile users
     if (user.expoPushToken) {
       try {
@@ -170,8 +181,11 @@ export async function GET(req: Request) {
             sound: 'default',
             title: pushTitle,
             body: pushBody,
-            data: { type: 'silent_interrupt', tier, daysSilent },
+            data: { type: 'silent_interrupt', tier, daysSilent, interruptId: interrupt.id },
             priority: 'high',
+            // Lock-screen action buttons: see apps/mobile/lib/notifications.ts.
+            categoryId: 'COYL_INTERRUPT',
+            channelId: 'coyl-interrupts',
           }),
         })
       } catch (err) {
@@ -196,15 +210,9 @@ export async function GET(req: Request) {
       }
     }
 
-    // Record the interrupt via shared helper \u2014 feeds cooldown + rate cap
-    // for every future guardInterrupt() call, AND keeps legacy analytics
-    // flowing by also writing CHURN_EMAIL_SENT below.
-    await recordInterrupt({
-      userId: user.id,
-      kind,
-      channel: user.expoPushToken ? 'push+email' : 'email',
-      metadata: { tier, daysSilent, wedge: user.primaryWedge },
-    })
+    // recordInterrupt was called above (before the push) so the interrupt
+    // id could be embedded in the outgoing payload. Cooldown + rate cap
+    // are fed regardless of whether push delivery itself succeeded.
     // Legacy CHURN_EMAIL_SENT event \u2014 retained so any dashboards or
     // existing alerting keyed on this type don't silently break.
     await prisma.productivityEvent.create({

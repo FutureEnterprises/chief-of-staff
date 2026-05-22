@@ -290,8 +290,13 @@ export async function recordInterrupt(args: {
   idempotencyKey?: string
   channel: InterruptChannel
   metadata?: Record<string, unknown>
-}): Promise<void> {
-  await prisma.productivityEvent.create({
+}): Promise<{ id: string }> {
+  // Return the created event's id so the caller can pass it as
+  // `interruptId` in the outgoing push payload. The mobile app's
+  // lock-screen action buttons (registered as the COYL_INTERRUPT
+  // category) tag back to this exact event via
+  // POST /api/v1/interrupts/[id]/feedback.
+  const event = await prisma.productivityEvent.create({
     data: {
       userId: args.userId,
       eventType: 'AUTOPILOT_INTERRUPTED',
@@ -303,7 +308,9 @@ export async function recordInterrupt(args: {
         ...(args.metadata ?? {}),
       },
     },
+    select: { id: true },
   })
+  return event
 }
 
 // ─────────────────────── Escalation tracking ───────────────────────

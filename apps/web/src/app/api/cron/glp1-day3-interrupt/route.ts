@@ -129,11 +129,35 @@ export async function GET(req: Request) {
       const firstName = user.name.split(' ')[0] || 'You'
       const drugName = user.glp1Drug || 'the drug'
 
+      // Record the GLP1 push as a ProductivityEvent first so we have an
+      // id to wire into the lock-screen action buttons. Unlike the other
+      // crons this one uses FEATURE_USED (clinician-shareable summary
+      // groups it differently) — same id mechanic still works for the
+      // lock-screen feedback POST.
+      const glp1Event = await prisma.productivityEvent.create({
+        data: {
+          userId: user.id,
+          eventType: 'FEATURE_USED',
+          eventValue: 'glp1_day3_push',
+          metadataJson: {
+            drug: user.glp1Drug,
+            injectionDay: user.glp1InjectionWeekday,
+            firedAt: now.toISOString(),
+            localHour,
+          },
+        },
+        select: { id: true },
+      })
+
       // Push payload — tone matches the brand voice (direct, observational,
       // not motivational). Single line that lands on the lock screen.
       const pushTitle = `${firstName}. Day 3 after ${drugName}.`
       const pushBody = `Hunger comes back tonight. The 9pm kitchen is the test. Catch yourself before it does.`
-      const pushData = { type: 'glp1_day3', deepLinkPath: '/rescue?from=push&t=BINGE_URGE' }
+      const pushData = {
+        type: 'glp1_day3',
+        deepLinkPath: '/rescue?from=push&t=BINGE_URGE',
+        interruptId: glp1Event.id,
+      }
 
       if (user.expoPushToken) {
         try {
@@ -150,6 +174,9 @@ export async function GET(req: Request) {
               body: pushBody,
               data: pushData,
               priority: 'high',
+              // Lock-screen action buttons: see apps/mobile/lib/notifications.ts.
+              categoryId: 'COYL_INTERRUPT',
+              channelId: 'coyl-interrupts',
             }),
           })
         } catch {
@@ -166,25 +193,11 @@ export async function GET(req: Request) {
         payload: { title: pushTitle, body: pushBody, data: pushData },
       })
 
-      // Record the event for cooldown + analytics + the eventual
-      // clinician-shareable summary. Even if push delivery silently
-      // fails we still record (the user got into the cycle, which is
-      // what the clinician summary cares about).
-      await prisma.productivityEvent
-        .create({
-          data: {
-            userId: user.id,
-            eventType: 'FEATURE_USED',
-            eventValue: 'glp1_day3_push',
-            metadataJson: {
-              drug: user.glp1Drug,
-              injectionDay: user.glp1InjectionWeekday,
-              firedAt: now.toISOString(),
-              localHour,
-            },
-          },
-        })
-        .catch(() => null)
+      // Cooldown/analytics ProductivityEvent was written above (before
+      // the push) so the new event id could be embedded as `interruptId`
+      // in the lock-screen action payload. Even if push delivery silently
+      // failed the event row is in place for the clinician-shareable
+      // summary — that's what the clinician summary cares about.
 
       fired++
     }
