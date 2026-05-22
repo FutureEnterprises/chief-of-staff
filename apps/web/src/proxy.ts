@@ -59,6 +59,10 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks/(.*)',
   '/api/cron/(.*)',
   '/api/health',
+  // PAP + EAP coordinator endpoints — LLM partners auth via Bearer
+  // API keys (coyl_pap_<id>_<secret>) instead of Clerk session cookies.
+  '/api/eap/v1/(.*)',
+  '/api/pap/v1/(.*)',
   // Third-party OAuth callbacks & webhooks — providers redirect/POST here
   // without a Clerk session cookie, so Clerk's protect would 302 them to
   // sign-in and break the integration handshake. /auth subroutes stay
