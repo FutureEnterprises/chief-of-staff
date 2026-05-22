@@ -11,6 +11,40 @@
 
 ---
 
+## v2 STRATEGY SPRINT — May 22, 2026
+
+> Per `/Users/imanschrock/Downloads/coyl_v2.pdf` (Founder-corrected
+> strategy brief): the actual 10-hour sprint that shifts M&A conversations
+> this week. Engineering items below ALREADY SHIPPED today; the founder
+> action items are the human-required pieces.
+
+### Engineering (already shipped, today)
+- [x] **Data-moat substantiation** — `/how-coyl-knows-you` now carries a "What COYL knows that Claude doesn't" section listing the four schema-backed moat components: slip taxonomy (8 ExcuseCategory enum values), recovery curve shape, individual danger-window histogram, longitudinal 60+ day sequences. Closes v2 WRONG #5. (commit `c2a9d56`)
+- [x] **Live PAP coordinator simulator on `/protocol`** — new public `POST /api/v1/protocol/demo` runs the production `isAboveConfidenceThreshold()` function in-process; new client island lets visitors run real coordinator decisions from the page with scenario + scope + confidence dials. Section "02b · Live." Converts the protocol from "open spec" to "running surface." (commit shipped same wave)
+- [x] **`/research/interim` RCT publish framework** — pre-registered ledger ready for Found Health interim data. Five endpoint rows marked PENDING today; editing one `RESULTS` array + `LAST_UPDATED` constant publishes results in minutes, not days. Honesty-frame section pre-commits to publishing a null result if the RCT comes back null — removes the temptation to bury it. (commit `0f6b975`)
+- [x] **`/api/share/[userId]` consent gate** — `User.shareCardEnabled` opt-in (default OFF). Privacy default fixed; share cards now require explicit opt-in via `/settings`. (commit `11cb431`)
+- [x] **`/content` marketing playbook removed from public site** — playbook moved to private `docs/marketing/content-playbook.md`. Closes competitive-intel leak. (commit `6be9235`)
+
+### Founder action — this week, in order
+- [ ] **Confirm 1 advisor name on `/advisors`** — even 1 of 6 slots flips the page from red flag to proof. Target: the ex-Novo-Nordisk pharma advisor or the JITAI PhD candidate the v2 doc named. One warm intro + one signed advisor agreement at zero/nominal equity. Time: 1–2 hrs of outreach. **This is the highest-leverage credibility move on the site.**
+- [ ] **Real founder photo on `/about`** — drop your photo at `/founder/iman.jpg` (the file path is already referenced in the page). The bio is already the best personal narrative in behavioral health; the IS-initials placeholder undercuts it every page load. Time: 5 min.
+- [ ] **Outreach to Found Health PI** — initiate the conversation about when interim numbers will be available. The `/research/interim` ledger is live and pre-registered; the moment you have a number, edit `RESULTS[0].value` and `LAST_UPDATED` and the page ships in one commit. Time: 30 min email.
+- [ ] **Strike "Series A in conversation" specificity from `/platform`** — v2 audit flagged: pins you to delivering a Series A within a visible window; if the conversation goes cold, the next visitor sees a fundraise that didn't close. Soften to "raising" or "pre-seed funded" until a term sheet is on the table. Time: 5 min edit.
+- [ ] **PMPM pricing benchmark test** — Headspace Health is $8–12 PMPM, Lyra $15+, Calm Business $6–8. COYL at $4–7 PMPM is likely 40–50% under market. Test the $8–10 band on the next 3 enterprise conversations before locking. Time: rephrase in 2 sales decks (10 min).
+
+### Strategic / governance (next 30 days, founder-led)
+- [ ] **Hand v2 strategy brief to a hostile reader** — someone who is not a believer (ex-pharma corp dev, ex-VC who passed on behavioral AI, skeptical board observer). Tell them: "rip this apart." Their critique becomes v3. **Reason:** v2 is internalized critique; it has no remaining adversarial perspective.
+- [ ] **Verify the "70% accuracy" claim** for individual danger-window prediction before it appears in any pitch deck — has any model actually been trained + validated, or is the number aspirational? If no model card / no AUC / no validation cohort, strike or qualify.
+- [ ] **Re-rate "Series A doesn't close"** with honest 2026 market context. v2 doc rates this Low; given no confirmed advisors + no published RCT data + no live PAP integration + 2026 Series A market being brutal, more honest rating is Meaningful. If Meaningful, bridge math becomes #1 strategic concern.
+- [ ] **Series A target list specificity** — v2 doc names a credible list (a16z Bio, GV, Andreessen Health, Rock Health, Bessemer health practice, General Catalyst Health Assurance, Khosla Ventures, First Round, Index). Strategic angels: Novo Nordisk Ventures, Eli Lilly Ventures, Microsoft M12. (NOTE: there is no "Apple peripheral health-tech investing arm" as a structured CVC — strike that line from v2.) Track each as cold / warm intro / 1st meeting / 2nd meeting / partner pitch / term sheet, updated weekly.
+
+### Engineering follow-ups (deferred, not blocking)
+- [ ] **One live PAP integration (production, not demo)** — convert `/today` to emit real PAP proposals as the "COYL Internal" partner against the actual coordinator + DB. Today's commit ships a write-free in-process demo, which is the right next-72-hours move; the production self-integration is the next-30-day move. Target: a foundation-lab Trust & Safety reviewer hits `/api/pap/v1/proposal` from a Claude or GPT integration test and sees a real persisted proposal row.
+- [ ] **Vercel Workflow migration** for orchestration + scheduled-interrupt cron — durable retries, `step.sleepUntil` for time-aware interrupts. Currently using Vercel Cron + best-effort retries.
+- [ ] **Full Cache Components migration** — currently shipping `export const revalidate = 86400` on 10 marketing pages + `revalidate = 3600` on `/research/interim`. Migrate to `cacheComponents: true` + `'use cache'` + `cacheTag` for surgical invalidation.
+
+---
+
 ## THIS WEEK — Existential gates
 
 ### Capital + legal posture
