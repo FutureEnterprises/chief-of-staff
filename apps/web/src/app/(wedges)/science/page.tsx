@@ -105,15 +105,32 @@ export default function SciencePage() {
         <span className="h-px w-10 bg-orange-500" />
         <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">Science</span>
       </div>
+
+      <section className="mb-20 max-w-4xl space-y-8 border-l border-orange-500 pl-6 md:pl-10">
+        <p className="font-serif text-4xl font-normal leading-[1.2] tracking-[-0.02em] text-gray-900 md:text-6xl">
+          We didn&rsquo;t invent the science. <span className="italic text-orange-600">We built the first product that fires it at the right moment.</span>
+        </p>
+        <p className="font-serif text-2xl font-normal leading-[1.4] text-gray-700 md:text-3xl">
+          JITAI architecture has been validated since 2006. Habit automaticity since 1999. Implementation intentions since Gollwitzer.
+        </p>
+        <p className="font-serif text-2xl font-normal italic leading-[1.4] text-gray-900 md:text-3xl">
+          The new thing is COYL: the interface that delivers this science in the 3 seconds it actually matters.
+        </p>
+      </section>
+
       <h1 className="mb-10 font-serif text-5xl font-normal leading-[1.0] tracking-[-0.03em] text-gray-900 md:text-7xl">
         The behavioral mechanism<br />
         <span className="italic text-orange-600">behind COYL.</span>
       </h1>
-      <p className="mb-20 max-w-2xl text-lg leading-[1.7] text-gray-600">
+      <p className="mb-12 max-w-2xl text-lg leading-[1.7] text-gray-600">
         Pattern interrupts. Just-in-time adaptive interventions (JITAI). Dual-process
         theory. Habit automaticity. Implementation intentions. Every claim cited to a
         primary source &mdash; the science behind catching yourself in real life.
       </p>
+
+      <blockquote className="mb-20 max-w-3xl border-l border-orange-500 pl-6 font-serif text-2xl italic leading-[1.4] text-gray-900 md:text-3xl">
+        AI for the moment before behavior happens.
+      </blockquote>
 
       <div className="mb-16 space-y-12">
         {CITATIONS.map((c, i) => (
@@ -144,10 +161,6 @@ export default function SciencePage() {
           <li>Our AI provides general behavioral support, not personalized medical, psychological, or nutritional advice.</li>
         </ul>
       </section>
-
-      <blockquote className="mb-10 max-w-3xl border-l border-orange-500 pl-6 font-serif text-2xl italic leading-[1.4] text-gray-900 md:text-3xl">
-        COYL is built from known behavioral science. The new invention is timing, interface, and intervention delivery.
-      </blockquote>
 
       <Link href="/sign-up" className="inline-flex items-center rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(255,102,0,0.45)] transition-all hover:bg-orange-600">
         Start your anti-autopilot map

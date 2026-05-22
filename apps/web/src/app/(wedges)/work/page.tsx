@@ -120,11 +120,11 @@ export default function WorkWedgePage() {
             <span className="italic text-orange-600">Follow-through is.</span>
           </h1>
 
-          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-            The email you said you&rsquo;d send. The meeting you didn&rsquo;t close out.
-            The follow-up you let slip. COYL catches the moment the commitment drops &mdash;
-            not the post-mortem after the deal is gone.
-          </p>
+          <div className="max-w-2xl space-y-4 font-serif text-2xl font-normal leading-[1.35] text-gray-900 md:text-3xl">
+            <p>The follow-up didn&rsquo;t die in your inbox.</p>
+            <p>It died at 3 PM with the thought: <span className="italic text-orange-600">&ldquo;They probably moved on anyway.&rdquo;</span></p>
+            <p>That thought is a script. COYL catches it before the thread goes cold.</p>
+          </div>
         </header>
 
         {/* ENTERPRISE B2B BAND — per the $6B strategy memo Fix 02:
@@ -261,7 +261,7 @@ export default function WorkWedgePage() {
               href="/sign-up?ref=work"
               className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              Start following through
+              Catch the next dropped follow-up &rarr;
             </Link>
             <Link
               href="/how-it-works"

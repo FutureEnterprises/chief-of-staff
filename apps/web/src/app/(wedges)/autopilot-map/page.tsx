@@ -232,12 +232,12 @@ export default function PatternsMarketingPage() {
         </div>
       </section>
 
-      {/* Pattern features — gallery columns on hairlines */}
+      {/* Pattern features — demo outputs, paired editorial entries on hairlines */}
       <section className="space-y-10 border-t border-gray-200 pt-16">
         <div className="flex items-center gap-3">
           <span className="h-px w-10 bg-orange-500" />
           <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-            What the map shows
+            Example output. Your map is yours.
           </span>
         </div>
         <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
@@ -245,18 +245,72 @@ export default function PatternsMarketingPage() {
         </h2>
         <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-2">
           {[
-            { title: 'Your danger windows', body: 'The exact hours and days your autopilot fires. Heatmap view.' },
-            { title: 'Top excuses by category', body: 'Ranked across 8 patterns: Delay, Reward, Minimization, Collapse, Exhaustion, Exception, Compensation, Social pressure.' },
-            { title: 'Failure chains', body: 'Missed weigh-in → binge next day. Skipped workout → weekend collapse. The sequences you run.' },
-            { title: 'Recovery speed', body: 'How fast you get back after a slip. The self-trust metric.' },
-            { title: 'What actually works', body: 'Interventions that interrupted scripts for YOU specifically.' },
-            { title: 'Identity trend', body: 'From sleepwalking → avoidant → recovering → resilient → high-self-trust.' },
+            {
+              label: 'FAILURE CHAIN DETECTED',
+              lines: [
+                'You missed your weigh-in Tuesday.',
+                'You binged Wednesday night.',
+                'This has happened 4 times in 6 weeks.',
+              ],
+              cta: 'COYL will interrupt the Tuesday pattern — before Wednesday becomes inevitable.',
+            },
+            {
+              label: 'DANGER WINDOW MAPPED',
+              lines: [
+                'Tuesday + Thursday, 9:08 PM.',
+                '14 of your last 18 slips fired in this hour.',
+                'You haven’t once made it to 10 PM clean on a Thursday.',
+              ],
+              cta: 'COYL will fire at 9:05 PM Tuesday — three minutes before the door opens.',
+            },
+            {
+              label: 'TOP EXCUSE DETECTED',
+              lines: [
+                '“I deserve this.”',
+                'Said 14 times this month. Category: Reward.',
+                'Wins 71% of the time it shows up.',
+              ],
+              cta: 'COYL will name it back to you the next time it loads — before you finish the sentence.',
+            },
+            {
+              label: 'RECOVERY SPEED TRACKED',
+              lines: [
+                'Six weeks ago: a slip cost you 4 days.',
+                'Two weeks ago: a slip cost you 1 day.',
+                'Last week: a slip cost you the next morning. That’s it.',
+              ],
+              cta: 'COYL is training your self-trust metric. The bounce-back is the product.',
+            },
+            {
+              label: 'WHAT ACTUALLY WORKED',
+              lines: [
+                'The 9:08 PM push lands when it’s phrased as a question, not a command.',
+                '“Walk five minutes” succeeds 3× more than “close the fridge.”',
+                'The cold-water interrupt works on Tuesday. Not on Sunday.',
+              ],
+              cta: 'COYL keeps the moves that work for YOU. Drops the ones that don’t.',
+            },
+            {
+              label: 'IDENTITY TREND',
+              lines: [
+                'Week 1: sleepwalking.',
+                'Week 4: avoidant.',
+                'Week 9: recovering.',
+                'Week 14: resilient.',
+              ],
+              cta: 'COYL is tracking who you’re becoming — not who you were when you signed up.',
+            },
           ].map((p) => (
-            <div key={p.title} className="border-t border-gray-200 pt-6">
-              <h3 className="font-serif text-2xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900">
-                {p.title}
-              </h3>
-              <p className="mt-3 text-base leading-[1.65] text-gray-700">{p.body}</p>
+            <div key={p.label} className="border-t border-gray-200 pt-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                {p.label}
+              </p>
+              <div className="mt-4 space-y-2 font-serif text-xl font-normal leading-[1.35] text-gray-900 md:text-2xl">
+                {p.lines.map((line, i) => (
+                  <p key={i}>{line}</p>
+                ))}
+              </div>
+              <p className="mt-4 text-base italic leading-[1.65] text-orange-600">{p.cta}</p>
             </div>
           ))}
         </div>

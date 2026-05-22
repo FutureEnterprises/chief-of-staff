@@ -175,13 +175,23 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
+      {/* Mid-page brand anchor — earns its place between the loop and the CTA */}
+      <section className="border-t border-orange-500 pt-16">
+        <p className="max-w-5xl font-serif text-5xl font-normal italic leading-[1.05] tracking-[-0.02em] text-orange-600 md:text-7xl">
+          Catch yourself before you do it again.
+        </p>
+        <p className="mt-10 max-w-2xl text-base leading-[1.7] text-gray-700">
+          AI for the moment before behavior happens. Not the journal entry the next morning. Not the regret on Sunday. The half-second before the hand moves.
+        </p>
+      </section>
+
       <section className="border-t border-gray-200 pt-16">
         <div className="flex flex-wrap gap-3">
           <Link
             href="/sign-up"
             className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
           >
-            Build my anti-autopilot plan
+            Let COYL map mine &rarr;
           </Link>
           <Link
             href="/science"

@@ -68,7 +68,7 @@ const NODES: Node[] = [
   {
     label: 'Learning',
     icon: Brain,
-    what: 'The loop closes. Excuse count +1. Danger window confidence shifts. Next interrupt is sharper.',
+    what: 'The loop closes. The next time looks the same — but COYL is sharper. It learned your exact excuse. It knows the window better. The pattern doesn’t know it just got a little smaller.',
     signal: 'COYL updates its map of your autopilot.',
   },
 ]

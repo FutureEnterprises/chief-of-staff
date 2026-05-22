@@ -248,6 +248,19 @@ export default function GLP1Page() {
         </div>
       </section>
 
+      <section className="mb-16 border-t border-orange-500 pt-12">
+        <p className="mb-8 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+          Month 7
+        </p>
+        <div className="max-w-3xl space-y-4 font-serif text-3xl font-normal italic leading-[1.3] text-gray-900 md:text-4xl">
+          <p>Month 7. The prescription ends.</p>
+          <p>The hunger is gone. The drug worked.</p>
+          <p>It&rsquo;s 9:14 PM and you&rsquo;re standing at the fridge.</p>
+          <p>The script is still there.</p>
+          <p className="text-orange-600">That&rsquo;s the moment COYL was built for.</p>
+        </div>
+      </section>
+
       <section className="mb-12 rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-500">
         <p>
           <span className="font-bold text-gray-700">Not medical advice.</span> COYL is

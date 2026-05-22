@@ -157,12 +157,17 @@ export default function TeamsWedgePage() {
             <span className="italic text-orange-600">23 minutes to recover.</span>
           </h1>
 
-          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-            A third of every knowledge-worker week is spent recovering, not working.
-            COYL catches the moment before the tab switch &mdash; the behavioral layer
-            underneath your focus stack. Deployed as a benefit, billed PMPM, no integration
-            with work content required.
-          </p>
+          <div className="max-w-2xl space-y-4">
+            <p className="font-serif text-2xl font-normal leading-[1.35] text-gray-900 md:text-3xl">
+              Your people aren&rsquo;t distracted. <span className="italic text-orange-600">They&rsquo;re running a script. The same one, every 11 minutes.</span>
+            </p>
+            <p className="text-lg leading-[1.7] text-gray-700">
+              A third of every knowledge-worker week is spent recovering, not working.
+              COYL catches the moment before the tab switch &mdash; the behavioral layer
+              underneath your focus stack. Deployed as a benefit, billed PMPM, no integration
+              with work content required.
+            </p>
+          </div>
 
           <div className="flex flex-wrap gap-3 pt-2">
             <Link
@@ -170,6 +175,12 @@ export default function TeamsWedgePage() {
               className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
               Start a 30-day pilot
+            </Link>
+            <Link
+              href="/teams/pilot"
+              className="rounded-full border border-orange-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 transition-all hover:border-orange-500"
+            >
+              Book a 20-min call &rarr;
             </Link>
             <Link
               href="/research"

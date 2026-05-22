@@ -47,20 +47,40 @@ export default function DecisionSupportPage() {
         Real-time guidance<br />
         <span className="italic text-orange-600">at the 3-second window.</span>
       </h1>
-      <p className="mb-20 max-w-2xl text-lg leading-[1.7] text-gray-600">
-        The 3 seconds between the impulse and the action &mdash; that&rsquo;s where the
-        decision actually happens. Ask COYL anything live: eat this, skip today, send
-        this text, walk away. Structured answer, no therapy voice, in seconds.
-      </p>
+      <div className="mb-20 max-w-2xl space-y-4 font-serif text-2xl font-normal leading-[1.35] text-gray-900 md:text-3xl">
+        <p>9:47 PM. You&rsquo;re standing at the fridge. The door is open.</p>
+        <p>You&rsquo;re not hungry. You know you&rsquo;re not hungry.</p>
+        <p>You ask COYL anyway: <span className="italic text-orange-600">&ldquo;Should I eat this?&rdquo;</span></p>
+        <p>Here&rsquo;s exactly what you get back.</p>
+      </div>
+
+      <blockquote className="mb-20 max-w-3xl border-l border-orange-500 pl-6 font-serif text-3xl italic leading-[1.3] text-gray-900 md:text-4xl">
+        AI for the moment before behavior happens.
+      </blockquote>
 
       <section className="mb-20 border-l border-orange-500 pl-6 md:pl-8">
-        <p className="mb-6 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">Every decision gives you</p>
-        <ul className="space-y-4 text-base leading-[1.65] text-gray-700">
-          <li><strong className="font-serif font-normal italic text-gray-900">What you&apos;re actually deciding.</strong> The real question, not the surface one.</li>
-          <li><strong className="font-serif font-normal italic text-gray-900">Best move.</strong> The action your future self will thank you for.</li>
-          <li><strong className="font-serif font-normal italic text-gray-900">Cost of the worse move.</strong> Immediate cost + pattern cost.</li>
-          <li><strong className="font-serif font-normal italic text-gray-900">The excuse you&apos;re probably using.</strong> Classified into one of 8 known self-deception patterns.</li>
-          <li><strong className="font-serif font-normal italic text-gray-900">Smallest next move.</strong> One thing you can do in the next 5 minutes.</li>
+        <p className="mb-6 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">Your question: &ldquo;Should I eat this at 9:47 PM?&rdquo;</p>
+        <ul className="space-y-6 text-base leading-[1.65] text-gray-700">
+          <li>
+            <strong className="font-serif font-normal italic text-gray-900">Best move.</strong>{' '}
+            Close the fridge. Drink a glass of water. Walk to another room for five minutes. If you&rsquo;re still thinking about it then, decide.
+          </li>
+          <li>
+            <strong className="font-serif font-normal italic text-gray-900">Worst case if you don&rsquo;t.</strong>{' '}
+            One handful turns into the whole bag. Tomorrow starts with &ldquo;I already blew it.&rdquo; The Tuesday-night pattern wins again.
+          </li>
+          <li>
+            <strong className="font-serif font-normal italic text-gray-900">Excuse detected.</strong>{' '}
+            &ldquo;I deserve this.&rdquo; Category: Reward. You&rsquo;ve said it 14&times; this month. It&rsquo;s the sentence, not the snack.
+          </li>
+          <li>
+            <strong className="font-serif font-normal italic text-gray-900">Smallest step.</strong>{' '}
+            Close the door. That&rsquo;s it. One physical move. The next decision gets easier.
+          </li>
+          <li>
+            <strong className="font-serif font-normal italic text-gray-900">Your choice.</strong>{' '}
+            COYL doesn&rsquo;t decide for you. It hands you the structure. The hand on the door is still yours.
+          </li>
         </ul>
       </section>
 
@@ -85,7 +105,7 @@ export default function DecisionSupportPage() {
       </section>
 
       <Link href="/sign-up" className="inline-flex items-center rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(255,102,0,0.45)] transition-all hover:bg-orange-600">
-        Try a decision
+        Should I eat this? &rarr;
       </Link>
     </>
   )
