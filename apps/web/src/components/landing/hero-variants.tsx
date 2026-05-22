@@ -101,23 +101,24 @@ const COPY: Record<Variant, {
     primaryCta: 'Stop the spiral',
   },
   b: {
-    label: 'The AI wrapped around your psyche',
-    // Category-launch positioning per the May 2026 strategist brief:
-    // COYL is not a habit app, not a GLP-1 app, not a productivity app —
-    // it's the first AI that meets you at the real-world moment when the
-    // pattern is about to run. The headline names the category, the
-    // subhead names the moments, the primary CTA leads to the audit
-    // (lowest-friction entry; reveals the user's archetype).
+    label: 'Proactive AI infrastructure',
+    // Platform-tier repositioning per the May 2026 Stripe-model brief:
+    // payments-as-API was Stripe's protocol; merchants were the proof.
+    // COYL: BIP + PAP + EAP are the protocols; coyl.ai is the proof
+    // case. The eyebrow names the category for acquirers (foundation
+    // labs + tech-platforms join the room), the headline names the
+    // layer ("behavioral OS for the LLM era"), the subhead names the
+    // architecture (three open protocols, one reference engine), and
+    // the audit stays the lowest-friction entry for consumers.
     headline: (
       <>
-        AI for the moment<br />
-        <span className="italic text-orange-600">
-          before behavior happens.
-        </span>
+        The <span className="italic text-orange-600">behavioral OS</span>
+        <br />
+        for the LLM era.
       </>
     ),
     subhead:
-      "COYL detects your autopilot patterns and interrupts them in real time — before the fridge opens, before the tab wins, before one slip becomes the night.",
+      'Three open protocols — BIP, PAP, EAP — that turn any LLM into a proactive intervention layer across every device the user owns. The consumer app at coyl.ai is the proof case.',
     primaryCta: 'Take the 60-second autopilot audit',
   },
   c: {

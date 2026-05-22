@@ -4,6 +4,8 @@ import { cookies } from 'next/headers'
 import { SoftwareApplicationSchema, FAQSchema } from './structured-data'
 import { GlassNav } from '@/components/landing/glass-nav'
 import { HeroVariants } from '@/components/landing/hero-variants'
+import { PlatformBand } from '@/components/landing/platform-band'
+import { ProofCaseBand } from '@/components/landing/proof-case-band'
 import { RescueDemo } from '@/components/landing/rescue-demo'
 import { WhatItCatches } from '@/components/landing/what-it-catches'
 import { YouArePatterned } from '@/components/landing/you-are-patterned'
@@ -101,8 +103,15 @@ export default async function HomePage({
               sixth, audit CTA last. Pricing is intentionally NOT on the
               homepage — strategist's rule: "do not lead with pricing." */}
 
-          {/* 1. Hero — AI for the moment before behavior happens. */}
+          {/* 1. Hero — the behavioral OS for the LLM era. */}
           <HeroVariants variant={variant} />
+
+          {/* 1b. The protocols — BIP, PAP, EAP. The Stripe-model band:
+              payments-as-API was the protocol, merchants were the proof.
+              COYL: three open specs + one reference engine, with the
+              consumer app at coyl.ai as the proof case (band below the
+              rescue demo). Added May 2026 platform-tier repositioning. */}
+          <PlatformBand />
 
           {/* 2. The premise — most human failure is predictable.
               "You are not random. You are patterned." */}
@@ -117,6 +126,13 @@ export default async function HomePage({
           <div id="try-it">
             <RescueDemo />
           </div>
+
+          {/* 5a. The proof case — coyl.ai, the consumer product, as
+              evidence the protocol works in real life. Stripe-style
+              "look at our merchants" surface. Sits between the rescue
+              demo (the moment) and the catch-yourself break (the
+              mythic line). Added May 2026. */}
+          <ProofCaseBand />
 
           {/* 5b. Section break — the footer tagline, promoted to the spine
               per the May 2026 brief. Sits as a full-bleed breath between
