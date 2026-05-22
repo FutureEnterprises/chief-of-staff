@@ -380,6 +380,263 @@ npx @coyl/bip-conformance \\
           </div>
         </section>
 
+        {/* SECTION 06 — PAP INTEGRATION (LLM PARTNERS) */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="space-y-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              06 · PAP — LLM partners
+            </p>
+            <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+              Build proactive Claude / ChatGPT / Gemini{' '}
+              <span className="italic text-orange-600">on COYL.</span>
+            </h2>
+            <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+              The Proactive AI Protocol is the trust layer foundation
+              labs integrate against to ship proactive features
+              without owning the rate-limit, dedup, consent, or audit
+              infrastructure. Your LLM emits a Proposal; the PAP
+              Coordinator decides whether to allow, queue, or deny
+              against the user&rsquo;s current behavioral state and
+              consent grants. If allowed, PAP fires through the
+              user&rsquo;s preferred modality. Your LLM never touches
+              a device API.
+            </p>
+          </div>
+
+          <CodeBlock
+            lang="typescript"
+            code={`// @coyl/pap-sdk — Propose a proactive intervention (Node.js)
+import { COYL } from '@coyl/pap-sdk'
+
+const coyl = new COYL({
+  apiKey: process.env.COYL_API_KEY!,
+  llmId: 'anthropic-claude-sonnet-3.7',
+})
+
+const proposal = await coyl.proposal.create({
+  userId: 'u_xyz',
+  scopeRequested: ['proactive_food'],
+  action: {
+    kind: 'interrupt',
+    mode: 'high_arousal',
+    headline: 'Stop. Hand on the counter. 4 breaths.',
+    subhead: '9:47 PM. You said no food after 9.',
+  },
+  context: {
+    trigger: 'danger_window_active:late_night_kitchen',
+    confidence: 0.84,
+    reasoning: 'HRV dropped 22pts in 90min + sedentary 105min + geofence:kitchen + active commitment:no_food_after_9',
+  },
+})
+
+if (proposal.decision === 'allowed') {
+  // PAP coordinator will fire via the user's preferred modality.
+  // Subscribe to the outcome webhook to learn whether the user
+  // caught themselves, deferred, or ignored.
+}`}
+          />
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/pap"
+              className="rounded-full border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              Read the full PAP v0.1 spec →
+            </Link>
+            <span className="text-xs uppercase tracking-widest text-gray-500">
+              API key applications:{' '}
+              <a
+                href="mailto:partner@coyl.ai?subject=PAP%20partner%20access"
+                className="underline decoration-orange-500/40 underline-offset-4 hover:decoration-orange-500"
+              >
+                partner@coyl.ai
+              </a>
+            </span>
+          </div>
+        </section>
+
+        {/* SECTION 07 — EAP INTEGRATION (LLM PARTNERS) */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="space-y-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              07 · EAP — LLM partners
+            </p>
+            <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+              Address any device. Through{' '}
+              <span className="italic text-orange-600">one protocol.</span>
+            </h2>
+            <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+              The Edge AI Protocol extends PAP from behavioral
+              interventions to general cross-device action. Your LLM
+              requests a haptic on the user&rsquo;s Watch, a voice
+              prompt on their iPhone, a screen dim on their Mac &mdash;
+              independently or as a multi-device orchestration. The
+              user&rsquo;s device coordinator evaluates against
+              cached scope grants, fires the actuator natively,
+              returns the outcome.
+            </p>
+          </div>
+
+          <CodeBlock
+            lang="typescript"
+            code={`// @coyl/eap-sdk — Request a single action on a specific device
+import { COYL } from '@coyl/eap-sdk'
+
+const coyl = new COYL({
+  apiKey: process.env.COYL_API_KEY!,
+  llmId: 'anthropic-claude-sonnet-3.7',
+})
+
+const action = await coyl.action.request({
+  userId: 'u_xyz',
+  deviceId: 'watch-series-9-def',
+  actuator: 'haptic',
+  params: { pattern: 'double-tap' },
+  scopeRequested: 'edge:watch:haptic',
+  reasoning: 'HRV spike + active danger window',
+  confidence: 0.83,
+})
+
+if (action.decision === 'allowed') {
+  // The user's Watch coordinator will fire the haptic.
+  // Outcome arrives via your subscribed webhook.
+}`}
+          />
+
+          <CodeBlock
+            lang="typescript"
+            code={`// Multi-device orchestration — one user-facing moment, three devices
+const orchestration = await coyl.orchestration.create({
+  userId: 'u_xyz',
+  atomicity: 'all_or_none',
+  steps: [
+    {
+      deviceId: 'watch-series-9-def',
+      actuator: 'haptic',
+      params: { pattern: 'double-tap' },
+      atOffsetMs: 0,
+    },
+    {
+      deviceId: 'iphone-15-pro-abc',
+      actuator: 'voice_tts',
+      params: { text: 'Stop. Hand on the counter. 4 breaths.' },
+      atOffsetMs: 200,
+    },
+    {
+      deviceId: 'macbook-pro-ghi',
+      actuator: 'system_dim_screen',
+      params: { brightnessPct: 30, durationSec: 60 },
+      atOffsetMs: 200,
+    },
+  ],
+})
+// atomicity: 'all_or_none' — composite is denied if any step is denied.
+// Use 'best_effort' for independent step evaluation.`}
+          />
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/eap"
+              className="rounded-full border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              Read the full EAP v0.1 spec →
+            </Link>
+            <span className="text-xs uppercase tracking-widest text-gray-500">
+              Partner access:{' '}
+              <a
+                href="mailto:partner@coyl.ai?subject=EAP%20partner%20access"
+                className="underline decoration-orange-500/40 underline-offset-4 hover:decoration-orange-500"
+              >
+                partner@coyl.ai
+              </a>
+            </span>
+          </div>
+        </section>
+
+        {/* SECTION 08 — EAP COORDINATOR (DEVICE MANUFACTURERS) */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="space-y-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              08 · EAP — device manufacturers
+            </p>
+            <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+              Run a coordinator.{' '}
+              <span className="italic text-orange-600">
+                Become an EAP-compliant edge.
+              </span>
+            </h2>
+            <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+              Each EAP-compatible device runs a small coordinator
+              daemon (~10K lines per platform). The coordinator
+              receives action requests from EAP cloud, checks the
+              local cache of user scope grants, executes the
+              actuator natively, and reports the outcome. Sensor
+              streams flow in the other direction &mdash; the
+              coordinator publishes events to EAP cloud, which fans
+              out to subscribed LLMs.
+            </p>
+            <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+              We ship reference coordinators for every major
+              platform. Device manufacturers can fork + extend for
+              their own hardware.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            {EAP_COORDINATORS.map((c) => (
+              <div
+                key={c.platform}
+                className="rounded-xl border border-gray-200 bg-white p-4"
+              >
+                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-orange-600">
+                  {c.platform}
+                </p>
+                <p className="mt-2 text-xs leading-[1.55] text-gray-700">
+                  {c.body}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <CodeBlock
+            lang="bash"
+            code={`# Reference coordinators — open-source, per-platform
+git clone https://github.com/coyl/eap-coordinator-reference
+
+# Each platform ships its own implementation:
+#   ios/        — Native app extension + App Intents
+#   macos/      — Menu bar app + AppleScript + Shortcuts
+#   watchos/    — Watch app + WatchConnectivity
+#   android/    — Tasker + custom Service
+#   wearos/     — Watch app
+#   chrome/     — WebExtension (also Edge, Firefox)
+#   safari/     — Safari Extension
+
+# Fork + extend for your hardware. Reach out and we'll
+# RFC the manifest schema for your device class.`}
+          />
+
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="https://github.com/coyl/eap-coordinator-reference"
+              target="_blank"
+              rel="noopener"
+              className="rounded-full border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              github.com/coyl/eap-coordinator-reference →
+            </a>
+            <span className="text-xs uppercase tracking-widest text-gray-500">
+              Device-manufacturer partnerships:{' '}
+              <a
+                href="mailto:devices@coyl.ai?subject=EAP%20coordinator%20integration"
+                className="underline decoration-orange-500/40 underline-offset-4 hover:decoration-orange-500"
+              >
+                devices@coyl.ai
+              </a>
+            </span>
+          </div>
+        </section>
+
         {/* CTA */}
         <section className="space-y-6 border-t border-orange-500 pt-12">
           <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-4xl">
@@ -451,6 +708,45 @@ const SCOPES: Array<{ scope: string; body: string }> = [
     scope: 'pattern:update',
     body:
       'Contribute observed behavioral signal back to the subject’s pattern model with explicit consent.',
+  },
+]
+
+const EAP_COORDINATORS: Array<{ platform: string; body: string }> = [
+  {
+    platform: 'iOS',
+    body: 'Native app extension + App Intents. ~60% actuator coverage; Live Activities, haptics, push, voice TTS.',
+  },
+  {
+    platform: 'macOS',
+    body: 'Menu bar app + AppleScript + Shortcuts. ~80% actuator coverage; notifications, dim screen, app launch.',
+  },
+  {
+    platform: 'watchOS',
+    body: 'Watch app + WatchConnectivity. Haptic patterns, complication updates, HRV stream.',
+  },
+  {
+    platform: 'Android',
+    body: 'Tasker + custom Service. ~85% actuator coverage; least restrictive of the mobile platforms.',
+  },
+  {
+    platform: 'Wear OS',
+    body: 'Watch app. Haptic + tile updates + HRV stream via Health Services.',
+  },
+  {
+    platform: 'Chrome',
+    body: 'WebExtension. Tab control, full-screen overlay, web push, active-URL read.',
+  },
+  {
+    platform: 'Edge',
+    body: 'Shared WebExtension build with Chrome. Same actuator surface.',
+  },
+  {
+    platform: 'Firefox',
+    body: 'WebExtension. Tab control, push, overlay. Manifest v2 + v3 supported.',
+  },
+  {
+    platform: 'Safari',
+    body: 'Safari Extension. ~50% coverage; most restrictive of the browsers.',
   },
 ]
 
