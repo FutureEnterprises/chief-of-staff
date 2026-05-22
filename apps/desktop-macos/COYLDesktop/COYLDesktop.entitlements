@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!--
+        COYL Desktop entitlements.
+
+        Distribution profile: Developer ID + notarytool, NOT Mac App
+        Store. The App Store would require app-sandboxing which
+        breaks several actuators (AppleScript across apps,
+        Shortcuts CLI exec, brightness key events). README documents
+        the trade-off.
+
+        Key entitlements:
+            com.apple.security.app-sandbox = false
+                Required to invoke NSAppleScript against other apps
+                and to fork /usr/bin/shortcuts.
+
+            com.apple.security.network.client = true
+                Outbound HTTPS to coyl.ai/api/eap/v1/*.
+
+            com.apple.security.application-groups
+                Shared App Group "group.com.coyl.shared" used by any
+                future helper (e.g. a Login Item launch agent) to
+                coordinate with the main coordinator.
+
+            com.apple.security.automation.apple-events = true
+                Required for NSAppleScript to target other apps; each
+                target app still surfaces its own TCC prompt on first
+                use.
+    -->
+
+    <key>com.apple.security.app-sandbox</key>
+    <false/>
+
+    <key>com.apple.security.network.client</key>
+    <true/>
+
+    <key>com.apple.security.network.server</key>
+    <false/>
+
+    <key>com.apple.security.application-groups</key>
+    <array>
+        <string>group.com.coyl.shared</string>
+    </array>
+
+    <key>com.apple.security.automation.apple-events</key>
+    <true/>
+
+    <!--
+        Hardened Runtime requirements for notarization. The
+        JIT/unsigned-memory/dyld-env exceptions are intentionally
+        left DISABLED; coordinator runs ARC Swift only.
+    -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <false/>
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <false/>
+    <key>com.apple.security.cs.allow-dyld-environment-variables</key>
+    <false/>
+</dict>
+</plist>

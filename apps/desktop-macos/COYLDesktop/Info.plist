@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!--
+        COYL Desktop — EAP coordinator on macOS.
+
+        This Info.plist is the source of truth for the bundle config
+        the Xcode project should ship with. It mirrors the founder
+        Xcode steps in README.md.
+
+        Critical keys:
+            LSUIElement                 - removes Dock icon; menu-bar only
+            CFBundleURLTypes            - registers `coyl-desktop://` scheme
+            NSAppleEventsUsageDescription - required for NSAppleScript
+            NSCalendarsFullAccessUsageDescription / NSCalendarsUsageDescription
+                                        - required for EventKit meeting density
+            NSUserNotificationsUsageDescription - banner-style EAP interrupts
+            LSMinimumSystemVersion      - macOS 13.0 target
+    -->
+
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+
+    <key>CFBundleDisplayName</key>
+    <string>COYL</string>
+
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+
+    <key>CFBundleIdentifier</key>
+    <string>ai.coyl.desktop</string>
+
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <key>CFBundleShortVersionString</key>
+    <string>0.1.0</string>
+
+    <key>CFBundleVersion</key>
+    <string>1</string>
+
+    <!-- Background menu-bar app: no Dock icon, no main window on launch. -->
+    <key>LSUIElement</key>
+    <true/>
+
+    <key>LSMinimumSystemVersion</key>
+    <string>13.0</string>
+
+    <!-- Custom URL scheme used by the sign-in browser handoff. -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>ai.coyl.desktop.signin</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>coyl-desktop</string>
+            </array>
+        </dict>
+    </array>
+
+    <!--
+        Privacy usage descriptions. These strings are SHOWN to the user
+        in the system permission prompt. Keep them honest and short.
+    -->
+    <key>NSAppleEventsUsageDescription</key>
+    <string>COYL uses AppleScript to fire interrupts through your apps when an AI partner has been granted that scope.</string>
+
+    <key>NSCalendarsUsageDescription</key>
+    <string>COYL reads your meeting density to predict afternoon focus collapse. Reading is local; nothing is sent without your permission.</string>
+
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>COYL reads your meeting density to predict afternoon focus collapse.</string>
+
+    <key>NSUserNotificationsUsageDescription</key>
+    <string>COYL delivers AI-fired interrupts as macOS notifications.</string>
+
+    <key>NSAppleMusicUsageDescription</key>
+    <string>COYL may pause background audio when an AI partner has been granted that scope.</string>
+
+    <!--
+        App Transport Security: allow only HTTPS to coyl.ai. Local-dev
+        override is enabled via the URLSession.allowsCellularAccess
+        no-op + the COYL_BASE_URL env var pointing at http://localhost.
+
+        NSPinnedDomains pins the public-key SPKI hashes for coyl.ai so
+        a compromised CA cannot mint a rogue cert that the coordinator
+        would silently accept. NSRequiresCertificateTransparency opts
+        the connection into the CT-log enforcement path so any cert
+        not logged in a trusted CT log is rejected before the EAP
+        handshake completes.
+
+        SPKI hash placeholders below MUST be replaced with the actual
+        Base64(SHA-256(SubjectPublicKeyInfo)) values for coyl.ai's
+        leaf + backup keys before the first signed build ships. See
+        README.md → "Notarize + distribute" for the openssl command
+        that prints the current values.
+    -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <false/>
+        <key>NSPinnedDomains</key>
+        <dict>
+            <key>coyl.ai</key>
+            <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSRequiresCertificateTransparency</key>
+                <true/>
+                <key>NSPinnedLeafIdentities</key>
+                <array>
+                    <dict>
+                        <key>SPKI-SHA256-BASE64</key>
+                        <string>REPLACE_WITH_COYL_AI_LEAF_SPKI_SHA256_BASE64</string>
+                    </dict>
+                    <dict>
+                        <key>SPKI-SHA256-BASE64</key>
+                        <string>REPLACE_WITH_COYL_AI_BACKUP_LEAF_SPKI_SHA256_BASE64</string>
+                    </dict>
+                </array>
+            </dict>
+        </dict>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>localhost</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSRequiresCertificateTransparency</key>
+                <true/>
+            </dict>
+        </dict>
+    </dict>
+</dict>
+</plist>
