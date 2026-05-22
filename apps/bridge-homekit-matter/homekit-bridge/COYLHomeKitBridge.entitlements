@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!--
+        REQUIRED. Without this entitlement HMHomeManager returns an
+        empty homes array regardless of NSHomeKitUsageDescription. The
+        signing identity must be a paid Developer Program account
+        (free dev accounts can't sign for HomeKit).
+    -->
+    <key>com.apple.developer.homekit</key>
+    <true/>
+
+    <!--
+        Sandboxing on. The app only needs:
+          - outgoing network (coyl.ai HTTPS)
+          - HomeKit (above)
+        No file-system, USB, Bluetooth, microphone, camera, location.
+    -->
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+
+    <key>com.apple.security.network.client</key>
+    <true/>
+
+    <!--
+        Keychain access group lets the bridge read the same
+        com.coyl.app/user_token entry the desktop coordinator writes,
+        so the user only signs in once on a Mac that hosts both apps.
+        The "$(AppIdentifierPrefix)" prefix is expanded by Xcode at
+        sign time to the team's 10-char prefix.
+    -->
+    <key>keychain-access-groups</key>
+    <array>
+        <string>$(AppIdentifierPrefix)com.coyl.shared</string>
+    </array>
+</dict>
+</plist>

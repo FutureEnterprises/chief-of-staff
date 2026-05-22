@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+
+    <key>CFBundleDisplayName</key>
+    <string>COYL HomeKit Bridge</string>
+
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+
+    <key>CFBundleIdentifier</key>
+    <string>com.coyl.bridge.homekit</string>
+
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+
+    <key>CFBundleName</key>
+    <string>COYL HomeKit Bridge</string>
+
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <key>CFBundleShortVersionString</key>
+    <string>0.1.0</string>
+
+    <key>CFBundleVersion</key>
+    <string>1</string>
+
+    <key>LSMinimumSystemVersion</key>
+    <string>13.0</string>
+
+    <!--
+        Menu-bar-only app. LSUIElement = true hides the Dock icon and
+        prevents a main window from opening; the menu bar extra is the
+        sole UI surface. The bridge is infrastructure, not an app the
+        user "uses" — keep it out of the way.
+    -->
+    <key>LSUIElement</key>
+    <true/>
+
+    <!--
+        REQUIRED. macOS will refuse to instantiate HMHomeManager without
+        this key set. The string is shown verbatim in the OS permission
+        prompt, so it has to explain to the user why the bridge needs
+        their HomeKit access.
+    -->
+    <key>NSHomeKitUsageDescription</key>
+    <string>COYL needs HomeKit access so your LLM assistant can dim lights, lock doors, and adjust your thermostat when your behavioral state needs support. Every action is scoped, logged, and revocable from coyl.ai.</string>
+
+    <!--
+        We don't ship a HumanReadableCopyright on v0.1 — added in v0.2.
+    -->
+
+    <!--
+        App Transport Security with leaf-identity public-key pinning.
+        - Arbitrary loads disabled — every outbound request must be HTTPS.
+        - coyl.ai is locked with includesSubdomains.
+        - NSPinnedLeafIdentities pins the SPKI hash of the live coyl.ai
+          LEAF cert (not the CA). Least-privilege: trusting a CA would
+          accept any cert that CA issues; trusting the leaf accepts
+          exactly one identity. Mitigates CWE-272 (Least Privilege
+          Violation) on top of CWE-296.
+        - CI publishes the live SPKI fingerprint alongside each release;
+          the values below are PLACEHOLDERS and MUST be replaced before
+          notarization. Leaving them in place causes every coyl.ai
+          request to fail closed — the correct fail mode for a security
+          misconfiguration.
+        - Backup leaf hash is required so cert rotation (every ~60-90
+          days under Let's Encrypt) doesn't brick the bridge in the
+          field. The release pipeline issues the next leaf, pre-stages
+          it as the backup, then promotes on rotation day.
+    -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <false/>
+        <key>NSPinnedDomains</key>
+        <dict>
+            <key>coyl.ai</key>
+            <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSPinnedLeafIdentities</key>
+                <array>
+                    <dict>
+                        <!-- PLACEHOLDER: replace before ship. SHA-256 of CURRENT leaf SPKI. -->
+                        <key>SPKI-SHA256-BASE64</key>
+                        <string>REPLACE_WITH_LIVE_LEAF_SPKI_SHA256_BASE64</string>
+                    </dict>
+                    <dict>
+                        <!-- PLACEHOLDER: replace before ship. SHA-256 of NEXT (pre-staged) leaf SPKI. -->
+                        <key>SPKI-SHA256-BASE64</key>
+                        <string>REPLACE_WITH_BACKUP_LEAF_SPKI_SHA256_BASE64</string>
+                    </dict>
+                </array>
+            </dict>
+        </dict>
+    </dict>
+
+    <!--
+        Optional: a clean launch URL handler for the deep link from
+        coyl.ai onboarding (e.g. coyl-bridge://onboarded). Stub for now.
+    -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>com.coyl.bridge.homekit</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>coyl-bridge</string>
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>
