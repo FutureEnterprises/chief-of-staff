@@ -139,19 +139,55 @@ export default async function AboutPage() {
                 Founder &middot; COYL
               </p>
 
+              {/* Founder origin — three movements. The first paragraph
+                  is the kitchen scene, told in the present tense the
+                  brand voice keeps coming back to. The second is the
+                  pattern recognition that turns one bad Tuesday into a
+                  thesis. The third is the build. Kept honest: no
+                  fabricated employers, schools, or fund names — just the
+                  arc the rest of the site is downstream of. When real
+                  career credentials are ready to publish, drop them in
+                  as a fourth paragraph under "Before COYL." */}
+              <p className="max-w-2xl font-serif text-xl italic leading-[1.5] text-gray-800 md:text-2xl">
+                It was 11:14 PM on a Tuesday. The freezer drawer had been
+                opened, closed, and reopened three times in twenty
+                minutes. I wasn&rsquo;t hungry. I was tired, frustrated,
+                stuck on a deadline I&rsquo;d already missed twice
+                &mdash; and I was watching my own hand reach for the
+                drawer for the third time that week.
+              </p>
               <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-                I started COYL the night I watched myself open the fridge
-                at 11:14 PM for the third time in a week, knowing I
-                wasn&rsquo;t hungry, knowing I was tired and frustrated,
-                and knowing that no app I&rsquo;d ever built or used would
-                say anything about it at the right moment. The behavioral
-                pattern was obvious in retrospect. The architecture to
-                catch it didn&rsquo;t exist. So I built it.
+                The pattern was obvious in retrospect. It always is. The
+                meeting that ran past 9 PM. The Friday I told myself
+                I&rsquo;d close the laptop early and didn&rsquo;t. The
+                Sunday I promised the gym and lost to the couch. Every
+                behavior I&rsquo;ve ever wanted to change has a moment
+                &mdash; a thin three-second window between the impulse
+                and the action &mdash; where an outside voice could have
+                caught me. No app I&rsquo;d ever built, used, or read
+                about lived in that window. Therapy showed up Tuesday at
+                3 PM. Coaching showed up in a weekly text. The habit
+                trackers showed up the next morning, after the slip, with
+                a guilt notification I&rsquo;d swipe away.
+              </p>
+              <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+                The architecture to live in those three seconds
+                didn&rsquo;t exist. So I started building it. COYL is
+                what came out: a behavioral interrupt protocol, four
+                open specs underneath it, a reference engine that runs
+                them, and a single quiet promise &mdash; that the next
+                time the pattern fires, something will be there.
+              </p>
+              <p className="max-w-2xl text-base leading-[1.7] text-gray-600">
+                The founder&rsquo;s own behavior was the first dataset.
+                It still is. Every interrupt in this product was tested
+                against the worst version of the person who built it,
+                before it was ever tested against anyone else.
               </p>
 
               <div className="flex flex-wrap gap-3 pt-2">
                 <Link
-                  href="https://linkedin.com/in/imanschrock"
+                  href="https://www.linkedin.com/in/ischrock/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-900 transition-all hover:border-gray-900"
