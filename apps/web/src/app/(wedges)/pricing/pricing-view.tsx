@@ -41,20 +41,20 @@ const FAQ = [
     a: 'For some people on some weeks. The reason you keep losing in the same exact moments is that the script is faster than your willpower. COYL fires before the script. That’s what you’re paying for — at $12/mo, less than one bad night out.',
   },
   {
-    q: 'Why one tier instead of three?',
-    a: 'Tier ladders convert worse than a single confident price. $12 sits under the deliberation line where you stop asking "is this worth it?" and just decide. We’d rather a million people pay $12 than a hundred thousand people pay $30.',
+    q: 'Why three tiers? You used to have one.',
+    a: 'Two of them — Recover (free) and Rewire ($12/mo) — are the same product split by depth. Rebound ($29/mo) is the separate one. It targets the GLP-1 maintenance moment specifically: the 9 PM kitchen after the shot wears off, the weekend script, the post-taper relapse window. Different stakes, different protocol, different price. If you are not on a GLP-1, Rewire is enough.',
   },
   {
-    q: 'I’m on Ozempic / Wegovy / Mounjaro. Is this enough for me?',
-    a: 'Core is enough for most. If you want the rebound-window protocol, the clinician summary export, and the post-taper relapse-prevention plan, there’s a dedicated GLP-1 Plus upgrade on the /glp1 page. Same product, different stakes.',
+    q: 'I’m on Ozempic / Wegovy / Zepbound. Which plan?',
+    a: 'Rebound. It is built specifically for the GLP-1 maintenance moment — the 9 PM kitchen, the weekend collapse, the stress-eating loop, the reward script the shot does not catch. $29/mo (or $199 for the year). Rewire works too, but Rebound carries the rebound-window protocol, the clinician summary export, and the four-archetype regain risk quiz. If you are paying for a GLP-1, you want the maintenance protocol that matches it.',
   },
   {
     q: 'How is this different from Noom?',
     a: 'Noom is daily-log coaching. COYL is moment-of-decision interruption. Noom asks you to journal what you ate. COYL fires at the exact second you’re standing in front of the fridge. Different products, different surfaces.',
   },
   {
-    q: 'Why $99/year instead of "save 31%"?',
-    a: 'Because the year isn’t a discount, it’s a stake. Putting $99 against your pattern is the commitment. The math just happens to work out — $8.25 a month — but the framing is the point. If you’re looking for a coupon, take the monthly.',
+    q: 'Why is annual cheaper? Is it just a discount?',
+    a: 'Yes — and the discount is intentional. Annual is the stake. Putting $99 (Rewire) or $199 (Rebound) against your pattern at year-zero is the commitment that makes the maintenance protocol work. The savings come along for the ride: Rewire annual = $8.25/mo equivalent, Rebound annual = $16.58/mo equivalent. We do not hide the math. We just frame what the money is buying — a year-long commitment to your own pattern, not a coupon to win on the way out.',
   },
   {
     q: 'Can I cancel?',
@@ -73,9 +73,12 @@ const FAQ = [
 export function PricingView() {
   const [interval, setInterval] = useState<Interval>('monthly')
 
-  // Annual is presented as a commitment device, not a savings number.
-  // Mathematically $99 / 12 = $8.25; the framing is "commit to the year",
-  // not "save 31%". Do not surface the % off.
+  // Annual is the commitment frame; the savings are real but secondary.
+  // Rewire: $12/mo monthly → $99/yr annual = $8.25/mo equivalent (31% off).
+  // Rebound: $29/mo monthly → $199/yr annual = $16.58/mo equivalent (43% off).
+  // We surface the equivalent-per-month price (no % off marketing) and let
+  // the cohort math do the work: locking GLP-1 patients into a year of
+  // maintenance is the retention lever that matters most for the wedge.
   const corePrice = interval === 'monthly' ? '12' : '8.25'
   const coreCadence = interval === 'monthly' ? '/mo' : '/mo, billed yearly'
   const reboundPrice = interval === 'monthly' ? '29' : '16.58'
@@ -291,8 +294,9 @@ export function PricingView() {
             ) : (
               <>
                 <span className="font-semibold text-gray-900">Annual · $199. Commit to the year.</span>{' '}
-                Less than one regain week. The maintenance protocol your
-                prescriber wishes you had.
+                Less than one regain week. Equivalent to $16.58/mo
+                — the year is the stake the maintenance protocol is
+                built around.
               </>
             )}
           </p>

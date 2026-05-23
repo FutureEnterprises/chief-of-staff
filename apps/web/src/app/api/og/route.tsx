@@ -51,6 +51,8 @@ export async function GET(req: NextRequest) {
       signature:
         (searchParams.get('signature') ?? '“One time won’t matter.”').slice(0, 80),
       specific: (searchParams.get('specific') ?? 'Night Fridge Saboteur').slice(0, 48),
+      footerCta: (searchParams.get('cta') ?? 'Find your autopilot family').slice(0, 48),
+      footerUrl: (searchParams.get('ctaUrl') ?? 'coyl.ai/audit').slice(0, 48),
     })
   }
 
@@ -303,10 +305,14 @@ function renderArchetypeCard({
   family,
   signature,
   specific,
+  footerCta,
+  footerUrl,
 }: {
   family: string
   signature: string
   specific: string
+  footerCta: string
+  footerUrl: string
 }) {
   return new ImageResponse(
     (
@@ -439,7 +445,7 @@ function renderArchetypeCard({
               textTransform: 'uppercase',
             }}
           >
-            Find your autopilot family
+            {footerCta}
           </span>
           <span
             style={{
@@ -450,7 +456,7 @@ function renderArchetypeCard({
               textTransform: 'uppercase',
             }}
           >
-            coyl.ai/audit
+            {footerUrl}
           </span>
         </div>
       </div>

@@ -242,11 +242,12 @@ export function familyBySlug(slug: string): ReboundFamilyDef | null {
 }
 
 /**
- * Build the public share URL for an archetype. The slug encodes the
- * family directly — Rebound shares are simpler than the generic
- * audit shares because every visit lands on the same family page.
+ * Build the public share URL for an archetype. Lands on /rb/[family]
+ * — short for "Rebound", not the existing /r/[code] referral
+ * redirect. Slug encodes the family directly so every visit to
+ * /rb/night-rebounder shows the Night Rebounder share card.
  */
 export function buildReboundShareUrl(family: ReboundFamily, base?: string): string {
   const origin = base ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://coyl.ai'
-  return `${origin}/r/${family}`
+  return `${origin}/rb/${family}`
 }
