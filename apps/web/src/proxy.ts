@@ -74,6 +74,10 @@ const isPublicRoute = createRouteMatcher([
   // the production confidence-gate function in-process with no DB writes.
   // See apps/web/src/app/api/v1/protocol/demo/route.ts.
   '/api/v1/protocol/demo',
+  // Public audit funnel — anonymous visitors POST here to capture their
+  // archetype result (capture) or schedule a one-shot interrupt (schedule).
+  // Per-IP rate-limited; both routes are open.
+  '/api/v1/audit/(.*)',
   // Third-party OAuth callbacks & webhooks — providers redirect/POST here
   // without a Clerk session cookie, so Clerk's protect would 302 them to
   // sign-in and break the integration handshake. /auth subroutes stay
@@ -154,6 +158,7 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/api/v1/newsletter',
   '/api/v1/sms/intro',
   '/api/v1/protocol/demo',
+  '/api/v1/audit/(.*)',
   '/api/uap/v1/(.*)',
   '/api/health',
   '/profile/(.*)',

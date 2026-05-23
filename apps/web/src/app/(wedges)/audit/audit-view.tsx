@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import {
   allFamilies,
   buildArchetype,
+  buildInterrupts,
   buildShareUrl,
   type WedgeId,
   type WindowId,
@@ -96,39 +97,9 @@ const SCRIPTS: { id: ScriptId; quote: string }[] = [
   { id: 'social', quote: '"I couldn\u2019t say no."' },
 ]
 
-/** Map the three answers to three specific interrupt moments COYL would fire. */
-function buildInterrupts(wedge: WedgeId, window: WindowId, script: ScriptId): string[] {
-  const scriptResponse: Record<ScriptId, string> = {
-    reward: 'You don\u2019t deserve this. You\u2019re avoiding.',
-    delay: 'Tomorrow is the script. Today is the break.',
-    collapse: 'You didn\u2019t blow it. You\u2019re about to blow it. There\u2019s a difference.',
-    minimize: 'One time is the pattern. Not the exception.',
-    exhaustion: 'Tired is a signal, not a verdict. 2 minutes, then decide.',
-    social: 'You said yes to them. Say no to the loop.',
-  }
-
-  const wedgeMoment: Record<WedgeId, string> = {
-    weight: 'At the fridge. Before the second trip.',
-    work: 'In the draft. Before you close the tab.',
-    destructive: 'At the trigger. Before the 3rd click.',
-    consistency: 'At the restart. Before you move the start date again.',
-    spending: 'At checkout. Before you hit confirm.',
-    focus: 'At the tab switch. Before the 10th open of the same app.',
-  }
-
-  const windowFollowup: Record<WindowId, string> = {
-    morning: '8 AM follow-up: "Yesterday\u2019s you bet on today\u2019s you. Show up."',
-    afternoon: '2 PM check: "The afternoon fold is the one you don\u2019t see coming."',
-    afterwork: '7 PM interrupt: "This is the hour. The one you always lose."',
-    latenight: '10 PM interrupt: "Decisions you make after 10 PM aren\u2019t decisions. They\u2019re reflexes."',
-  }
-
-  return [
-    wedgeMoment[wedge],
-    scriptResponse[script],
-    windowFollowup[window],
-  ]
-}
+// buildInterrupts moved to @/lib/audit-archetype so the server-side
+// /api/v1/audit/capture route and the email template can share the
+// exact strings the audit result page shows.
 
 function resultHeadline(wedge: WedgeId, window: WindowId): string {
   const wedgeShort: Record<WedgeId, string> = {
@@ -468,6 +439,15 @@ export function AuditView() {
             archetypeSlug={archetype.family.slug}
           />
 
+          {/* Email-me-this-result — the no-commitment top of funnel.
+              Lower-friction than ScheduleInterruptBlock (no SMS/email
+              gets booked for tonight). The visitor's email lands in
+              audit_leads with their archetype attached, and they get
+              a single result email through Resend. Sits ABOVE the
+              schedule block so visitors who aren't ready to commit
+              still leave a contact. */}
+          <EmailResultBlock archetype={archetype} />
+
           {/* First-hour interrupt scheduler — the retention engine.
               Per the May 2026 product blueprint, this replaces the
               "go to /sign-up" deferred-value path. The visitor leaves
@@ -689,6 +669,164 @@ function ScheduleInterruptBlock({
       >
         Run it again
       </button>
+    </div>
+  )
+}
+
+/**
+ * EmailResultBlock — three-state inline block that captures an email
+ * and fires a one-shot result email through Resend. Sits between the
+ * result reveal and ScheduleInterruptBlock. Lower commitment than
+ * scheduling a real interrupt — meant for the cold viral visitor who
+ * isn't ready to lock anything in tonight but will leave a contact
+ * for a result delivery they can re-read tomorrow.
+ *
+ * States:
+ *   idle  — "Email me this result" CTA + brief reassurance
+ *   form  — email input + submit
+ *   sent  — confirmation card with sign-up CTA
+ */
+function EmailResultBlock({ archetype }: { archetype: Archetype }) {
+  const [mode, setMode] = useState<'idle' | 'form' | 'sent'>('idle')
+  const [email, setEmail] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setErrorMessage(null)
+    const trimmed = email.trim()
+    if (!trimmed || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(trimmed)) {
+      setErrorMessage('That email doesn’t look right.')
+      return
+    }
+    setSubmitting(true)
+    try {
+      const res = await fetch('/api/v1/audit/capture', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          email: trimmed,
+          archetypeFamily: archetype.family.name,
+          archetypeSlug: archetype.family.slug,
+          wedge: archetype.wedge,
+          window: archetype.window,
+          script: archetype.script,
+          source: 'audit-result-page',
+        }),
+      })
+      if (!res.ok) {
+        const detail = await res.json().catch(() => ({}))
+        setErrorMessage(
+          typeof detail?.error === 'string'
+            ? detail.error
+            : 'Could not send that. Try again?',
+        )
+        setSubmitting(false)
+        return
+      }
+      setMode('sent')
+    } catch {
+      setErrorMessage('Network hiccup. Try once more.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (mode === 'sent') {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-6 rounded-3xl border border-gray-200 bg-white p-6 md:p-8"
+      >
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-emerald-700 ring-1 ring-emerald-300">
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          On its way
+        </span>
+        <p className="mt-4 text-base text-gray-700">
+          Your archetype, signature script, and three interrupts are heading
+          to <span className="font-semibold text-gray-900">{email}</span>. Reread
+          it tonight before your danger window fires.
+        </p>
+        <p className="mt-4 text-sm text-gray-500">
+          Ready to lock in the actual interrupt below — or{' '}
+          <Link
+            href="/sign-up?ref=audit-emailed"
+            className="font-semibold text-orange-700 underline-offset-4 hover:underline"
+          >
+            sign up &rarr;
+          </Link>
+        </p>
+      </motion.div>
+    )
+  }
+
+  if (mode === 'form') {
+    return (
+      <motion.form
+        onSubmit={handleSubmit}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-6 rounded-3xl border border-gray-200 bg-white p-6 md:p-8"
+      >
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-orange-600">
+          No commitment
+        </p>
+        <h3 className="mt-2 text-xl font-bold leading-tight text-gray-900 md:text-2xl">
+          Email me my result.
+        </h3>
+        <p className="mt-2 max-w-lg text-sm text-gray-600">
+          One email with your archetype + the three interrupts. We don&rsquo;t
+          email you again unless you sign up.
+        </p>
+        <label className="mt-5 block">
+          <span className="block text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
+            Email
+          </span>
+          <input
+            type="email"
+            autoComplete="email"
+            placeholder="you@domain.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-2 w-full max-w-md rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+          />
+        </label>
+        {errorMessage && (
+          <p className="mt-3 text-sm font-semibold text-red-600">{errorMessage}</p>
+        )}
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="rounded-full bg-gray-900 px-5 py-2.5 text-sm font-bold text-white transition-opacity disabled:opacity-60"
+          >
+            {submitting ? 'Sending…' : 'Send it to me'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('idle')}
+            className="text-sm font-semibold text-gray-500 hover:text-gray-700"
+          >
+            Cancel
+          </button>
+        </div>
+      </motion.form>
+    )
+  }
+
+  return (
+    <div className="mb-6 flex flex-wrap items-center gap-3">
+      <button
+        onClick={() => setMode('form')}
+        className="rounded-full border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-800 hover:border-orange-300 hover:text-orange-700"
+      >
+        📩 Email me this result
+      </button>
+      <span className="text-xs text-gray-500">
+        Or lock in tonight&rsquo;s interrupt below.
+      </span>
     </div>
   )
 }

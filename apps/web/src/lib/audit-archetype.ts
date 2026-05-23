@@ -271,6 +271,44 @@ export function buildArchetype(wedge: WedgeId, window: WindowId, script: ScriptI
   }
 }
 
+/**
+ * The three "interrupts" the audit result page shows for a given
+ * wedge × window × script combo. Pure data, no React — usable from
+ * the audit page, the email template, and any future export.
+ */
+export function buildInterrupts(
+  wedge: WedgeId,
+  window: WindowId,
+  script: ScriptId,
+): [string, string, string] {
+  const scriptResponse: Record<ScriptId, string> = {
+    reward: 'You don’t deserve this. You’re avoiding.',
+    delay: 'Tomorrow is the script. Today is the break.',
+    collapse: 'You didn’t blow it. You’re about to blow it. There’s a difference.',
+    minimize: 'One time is the pattern. Not the exception.',
+    exhaustion: 'Tired is a signal, not a verdict. 2 minutes, then decide.',
+    social: 'You said yes to them. Say no to the loop.',
+  }
+
+  const wedgeMoment: Record<WedgeId, string> = {
+    weight: 'At the fridge. Before the second trip.',
+    work: 'In the draft. Before you close the tab.',
+    destructive: 'At the trigger. Before the 3rd click.',
+    consistency: 'At the restart. Before you move the start date again.',
+    spending: 'At checkout. Before you hit confirm.',
+    focus: 'At the tab switch. Before the 10th open of the same app.',
+  }
+
+  const windowFollowup: Record<WindowId, string> = {
+    morning: '8 AM follow-up: "Yesterday’s you bet on today’s you. Show up."',
+    afternoon: '2 PM check: "The afternoon fold is the one you don’t see coming."',
+    afterwork: '7 PM interrupt: "This is the hour. The one you always lose."',
+    latenight: '10 PM interrupt: "Decisions you make after 10 PM aren’t decisions. They’re reflexes."',
+  }
+
+  return [wedgeMoment[wedge], scriptResponse[script], windowFollowup[window]]
+}
+
 /* ───────────────────────────────────────────────────────────────────
  * URLS
  * ─────────────────────────────────────────────────────────────────── */

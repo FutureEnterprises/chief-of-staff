@@ -1803,6 +1803,72 @@ model CronHeartbeat {
   @@map("cron_heartbeats")
 }
 
+/**
+ * AuditLead — anonymous /audit visitors who entered an email to have
+ * their result delivered. Lower-commitment than the ScheduleInterrupt
+ * flow (which captures phone or email AND books an actual SMS/email
+ * for the next danger window). This row is "email me this so I can
+ * come back" — the right top-of-funnel for viral acquisition where
+ * most visitors won't yet commit to a scheduled interrupt.
+ *
+ * convertedUserId is populated when the lead later signs up — the
+ * audit-archetype carries through onboarding so the user lands in
+ * /today already pattern-mapped.
+ */
+model AuditLead {
+  id              String    @id @default(cuid())
+  email           String
+  archetypeFamily String
+  archetypeSlug   String?
+  wedge           String
+  window          String
+  script          String
+  source          String?
+  userAgent       String?
+  ipHash          String?
+  emailSentAt     DateTime?
+  emailMessageId  String?
+  convertedUserId String?
+  createdAt       DateTime  @default(now())
+
+  @@index([email])
+  @@index([createdAt(sort: Desc)])
+  @@index([archetypeFamily])
+  @@index([source])
+  @@map("audit_leads")
+}
+
+/**
+ * RetentionSnapshot — daily cohort retention point-in-time record.
+ *
+ * Written by the daily retention-snapshot cron at 04:00 UTC. One row
+ * per (snapshotDate, cohortKind) — cohortKind in {'D1','D7','D14','D30'}.
+ * The admin retention dashboard reads the last 30 snapshots per
+ * cohort to show trend, not just the live point-in-time.
+ *
+ * Cohort definitions, relative to snapshotDate S:
+ *   D1  — users registered (S-2, S-1], active in (S-1, S]
+ *   D7  — users registered (S-14, S-7], active in (S-7, S]
+ *   D14 — users registered (S-28, S-14], active in (S-14, S]
+ *   D30 — users registered (S-60, S-30], active in (S-30, S]
+ */
+model RetentionSnapshot {
+  id            String   @id @default(cuid())
+  snapshotDate  DateTime @db.Date
+  cohortKind    String
+  cohortSize    Int
+  retainedCount Int
+  retentionPct  Float
+  cohortStartAt DateTime
+  cohortEndAt   DateTime
+  createdAt     DateTime @default(now())
+
+  @@unique([snapshotDate, cohortKind])
+  @@index([snapshotDate(sort: Desc)])
+  @@index([cohortKind])
+  @@map("retention_snapshots")
+}
+
 // ============================================================
 // UAP — USER-AUTHORITY PROTOCOL v0.1
 // ============================================================
