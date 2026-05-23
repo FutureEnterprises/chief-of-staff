@@ -122,13 +122,134 @@ function resultHeadline(wedge: WedgeId, window: WindowId): string {
 // buildArchetype lives in @/lib/audit-archetype so it can be re-used
 // at the public /a/[slug] share page for SSR rendering and OG meta.
 
+/**
+ * Per-visitor funnel session id. Lives 24h in a first-party cookie so
+ * the four funnel beacons (started → completed → email_captured →
+ * signup_started) tie together server-side without auth. Survives page
+ * reloads inside the audit. Reset on each fresh visit (>24h gap).
+ */
+const AUDIT_SESSION_COOKIE = 'coyl_audit_sid'
+const AUDIT_SESSION_TTL_HOURS = 24
+
+function getOrCreateAuditSession(): string {
+  if (typeof document === 'undefined') return ''
+  const existing = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith(`${AUDIT_SESSION_COOKIE}=`))
+    ?.split('=')[1]
+  if (existing) return existing
+  const fresh =
+    (typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2)) + Date.now().toString(36)
+  const maxAge = AUDIT_SESSION_TTL_HOURS * 60 * 60
+  document.cookie = `${AUDIT_SESSION_COOKIE}=${fresh}; max-age=${maxAge}; path=/; SameSite=Lax`
+  return fresh
+}
+
+/** Read-only sibling — used by child components (EmailResultBlock,
+ *  ScheduleInterruptBlock, sign-up CTAs) that need the session id
+ *  without retriggering the create flow. */
+function readAuditSession(): string {
+  if (typeof document === 'undefined') return ''
+  return (
+    document.cookie
+      .split('; ')
+      .find((row) => row.startsWith(`${AUDIT_SESSION_COOKIE}=`))
+      ?.split('=')[1] ?? ''
+  )
+}
+
+/**
+ * Fire-and-forget funnel beacon. Uses sendBeacon when available
+ * (survives page navigation away from /audit) and falls back to
+ * fetch with keepalive otherwise. Errors are swallowed — funnel
+ * telemetry must never break the audit UX.
+ */
+function fireFunnelEvent(
+  kind: 'started' | 'completed' | 'email_captured' | 'signup_started',
+  payload: {
+    sessionId: string
+    archetypeFamily?: string
+    archetypeSlug?: string
+    wedge?: string
+    window?: string
+    script?: string
+    source?: string
+  },
+): void {
+  if (typeof window === 'undefined') return
+  const body = JSON.stringify({ kind, ...payload })
+  try {
+    if ('sendBeacon' in navigator) {
+      const blob = new Blob([body], { type: 'application/json' })
+      navigator.sendBeacon('/api/v1/audit/event', blob)
+      return
+    }
+  } catch {
+    // fall through
+  }
+  void fetch('/api/v1/audit/event', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body,
+    keepalive: true,
+  }).catch(() => {
+    // swallow — telemetry must not break the funnel
+  })
+}
+
 export function AuditView() {
   const [step, setStep] = useState<0 | 1 | 2 | 3>(0)
   const [wedge, setWedge] = useState<WedgeId | null>(null)
   const [windowChoice, setWindowChoice] = useState<WindowId | null>(null)
   const [script, setScript] = useState<ScriptId | null>(null)
+  const sessionIdRef = useRef<string>('')
+  const startedFiredRef = useRef(false)
+  const completedFiredRef = useRef(false)
+
+  useEffect(() => {
+    sessionIdRef.current = getOrCreateAuditSession()
+  }, [])
+
+  // Fire the 'started' beacon the first time the user selects an
+  // answer (not on bare page mount — we want measurable intent, not
+  // bots crawling /audit).
+  useEffect(() => {
+    if (step >= 1 && !startedFiredRef.current && sessionIdRef.current) {
+      startedFiredRef.current = true
+      fireFunnelEvent('started', { sessionId: sessionIdRef.current })
+    }
+  }, [step])
+
+  // Fire the 'completed' beacon once the third question is answered
+  // (we have wedge × window × script — the result is being rendered).
+  useEffect(() => {
+    if (
+      wedge &&
+      windowChoice &&
+      script &&
+      !completedFiredRef.current &&
+      sessionIdRef.current
+    ) {
+      completedFiredRef.current = true
+      const archetype = buildArchetype(wedge, windowChoice, script)
+      fireFunnelEvent('completed', {
+        sessionId: sessionIdRef.current,
+        archetypeFamily: archetype.family.name,
+        archetypeSlug: archetype.family.slug,
+        wedge,
+        window: windowChoice,
+        script,
+      })
+    }
+  }, [wedge, windowChoice, script])
 
   function reset() {
+    // Treat a reset as a new funnel session — re-fires `started` if
+    // the visitor answers again.
+    startedFiredRef.current = false
+    completedFiredRef.current = false
     setStep(0)
     setWedge(null)
     setWindowChoice(null)
@@ -342,44 +463,76 @@ export function AuditView() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {/* Archetype card — two-tier: FAMILY headlines (the meme),
-              SPECIFIC is the texture (the moment). Per the May 2026
-              virality dispatch: people share family identity ("I'm a
-              Deserver") more than they share situational labels. The
-              family is the screenshot atom; the specific is the
-              context that proves the result is real. */}
-          <div className="mb-6 rounded-3xl border border-orange-300 bg-gradient-to-br from-orange-50 via-white to-white p-6 shadow-[0_24px_60px_-12px_rgba(255,102,0,0.18)] md:p-8">
-            <p className="text-xs font-mono uppercase tracking-[0.28em] text-orange-600">
+          {/* Archetype card — cinematic dark treatment per the May 2026
+              full-site audit ("the audit currently feels too rational;
+              you need emotional punch"). The result is the moment of
+              recognition — it should feel like the page just turned the
+              lights down so you can actually see yourself. Warm charcoal
+              panel, dual orange radial glow, oversized serif italic
+              family name as the focal headline, signature script in
+              orange italic as the meme line. Same visual language as
+              the cinematic hero so the audit funnel reads as one piece. */}
+          <div className="relative mb-6 isolate overflow-hidden rounded-3xl border border-white/[0.06] bg-[#0f0e0c] p-6 shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55),0_10px_30px_-10px_rgba(255,102,0,0.25)] md:p-10">
+            {/* Dual radial orange glow — anchors the headline left,
+                anchors the specific-moment card lower-right. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -z-10"
+              style={{
+                backgroundImage: `
+                  radial-gradient(50% 60% at 18% 32%, rgba(255, 138, 76, 0.22) 0%, transparent 70%),
+                  radial-gradient(45% 55% at 82% 80%, rgba(255, 102, 0, 0.18) 0%, transparent 70%)
+                `,
+              }}
+            />
+            {/* Subtle scan-line texture overlay */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05]"
+              style={{
+                backgroundImage:
+                  'repeating-linear-gradient(0deg, rgba(255,255,255,0.5) 0px, rgba(255,255,255,0.5) 1px, transparent 1px, transparent 3px)',
+              }}
+            />
+
+            <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-orange-400">
               You&rsquo;re
             </p>
-            <p className="mt-2 flex flex-wrap items-center gap-4 text-4xl font-black leading-tight text-gray-900 md:text-5xl">
+
+            <p className="mt-4 flex flex-wrap items-baseline gap-4">
               <span
                 aria-hidden
-                className="inline-flex h-14 w-14 flex-none items-center justify-center rounded-2xl bg-orange-100 text-orange-600 ring-1 ring-orange-200 md:h-16 md:w-16"
+                className="inline-flex h-14 w-14 flex-none items-center justify-center rounded-2xl bg-orange-500/15 text-orange-300 ring-1 ring-orange-400/30 md:h-16 md:w-16"
               >
-                <archetype.family.Icon className="h-8 w-8 md:h-9 md:w-9" strokeWidth={2} />
+                <archetype.family.Icon className="h-8 w-8 md:h-9 md:w-9" strokeWidth={1.8} />
               </span>
-              <span>{archetype.family.name}</span>
+              <span className="font-serif text-[clamp(2.4rem,6vw,4.2rem)] italic font-normal leading-[0.98] tracking-[-0.025em] text-[#f8f1e4]">
+                {archetype.family.name}.
+              </span>
             </p>
-            <p className="mt-3 max-w-xl text-base leading-relaxed text-gray-700">
+
+            <p className="mt-6 max-w-xl text-base leading-[1.6] text-[#d9d1c2] md:text-lg">
               {archetype.family.essence}
             </p>
-            <p className="mt-4 font-mono text-sm italic text-orange-700">
-              Signature script: {archetype.family.signature}
+
+            <p className="mt-5 font-serif text-xl italic leading-snug text-orange-300 md:text-2xl">
+              {archetype.family.signature}
             </p>
-            <p className="mt-3 text-sm text-gray-600">
+
+            <p className="mt-3 text-sm leading-[1.6] text-[#a59a87]">
               {archetype.family.prevalenceCopy}
             </p>
-            <div className="mt-5 rounded-2xl border border-gray-200 bg-white p-4">
-              <p className="font-mono text-[10px] uppercase tracking-widest text-gray-500">
+
+            <div className="mt-7 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 backdrop-blur-sm">
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#a59a87]">
                 Your specific moment
               </p>
-              <p className="mt-1 flex items-center gap-2 text-base font-bold text-gray-900">
+              <p className="mt-2 flex items-center gap-2 text-base font-semibold text-[#f5efe6]">
                 <span
                   aria-hidden
-                  className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-orange-50 text-orange-600 ring-1 ring-orange-100"
+                  className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-orange-500/15 text-orange-300 ring-1 ring-orange-400/25"
                 >
-                  <archetype.specific.Icon className="h-5 w-5" strokeWidth={2} />
+                  <archetype.specific.Icon className="h-5 w-5" strokeWidth={1.8} />
                 </span>
                 <span>{archetype.specific.name}</span>
               </p>
@@ -564,6 +717,17 @@ function ScheduleInterruptBlock({
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <Link
             href="/sign-up?ref=audit"
+            onClick={() =>
+              fireFunnelEvent('signup_started', {
+                sessionId: readAuditSession(),
+                archetypeFamily: archetype.family.name,
+                archetypeSlug: archetype.family.slug,
+                wedge: archetype.wedge,
+                window: archetype.window,
+                script: archetype.script,
+                source: 'audit-schedule-confirmed',
+              })
+            }
             className="text-sm font-semibold text-orange-700 underline-offset-4 hover:underline"
           >
             Want the full system? Sign up &rarr;
@@ -725,6 +889,18 @@ function EmailResultBlock({ archetype }: { archetype: Archetype }) {
         setSubmitting(false)
         return
       }
+      // Fire the email_captured funnel beacon. Persisted as an
+      // AuditFunnelEvent row so the admin funnel dashboard can
+      // compute completed → email_captured conversion.
+      fireFunnelEvent('email_captured', {
+        sessionId: readAuditSession(),
+        archetypeFamily: archetype.family.name,
+        archetypeSlug: archetype.family.slug,
+        wedge: archetype.wedge,
+        window: archetype.window,
+        script: archetype.script,
+        source: 'audit-result-page',
+      })
       setMode('sent')
     } catch {
       setErrorMessage('Network hiccup. Try once more.')
@@ -753,6 +929,17 @@ function EmailResultBlock({ archetype }: { archetype: Archetype }) {
           Ready to lock in the actual interrupt below — or{' '}
           <Link
             href="/sign-up?ref=audit-emailed"
+            onClick={() =>
+              fireFunnelEvent('signup_started', {
+                sessionId: readAuditSession(),
+                archetypeFamily: archetype.family.name,
+                archetypeSlug: archetype.family.slug,
+                wedge: archetype.wedge,
+                window: archetype.window,
+                script: archetype.script,
+                source: 'audit-email-sent',
+              })
+            }
             className="font-semibold text-orange-700 underline-offset-4 hover:underline"
           >
             sign up &rarr;
@@ -1182,10 +1369,10 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
     `https://www.threads.net/intent/post?text=${encodeURIComponent(shareTextWithUrl)}`
 
   return (
-    <div className="mt-5 flex flex-wrap items-center gap-2">
+    <div className="mt-7 flex flex-wrap items-center gap-2">
       <button
         onClick={handleNativeShare}
-        className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2.5 text-xs font-bold text-white transition-colors hover:bg-gray-800"
+        className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-xs font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.35)] transition-transform hover:-translate-y-0.5"
         aria-label="Share my archetype"
       >
         Share my archetype
@@ -1203,7 +1390,7 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
         href={twitterUrl}
         target="_blank"
         rel="noreferrer"
-        className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-800 transition-colors hover:border-gray-900 hover:text-gray-900"
+        className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-[#e7dccb] transition-colors hover:border-orange-300 hover:text-orange-300"
         aria-label="Share on X / Twitter"
       >
         <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -1215,21 +1402,21 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
         href={threadsUrl}
         target="_blank"
         rel="noreferrer"
-        className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-800 transition-colors hover:border-gray-900 hover:text-gray-900"
+        className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-[#e7dccb] transition-colors hover:border-orange-300 hover:text-orange-300"
         aria-label="Share on Threads"
       >
         Threads
       </a>
       <button
         onClick={handleCopy}
-        className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-800 transition-colors hover:border-gray-900 hover:text-gray-900"
+        className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-[#e7dccb] transition-colors hover:border-orange-300 hover:text-orange-300"
         aria-label="Copy share link"
       >
         {copied ? 'Copied' : 'Copy link'}
       </button>
       <Link
         href={shareUrl}
-        className="text-xs font-semibold text-orange-700 underline-offset-4 hover:underline"
+        className="text-xs font-semibold text-orange-300 underline-offset-4 hover:text-orange-200 hover:underline"
       >
         view share card →
       </Link>

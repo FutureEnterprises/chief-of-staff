@@ -138,8 +138,15 @@ export default async function ProtocolPage() {
           <p className="max-w-2xl text-base leading-[1.65] text-gray-600">
             BIP for behavioral context. PAP for LLM proactive
             interventions. EAP for cross-device LLM action. UAP for
-            standing authority when the user is absent. Apache 2.0.
-            The reference engine is ours.
+            standing authority when the user is absent.{' '}
+            <Link
+              href="/rap"
+              className="text-orange-600 underline-offset-4 hover:underline"
+            >
+              RAP
+            </Link>{' '}
+            for safety routing — when the AI stops coaching and routes
+            to a human. Apache 2.0. The reference engine is ours.
           </p>
 
           <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
@@ -828,6 +835,13 @@ function StackDiagram() {
         title="Foundation labs"
         subtitle="Anthropic · OpenAI · Google · …"
         tone="muted"
+      />
+      <StackConnector />
+      <StackBox
+        kicker="RAP v0.1 · draft"
+        title="Risk assessment + safety routing"
+        subtitle="When the AI stops coaching and routes to human support. Overrides every other layer when it fires."
+        tone="accent"
       />
       <StackConnector />
       <StackBox

@@ -1839,6 +1839,36 @@ model AuditLead {
 }
 
 /**
+ * AuditFunnelEvent — anonymous /audit funnel telemetry. The four-stage
+ * funnel: started → completed → email_captured → signup_started.
+ * Separate from ProductivityEvent (which needs a userId; audit
+ * visitors are mostly anonymous) and separate from AuditLead (which
+ * only fires at the email-captured stage and misses the drop-offs
+ * before it). sessionId ties the funnel together across requests.
+ */
+model AuditFunnelEvent {
+  id              String   @id @default(cuid())
+  sessionId       String
+  /// One of: 'started' | 'completed' | 'email_captured' | 'signup_started'
+  kind            String
+  archetypeFamily String?
+  archetypeSlug   String?
+  wedge           String?
+  window          String?
+  script          String?
+  source          String?
+  userAgent       String?
+  ipHash          String?
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@index([kind])
+  @@index([sessionId])
+  @@index([archetypeFamily])
+  @@map("audit_funnel_events")
+}
+
+/**
  * RetentionSnapshot — daily cohort retention point-in-time record.
  *
  * Written by the daily retention-snapshot cron at 04:00 UTC. One row
