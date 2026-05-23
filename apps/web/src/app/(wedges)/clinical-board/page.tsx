@@ -19,8 +19,19 @@
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
+
+/**
+ * ROUND-3 AUDIT GATE — May 2026.
+ *
+ * Gated parallel to /advisors per founder decision. Returns 404 until
+ * at least one credible clinical board member can be named publicly
+ * (target: Q3 2026 with GLP-1 RCT enrollment). Flip GATE_ACTIVE →
+ * false (or delete) to relight the page when a name confirms.
+ */
+const GATE_ACTIVE = true
 
 
 export const metadata: Metadata = {
@@ -85,6 +96,9 @@ export default async function ClinicalBoardPage() {
   'use cache'
   cacheLife('days')
   cacheTag('marketing-clinical-board')
+
+  // Round-3 audit gate — return 404 until a credible name lands.
+  if (GATE_ACTIVE) notFound()
 
   return (
     <>

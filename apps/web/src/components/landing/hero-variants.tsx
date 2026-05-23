@@ -1,28 +1,41 @@
 'use client'
 
 /**
- * Rebound-led cinematic hero — May 2026 consumer pivot.
+ * General-autopilot cinematic hero — May 2026 round-3 revert.
  *
- * Per the founder strategic decision to focus the consumer-facing
- * surface on the GLP-1 anti-regain wedge (and the second-audit math
- * showing the fastest $100M-ARR path runs through "stopping Ozempic"
- * patients terrified of weight regain), the homepage hero now leads
- * with the Rebound positioning rather than the generic-pattern
- * cold-open.
+ * Round-1 (April 2026) pivoted this hero to GLP-1 Rebound led, on the
+ * theory that the fastest $100M-ARR path was through patients
+ * terrified of weight regain. Round-3 audit (May 2026) flagged the
+ * resulting front-door bifurcation: a visitor with a general
+ * autopilot problem (focus, procrastination, late-night eating
+ * unrelated to GLP-1) bounced because the hero spoke only to GLP-1
+ * patients. Per the founder decision in the round-3 question set,
+ * Rebound moves back to a specialty tier deeper in the funnel and the
+ * homepage hero returns to the general-pattern framing the brand
+ * mantra and the founder bio are already built around.
  *
- *   Hero line:  "The shot quiets hunger.
- *                COYL trains the pattern that keeps the weight off."
+ *   Hero line:  "Your patterns are louder than your plans.
+ *                COYL lives in the three seconds between."
  *
- * The MomentLoop card stays — the 11:42 PM micro-moment ("One snack
- * won't matter" → "This is where tomorrow gets damaged") is exactly
- * the GLP-1-rebounder script. Same component, sharper context.
+ * Rebound stays reachable via:
+ *   - the "On Ozempic, Wegovy, or Zepbound?" secondary chip below the
+ *     primary CTAs (this file)
+ *   - the /rebound landing page (unchanged)
+ *   - the Consumer nav dropdown (unchanged)
+ *   - the /rebound/for-clinicians prescriber one-pager (unchanged)
+ * The Rebound funnel is intact; only the homepage entry point flips.
  *
- * Visual treatment preserved from the prior cinematic rollout:
- * warm-charcoal scrim, dual radial orange glow, scan-line texture,
- * serif italic for the focal accent, cream bleed to the page beneath.
+ * The MomentLoop card on the right reads as either the general
+ * pattern OR the GLP-1 rebounder — the late-night kitchen scene works
+ * for both audiences because the script ("one snack won't matter") is
+ * the same. Visual cinematic treatment preserved: warm-charcoal
+ * scrim, dual radial orange glow, scan-line texture, serif italic for
+ * the focal accent, cream bleed to the page beneath.
  *
  * The variant prop is kept for backward compat (?v=a|b|c links still
- * resolve); every variant now renders the same Rebound hero.
+ * resolve); every variant now renders the same general-autopilot
+ * hero. If A/B testing returns, the COPY map below is the surface to
+ * branch on.
  */
 
 import Link from 'next/link'
@@ -32,9 +45,9 @@ import { MomentLoop } from './moment-loop'
 type Variant = 'a' | 'b' | 'c'
 
 const COPY: Record<Variant, { eyebrow: string }> = {
-  a: { eyebrow: 'The anti-regain layer' },
-  b: { eyebrow: 'Behavioral support · GLP-1 maintenance' },
-  c: { eyebrow: 'For the moment the shot gets quiet' },
+  a: { eyebrow: 'AI for the moment before behavior happens' },
+  b: { eyebrow: 'Catch yourself before you do it again' },
+  c: { eyebrow: 'Behavioral support · the 3-second window' },
 }
 
 export function HeroVariants({ variant }: { variant: Variant }) {
@@ -91,18 +104,18 @@ export function HeroVariants({ variant }: { variant: Variant }) {
             </motion.div>
 
             {/* Hero line — the one sentence. Serif italic on the second
-                clause makes the "trains the pattern" feel like the
-                category-defining claim, not a feature list. */}
+                clause makes the "lives in the three seconds" feel like
+                the category-defining claim, not a feature list. */}
             <motion.h1
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
               className="font-serif text-[clamp(2.4rem,5.8vw,4.6rem)] font-normal leading-[1.04] tracking-[-0.025em] text-[#f8f1e4]"
             >
-              The shot quiets hunger.
+              Your patterns are louder than your plans.
               <br />
               <span className="italic text-orange-300">
-                COYL trains the pattern that keeps the weight off.
+                COYL lives in the three seconds between.
               </span>
             </motion.h1>
 
@@ -112,10 +125,12 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               transition={{ delay: 0.85, duration: 0.7 }}
               className="mt-8 max-w-xl text-lg leading-[1.6] text-[#cfc7b9] md:text-xl"
             >
-              When the Ozempic, Wegovy, or Zepbound gets quiet, the 9 PM
-              script comes back. COYL catches it{' '}
-              <span className="font-semibold text-orange-300">before</span>{' '}
-              the pattern reruns — so the weight you lost stays off.
+              Every behavior you wanted to change has a moment — a thin
+              three-second window between the impulse and the action
+              where an outside voice could have caught you. Therapy
+              shows up Tuesday at 3 PM. Habit trackers show up the next
+              morning. COYL{' '}
+              <span className="font-semibold text-orange-300">lives in those three seconds.</span>
             </motion.p>
 
             <motion.div
@@ -125,11 +140,11 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               className="mt-10 flex flex-wrap items-center gap-4"
             >
               <Link
-                href="/rebound/quiz"
+                href="/audit"
                 className="group relative flex items-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-8 py-4 text-base font-semibold text-white shadow-[0_8px_28px_-8px_rgba(255,102,0,0.55)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_18px_44px_-12px_rgba(255,102,0,0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e0d0b]"
               >
                 <span className="relative z-10">
-                  Take the 60-second regain risk quiz
+                  Take the 90-second autopilot audit
                 </span>
                 <svg
                   width="14"
@@ -170,22 +185,24 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               </Link>
             </motion.div>
 
-            {/* Reassurance line — anchors the wedge in research. 60%
-                regain stat comes from the May 2026 Cambridge meta-
-                analysis cited on /clinical-study. */}
+            {/* Specialty path — GLP-1 visitors get an explicit chip
+                routing to the Rebound funnel. Smaller, lighter than the
+                primary CTAs so general-autopilot stays the front door,
+                but visible enough that a paid-acquisition click off an
+                Ozempic / Wegovy / Zepbound keyword still lands in
+                Rebound on the second hit. */}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.25, duration: 0.6 }}
               className="mt-5 max-w-xl text-sm text-[#a59a87]"
             >
-              60% of weight lost on GLP-1 returns within a year of
-              stopping the medication.{' '}
+              On Ozempic, Wegovy, or Zepbound?{' '}
               <Link
-                href="/clinical-study"
-                className="underline-offset-4 hover:text-orange-300 hover:underline"
+                href="/rebound"
+                className="font-medium text-orange-300 underline-offset-4 hover:underline"
               >
-                The research →
+                See Rebound — the anti-regain layer →
               </Link>
             </motion.p>
           </div>

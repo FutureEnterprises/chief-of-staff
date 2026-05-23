@@ -26,8 +26,27 @@
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
+
+/**
+ * ROUND-3 AUDIT GATE — May 2026.
+ *
+ * The audit re-raised the "no real advisor names" critique even after
+ * round-2 hid this surface from the footer and About callouts. Per
+ * founder decision in the round-3 question set: gate the page itself
+ * with notFound() until at least one credible advisor name can be
+ * published. "Forming" reads as a weak signal; a clean 404 is the
+ * cleaner answer for direct-URL visitors (e.g. auditors guessing the
+ * sibling URL of /clinical-board).
+ *
+ * When a real advisor confirms: comment out the GATE_ACTIVE constant
+ * below, edit the ADVISORS array to surface the named seat, and the
+ * page lights back up. The full page layout / metadata / cinematic
+ * structure below is preserved so the unhiding is a one-line revert.
+ */
+const GATE_ACTIVE = true
 
 
 export const metadata: Metadata = {
@@ -108,6 +127,10 @@ export default async function AdvisorsPage() {
   'use cache'
   cacheLife('days')
   cacheTag('marketing-advisors')
+
+  // Round-3 audit gate — return 404 until a credible name lands.
+  // Flip GATE_ACTIVE → false (or delete) when ready to publish.
+  if (GATE_ACTIVE) notFound()
 
   return (
     <>
