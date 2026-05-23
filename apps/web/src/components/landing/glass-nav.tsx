@@ -52,7 +52,7 @@ const PROTOCOL: DropdownLink[] = [
   { label: 'Platform overview', href: '/platform', description: 'Five protocols, one reference engine. The M&A + partner-facing story.' },
   { label: 'Protocol stack', href: '/protocol', description: '"Stop being a chatbot. Become behavior-aware." The full stack.' },
   { label: 'UAP — Standing Consent', href: '/uap', description: 'The foundation. What the user permits, refuses, can override.' },
-  { label: 'BIP — Behavioral Context', href: '/protocol#bip', description: 'The substrate. What loop the user is in right now.' },
+  { label: 'BIP — Behavioral Context', href: '/bip', description: 'The substrate. What loop the user is in right now.' },
   { label: 'PAP — Proactive Intervention', href: '/pap', description: 'LLMs propose, coordinator arbitrates. Cross-vendor Switzerland.' },
   { label: 'EAP — Cross-Device Action', href: '/eap', description: 'Per-action execution across the user’s device fleet.' },
   { label: 'RAP — Safety Routing', href: '/rap', description: 'When the AI stops coaching and routes to a human.' },

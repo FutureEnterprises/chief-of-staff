@@ -36,8 +36,11 @@ export function LandingFooter() {
 
   const partners = [
     { label: 'About', href: '/about' },
-    { label: 'Advisors', href: '/advisors' },
-    { label: 'Clinical board', href: '/clinical-board' },
+    // Advisors + clinical board hidden until at least one credible name
+    // can be published (Q3 2026 per the audit answer). "Forming" reads
+    // as a weak signal; cleaner to absent the surface entirely than to
+    // signal under-construction. Pages still exist at /advisors and
+    // /clinical-board for anyone with a direct link.
     { label: 'For clinicians', href: '/clinician' },
     { label: 'Psyche AI', href: '/psyche' },
     { label: 'Protocol (BIP)', href: '/protocol' },

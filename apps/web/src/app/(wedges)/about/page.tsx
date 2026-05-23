@@ -107,19 +107,28 @@ export default async function AboutPage() {
           <div className="grid grid-cols-1 gap-12 md:grid-cols-[auto_1fr] md:gap-16">
             {/*
               Founder mark — monogram block that reads as an intentional
-              brand element, not a portrait placeholder. When a real
-              photo lands, drop it at apps/web/public/founder/iman.jpg
-              and swap this for <Image src="/founder/iman.jpg" .../>.
+              brand element, not a portrait placeholder. The explicit
+              "Portrait · Q3 2026" mono label below disambiguates this
+              for the auditor who reads the standalone IS as a missing
+              image. When a real photo lands, drop it at
+              apps/web/public/founder/iman.jpg, swap the inner span for
+              an <Image src="/founder/iman.jpg" .../>, and remove the
+              mono label.
             */}
-            <div
-              aria-hidden
-              className="relative h-64 w-64 shrink-0 overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-100 via-orange-50 to-[#fafaf7] md:h-72 md:w-72"
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-serif text-7xl italic leading-none text-orange-600/80 md:text-8xl">
-                  IS
-                </span>
+            <div className="flex flex-col items-start gap-3">
+              <div
+                aria-hidden
+                className="relative h-64 w-64 shrink-0 overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-100 via-orange-50 to-[#fafaf7] md:h-72 md:w-72"
+              >
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="font-serif text-7xl italic leading-none text-orange-600/80 md:text-8xl">
+                    IS
+                  </span>
+                </div>
               </div>
+              <span className="font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-gray-400">
+                Founder mark &middot; portrait Q3 2026
+              </span>
             </div>
 
             <div className="space-y-6">
@@ -211,47 +220,13 @@ export default async function AboutPage() {
           </p>
         </section>
 
-        {/* ADVISORY + CLINICAL BOARD CALLOUTS — paired, lightweight */}
-        <section className="grid grid-cols-1 gap-8 border-t border-gray-200 pt-16 md:grid-cols-2 md:gap-10">
-          <Link
-            href="/advisors"
-            className="group block rounded-2xl border border-gray-200 bg-white p-8 transition-all hover:border-orange-300 hover:bg-orange-50"
-          >
-            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              Advisory board
-            </p>
-            <h3 className="mt-5 font-serif text-2xl font-normal leading-[1.15] tracking-[-0.015em] text-gray-900 group-hover:text-orange-700">
-              The people in the room with us.
-            </h3>
-            <p className="mt-4 text-sm leading-[1.7] text-gray-600">
-              Operators and researchers across pharma, behavioral health,
-              mobile platforms, and AI &mdash; the people who push us
-              harder than we push ourselves.
-            </p>
-            <p className="mt-6 font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-orange-600">
-              See the advisors &rarr;
-            </p>
-          </Link>
-
-          <Link
-            href="/clinical-board"
-            className="group block rounded-2xl border border-gray-200 bg-white p-8 transition-all hover:border-orange-300 hover:bg-orange-50"
-          >
-            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              Clinical board
-            </p>
-            <h3 className="mt-5 font-serif text-2xl font-normal leading-[1.15] tracking-[-0.015em] text-gray-900 group-hover:text-orange-700">
-              The clinical eyes on the work.
-            </h3>
-            <p className="mt-4 text-sm leading-[1.7] text-gray-600">
-              Researchers and clinicians who pressure-test the science,
-              the protocol, the safety, and the claims.
-            </p>
-            <p className="mt-6 font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-orange-600">
-              See the clinical board &rarr;
-            </p>
-          </Link>
-        </section>
+        {/* ADVISORY + CLINICAL BOARD CALLOUTS — temporarily hidden per
+            the May 2026 audit decision. Listing "forming" seats reads as
+            a weak signal in the absence of at least one published name.
+            The /advisors and /clinical-board pages still exist for
+            direct links; this section will return when a credible name
+            is ready to publish (target: Q3 2026 with the GLP-1 RCT
+            enrollment milestone). */}
 
         {/* RECURRING ANCHOR — the one-line category claim */}
         <section className="border-t border-orange-500 py-16 text-center md:py-24">

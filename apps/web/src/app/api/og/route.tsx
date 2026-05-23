@@ -284,19 +284,26 @@ function renderInterruptCard({
 /**
  * Archetype OG variant — the viral atom for /a/[slug] shares.
  *
- * Layout (1200×630):
+ * Layout (1200×630) when a stat is provided (Rebound shares):
  *
  *   ┌────────────────────────────────────────────────────────┐
- *   │  [Flame]   I'M                                         │
+ *   │  [Flame]   64% OF REGAIN HAPPENS IN THE DOSE-TROUGH    │
  *   │                                                        │
- *   │  The 9 PM Negotiator. (huge serif italic, FG)          │
+ *   │  The Night Rebounder. (huge serif italic, FG)          │
  *   │                                                        │
- *   │  "One time won't matter."  (orange serif italic)       │
+ *   │  "One snack won't matter."  (orange serif italic)      │
  *   │                                                        │
- *   │  NIGHT FRIDGE SABOTEUR  (mono uppercase tracked)       │
+ *   │  9:00 PM – 11:30 PM  (mono uppercase tracked)          │
  *   │ ──────────────────────────────────────────────────────│
- *   │  Find your autopilot family            coyl.ai/audit  │
+ *   │  Find your rebound pattern         coyl.ai/rebound...  │
  *   └────────────────────────────────────────────────────────┘
+ *
+ * When NO stat (generic /audit shares), the top eyebrow falls back to
+ * "I'M" — the old layout. The audit's May 2026 audit note specifically
+ * called for "data-driven copy will make people share it more" — so
+ * when caller passes a stat, the data line replaces the generic eyebrow
+ * and becomes the FIRST thing a viewer reads on the Twitter/iMessage/
+ * Slack preview, instead of being buried mid-card.
  *
  * Matches the visual language of renderInterruptCard — warm dark BG,
  * single orange accent, Instrument-Serif-shaped focal type, mono for
@@ -336,7 +343,10 @@ function renderArchetypeCard({
           position: 'relative',
         }}
       >
-        {/* Top row — flame chip + "I'M" eyebrow */}
+        {/* Top row — flame chip + eyebrow. When a stat is provided
+            (Rebound shares), the stat IS the eyebrow so the data is
+            the first thing a viewer reads on the preview. When no
+            stat (generic /audit shares), falls back to "I'M". */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <div
             style={{
@@ -365,15 +375,17 @@ function renderArchetypeCard({
           </div>
           <span
             style={{
-              color: WARM_OFF,
+              color: stat ? FG : WARM_OFF,
               fontFamily: 'monospace',
-              fontSize: '22px',
-              fontWeight: 500,
-              letterSpacing: '0.32em',
+              fontSize: stat ? '20px' : '22px',
+              fontWeight: stat ? 600 : 500,
+              letterSpacing: stat ? '0.18em' : '0.32em',
               textTransform: 'uppercase',
+              maxWidth: '900px',
+              lineHeight: 1.2,
             }}
           >
-            I’m
+            {stat ?? 'I’m'}
           </span>
         </div>
 
@@ -417,25 +429,10 @@ function renderArchetypeCard({
             {signature}
           </span>
 
-          {/* Data-driven prevalence stat — the line that drives sharing.
-              Renders only when caller provides one (default audit shares
-              skip it; Rebound shares pass per-family share-stat copy). */}
-          {stat && (
-            <span
-              style={{
-                color: WARM_OFF,
-                fontFamily: 'sans-serif',
-                fontSize: '24px',
-                fontWeight: 400,
-                lineHeight: 1.3,
-                opacity: 0.86,
-              }}
-            >
-              {stat}
-            </span>
-          )}
-
-          {/* Specific moment — mono uppercase, the texture proof */}
+          {/* Specific moment — mono uppercase, the texture proof. The
+              stat (when present) now lives in the eyebrow above; this
+              line carries the danger-window timing only, not the
+              prevalence number. */}
           <span
             style={{
               color: WARM_OFF,
