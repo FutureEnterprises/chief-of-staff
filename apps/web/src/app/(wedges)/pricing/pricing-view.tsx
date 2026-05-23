@@ -137,10 +137,10 @@ export function PricingView() {
           className="flex flex-col border-t border-gray-200 pt-10"
         >
           <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-600">
-            Free
+            Recover
           </p>
           <p className="mb-10 mt-4 max-w-md font-serif text-2xl font-normal italic leading-[1.2] text-gray-900">
-            Find your pattern.
+            Find your pattern. Free, forever.
           </p>
 
           <div className="mb-2 flex items-baseline gap-2">
@@ -186,10 +186,10 @@ export function PricingView() {
           className="flex flex-col border-t border-orange-500 pt-10"
         >
           <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] italic text-orange-600">
-            Core
+            Rewire
           </p>
           <p className="mb-10 mt-4 max-w-md font-serif text-2xl font-normal italic leading-[1.2] text-gray-900">
-            Catch yourself.
+            Catch yourself. Every time.
           </p>
 
           <div className="mb-2 flex items-baseline gap-2">
@@ -217,13 +217,13 @@ export function PricingView() {
             href={`/sign-up?ref=pricing-core-${interval}`}
             className="mb-10 inline-flex w-fit items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-all duration-200 hover:shadow-[0_0_28px_rgba(255,102,0,0.5)]"
           >
-            {interval === 'monthly' ? 'Start Core · $12/mo' : 'Commit · $99/year'}
+            {interval === 'monthly' ? 'Start Rewire · $12/mo' : 'Commit · $99/year'}
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
 
           <ul className="space-y-3">
             {[
-              'Everything in Free',
+              'Everything in Recover',
               'Unlimited interrupts at your danger windows',
               'Full rescue flows',
               'Recovery engine — no Monday reset',
@@ -300,10 +300,10 @@ export function PricingView() {
           </span>
         </div>
         <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
-          Free is real software, <span className="italic text-orange-600">not a 7-day demo.</span>
+          Recover is real software, <span className="italic text-orange-600">not a 7-day demo.</span>
         </h2>
         <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
-          Core adds depth, not gates around the basics.
+          Rewire adds depth, not gates around the basics.
         </p>
         <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-3">
           {[

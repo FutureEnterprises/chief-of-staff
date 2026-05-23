@@ -94,12 +94,24 @@ export function LandingFooter() {
           <span className="text-xs text-gray-600">
             &copy; {new Date().getFullYear()} COYL &middot; Catch yourself before you do it again.
           </span>
-          <Link
-            href="/sign-up?ref=footer"
-            className="text-xs font-bold text-orange-600 transition-colors hover:text-orange-700"
-          >
-            Start free &rarr;
-          </Link>
+          <div className="flex flex-wrap items-center gap-5">
+            {/* Quiet developer/partner handoff — the protocol surface
+                lives one click deep so the consumer hero isn't fighting
+                two audiences. Foundation labs, wearable platforms, and
+                consumer-app developers land at /protocol. */}
+            <Link
+              href="/protocol"
+              className="text-xs text-gray-500 underline-offset-4 transition-colors hover:text-gray-900 hover:underline"
+            >
+              Developers &amp; foundation-lab partners &rarr;
+            </Link>
+            <Link
+              href="/sign-up?ref=footer"
+              className="text-xs font-bold text-orange-600 transition-colors hover:text-orange-700"
+            >
+              Start free &rarr;
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

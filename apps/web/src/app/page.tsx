@@ -5,7 +5,9 @@ import { cookies } from 'next/headers'
 import { SoftwareApplicationSchema, FAQSchema } from './structured-data'
 import { GlassNav } from '@/components/landing/glass-nav'
 import { HeroVariants } from '@/components/landing/hero-variants'
-import { PlatformBand } from '@/components/landing/platform-band'
+// PlatformBand is intentionally NOT imported here — the protocol-stack
+// surface lives at /platform and /protocol per the May 2026 audit.
+// The homepage stays consumer-led.
 import { ProofCaseBand } from '@/components/landing/proof-case-band'
 import { RescueDemo } from '@/components/landing/rescue-demo'
 import { WhatItCatches } from '@/components/landing/what-it-catches'
@@ -120,15 +122,16 @@ async function HomePageContent({
               sixth, audit CTA last. Pricing is intentionally NOT on the
               homepage — strategist's rule: "do not lead with pricing." */}
 
-          {/* 1. Hero — the behavioral OS for the LLM era. */}
+          {/* 1. Hero — cinematic cold-open recognition + auto-playing
+              MomentLoop. Per the May 2026 full-site audit overhaul. */}
           <HeroVariants variant={variant} />
 
-          {/* 1b. The protocols — BIP, PAP, EAP. The Stripe-model band:
-              payments-as-API was the protocol, merchants were the proof.
-              COYL: three open specs + one reference engine, with the
-              consumer app at coyl.ai as the proof case (band below the
-              rescue demo). Added May 2026 platform-tier repositioning. */}
-          <PlatformBand />
+          {/* PlatformBand (BIP / PAP / EAP / UAP / RAP protocol-stack
+              copy) was previously here as section 1b. Pulled per the
+              May 2026 audit ("the consumer surface and the protocol
+              surface are two audiences; one should be one click deep,
+              not above the fold"). Lives now on /platform and /protocol.
+              The homepage stays consumer-led. */}
 
           {/* 2. The premise — most human failure is predictable.
               "You are not random. You are patterned." */}

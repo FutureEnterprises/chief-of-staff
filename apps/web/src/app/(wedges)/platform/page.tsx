@@ -479,9 +479,14 @@ export default async function PlatformPage() {
           <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
             08 &middot; The recurring anchor
           </p>
-          <blockquote className="max-w-3xl font-serif text-3xl font-normal italic leading-[1.3] text-gray-900 md:text-5xl">
-            AI for the moment before behavior happens.
+          <blockquote className="max-w-4xl font-serif text-3xl font-normal italic leading-[1.15] tracking-[-0.02em] text-gray-900 md:text-6xl">
+            Stop being a chatbot.{' '}
+            <span className="not-italic text-orange-600">Become behavior-aware.</span>
           </blockquote>
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-600">
+            The category line. LLMs read context windows. They don&rsquo;t read
+            users. COYL is the protocol layer that closes that gap.
+          </p>
         </section>
       </article>
     </>

@@ -41,11 +41,20 @@ import {
 } from '@/lib/coordinator/confidence-gate'
 import type { CoordinatorDecision } from '@/lib/coordinator'
 
+type DemoScenario = 'normal' | 'panic' | 'quiet_hours' | 'rate_limited' | 'duplicate'
+const VALID_SCENARIOS = new Set<DemoScenario>([
+  'normal',
+  'panic',
+  'quiet_hours',
+  'rate_limited',
+  'duplicate',
+])
+
 type DemoBody = {
   confidence?: number
   scopeRequested?: string[]
   action?: { mode?: string; headline?: string; subhead?: string }
-  scenario?: 'normal' | 'panic' | 'quiet_hours' | 'rate_limited' | 'duplicate'
+  scenario?: string
 }
 
 const SUPPORTED_SCOPES = new Set([
@@ -82,7 +91,23 @@ export async function POST(req: Request) {
     headline: body.action?.headline ?? '9:32. You said no food after 9. That is the story.',
     subhead: body.action?.subhead ?? 'Drink water. Brush teeth. Decide at 9:47.',
   }
-  const scenario = body.scenario ?? 'normal'
+  // Validate scenario explicitly — an unknown string used to silently
+  // fall through to the confidence-gate branch, which made the simulator
+  // appear to "allow" denial scenarios that were just spelled wrong
+  // (e.g. `panic_active` instead of `panic`). Now it 400s with the
+  // list of valid scenarios so the caller gets a clear correction.
+  const rawScenario = body.scenario ?? 'normal'
+  if (!VALID_SCENARIOS.has(rawScenario as DemoScenario)) {
+    return NextResponse.json(
+      {
+        decision: 'denied',
+        reason: 'invalid_input',
+        detail: `unknown scenario "${rawScenario}" — valid: ${[...VALID_SCENARIOS].join(', ')}`,
+      },
+      { status: 400 },
+    )
+  }
+  const scenario: DemoScenario = rawScenario as DemoScenario
 
   // Validate scope presence — same as the production endpoint would.
   if (scopeRequested.length === 0) {
@@ -147,7 +172,7 @@ export async function POST(req: Request) {
   return NextResponse.json(annotate(decision, scenario))
 }
 
-function annotate(decision: CoordinatorDecision, scenario: DemoBody['scenario']) {
+function annotate(decision: CoordinatorDecision, scenario: DemoScenario) {
   return {
     ...decision,
     _demo: {

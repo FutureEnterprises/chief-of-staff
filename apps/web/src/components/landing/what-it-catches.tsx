@@ -34,11 +34,15 @@ export function WhatItCatches() {
 
   const wedges = [
     {
-      eyebrow: 'WEIGHT · GLP-1',
+      // GLP-1 framing pulled per the May 2026 audit — the consumer
+      // surface speaks "night self-sabotage" / "behavioral interrupt";
+      // the GLP-1 angle stays on /glp1, /clinical-study, /clinician,
+      // /research where the clinical narrative lives.
+      eyebrow: 'NIGHT · FRIDGE',
       title: '"Not hungry. Just restless."',
-      body: 'The 9 PM kitchen. The post-injection day-3 rebound. The script the drug can’t touch.',
-      href: '/glp1',
-      cta: 'GLP-1 companion',
+      body: 'The 9 PM kitchen. The "I worked hard today" script. The script the willpower can’t touch.',
+      href: '/weight-loss',
+      cta: 'Late-night kitchen',
     },
     {
       eyebrow: 'FOCUS · WORK',

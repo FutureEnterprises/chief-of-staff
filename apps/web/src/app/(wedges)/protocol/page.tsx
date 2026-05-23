@@ -93,7 +93,13 @@ export default async function ProtocolPage() {
       />
 
       <article className="space-y-24 pb-12">
-        {/* HEADER */}
+        {/* HEADER — behavior-blindness as the category error.
+            Rewritten May 2026 per the full-site protocol audit. The
+            old "four open specs / one reference engine" opener was
+            structurally clean but missed the diagnosis: LLMs are
+            behavior-blind. That diagnosis IS the category — and
+            naming it first is what makes the rest of the page read
+            as the solution, not as an architecture diagram. */}
         <header className="space-y-8">
           <div className="flex items-center gap-3">
             <span className="h-px w-12 bg-orange-500" />
@@ -102,28 +108,47 @@ export default async function ProtocolPage() {
             </span>
           </div>
 
-          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
-            Four open specs.{' '}
+          <h1 className="font-serif text-5xl font-normal leading-[1.02] tracking-[-0.025em] text-gray-900 md:text-[5.5rem]">
+            LLMs are intelligent.{' '}
             <span className="italic text-orange-600">
-              One reference engine.
+              They&rsquo;re still behavior-blind.
             </span>
           </h1>
 
+          <p className="max-w-2xl text-lg leading-[1.65] text-gray-700">
+            Today&rsquo;s foundation models read the context window.
+            They don&rsquo;t read the user. They know what you say.
+            They don&rsquo;t know what loop you&rsquo;re inside, what
+            window your autopilot fires in, or whether this is the
+            moment before the same fold or just routine friction.
+            That gap is a category — not a feature.
+          </p>
+
           <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-            BIP for consumer apps. PAP for LLM behavioral interventions.
-            EAP for cross-device LLM action. UAP for standing authority
-            when the user is absent. Together: the trust infrastructure
-            for proactive AI.
+            <strong className="font-serif font-normal italic">
+              Stop being a chatbot. Become behavior-aware.
+            </strong>{' '}
+            COYL is the protocol layer that closes the gap. Four open
+            specs that turn any LLM into a behaviorally-grounded agent
+            — read the substrate, propose the intervention, act across
+            the fleet, hold authority across moments — all with the
+            consent surface the user actually trusts.
+          </p>
+
+          <p className="max-w-2xl text-base leading-[1.65] text-gray-600">
+            BIP for behavioral context. PAP for LLM proactive
+            interventions. EAP for cross-device LLM action. UAP for
+            standing authority when the user is absent. Apache 2.0.
+            The reference engine is ours.
           </p>
 
           <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
             <strong className="font-serif font-normal italic">
               MCP connected LLMs to software systems. The COYL stack
-              connects LLMs to the human behavioral system — read,
-              propose, act, and operate under bounded standing authority,
-              with consent.
+              connects them to the human behavioral system
             </strong>{' '}
-            The specs are open. The reference engine is ours.
+            — read the loop, propose the moment, act across the fleet,
+            hold authority under bounded consent.
           </p>
         </header>
 
@@ -737,10 +762,10 @@ Authorization: <user session, not partner token>
 
         {/* CLOSING BRAND ANCHOR */}
         <section className="space-y-12 border-t border-orange-500 pt-16">
-          <blockquote className="max-w-4xl font-serif text-3xl font-normal italic leading-[1.25] text-gray-900 md:text-6xl">
-            AI for the moment{' '}
+          <blockquote className="max-w-4xl font-serif text-3xl font-normal italic leading-[1.15] tracking-[-0.02em] text-gray-900 md:text-6xl">
+            Stop being a chatbot.{' '}
             <span className="not-italic text-orange-600">
-              before behavior happens.
+              Become behavior-aware.
             </span>
           </blockquote>
 
