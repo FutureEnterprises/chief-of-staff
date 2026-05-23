@@ -34,11 +34,14 @@ type Stat = {
   note?: string
 }
 
+// Stats shown on the homepage proof case. Only items with substantive,
+// honest values appear here — placeholder [N] / [N%] tokens shipped
+// previously and were removed (better to show 3 real signals than 5
+// with broken numbers). The hold rate + share rate come back online
+// once the RCT cohort and daily-number cohort cross their N>50 floor.
 const STATS: Stat[] = [
-  { label: 'Users', value: '[N]' },
   { label: 'Archetypes mapped', value: '6' },
-  { label: 'Interrupt hold rate', value: '[N%]' },
-  { label: 'Daily-number share rate', value: '[N%]' },
+  { label: 'Open protocols', value: '4', note: 'BIP · PAP · EAP · UAP' },
   { label: 'Clinical RCT', value: 'in flight', note: 'Found Health partnership' },
 ]
 

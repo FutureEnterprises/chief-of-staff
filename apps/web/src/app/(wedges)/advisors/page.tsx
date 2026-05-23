@@ -68,37 +68,37 @@ export const metadata: Metadata = {
 const ADVISORS = [
   {
     slot: 'Behavioral health operator',
-    name: 'Advisor name — pending public confirmation',
+    status: 'Seat open — confirming Q3 2026',
     role: 'ex-Noom or ex-Headspace VP',
     bring: 'How a wellness platform actually scales user trust.',
   },
   {
     slot: 'Pharma commercial leader',
-    name: 'Advisor name — pending public confirmation',
+    status: 'Seat open — confirming Q3 2026',
     role: 'ex-Novo Nordisk or ex-Eli Lilly',
     bring: 'How a $400B pharma actually buys an adjacent capability.',
   },
   {
     slot: 'Clinical researcher',
-    name: 'Advisor name — pending public confirmation',
+    status: 'Seat open — confirming Q3 2026',
     role: 'JITAI specialist',
     bring: 'Whether the predictive model holds at scale.',
   },
   {
     slot: 'Mobile platform veteran',
-    name: 'Advisor name — pending public confirmation',
+    status: 'Seat open — confirming Q3 2026',
     role: 'ex-Apple Health',
     bring: 'Where the HealthKit story can actually go.',
   },
   {
     slot: 'Strategic finance advisor',
-    name: 'Advisor name — pending public confirmation',
+    status: 'Seat open — confirming Q3 2026',
     role: 'M&A in digital health',
     bring: 'Reading the right room at the right table.',
   },
   {
     slot: 'Behavioral neuroscience PhD',
-    name: 'Advisor name — pending public confirmation',
+    status: 'Seat open — confirming Q3 2026',
     role: 'habit research',
     bring: 'Whether the pattern-decay claim is real.',
   },
@@ -174,10 +174,11 @@ export default async function AdvisorsPage() {
                   {advisor.slot}
                 </p>
                 <h2 className="font-serif text-xl font-normal leading-[1.15] tracking-[-0.015em] text-gray-900">
-                  {advisor.name}
-                </h2>
-                <p className="font-mono text-[11px] font-medium uppercase tracking-[0.24em] text-gray-500">
                   {advisor.role}
+                </h2>
+                <p className="inline-flex items-center gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-gray-500">
+                  <span aria-hidden className="h-1 w-1 rounded-full bg-orange-400" />
+                  {advisor.status}
                 </p>
                 <p className="pt-2 text-sm leading-[1.7] text-gray-700">
                   {advisor.bring}

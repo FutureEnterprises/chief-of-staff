@@ -82,7 +82,7 @@ const METRICS = [
   {
     label: 'SAME-NIGHT RECOVERY',
     title: 'Slips logged + stabilized within 24h',
-    body: 'A slip is "recovered" when the user completes the three stabilize actions (water, walk, planned next meal) within 24h of logging. Tracked via the SLIP_RECOVERED event.',
+    body: 'A slip counts as recovered when the user completes the three stabilize actions (water, walk, planned next meal) within 24h of logging. Tracked via the SLIP_RECOVERED event.',
     note: 'Live metric',
   },
   {

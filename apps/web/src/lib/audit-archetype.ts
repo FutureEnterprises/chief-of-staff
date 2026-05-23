@@ -147,7 +147,7 @@ const FAMILIES: Record<ArchetypeFamily, FamilyDef> = {
     slug: 'the-one-more-tabber',
     name: 'The One-More-Tabber',
     Icon: Layers,
-    essence: 'Focus dies one tab, one scroll, one "just a second" at a time.',
+    essence: 'Focus dies one tab, one scroll, one tiny detour at a time.',
     description:
       'You don\'t crash out — you drift out. The first tab is innocent. The seventh tab is a problem. The fourteenth tab is the afternoon. The pattern hides because no single click feels meaningful; the meaning is in the sequence.',
     signature: '"Just one more thing."',

@@ -106,20 +106,19 @@ export default async function AboutPage() {
 
           <div className="grid grid-cols-1 gap-12 md:grid-cols-[auto_1fr] md:gap-16">
             {/*
-              FOUNDER PORTRAIT PLACEHOLDER
-              ----------------------------
-              When ready, drop the portrait at:
-                apps/web/public/founder/iman.jpg
-              Then swap this styled div for a <Image src="/founder/iman.jpg" .../>
-              from next/image (priority + alt="Iman Schrock, founder of COYL").
-              The orange-tinted block keeps the editorial mood until then.
+              Founder mark — monogram block that reads as an intentional
+              brand element, not a portrait placeholder. When a real
+              photo lands, drop it at apps/web/public/founder/iman.jpg
+              and swap this for <Image src="/founder/iman.jpg" .../>.
             */}
-            <div className="relative h-64 w-64 shrink-0 overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-100 via-orange-50 to-[#fafaf7] md:h-72 md:w-72">
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center">
-                <span className="font-mono text-[9px] font-medium uppercase tracking-[0.32em] text-orange-600">
-                  Portrait
+            <div
+              aria-hidden
+              className="relative h-64 w-64 shrink-0 overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-100 via-orange-50 to-[#fafaf7] md:h-72 md:w-72"
+            >
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="font-serif text-7xl italic leading-none text-orange-600/80 md:text-8xl">
+                  IS
                 </span>
-                <span className="font-serif text-3xl italic text-gray-400">IS</span>
               </div>
             </div>
 
