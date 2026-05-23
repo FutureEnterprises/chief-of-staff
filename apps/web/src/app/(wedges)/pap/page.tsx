@@ -449,17 +449,25 @@ export default async function PapPage() {
             behavior happens, not the moment after.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
-            <Link
-              href="/eap"
+            <a
+              href="https://github.com/FutureEnterprises/chief-of-staff/blob/main/docs/protocol/proactive-ai-protocol.md"
+              target="_blank"
+              rel="noopener"
               className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              Read the EAP spec &rarr;
+              Read the PAP spec on GitHub →
+            </a>
+            <Link
+              href="/eap"
+              className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              The EAP companion →
             </Link>
             <Link
               href="/protocol"
               className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
             >
-              BIP v0.1 (the consumer protocol)
+              The full protocol stack
             </Link>
             <Link
               href="/manifesto"

@@ -1,23 +1,26 @@
 /**
- * SINGLE-TIER COLLAPSE — May 2026 product blueprint memo.
+ * THREE-TIER STRUCTURE — May 2026 GLP-1 Rebound pivot.
  *
- * Per the blueprint: consumer pricing collapses to ONE paid tier.
- *   - Free  → audit + archetype card + 3 interrupts/week
- *   - Core  → $12/mo or $99/year (annual reframed as a commitment device,
- *             not a discount). $12 sits under the $19.99 "is this worth it?"
- *             deliberation line and reads as impulse pricing.
+ * Per the founder strategic decision: three tiers with clear
+ * audience segmentation.
  *
- * The GLP-1 $19.99 tier is GONE from this page. It moves to /glp1 as the
- * page-native upsell ("GLP-1 Plus"). High-intent traffic still pays; the
- * decision is just no longer surfaced to non-GLP-1 users on the main /pricing.
+ *   - Recover (free)         → audit + archetype + 3 interrupts/week
+ *   - Rewire ($12/mo, $99/yr) → generic behavioral interrupt product
+ *   - Rebound ($29/mo, $199/yr) → GLP-1 anti-regain layer with the
+ *                                 4-archetype regain risk taxonomy
+ *
+ * Recover + Rewire are the same product split by depth; Rebound is
+ * the separate GLP-1-specific tier with the rebound-window protocol,
+ * the clinician summary export, and the four rebound archetypes
+ * (Night / Weekend / Stress / Reward Rebounder).
  *
  * The B2B PMPM calculator is reused below the consumer tiers as the
  * enterprise band — explicitly labeled "For teams + clinics" so the
  * consumer reader doesn't confuse the two motions.
  *
- * Editorial treatment: Instrument Serif on the $12 numeral, italic-orange
- * "Core" label, hairline rules between sections, generous whitespace.
- * No new accent colors — orange-500/600 stays the single accent.
+ * Editorial treatment: Instrument Serif on the price numerals,
+ * italic-orange tier labels, hairline rules between sections,
+ * generous whitespace. Orange-500/600 stays the single accent.
  */
 
 'use client'

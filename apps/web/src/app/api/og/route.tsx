@@ -51,6 +51,7 @@ export async function GET(req: NextRequest) {
       signature:
         (searchParams.get('signature') ?? '“One time won’t matter.”').slice(0, 80),
       specific: (searchParams.get('specific') ?? 'Night Fridge Saboteur').slice(0, 48),
+      stat: searchParams.get('stat')?.slice(0, 56) ?? null,
       footerCta: (searchParams.get('cta') ?? 'Find your autopilot family').slice(0, 48),
       footerUrl: (searchParams.get('ctaUrl') ?? 'coyl.ai/audit').slice(0, 48),
     })
@@ -305,12 +306,18 @@ function renderArchetypeCard({
   family,
   signature,
   specific,
+  stat,
   footerCta,
   footerUrl,
 }: {
   family: string
   signature: string
   specific: string
+  /** Optional data-driven stat rendered above the specific moment.
+   *  When present, makes the share card spread (per the May 2026
+   *  share-card audit: "78% of Night Rebounders lapse within 90 min
+   *  of finishing something hard" is the line that drives sharing). */
+  stat: string | null
   footerCta: string
   footerUrl: string
 }) {
@@ -409,6 +416,24 @@ function renderArchetypeCard({
           >
             {signature}
           </span>
+
+          {/* Data-driven prevalence stat — the line that drives sharing.
+              Renders only when caller provides one (default audit shares
+              skip it; Rebound shares pass per-family share-stat copy). */}
+          {stat && (
+            <span
+              style={{
+                color: WARM_OFF,
+                fontFamily: 'sans-serif',
+                fontSize: '24px',
+                fontWeight: 400,
+                lineHeight: 1.3,
+                opacity: 0.86,
+              }}
+            >
+              {stat}
+            </span>
+          )}
 
           {/* Specific moment — mono uppercase, the texture proof */}
           <span

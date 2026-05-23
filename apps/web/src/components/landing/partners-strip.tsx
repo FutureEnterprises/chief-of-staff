@@ -41,8 +41,8 @@ export function PartnersStrip() {
     {
       Icon: Stethoscope,
       label: 'Telehealth GLP-1 prescribers',
-      body: 'Add real-time relapse prevention to your weight care program. White-label available.',
-      href: '/glp1',
+      body: 'Add real-time relapse prevention to your weight care program. Co-branded enrollment + clinician dashboard.',
+      href: '/rebound',
     },
     {
       Icon: Building2,

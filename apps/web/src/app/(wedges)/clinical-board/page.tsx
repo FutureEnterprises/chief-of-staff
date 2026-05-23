@@ -105,63 +105,42 @@ export default async function ClinicalBoardPage() {
             </span>
           </div>
 
-          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
-            The clinical eyes{' '}
-            <span className="italic text-orange-600">on the work.</span>
+          <h1 className="font-serif text-5xl font-normal leading-[1.02] tracking-[-0.025em] text-gray-900 md:text-7xl">
+            Clinical board{' '}
+            <span className="italic text-orange-600">forming with the trial.</span>
           </h1>
 
           <p className="max-w-2xl font-serif text-2xl font-normal italic leading-[1.35] text-gray-700 md:text-3xl">
-            Researchers and clinicians who pressure-test the science, the
-            protocol, the safety, and the claims.
+            Names land as the GLP-1 weight-regain RCT enrolls. Public
+            confirmations Q3 2026.
           </p>
         </header>
 
-        {/* CLINICAL GRID — same template as /advisors, 4 slots */}
-        <section className="grid grid-cols-1 gap-8 border-t border-gray-200 pt-16 md:grid-cols-2 md:gap-10">
-          {CLINICAL.map((advisor) => (
-            <article
-              key={advisor.slot}
-              className="flex flex-col gap-6 rounded-2xl border border-gray-200 bg-white p-6 md:flex-row md:items-start md:p-8"
-            >
-              {/*
-                CLINICAL ADVISOR PORTRAIT PLACEHOLDER
-                -------------------------------------
-                When confirmed, drop the portrait at:
-                  apps/web/public/clinical-board/<lowercase-name>.jpg
-                And swap this styled div for next/image with a real src.
-              */}
-              <div
-                aria-hidden
-                className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-orange-200 bg-gradient-to-br from-orange-100 via-orange-50 to-[#fafaf7]"
-              >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="font-serif text-2xl italic text-gray-300">
-                    {advisor.slot
-                      .split(' ')
-                      .slice(0, 2)
-                      .map((w) => w[0])
-                      .join('')
-                      .toUpperCase()}
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-                  {advisor.slot}
-                </p>
-                <h2 className="font-serif text-xl font-normal leading-[1.15] tracking-[-0.015em] text-gray-900">
-                  {advisor.name}
-                </h2>
-                <p className="font-mono text-[11px] font-medium uppercase tracking-[0.24em] text-gray-500">
-                  {advisor.role}
-                </p>
-                <p className="pt-2 text-sm leading-[1.7] text-gray-700">
-                  {advisor.bring}
-                </p>
-              </div>
-            </article>
-          ))}
+        {/* HONEST — one paragraph, not four cards. Per the May 2026
+            audit pass: empty seats on a clinical board read as
+            fragility to any acquirer doing diligence. One honest
+            paragraph reads as "the work is in motion." Cards land
+            when names land. */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+            The COYL clinical advisory board carries four load-bearing
+            seats: a Principal Investigator on the GLP-1 weight-regain
+            RCT, a behavioral medicine clinician scoping the
+            maintenance protocol, a digital therapeutic regulatory
+            advisor (FDA pathway), and an IRB / ethics chair. The
+            outreach is in motion alongside the trial enrollment
+            timeline. Names land when names land.
+          </p>
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+            We&rsquo;re not posting placeholder names on a clinical
+            board. The seats are mapped against the four hardest
+            questions any pharma or telehealth diligence asks:{' '}
+            <em>does the model hold at scale, does the protocol
+            survive clinical review, what&rsquo;s the regulatory path,
+            and is the safety surface real.</em>{' '}
+            If you do work on one of those four, see the section
+            below.
+          </p>
         </section>
 
         {/* HONEST NOTE — explains the empty slots without apologising */}

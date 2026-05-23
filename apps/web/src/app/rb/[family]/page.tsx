@@ -42,6 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     `&family=${encodeURIComponent(def.name)}` +
     `&signature=${encodeURIComponent(def.signature)}` +
     `&specific=${encodeURIComponent(def.riskWindow)}` +
+    `&stat=${encodeURIComponent(def.shareStat)}` +
     `&cta=${encodeURIComponent('Find your rebound pattern')}` +
     `&ctaUrl=${encodeURIComponent('coyl.ai/rebound/quiz')}`
 

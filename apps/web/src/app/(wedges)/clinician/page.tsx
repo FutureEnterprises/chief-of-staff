@@ -132,7 +132,7 @@ export default async function ClinicianPage() {
         never reaches.
       </p>
 
-      <div className="mb-20 flex flex-wrap gap-3">
+      <div className="mb-8 flex flex-wrap gap-3">
         <Link
           href="/clinician/onboarding"
           className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
@@ -146,6 +146,26 @@ export default async function ClinicianPage() {
           See the dashboard
         </Link>
       </div>
+
+      {/* GLP-1 fast path — for the prescriber who landed here from the
+          May 2026 X/LinkedIn outreach campaign. The /rebound/for-
+          clinicians page is the GLP-1-specific one-pager with the
+          Cambridge meta-analysis + four-phenotype protocol + 25-patient
+          pilot offer. This inline pointer keeps /clinician as the
+          general clinical surface and routes GLP-1 traffic to the
+          focused page without forcing it through the full editorial
+          arc. */}
+      <p className="mb-20 max-w-2xl text-sm leading-[1.65] text-gray-600">
+        Prescribing GLP-1s?{' '}
+        <Link
+          href="/rebound/for-clinicians"
+          className="font-medium text-orange-700 underline-offset-4 hover:underline"
+        >
+          See the GLP-1 maintenance one-pager &rarr;
+        </Link>{' '}
+        — Cambridge meta-analysis, four maintenance phenotypes, first 25
+        patients free.
+      </p>
 
       {/* THREE LIVED MOMENTS — editorial chain like /how-it-works.
           Each lives on its own hairline rule. No icons, no gradients,
@@ -251,7 +271,8 @@ export default async function ClinicianPage() {
       </section>
 
       {/* PRICING — editorial pricing block. No tier cards. Two prices,
-          on hairline rules. Same treatment as /glp1's GLP-1 Plus block. */}
+          on hairline rules. Same treatment as /rebound's clinic-channel
+          pricing block. */}
       <section className="mb-20 border-t border-gray-200 pt-12">
         <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
           The deal

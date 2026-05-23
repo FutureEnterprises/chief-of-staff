@@ -28,7 +28,7 @@ export function LandingFooter() {
     { label: 'Autopilot audit', href: '/audit' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Procrastination + focus', href: '/procrastination' },
-    { label: 'GLP-1 companion', href: '/glp1' },
+    { label: 'Rebound (GLP-1)', href: '/rebound' },
     { label: 'Weight loss', href: '/weight-loss' },
     { label: 'Work follow-through', href: '/work' },
     { label: 'For teams (employer)', href: '/teams' },

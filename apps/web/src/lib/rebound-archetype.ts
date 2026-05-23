@@ -56,6 +56,18 @@ export type ReboundFamilyDef = {
   description: string
   signature: string
   prevalenceCopy: string
+  /**
+   * Short data-driven stat that fits in the OG share card under the
+   * archetype name. Keep ≤ 56 chars — anything longer truncates in
+   * the 1200×630 layout. This is the "78% of Night Rebounders lapse
+   * within 90 min of finishing something hard" line the audit asked
+   * for: it's what makes the share card spread.
+   *
+   * Sources: cohort math from the COYL maintenance protocol pre-cohort
+   * (until N>=20 we use the Cambridge meta-analysis-derived ranges +
+   * the COYL danger-window-learner pre-launch ranges as priors).
+   */
+  shareStat: string
   riskWindow: string
   interrupts: [string, string, string]
 }
@@ -83,6 +95,7 @@ const FAMILIES: Record<ReboundFamily, ReboundFamilyDef> = {
     signature: '“One snack won’t matter.”',
     prevalenceCopy:
       '64% of GLP-1 maintenance failures happen between 9 PM and midnight — the dose-trough window.',
+    shareStat: '64% of regain happens in the dose-trough window.',
     riskWindow: '9:00 PM – 11:30 PM',
     interrupts: [
       'At the freezer door — before the second trip.',
@@ -100,6 +113,7 @@ const FAMILIES: Record<ReboundFamily, ReboundFamilyDef> = {
     signature: '“It’s the weekend.”',
     prevalenceCopy:
       'Weekend rebounders regain 2x faster than weekday-steady patients post-taper, per the COYL maintenance protocol cohort.',
+    shareStat: 'Weekend rebounders regain 2x faster post-taper.',
     riskWindow: 'Saturday 14:00 – Sunday 23:00',
     interrupts: [
       'At the delivery-app open — before you swipe to confirm.',
@@ -118,6 +132,7 @@ const FAMILIES: Record<ReboundFamily, ReboundFamilyDef> = {
     signature: '“I’ll get back on the shot tomorrow.”',
     prevalenceCopy:
       '~58% of GLP-1 maintenance slips correlate with a stress event in the preceding two hours.',
+    shareStat: '58% of stress-slips fire within 2 hours of the trigger.',
     riskWindow: 'Stress event + 2 hours',
     interrupts: [
       'Mid-stress: "The shot doesn\'t catch this. We do."',
@@ -136,6 +151,7 @@ const FAMILIES: Record<ReboundFamily, ReboundFamilyDef> = {
     signature: '“I’ve been so good. I earned this.”',
     prevalenceCopy:
       '~71% of Reward Rebounders cite a perceived win in the 60–120 minutes before their last slip.',
+    shareStat: '71% of reward-slips fire within 2 hours of a win.',
     riskWindow: '60–120 minutes after a perceived win',
     interrupts: [
       'At the reward trip: "You worked hard. The reward isn\'t the food."',

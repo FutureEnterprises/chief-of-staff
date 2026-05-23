@@ -335,12 +335,12 @@ export default async function ReboundPage() {
             >
               The maintenance study
             </Link>
-            <a
-              href="mailto:clinic@coyl.ai?subject=GLP-1+clinic+inquiry"
+            <Link
+              href="/rebound/for-clinicians"
               className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
             >
-              For clinicians
-            </a>
+              For clinicians &rarr;
+            </Link>
           </div>
         </section>
       </article>

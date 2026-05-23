@@ -75,6 +75,12 @@ const nextConfig: NextConfig = {
       // the page explicitly disclaims. Footer/nav labels were already
       // "Recurring loops"; URL now matches. 301 preserves SEO equity.
       { source: '/destructive-behaviors', destination: '/recurring-loops', permanent: true },
+      // May 2026 GLP-1 pivot: /glp1 is now superseded by /rebound, which
+      // carries the unified anti-regain narrative, pricing, four-archetype
+      // taxonomy, and clinician channel. /glp1 stays as a permanent
+      // redirect so inbound links + Google search results continue to
+      // route to the live wedge.
+      { source: '/glp1', destination: '/rebound', permanent: true },
     ]
   },
   experimental: {

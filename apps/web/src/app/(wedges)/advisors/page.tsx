@@ -128,64 +128,41 @@ export default async function AdvisorsPage() {
             </span>
           </div>
 
-          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
-            The people in the room{' '}
-            <span className="italic text-orange-600">with us.</span>
+          <h1 className="font-serif text-5xl font-normal leading-[1.02] tracking-[-0.025em] text-gray-900 md:text-7xl">
+            Advisory board{' '}
+            <span className="italic text-orange-600">forming.</span>
           </h1>
 
           <p className="max-w-2xl font-serif text-2xl font-normal italic leading-[1.35] text-gray-700 md:text-3xl">
-            Operators and researchers who push us harder than we push
-            ourselves.
+            Public names land Q3 2026. The seats are mapped, the
+            outreach is in motion, the placeholders are gone.
           </p>
         </header>
 
-        {/* ADVISOR GRID — 2 columns on md+, single column on mobile */}
-        <section className="grid grid-cols-1 gap-8 border-t border-gray-200 pt-16 md:grid-cols-2 md:gap-10">
-          {ADVISORS.map((advisor) => (
-            <article
-              key={advisor.slot}
-              className="flex flex-col gap-6 rounded-2xl border border-gray-200 bg-white p-6 md:flex-row md:items-start md:p-8"
-            >
-              {/*
-                ADVISOR PORTRAIT PLACEHOLDER
-                ----------------------------
-                When confirmed, drop the portrait at:
-                  apps/web/public/advisors/<lowercase-name>.jpg
-                And swap this styled div for next/image with a real src.
-              */}
-              <div
-                aria-hidden
-                className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-orange-200 bg-gradient-to-br from-orange-100 via-orange-50 to-[#fafaf7]"
-              >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="font-serif text-2xl italic text-gray-300">
-                    {advisor.slot
-                      .split(' ')
-                      .slice(0, 2)
-                      .map((w) => w[0])
-                      .join('')
-                      .toUpperCase()}
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-                  {advisor.slot}
-                </p>
-                <h2 className="font-serif text-xl font-normal leading-[1.15] tracking-[-0.015em] text-gray-900">
-                  {advisor.role}
-                </h2>
-                <p className="inline-flex items-center gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-gray-500">
-                  <span aria-hidden className="h-1 w-1 rounded-full bg-orange-400" />
-                  {advisor.status}
-                </p>
-                <p className="pt-2 text-sm leading-[1.7] text-gray-700">
-                  {advisor.bring}
-                </p>
-              </div>
-            </article>
-          ))}
+        {/* HONEST — one paragraph, not six cards. Per the May 2026
+            audit pass: six "Seat open" cards read as "we have six
+            empty seats" to any M&A or partner visitor; one
+            paragraph reads as "here is the strategic plan, names
+            land when names land." Cleaner signal, no shipped
+            credibility damage. */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+            The COYL advisory board is being assembled across six
+            strategic seats: a behavioral-health operator (ex-Noom /
+            ex-Headspace VP), a pharma commercial leader (ex-Novo
+            Nordisk / ex-Eli Lilly), a JITAI clinical researcher, a
+            mobile platform veteran (ex-Apple Health), a strategic
+            finance advisor (M&amp;A in digital health), and a
+            behavioral neuroscience PhD focused on habit research.
+            Conversations are in flight. Public confirmations and
+            named bios land in Q3 2026.
+          </p>
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+            We&rsquo;re holding the seats open until the right
+            voices commit — and not posting placeholder names while
+            we wait. If you do work that maps to one of these
+            seats, see the section below.
+          </p>
         </section>
 
         {/* JOIN US */}

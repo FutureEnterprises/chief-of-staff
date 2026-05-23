@@ -46,27 +46,36 @@ export default function TermsPage() {
       </ul>
 
       <h2>4. Subscription Plans and Billing</h2>
-      <h3>4.1 Free Plan</h3>
+      <h3>4.1 Recover (Free)</h3>
       <p>
-        The Free plan provides limited access to the Service, including up to 50 active tasks,
-        20 AI assists per month, and 3 projects. The Free plan may be modified at our discretion.
+        The Recover plan provides limited access to the Service, including the Autopilot Audit,
+        the archetype card, three interrupts per week, and basic autopilot map. The Recover plan
+        may be modified at our discretion.
       </p>
-      <h3>4.2 Pro Plan</h3>
+      <h3>4.2 Rewire ($12/month or $99/year)</h3>
       <p>
-        The Pro plan is available for $14.99/month or $99.99/year and provides expanded access to
-        all features, including unlimited tasks, 500 AI assists per month, follow-up automation,
-        performance assessments, and advanced insights.
+        The Rewire plan provides expanded access to all generic behavioral features, including
+        unlimited interrupts at danger windows, full rescue flows, the recovery engine, pattern
+        detection, autopilot map, AI assessments, and daily email briefings.
       </p>
-      <h3>4.3 Billing</h3>
+      <h3>4.3 Rebound ($29/month or $199/year)</h3>
+      <p>
+        The Rebound plan is the GLP-1-specific maintenance tier. It includes everything in Rewire
+        plus the Regain Risk Quiz, the four-archetype taxonomy (Night / Weekend / Stress / Reward
+        Rebounder), rebound-window-specific interrupts, the GLP-1 maintenance protocol (post-taper
+        relapse-prevention plan), and a clinician summary export. Behavioral support, not medical
+        treatment — talk to your prescriber about dosing and taper schedule.
+      </p>
+      <h3>4.4 Billing</h3>
       <p>
         All payments are processed through Stripe. By subscribing to a paid plan, you authorize us
         to charge the payment method on file on a recurring basis. Prices are in USD and do not
         include applicable taxes.
       </p>
-      <h3>4.4 Cancellation and Refunds</h3>
+      <h3>4.5 Cancellation and Refunds</h3>
       <p>
         You may cancel your subscription at any time through the Service or by contacting us. Upon
-        cancellation, you will retain access to Pro features until the end of your current billing
+        cancellation, you will retain access to paid features until the end of your current billing
         period. We do not provide prorated refunds for partial billing periods. Annual plans with a
         free trial may be cancelled during the trial at no charge.
       </p>

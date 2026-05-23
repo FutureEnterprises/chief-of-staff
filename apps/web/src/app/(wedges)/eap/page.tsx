@@ -671,17 +671,25 @@ export default async function EapPage() {
             Catch yourself before you do it again.
           </blockquote>
           <div className="flex flex-wrap gap-3 pt-2">
-            <Link
-              href="/pap"
+            <a
+              href="https://github.com/FutureEnterprises/chief-of-staff/blob/main/docs/protocol/edge-ai-protocol.md"
+              target="_blank"
+              rel="noopener"
               className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              Read PAP v0.1 →
+              Read the EAP spec on GitHub →
+            </a>
+            <Link
+              href="/pap"
+              className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              The PAP companion →
             </Link>
             <Link
               href="/protocol"
               className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
             >
-              Read the umbrella spec
+              The full protocol stack
             </Link>
           </div>
         </section>
