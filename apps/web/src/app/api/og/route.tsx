@@ -45,6 +45,15 @@ export async function GET(req: NextRequest) {
     })
   }
 
+  if (variant === 'archetype') {
+    return renderArchetypeCard({
+      family: (searchParams.get('family') ?? 'The 9 PM Negotiator').slice(0, 64),
+      signature:
+        (searchParams.get('signature') ?? '“One time won’t matter.”').slice(0, 80),
+      specific: (searchParams.get('specific') ?? 'Night Fridge Saboteur').slice(0, 48),
+    })
+  }
+
   return renderDefault({
     title: (searchParams.get('title') ?? "It's not the mistake. It's what you do after.").slice(0, 140),
     kicker: (searchParams.get('kicker') ?? 'COYL').slice(0, 32),
@@ -258,6 +267,190 @@ function renderInterruptCard({
             }}
           >
             coyl.ai
+          </span>
+        </div>
+      </div>
+    ),
+    {
+      width: 1200,
+      height: 630,
+    },
+  )
+}
+
+/**
+ * Archetype OG variant — the viral atom for /a/[slug] shares.
+ *
+ * Layout (1200×630):
+ *
+ *   ┌────────────────────────────────────────────────────────┐
+ *   │  [Flame]   I'M                                         │
+ *   │                                                        │
+ *   │  The 9 PM Negotiator. (huge serif italic, FG)          │
+ *   │                                                        │
+ *   │  "One time won't matter."  (orange serif italic)       │
+ *   │                                                        │
+ *   │  NIGHT FRIDGE SABOTEUR  (mono uppercase tracked)       │
+ *   │ ──────────────────────────────────────────────────────│
+ *   │  Find your autopilot family            coyl.ai/audit  │
+ *   └────────────────────────────────────────────────────────┘
+ *
+ * Matches the visual language of renderInterruptCard — warm dark BG,
+ * single orange accent, Instrument-Serif-shaped focal type, mono for
+ * metadata. No remote fonts/images so it stays edge-bulletproof.
+ */
+function renderArchetypeCard({
+  family,
+  signature,
+  specific,
+}: {
+  family: string
+  signature: string
+  specific: string
+}) {
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: BG,
+          backgroundImage:
+            'radial-gradient(circle at 30% 40%, rgba(255,102,0,0.22), transparent 55%)',
+          padding: '64px 72px',
+          position: 'relative',
+        }}
+      >
+        {/* Top row — flame chip + "I'M" eyebrow */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div
+            style={{
+              width: '52px',
+              height: '52px',
+              borderRadius: '14px',
+              backgroundColor: ACCENT,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: `0 0 28px ${ACCENT}80`,
+            }}
+          >
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={BG}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+            </svg>
+          </div>
+          <span
+            style={{
+              color: WARM_OFF,
+              fontFamily: 'monospace',
+              fontSize: '22px',
+              fontWeight: 500,
+              letterSpacing: '0.32em',
+              textTransform: 'uppercase',
+            }}
+          >
+            I’m
+          </span>
+        </div>
+
+        {/* Family name — huge serif italic, the focal headline */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            justifyContent: 'center',
+            gap: '24px',
+            marginTop: '12px',
+          }}
+        >
+          <span
+            style={{
+              color: FG,
+              fontFamily: 'serif',
+              fontStyle: 'italic',
+              fontSize: '108px',
+              fontWeight: 400,
+              lineHeight: 0.95,
+              letterSpacing: '-0.03em',
+            }}
+          >
+            {family}.
+          </span>
+
+          {/* Signature script — orange italic, the meme line */}
+          <span
+            style={{
+              color: ACCENT,
+              fontFamily: 'serif',
+              fontStyle: 'italic',
+              fontSize: '44px',
+              fontWeight: 400,
+              lineHeight: 1.1,
+              letterSpacing: '-0.01em',
+            }}
+          >
+            {signature}
+          </span>
+
+          {/* Specific moment — mono uppercase, the texture proof */}
+          <span
+            style={{
+              color: WARM_OFF,
+              fontFamily: 'monospace',
+              fontSize: '22px',
+              fontWeight: 500,
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {specific}
+          </span>
+        </div>
+
+        {/* Footer */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderTop: '1px solid rgba(255,255,255,0.06)',
+            paddingTop: '20px',
+            marginTop: '20px',
+          }}
+        >
+          <span
+            style={{
+              color: MUTED,
+              fontFamily: 'monospace',
+              fontSize: '16px',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Find your autopilot family
+          </span>
+          <span
+            style={{
+              color: ACCENT,
+              fontFamily: 'monospace',
+              fontSize: '16px',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+            }}
+          >
+            coyl.ai/audit
           </span>
         </div>
       </div>

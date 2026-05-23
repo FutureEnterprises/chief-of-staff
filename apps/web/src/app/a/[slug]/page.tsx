@@ -44,22 +44,32 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!parsed) return { title: 'Archetype not found · COYL' }
 
   const a = buildArchetype(parsed.wedge, parsed.window, parsed.script)
-  const ogTitle = encodeURIComponent(a.family.name)
-  const ogKicker = encodeURIComponent('My COYL autopilot')
+  // Archetype OG variant — the viral atom. Renders family name + signature
+  // script + specific moment into a 1200×630 card sized for Twitter/X,
+  // iMessage, Slack, LinkedIn link previews. Different from the generic
+  // `?title=…&kicker=…` route — this one IS the screenshot people share.
+  const ogUrl =
+    `/api/og?variant=archetype` +
+    `&family=${encodeURIComponent(a.family.name)}` +
+    `&signature=${encodeURIComponent(a.family.signature)}` +
+    `&specific=${encodeURIComponent(a.specific.name)}`
+
+  const shareTitle = `I'm ${a.family.name}`
+  const shareDescription = `${a.family.signature} ${a.family.essence} Find your autopilot family at coyl.ai/audit.`
 
   return {
     title: `${a.family.name} — my COYL autopilot`,
-    description: `${a.family.essence} ${a.family.signature} — find your archetype with the 60-second autopilot audit.`,
+    description: shareDescription,
     alternates: { canonical: `/a/${slug}` },
     openGraph: {
       type: 'article',
-      title: `I'm ${a.family.name}`,
-      description: `${a.family.essence} Find yours with the COYL autopilot audit.`,
+      title: shareTitle,
+      description: shareDescription,
       url: `https://coyl.ai/a/${slug}`,
       siteName: 'COYL',
       images: [
         {
-          url: `/api/og?title=${ogTitle}&kicker=${ogKicker}`,
+          url: ogUrl,
           width: 1200,
           height: 630,
           alt: `${a.family.name} — my COYL autopilot`,
@@ -68,9 +78,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: 'summary_large_image',
-      title: `I'm ${a.family.name}`,
-      description: `${a.family.essence} Find yours.`,
-      images: [`/api/og?title=${ogTitle}&kicker=${ogKicker}`],
+      title: shareTitle,
+      description: shareDescription,
+      images: [ogUrl],
     },
   }
 }

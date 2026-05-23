@@ -1121,13 +1121,35 @@ function formatHour12(h: number): string {
  * Uses native Web Share API on mobile (Twitter/iMessage/etc. sharesheet)
  * with clipboard fallback on desktop.
  */
+/**
+ * ArchetypeShareButton — the viral atom's launch surface.
+ *
+ * Per the founder action master list "the one thing that actually spreads":
+ * the audit + shareable result card is COYL's Spotify-Wrapped moment.
+ * People share family identity ("I'm a Deserver") more than situational
+ * labels — this surface gives them four one-tap paths to do it:
+ *
+ *   - Native share sheet (mobile) — Web Share API surfaces Twitter,
+ *     iMessage, Slack, every installed sharing app
+ *   - Twitter/X intent — desktop fallback so the click goes straight
+ *     into a pre-filled tweet, not a "copy link" friction step
+ *   - Threads intent — the surface where /audit's archetype language
+ *     plays best (more text-forward than TikTok or Instagram Stories)
+ *   - Copy link — guarantees something always works, even with
+ *     ad-blockers blocking navigator.share
+ *
+ * Share copy is punchy and first-person: "I'm The 9 PM Negotiator.
+ * \"One time won't matter.\" — that's the script COYL catches." vs.
+ * the previous bland "I'm Family. Signature. Find yours:".
+ */
 function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
   const [copied, setCopied] = useState(false)
 
   const shareUrl = buildShareUrl(archetype)
-  const shareText = `I'm ${archetype.family.name}. ${archetype.family.signature} Find yours:`
+  const shareText = `I'm ${archetype.family.name}. ${archetype.family.signature} — the script COYL catches.\n\nFind your autopilot family:`
+  const shareTextWithUrl = `${shareText} ${shareUrl}`
 
-  async function handleShare() {
+  async function handleNativeShare() {
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
         await navigator.share({
@@ -1140,8 +1162,12 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
         // user cancelled — fall through to clipboard
       }
     }
+    await handleCopy()
+  }
+
+  async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`)
+      await navigator.clipboard.writeText(shareTextWithUrl)
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
     } catch {
@@ -1149,13 +1175,20 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
     }
   }
 
+  const twitterUrl =
+    `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}` +
+    `&url=${encodeURIComponent(shareUrl)}`
+  const threadsUrl =
+    `https://www.threads.net/intent/post?text=${encodeURIComponent(shareTextWithUrl)}`
+
   return (
     <div className="mt-5 flex flex-wrap items-center gap-2">
       <button
-        onClick={handleShare}
+        onClick={handleNativeShare}
         className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2.5 text-xs font-bold text-white transition-colors hover:bg-gray-800"
+        aria-label="Share my archetype"
       >
-        {copied ? 'Copied link' : 'Share my archetype'}
+        Share my archetype
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
           <path
             d="M1 6h10m0 0L7 2m4 4L7 10"
@@ -1165,6 +1198,34 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
             strokeLinejoin="round"
           />
         </svg>
+      </button>
+      <a
+        href={twitterUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-800 transition-colors hover:border-gray-900 hover:text-gray-900"
+        aria-label="Share on X / Twitter"
+      >
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+        Post on X
+      </a>
+      <a
+        href={threadsUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-800 transition-colors hover:border-gray-900 hover:text-gray-900"
+        aria-label="Share on Threads"
+      >
+        Threads
+      </a>
+      <button
+        onClick={handleCopy}
+        className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-800 transition-colors hover:border-gray-900 hover:text-gray-900"
+        aria-label="Copy share link"
+      >
+        {copied ? 'Copied' : 'Copy link'}
       </button>
       <Link
         href={shareUrl}

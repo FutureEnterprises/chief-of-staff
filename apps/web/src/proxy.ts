@@ -78,6 +78,14 @@ const isPublicRoute = createRouteMatcher([
   // archetype result (capture) or schedule a one-shot interrupt (schedule).
   // Per-IP rate-limited; both routes are open.
   '/api/v1/audit/(.*)',
+  // Open Graph image generator + public share-card endpoint — must be
+  // anonymous so Twitter/X, iMessage, Slack, LinkedIn, Discord, Facebook,
+  // Threads etc. can fetch link previews. Previously gated behind Clerk,
+  // which collapsed every scraped preview to 307 → /sign-in and silently
+  // killed the share funnel.
+  '/api/og',
+  '/api/og/(.*)',
+  '/api/share/(.*)',
   // Third-party OAuth callbacks & webhooks — providers redirect/POST here
   // without a Clerk session cookie, so Clerk's protect would 302 them to
   // sign-in and break the integration handshake. /auth subroutes stay
@@ -159,6 +167,9 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/api/v1/sms/intro',
   '/api/v1/protocol/demo',
   '/api/v1/audit/(.*)',
+  '/api/og',
+  '/api/og/(.*)',
+  '/api/share/(.*)',
   '/api/uap/v1/(.*)',
   '/api/health',
   '/profile/(.*)',
