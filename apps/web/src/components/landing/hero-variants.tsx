@@ -1,30 +1,28 @@
 'use client'
 
 /**
- * Cinematic cold-open hero — May 2026 full-site audit overhaul.
+ * Rebound-led cinematic hero — May 2026 consumer pivot.
  *
- * The previous hero explained too much before proving anything. Per
- * the audit's exact prescription, this one opens with the pattern-
- * recognition cold-open ("Let me guess..." — restart on Mondays,
- * negotiate at night, "tomorrow" after one mistake, worst decisions
- * mentally tired) and demonstrates the product loop above the fold
- * via the auto-playing MomentLoop card instead of explaining it in
- * five sections.
+ * Per the founder strategic decision to focus the consumer-facing
+ * surface on the GLP-1 anti-regain wedge (and the second-audit math
+ * showing the fastest $100M-ARR path runs through "stopping Ozempic"
+ * patients terrified of weight regain), the homepage hero now leads
+ * with the Rebound positioning rather than the generic-pattern
+ * cold-open.
  *
- * Visual treatment is the dark cinematic shift the audit demanded:
- * warm charcoal scrim, single orange accent, deep shadow on the loop
- * card. The rest of the homepage stays cream — the emotional contrast
- * between the dark moment-of-recognition hero and the lighter content
- * below is the point.
+ *   Hero line:  "The shot quiets hunger.
+ *                COYL trains the pattern that keeps the weight off."
  *
- * The COPY map keeps the variant prop interface so existing
- * ?v=a|b|c links continue to resolve, but every variant now renders
- * the same cold-open structure (the A/B was forced to B per the
- * earlier locked-variant decision). Variants A and C are kept as
- * eyebrow-only overrides for ad-source attribution.
+ * The MomentLoop card stays — the 11:42 PM micro-moment ("One snack
+ * won't matter" → "This is where tomorrow gets damaged") is exactly
+ * the GLP-1-rebounder script. Same component, sharper context.
  *
- * Medical-disclaimer line moved off this surface to /safety + the
- * sign-up consent screen per the same audit pass.
+ * Visual treatment preserved from the prior cinematic rollout:
+ * warm-charcoal scrim, dual radial orange glow, scan-line texture,
+ * serif italic for the focal accent, cream bleed to the page beneath.
+ *
+ * The variant prop is kept for backward compat (?v=a|b|c links still
+ * resolve); every variant now renders the same Rebound hero.
  */
 
 import Link from 'next/link'
@@ -34,9 +32,9 @@ import { MomentLoop } from './moment-loop'
 type Variant = 'a' | 'b' | 'c'
 
 const COPY: Record<Variant, { eyebrow: string }> = {
-  a: { eyebrow: 'Autopilot interruption' },
-  b: { eyebrow: 'The behavioral OS' },
-  c: { eyebrow: 'Late-night self-sabotage' },
+  a: { eyebrow: 'The anti-regain layer' },
+  b: { eyebrow: 'Behavioral support · GLP-1 maintenance' },
+  c: { eyebrow: 'For the moment the shot gets quiet' },
 }
 
 export function HeroVariants({ variant }: { variant: Variant }) {
@@ -44,16 +42,11 @@ export function HeroVariants({ variant }: { variant: Variant }) {
 
   return (
     <section className="relative isolate overflow-hidden">
-      {/* Dark scrim — the cinematic surface. Sits above the cream page
-          background so the rest of the homepage reads as lighter
-          chapters after the moment of recognition. */}
+      {/* Dark scrim — cinematic surface, same as the prior hero */}
       <div
         aria-hidden
         className="absolute inset-0 -z-10 bg-[#0e0d0b]"
       />
-      {/* Two orange radial pools — one upper-left (anchors the cold-open
-          paragraph), one mid-right (anchors the MomentLoop card). The
-          dual-glow gives the panel atmosphere without flattening. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -64,8 +57,6 @@ export function HeroVariants({ variant }: { variant: Variant }) {
           `,
         }}
       />
-      {/* Soft scan-line texture — the Black-Mirror-meets-behavioral-psych
-          texture the audit asked for. Pure CSS, edge-bulletproof. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 opacity-[0.04]"
@@ -74,9 +65,6 @@ export function HeroVariants({ variant }: { variant: Variant }) {
             'repeating-linear-gradient(0deg, rgba(255,255,255,0.5) 0px, rgba(255,255,255,0.5) 1px, transparent 1px, transparent 3px)',
         }}
       />
-      {/* Gradient bleed at the bottom — soft fade into the cream page
-          beneath so the hero/page transition reads as a deliberate
-          chapter change, not a hard cut. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0 h-40 -z-10"
@@ -88,9 +76,8 @@ export function HeroVariants({ variant }: { variant: Variant }) {
 
       <div className="mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-center px-6 pt-28 pb-24 md:px-12 lg:pt-40 lg:pb-32">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
-          {/* Left column — cold-open recognition paragraph */}
+          {/* Left column — Rebound headline */}
           <div className="relative z-20 flex flex-col items-start lg:col-span-7">
-            {/* Eyebrow — small caps, mono, hairline rule */}
             <motion.div
               initial={{ opacity: 0, x: -16 }}
               animate={{ opacity: 1, x: 0 }}
@@ -103,46 +90,34 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               </span>
             </motion.div>
 
-            {/* Cold-open paragraph. Four lines of recognition that trigger
-                the Barnum effect — the same mechanic that drives Myers-
-                Briggs, Enneagram, and Wordle virality. Serif italic on
-                "Let me guess." for the intimate-reading-aloud cadence. */}
+            {/* Hero line — the one sentence. Serif italic on the second
+                clause makes the "trains the pattern" feel like the
+                category-defining claim, not a feature list. */}
             <motion.h1
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
               className="font-serif text-[clamp(2.4rem,5.8vw,4.6rem)] font-normal leading-[1.04] tracking-[-0.025em] text-[#f8f1e4]"
             >
-              <span className="italic text-orange-300">Let me guess.</span>
+              The shot quiets hunger.
               <br />
-              You restart on Mondays.
-              <br />
-              You negotiate with yourself at night.
-              <br />
-              You say <span className="italic text-orange-300">“tomorrow”</span> after one
-              mistake.
-              <br />
-              And your worst decisions
-              <br />
-              happen when you’re tired.
+              <span className="italic text-orange-300">
+                COYL trains the pattern that keeps the weight off.
+              </span>
             </motion.h1>
 
-            {/* Punchline — sans, restrained, sits as a calm afterbeat
-                under the recognition stack. */}
             <motion.p
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.85, duration: 0.7 }}
               className="mt-8 max-w-xl text-lg leading-[1.6] text-[#cfc7b9] md:text-xl"
             >
-              You’re not random. You’re patterned. COYL catches you{' '}
-              <span className="font-semibold text-orange-300">before</span> you
-              repeat it.
+              When the Ozempic, Wegovy, or Zepbound gets quiet, the 9 PM
+              script comes back. COYL catches it{' '}
+              <span className="font-semibold text-orange-300">before</span>{' '}
+              the pattern reruns — so the weight you lost stays off.
             </motion.p>
 
-            {/* CTAs — audit is primary (lowest-friction entry, viral
-                archetype reveal). "See the 3-second window" routes to
-                /how-it-works for the inspection-minded visitor. */}
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
@@ -150,10 +125,12 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               className="mt-10 flex flex-wrap items-center gap-4"
             >
               <Link
-                href="/audit"
+                href="/rebound"
                 className="group relative flex items-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-8 py-4 text-base font-semibold text-white shadow-[0_8px_28px_-8px_rgba(255,102,0,0.55)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_18px_44px_-12px_rgba(255,102,0,0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e0d0b]"
               >
-                <span className="relative z-10">Take the 60-second pattern audit</span>
+                <span className="relative z-10">
+                  Take the 60-second regain risk quiz
+                </span>
                 <svg
                   width="14"
                   height="14"
@@ -193,31 +170,32 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               </Link>
             </motion.div>
 
-            {/* Tertiary line — the no-card start-free affordance. Medical
-                disclaimer moved to /safety + sign-up consent per the
-                full-site audit ("legally smart but emotionally dead in
-                the hero"). */}
+            {/* Reassurance line — anchors the wedge in research. 60%
+                regain stat comes from the May 2026 Cambridge meta-
+                analysis cited on /clinical-study. */}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.25, duration: 0.6 }}
-              className="mt-5 text-sm text-[#a59a87]"
+              className="mt-5 max-w-xl text-sm text-[#a59a87]"
             >
-              Or{' '}
+              60% of weight lost on GLP-1 returns within a year of
+              stopping the medication.{' '}
               <Link
-                href={`/sign-up?v=${variant}`}
-                className="font-semibold text-orange-300 underline-offset-4 hover:text-orange-200 hover:underline"
+                href="/clinical-study"
+                className="underline-offset-4 hover:text-orange-300 hover:underline"
               >
-                start free
-              </Link>{' '}
-              <span className="text-[#7a7264]">· no card · 60 seconds to your archetype</span>
+                The research →
+              </Link>
             </motion.p>
           </div>
 
-          {/* Right column — the auto-playing MomentLoop. This IS the
-              "visible product loop above the fold" the audit demanded —
-              not a diagram, an actual four-beat micro-moment that plays
-              continuously while the visitor reads the cold-open. */}
+          {/* Right column — auto-playing MomentLoop, same as prior hero.
+              The 11:42 PM micro-moment is exactly the GLP-1-rebounder
+              script: late-night kitchen, the "one snack won't matter"
+              negotiation, the interrupt, the resolution. No content
+              change needed; the cinematic loop already reads as
+              Rebound. */}
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
@@ -228,42 +206,10 @@ export function HeroVariants({ variant }: { variant: Variant }) {
           </motion.div>
         </div>
 
-        {/* Mobile-only MomentLoop placement — slides under the cold-open
-            paragraph on small screens so mobile visitors also see the
-            visible loop above the audit CTA. */}
+        {/* Mobile MomentLoop */}
         <div className="mt-12 flex justify-center lg:hidden">
           <MomentLoop />
         </div>
-
-        {/* Scroll cue */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.6, duration: 0.8 }}
-          className="pointer-events-none mt-12 hidden flex-col items-center gap-2 lg:flex"
-          aria-hidden
-        >
-          <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-[#7a7264]">
-            Scroll
-          </span>
-          <motion.svg
-            width="14"
-            height="20"
-            viewBox="0 0 14 20"
-            fill="none"
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 2.4, ease: 'easeInOut', repeat: Infinity }}
-            className="text-orange-400"
-          >
-            <path
-              d="M7 2v14m0 0l5-5m-5 5l-5-5"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </motion.svg>
-        </motion.div>
       </div>
     </section>
   )

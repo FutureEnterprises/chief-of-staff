@@ -8,33 +8,29 @@ import { useUser, SignOutButton } from '@clerk/nextjs'
 import { CoylLogo } from '@/components/brand/logo'
 
 /**
- * GlassNav — May 2026 IA expansion.
+ * GlassNav — May 2026 two-track IA.
  *
- * Prior version surfaced only 3 links (How it works / Pricing / Research)
- * + a CTA, leaving 16 wedge pages discoverable only via the footer. That
- * created a "tour the footer to find anything" navigation IA — fine for
- * a brochure site, broken for a category launch where every wedge page
- * is a load-bearing surface (audit is the viral hook, /teams is the B2B
- * revenue lane, /clinical-study is the credibility moat).
+ * Restructured per the founder strategic decision to separate the
+ * consumer-facing surface (Rebound — the GLP-1 anti-regain wedge)
+ * from the protocol-tier surface (BIP/PAP/EAP/UAP/RAP — the
+ * developer/M&A/foundation-lab story). Two surfaces, one company,
+ * preserved independently so consumer execution and protocol
+ * execution can run in parallel without trampling each other.
  *
- * New structure:
+ * Structure:
  *
- *   Product           (dropdown)  → How it works, Autopilot map, Decision
- *                                   support, Recovery engine, Audit (tool)
- *   Patterns          (dropdown)  → GLP-1, Weight loss, Procrastination,
- *                                   Recurring loops, Work, Catch me tonight
- *                                   (the "Patterns COYL Catches" library —
- *                                   strategist's mandate: do NOT call them
- *                                   "use cases", "solutions", or
- *                                   "treatment areas". They are patterns.)
- *   For teams         (link)      → /teams
- *   Research          (dropdown)  → Clinical study, The science,
- *                                   Research + outcomes, Content
- *   Pricing           (link)      → /pricing
- *   CTA               (button)    → /sign-up
+ *   PRIMARY (consumer)
+ *     Rebound          — the anti-regain wedge landing
+ *     Take the audit   — the viral funnel entry
+ *     How it works     — the 3-second-window mechanism
+ *     Pricing          — Recover / Rewire / Rebound
  *
- * Mobile: hamburger → full-screen drawer with flat list of every link.
- * Desktop: hover-or-tap dropdowns; only one panel open at a time.
+ *   PROTOCOL (developer + M&A)
+ *     Protocol         — dropdown to the full 5-spec stack
+ *
+ * Other surfaces (research, manifesto, advisors, vertical-specific
+ * wedge pages) live in the footer for direct-link traffic but stay
+ * off the primary nav so neither audience is fighting two stories.
  */
 
 type DropdownLink = {
@@ -43,46 +39,24 @@ type DropdownLink = {
   description?: string
 }
 
-type DropdownKey = 'product' | 'use-cases' | 'research' | null
+type DropdownKey = 'protocol' | null
 
-const PRODUCT: DropdownLink[] = [
-  { label: 'Manifesto', href: '/manifesto', description: 'AI has never met human behavior before. Read the category claim.' },
-  { label: 'Psyche AI', href: '/psyche', description: 'The first AI wrapped around the human psyche. The category, named.' },
-  { label: 'How COYL knows you', href: '/how-coyl-knows-you', description: 'The honest answer — 80% you tell us today, 10% in year two. The arc, interactive.' },
-  { label: 'How it works', href: '/how-it-works', description: 'Detect, interrupt, recover — the three-step loop.' },
-  { label: 'Autopilot audit', href: '/audit', description: '60 seconds. Find your archetype. Share the card.' },
-  { label: 'Autopilot map', href: '/autopilot-map', description: 'Your danger windows visualised over the week.' },
-  { label: 'Decision support', href: '/decision-support', description: 'Real-time guidance at the 3-second window.' },
-  { label: 'Recovery engine', href: '/recovery', description: 'Same-night re-entry. No spiral. No restart.' },
-  { label: 'Catch me tonight', href: '/catch-me', description: 'One SMS at 9 PM — the moment, caught.' },
-]
-
-const USE_CASES: DropdownLink[] = [
-  { label: 'GLP-1 companion', href: '/glp1', description: 'For the moments medication does not touch.' },
-  { label: 'Weight loss', href: '/weight-loss', description: 'The 9 PM kitchen, not the diet plan.' },
-  { label: 'Procrastination + focus', href: '/procrastination', description: 'The tab switch, before it wins.' },
-  { label: 'Recurring loops', href: '/recurring-loops', description: 'Autopilot patterns you keep returning to — not clinical crisis.' },
-  { label: 'Work follow-through', href: '/work', description: 'The shower-thought that derails the deep-work block.' },
-  { label: 'Caught moments', href: '/caught', description: 'Shareable archetype cards.' },
-]
-
-const RESEARCH: DropdownLink[] = [
-  { label: 'About', href: '/about', description: 'Built by someone who needed it. The founder story, in one page.' },
-  { label: 'Advisors', href: '/advisors', description: 'The people in the room with us — operators across pharma, behavioral health, and mobile.' },
-  { label: 'Clinical board', href: '/clinical-board', description: 'The clinical eyes on the work — science, protocol, safety, regulatory.' },
-  { label: 'For clinicians', href: '/clinician', description: 'The behavioral layer your GLP-1 patients are missing. Provider channel + invite flow.' },
-  { label: 'The science', href: '/science', description: 'Pattern interrupts, JITAI, recovery psychology.' },
-  { label: 'Clinical study', href: '/clinical-study', description: 'Study-readiness package — protocol drafted.' },
-  { label: 'Research + outcomes', href: '/research', description: 'What we measure, what we will publish.' },
-  { label: 'Protocol', href: '/protocol', description: 'The Behavioral Interrupt Protocol — open spec, Apache 2.0.' },
-  { label: 'PAP — Proactive AI', href: '/pap', description: 'Trust infrastructure for LLMs to fire proactive interventions.' },
-  { label: 'EAP — Edge AI', href: '/eap', description: 'Cross-device LLM action protocol. Every device, every LLM.' },
-  { label: 'UAP — User Authority', href: '/uap', description: 'Standing-authority layer for agentic AI. The trust contract for autonomous LLMs.' },
-  { label: 'Platform', href: '/platform', description: 'Three protocols, one reference engine. Platform overview.' },
-  { label: 'Developers', href: '/developers', description: 'Build against BIP. SDKs, code examples, getting started.' },
-  { label: 'Press', href: '/press', description: 'AI is leaving the prompt box — for journalists.' },
-  { label: 'Safety', href: '/safety', description: 'What COYL is for, and what it is not. Real-help routing.' },
-  { label: 'Changelog', href: '/changelog', description: 'What shipped, what is shipping next.' },
+/**
+ * The protocol-tier menu — single dropdown that houses every
+ * developer / M&A / foundation-lab surface. Visually demoted to a
+ * subtle "Protocol" trigger at the right end of the primary nav so
+ * the consumer story leads and the protocol thesis is one click
+ * deep but never hidden.
+ */
+const PROTOCOL: DropdownLink[] = [
+  { label: 'Platform overview', href: '/platform', description: 'Five protocols, one reference engine. The M&A + partner-facing story.' },
+  { label: 'Protocol stack', href: '/protocol', description: '"Stop being a chatbot. Become behavior-aware." The full stack.' },
+  { label: 'UAP — Standing Consent', href: '/uap', description: 'The foundation. What the user permits, refuses, can override.' },
+  { label: 'BIP — Behavioral Context', href: '/protocol#bip', description: 'The substrate. What loop the user is in right now.' },
+  { label: 'PAP — Proactive Intervention', href: '/pap', description: 'LLMs propose, coordinator arbitrates. Cross-vendor Switzerland.' },
+  { label: 'EAP — Cross-Device Action', href: '/eap', description: 'Per-action execution across the user’s device fleet.' },
+  { label: 'RAP — Safety Routing', href: '/rap', description: 'When the AI stops coaching and routes to a human.' },
+  { label: 'Developers', href: '/developers', description: 'SDKs, code examples, getting started against COYL.' },
 ]
 
 export function GlassNav() {
@@ -129,36 +103,29 @@ export function GlassNav() {
           <CoylLogo size="md" theme="light" />
         </Link>
 
-        {/* Desktop nav */}
+        {/* Desktop nav — consumer-led primary surface */}
         <div className="hidden items-center gap-1 text-sm font-medium tracking-wide text-gray-600 md:flex">
-          <DropdownTrigger
-            label="Product"
-            id="product"
-            open={open === 'product'}
-            onToggle={() => setOpen(open === 'product' ? null : 'product')}
-            onEnter={() => setOpen('product')}
-          />
-          <DropdownTrigger
-            label="Patterns"
-            id="patterns"
-            open={open === 'use-cases'}
-            onToggle={() => setOpen(open === 'use-cases' ? null : 'use-cases')}
-            onEnter={() => setOpen('use-cases')}
-          />
           <Link
-            href="/teams"
+            href="/rebound"
             className="rounded-full px-3 py-1.5 transition-colors hover:text-gray-900"
             onClick={() => setOpen(null)}
           >
-            For teams
+            Rebound
           </Link>
-          <DropdownTrigger
-            label="Research"
-            id="research"
-            open={open === 'research'}
-            onToggle={() => setOpen(open === 'research' ? null : 'research')}
-            onEnter={() => setOpen('research')}
-          />
+          <Link
+            href="/audit"
+            className="rounded-full px-3 py-1.5 transition-colors hover:text-gray-900"
+            onClick={() => setOpen(null)}
+          >
+            Take the audit
+          </Link>
+          <Link
+            href="/how-it-works"
+            className="rounded-full px-3 py-1.5 transition-colors hover:text-gray-900"
+            onClick={() => setOpen(null)}
+          >
+            How it works
+          </Link>
           <Link
             href="/pricing"
             className="rounded-full px-3 py-1.5 transition-colors hover:text-gray-900"
@@ -166,6 +133,19 @@ export function GlassNav() {
           >
             Pricing
           </Link>
+
+          {/* Subtle protocol-tier menu — visually demoted to a small
+              divider + muted trigger so the consumer audience reads
+              the primary nav as the story while developer / M&A
+              visitors find the protocol surface one click in. */}
+          <span aria-hidden className="mx-2 h-4 w-px bg-gray-300" />
+          <DropdownTrigger
+            label="Protocol"
+            id="protocol"
+            open={open === 'protocol'}
+            onToggle={() => setOpen(open === 'protocol' ? null : 'protocol')}
+            onEnter={() => setOpen('protocol')}
+          />
         </div>
 
         {/* Mobile hamburger */}
@@ -186,16 +166,15 @@ export function GlassNav() {
         <NavAuthCta onCloseDropdowns={() => setOpen(null)} />
       </div>
 
-      {/* Desktop dropdown panels */}
+      {/* Desktop dropdown panel — protocol only */}
       <AnimatePresence>
-        {open === 'product' && (
-          <DropdownPanel key="product" links={PRODUCT} onClose={() => setOpen(null)} />
-        )}
-        {open === 'use-cases' && (
-          <DropdownPanel key="use-cases" links={USE_CASES} onClose={() => setOpen(null)} />
-        )}
-        {open === 'research' && (
-          <DropdownPanel key="research" links={RESEARCH} onClose={() => setOpen(null)} />
+        {open === 'protocol' && (
+          <DropdownPanel
+            key="protocol"
+            links={PROTOCOL}
+            eyebrow="For developers, foundation labs, and partners"
+            onClose={() => setOpen(null)}
+          />
         )}
       </AnimatePresence>
 
@@ -229,8 +208,8 @@ function DropdownTrigger({
       aria-controls={`${id}-panel`}
       onClick={onToggle}
       onMouseEnter={onEnter}
-      className={`flex items-center gap-1 rounded-full px-3 py-1.5 transition-colors ${
-        open ? 'text-gray-900' : 'hover:text-gray-900'
+      className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-mono uppercase tracking-[0.18em] transition-colors ${
+        open ? 'text-orange-700' : 'text-gray-500 hover:text-gray-900'
       }`}
     >
       {label}
@@ -247,7 +226,15 @@ function DropdownTrigger({
   )
 }
 
-function DropdownPanel({ links, onClose }: { links: DropdownLink[]; onClose: () => void }) {
+function DropdownPanel({
+  links,
+  eyebrow,
+  onClose,
+}: {
+  links: DropdownLink[]
+  eyebrow?: string
+  onClose: () => void
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: -8 }}
@@ -256,22 +243,29 @@ function DropdownPanel({ links, onClose }: { links: DropdownLink[]; onClose: () 
       transition={{ duration: 0.18, ease: 'easeOut' }}
       className="absolute left-0 right-0 top-full hidden border-b border-gray-200 bg-white shadow-[0_24px_60px_-24px_rgba(0,0,0,0.18)] md:block"
     >
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-2 px-6 py-6 md:px-12 lg:grid-cols-3">
-        {links.map((l) => (
-          <Link
-            key={l.href}
-            href={l.href}
-            onClick={onClose}
-            className="group flex flex-col gap-1 rounded-2xl border border-transparent p-4 transition-colors hover:border-orange-200 hover:bg-orange-50"
-          >
-            <span className="text-sm font-semibold text-gray-900 group-hover:text-orange-700">
-              {l.label}
-            </span>
-            {l.description && (
-              <span className="text-xs leading-relaxed text-gray-600">{l.description}</span>
-            )}
-          </Link>
-        ))}
+      <div className="mx-auto max-w-7xl px-6 py-6 md:px-12">
+        {eyebrow && (
+          <p className="mb-4 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            {eyebrow}
+          </p>
+        )}
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              onClick={onClose}
+              className="group flex flex-col gap-1 rounded-2xl border border-transparent p-4 transition-colors hover:border-orange-200 hover:bg-orange-50"
+            >
+              <span className="text-sm font-semibold text-gray-900 group-hover:text-orange-700">
+                {l.label}
+              </span>
+              {l.description && (
+                <span className="text-xs leading-relaxed text-gray-600">{l.description}</span>
+              )}
+            </Link>
+          ))}
+        </div>
       </div>
     </motion.div>
   )
@@ -301,25 +295,21 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className="h-[calc(100vh-72px)] overflow-y-auto px-6 pb-12 pt-8">
-        <MobileSection title="Product" links={PRODUCT} onClose={onClose} />
-        <MobileSection title="Patterns COYL catches" links={USE_CASES} onClose={onClose} />
-        <div className="mt-8 border-t border-gray-200 pt-8">
-          <Link
-            href="/teams"
-            onClick={onClose}
-            className="mb-3 block text-base font-bold text-gray-900"
-          >
-            For teams →
-          </Link>
-          <Link
-            href="/pricing"
-            onClick={onClose}
-            className="mb-3 block text-base font-bold text-gray-900"
-          >
-            Pricing →
-          </Link>
+        {/* Primary — consumer surface */}
+        <div className="mb-10">
+          <p className="mb-4 font-mono text-[10px] font-bold uppercase tracking-[0.32em] text-orange-600">
+            For you
+          </p>
+          <ul className="space-y-1">
+            <MobileLink href="/rebound" label="Rebound" description="The anti-regain layer for GLP-1 users." onClose={onClose} />
+            <MobileLink href="/audit" label="Take the 60-second audit" description="Find your autopilot family." onClose={onClose} />
+            <MobileLink href="/how-it-works" label="How it works" description="Detect, interrupt, recover — the 3-step loop." onClose={onClose} />
+            <MobileLink href="/pricing" label="Pricing" description="Recover (free) + Rewire ($12/mo) + Rebound." onClose={onClose} />
+          </ul>
         </div>
-        <MobileSection title="Research" links={RESEARCH} onClose={onClose} />
+
+        {/* Secondary — protocol surface */}
+        <MobileSection title="Protocol · for developers + partners" links={PROTOCOL} onClose={onClose} />
 
         <div className="mt-10">
           <NavAuthCta onCloseDropdowns={onClose} fullWidth />
@@ -421,6 +411,33 @@ function NavAuthCta({
         <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </Link>
+  )
+}
+
+function MobileLink({
+  href,
+  label,
+  description,
+  onClose,
+}: {
+  href: string
+  label: string
+  description?: string
+  onClose: () => void
+}) {
+  return (
+    <li>
+      <Link
+        href={href}
+        onClick={onClose}
+        className="flex flex-col rounded-xl px-3 py-2 hover:bg-orange-50"
+      >
+        <span className="text-base font-semibold text-gray-900">{label}</span>
+        {description && (
+          <span className="text-xs text-gray-600">{description}</span>
+        )}
+      </Link>
+    </li>
   )
 }
 
