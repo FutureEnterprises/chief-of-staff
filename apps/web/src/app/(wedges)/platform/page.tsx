@@ -30,26 +30,26 @@ import { BreadcrumbSchema } from '@/app/structured-data'
 
 
 export const metadata: Metadata = {
-  title: 'Platform — three protocols, one reference engine · COYL',
+  title: 'Platform — four protocols, one reference engine · COYL',
   description:
-    'COYL is the proactive AI infrastructure layer for human life. Consumer coyl.ai is the proof. BIP + PAP + EAP is the protocol stack.',
+    'COYL is the proactive AI infrastructure layer for human life. Consumer coyl.ai is the proof. BIP + PAP + EAP + UAP is the protocol stack.',
   keywords: [
     'coyl platform',
     'proactive ai infrastructure',
     'behavioral ai protocol',
-    'bip pap eap',
+    'bip pap eap uap',
     'coyl cloud',
     'proactive ai reference engine',
   ],
   alternates: { canonical: '/platform' },
   openGraph: {
-    title: 'COYL Platform — three protocols, one reference engine',
+    title: 'COYL Platform — four protocols, one reference engine',
     description:
-      'The proactive AI infrastructure layer for human life. BIP + PAP + EAP. Consumer coyl.ai is the proof case.',
+      'The proactive AI infrastructure layer for human life. BIP + PAP + EAP + UAP. Consumer coyl.ai is the proof case.',
     url: 'https://coyl.ai/platform',
     images: [
       {
-        url: '/api/og?title=Three+protocols.+One+reference+engine.&kicker=The+Platform',
+        url: '/api/og?title=Four+protocols.+One+reference+engine.&kicker=The+Platform',
         width: 1200,
         height: 630,
       },
@@ -59,8 +59,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'COYL Platform',
     description:
-      'Three protocols. One reference engine. The proactive AI infrastructure layer for human life.',
-    images: ['/api/og?title=Three+protocols.+One+reference+engine.&kicker=The+Platform'],
+      'Four protocols. One reference engine. The proactive AI infrastructure layer for human life.',
+    images: ['/api/og?title=Four+protocols.+One+reference+engine.&kicker=The+Platform'],
   },
 }
 
@@ -89,7 +89,7 @@ export default async function PlatformPage() {
           </div>
 
           <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
-            Three protocols.{' '}
+            Four protocols.{' '}
             <span className="italic text-orange-600">
               One reference engine.
             </span>
@@ -105,7 +105,7 @@ export default async function PlatformPage() {
               coyl.ai
             </a>{' '}
             is the proof case. The protocol stack &mdash; BIP, PAP,
-            EAP &mdash; is the moat.
+            EAP, UAP &mdash; is the moat.
           </p>
         </header>
 
@@ -155,25 +155,26 @@ export default async function PlatformPage() {
           </div>
         </section>
 
-        {/* 02 · THE THREE PROTOCOLS */}
+        {/* 02 · THE FOUR PROTOCOLS */}
         <section className="space-y-12 border-t border-gray-200 pt-16">
           <div className="space-y-6">
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
               02 &middot; The protocol stack
             </p>
             <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
-              BIP. PAP.{' '}
-              <span className="italic text-orange-600">EAP.</span>
+              BIP. PAP. EAP.{' '}
+              <span className="italic text-orange-600">UAP.</span>
             </h2>
             <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
-              Three protocols. One reference engine. Each protocol is
+              Four protocols. One reference engine. Each protocol is
               Apache 2.0. Each has a reference implementation at COYL
-              Cloud. Together they form the infrastructure layer for
-              proactive AI.
+              Cloud (UAP is spec-only today — reference engine ships
+              post-Series-A). Together they form the infrastructure
+              layer for proactive AI.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
             {PROTOCOLS.map((p) => (
               <div
                 key={p.name}
@@ -525,6 +526,16 @@ const PROTOCOLS: Array<{
     href: '/eap',
     linkLabel: 'Read the EAP spec',
   },
+  {
+    kicker: 'UAP v0.1 · Apache 2.0',
+    name: 'User-Authority Protocol',
+    body:
+      'The fourth layer. When the user is absent and the LLM acts on their behalf, UAP is the trust contract — grant, expire, kill-switch, audit. Eight primitives. Hard invariants. The layer foundation labs need to ship agentic AI safely.',
+    example:
+      'Standing authority for agentic AI.',
+    href: '/uap',
+    linkLabel: 'Read UAP',
+  },
 ]
 
 const ENGINE: Array<{ kicker: string; title: string; body: string }> = [
@@ -586,6 +597,15 @@ const PARTNERS: Array<{
       { name: 'Found Health', status: 'RCT in flight' },
       { name: 'Novo Nordisk', status: 'BD' },
       { name: 'Eli Lilly', status: 'BD' },
+    ],
+  },
+  {
+    label: 'UAP — standing authority',
+    context:
+      'Spec published v0.1. Reference engine ships post-Series-A. Zero partners, zero integrations today — the namespace is reserved while foundation labs review.',
+    entries: [
+      { name: 'Spec-only', status: '0 partners' },
+      { name: 'Reference engine', status: 'Post-Series-A' },
     ],
   },
 ]

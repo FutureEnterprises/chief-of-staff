@@ -553,11 +553,93 @@ const orchestration = await coyl.orchestration.create({
           </div>
         </section>
 
-        {/* SECTION 08 — EAP COORDINATOR (DEVICE MANUFACTURERS) */}
+        {/* SECTION 08a — UAP (STANDING AUTHORITY FOR AGENTIC AI) */}
         <section className="space-y-10 border-t border-gray-200 pt-16">
           <div className="space-y-6">
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              08 · EAP — device manufacturers
+              08 &middot; UAP &mdash; User-Authority Protocol
+            </p>
+            <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+              Standing authority for{' '}
+              <span className="italic text-orange-600">agentic AI.</span>
+            </h2>
+            <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+              UAP defines the standing-authority layer. When a user
+              grants their LLM bounded autonomous action, UAP is the
+              trust contract &mdash; eight primitives, hard expiry,
+              kill switch, signed audit trail.
+            </p>
+          </div>
+
+          <CodeBlock
+            lang="bash"
+            code={`# Issue a standing grant under UAP v0.1
+curl -X POST https://coyl.ai/api/uap/v1/grant \\
+  -H "Authorization: Bearer coyl_uap_<partner_id>_<secret>" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "user_id": "u_2sj8xks0a",
+    "scopes": ["calendar.write", "messaging.routine"],
+    "expires_at": "2026-05-29T17:00:00Z",
+    "rules": [
+      { "kind": "spending_cap", "max_per_action_usd": 50 },
+      { "kind": "quiet_hours", "from": "00:00", "to": "07:00", "tz": "America/Los_Angeles" }
+    ],
+    "consent_artifact": {
+      "version": "0.1",
+      "shown_to_user_at": "2026-05-22T16:58:00Z",
+      "user_response": "explicit_grant",
+      "ui_surface": "settings.standing_authority"
+    }
+  }'`}
+          />
+
+          <p className="max-w-2xl text-sm leading-[1.7] text-gray-600">
+            <strong className="font-semibold text-gray-800">Note:</strong>{' '}
+            The{' '}
+            <code className="rounded bg-orange-50 px-1.5 py-0.5 font-mono text-[12px] text-orange-700">
+              /api/uap/v1/*
+            </code>{' '}
+            namespace is reserved and currently returns{' '}
+            <code className="rounded bg-orange-50 px-1.5 py-0.5 font-mono text-[12px] text-orange-700">
+              HTTP 501 Not Implemented
+            </code>
+            . The reference engine ships post-Series-A. Specification
+            is final; implementations are encouraged.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="https://github.com/FutureEnterprises/chief-of-staff/blob/main/docs/protocol/UAP-0.1.md"
+              target="_blank"
+              rel="noopener"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+            >
+              Read the spec &rarr;
+            </a>
+            <Link
+              href="/uap"
+              className="rounded-full border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              /uap
+            </Link>
+            <span className="text-xs uppercase tracking-widest text-gray-500">
+              Partner access:{' '}
+              <a
+                href="mailto:partner@coyl.ai?subject=UAP%20partner%20access"
+                className="underline decoration-orange-500/40 underline-offset-4 hover:decoration-orange-500"
+              >
+                partner@coyl.ai
+              </a>
+            </span>
+          </div>
+        </section>
+
+        {/* SECTION 09 — EAP COORDINATOR (DEVICE MANUFACTURERS) */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="space-y-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              09 · EAP — device manufacturers
             </p>
             <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
               Run a coordinator.{' '}
