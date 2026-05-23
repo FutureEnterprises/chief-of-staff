@@ -14,6 +14,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CoreLoop } from '@/components/landing/core-loop'
+import {
+  CinematicScrim,
+  CinematicEyebrow,
+  CinematicBody,
+} from '@/components/cinematic'
 
 export const metadata: Metadata = {
   title: 'How COYL works — the behavioral interface between AI and real life',
@@ -53,24 +58,21 @@ export const metadata: Metadata = {
 export default function HowItWorksPage() {
   return (
     <div className="space-y-24 pb-12">
-      <header className="space-y-10">
-        <div className="flex items-center gap-3">
-          <span className="h-px w-12 bg-orange-500" />
-          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-            How it works
-          </span>
-        </div>
-        <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
-          Detect the script.<br />
-          Interrupt the moment.<br />
-          <span className="italic text-orange-600">Recover before the spiral.</span>
-        </h1>
-        <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-          COYL is the behavioral interface between AI and real life. It learns where your
-          autopilot takes over, catches you in the moments that matter, and keeps one bad
-          decision from becoming a bad week.
-        </p>
-      </header>
+      <CinematicScrim bleedToCream className="-mx-6 -mt-24 px-6 pt-32 pb-20 md:-mx-12 md:px-12 md:pt-40 md:pb-28">
+        <header className="mx-auto max-w-5xl space-y-10">
+          <CinematicEyebrow label="How it works" />
+          <h1 className="font-serif text-5xl font-normal leading-[0.98] tracking-[-0.025em] text-[#f8f1e4] md:text-[6.5rem]">
+            Detect the script.<br />
+            Interrupt the moment.<br />
+            <span className="italic text-orange-300">Recover before the spiral.</span>
+          </h1>
+          <CinematicBody>
+            COYL is the behavioral interface between AI and real life. It learns where your
+            autopilot takes over, catches you in the moments that matter, and keeps one bad
+            decision from becoming a bad week.
+          </CinematicBody>
+        </header>
+      </CinematicScrim>
 
       {/* Three steps */}
       <section className="grid grid-cols-1 gap-10 md:grid-cols-3">

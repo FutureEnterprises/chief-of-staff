@@ -2,6 +2,12 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
+import {
+  CinematicScrim,
+  CinematicEyebrow,
+  CinematicDisplay,
+  CinematicBody,
+} from '@/components/cinematic'
 
 export const metadata: Metadata = {
   title:
@@ -57,23 +63,16 @@ export default async function RapPage() {
         ]}
       />
 
-      <article className="space-y-20 pb-12">
-        <header className="space-y-8">
-          <div className="flex items-center gap-3">
-            <span className="h-px w-12 bg-orange-500" />
-            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              RAP v0.1 · draft · Apache 2.0
-            </span>
-          </div>
-
-          <h1 className="font-serif text-5xl font-normal leading-[1.02] tracking-[-0.025em] text-gray-900 md:text-[5.5rem]">
+      <CinematicScrim bleedToCream className="-mx-6 -mt-24 px-6 pt-32 pb-20 md:-mx-12 md:px-12 md:pt-40 md:pb-28">
+        <header className="mx-auto max-w-5xl space-y-10">
+          <CinematicEyebrow label="RAP v0.1 · draft · Apache 2.0" />
+          <CinematicDisplay as="h1" variant="hero">
             When the AI stops coaching{' '}
-            <span className="italic text-orange-600">
+            <span className="italic text-orange-300">
               and routes to a human.
             </span>
-          </h1>
-
-          <p className="max-w-2xl text-lg leading-[1.65] text-gray-700">
+          </CinematicDisplay>
+          <CinematicBody>
             Every Trust &amp; Safety team that reviews a behavior-aware AI
             stack asks the same question first:{' '}
             <em>
@@ -81,34 +80,38 @@ export default async function RapPage() {
               and become a barrier between them and clinical care?
             </em>{' '}
             RAP is the protocol that answers it.
-          </p>
-
-          <p className="max-w-2xl text-base leading-[1.7] text-gray-600">
-            RAP sits orthogonal to BIP / PAP / EAP / UAP. Four risk classes
-            classify every behavioral moment. Three routing envelopes carry
-            the AI&rsquo;s exit when classification crosses the floor. The
-            classifier&rsquo;s rationale is hashed for audit replay so a
-            reviewer six months later can confirm the same moment would
-            classify the same way.
-          </p>
-
+          </CinematicBody>
+          <CinematicBody tone="dim">
+            RAP sits orthogonal to BIP / PAP / EAP / UAP. Four risk
+            classes classify every behavioral moment. Three routing
+            envelopes carry the AI&rsquo;s exit when classification
+            crosses the floor. The classifier&rsquo;s rationale is
+            hashed for audit replay so a reviewer six months later can
+            confirm the same moment would classify the same way.
+          </CinematicBody>
           <div className="flex flex-wrap gap-3 pt-2">
             <a
               href={SPEC_URL}
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-7 py-3.5 text-sm font-semibold text-white shadow-[0_8px_28px_-8px_rgba(255,102,0,0.55)] transition-transform hover:-translate-y-0.5"
             >
-              Read the RAP spec on GitHub →
+              Read the RAP spec on GitHub
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+                <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </a>
             <Link
               href="/protocol"
-              className="inline-flex items-center rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 py-3.5 text-sm font-medium text-[#e7dccb] hover:border-orange-300 hover:text-orange-300"
             >
               ← back to the protocol stack
             </Link>
           </div>
         </header>
+      </CinematicScrim>
+
+      <article className="space-y-20 pb-12">
 
         {/* THE FOUR RISK CLASSES */}
         <section className="space-y-10 border-t border-gray-200 pt-12">

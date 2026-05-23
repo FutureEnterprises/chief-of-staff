@@ -25,6 +25,11 @@ import {
   type ScriptId,
   type Archetype,
 } from '@/lib/audit-archetype'
+import {
+  CinematicScrim,
+  CinematicEyebrow,
+  CinematicBody,
+} from '@/components/cinematic'
 
 /**
  * Map audit WedgeId → PrimaryWedge enum (server-side).
@@ -258,33 +263,36 @@ export function AuditView() {
 
   // Intro screen.
   //
-  // Per the strategist's May 2026 audit: this page is the viral engine, not
-  // a short landing. The intro shows the six families up-front (so visitors
-  // arrive with "which one am I?" priming), plus two example share-card
-  // outputs that prove what they get on the other side. The Start button
-  // remains the single obvious next action.
+  // Per the May 2026 cinematic rollout (Refero V7labs + Sequel + ThoughtLab
+  // synthesis): the audit intro now opens on the cinematic dark scrim and
+  // fades to cream content below. The journey reads as one chapter — dark
+  // moment-of-recognition opener, cream editorial preview, dark result on
+  // the other side.
   if (step === 0) {
     const families = allFamilies()
     return (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="mb-8 flex items-center gap-3">
-          <span className="h-px w-10 bg-orange-500" />
-          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-            Autopilot audit
-          </span>
-        </div>
-        <h1 className="mb-10 font-serif text-5xl font-normal leading-[0.98] tracking-[-0.03em] text-gray-900 md:text-7xl">
-          Find your<br />
-          <span className="italic text-orange-600">autopilot family.</span>
-        </h1>
-        <p className="mb-6 max-w-2xl font-serif text-2xl font-normal italic leading-[1.35] text-gray-900 md:text-3xl">
-          Three questions. No signup. Your autopilot family on the other side.
-        </p>
-        <p className="mb-14 max-w-2xl text-base leading-[1.7] text-gray-600">
-          The audit places you in one of six families &mdash; the named identity
-          that drives your loop &mdash; and pins your specific moment: the
-          exact wedge, window, and script the pattern runs on.
-        </p>
+        <CinematicScrim
+          bleedToCream
+          className="-mx-6 -mt-24 px-6 pt-32 pb-24 md:-mx-12 md:px-12 md:pt-40 md:pb-32"
+        >
+          <div className="mx-auto max-w-4xl space-y-10">
+            <CinematicEyebrow label="Autopilot audit" />
+            <h1 className="font-serif text-5xl font-normal leading-[0.98] tracking-[-0.03em] text-[#f8f1e4] md:text-7xl">
+              Find your<br />
+              <span className="italic text-orange-300">autopilot family.</span>
+            </h1>
+            <p className="max-w-2xl font-serif text-2xl font-normal italic leading-[1.35] text-[#f8f1e4] md:text-3xl">
+              Three questions. No signup. Your autopilot family on the other side.
+            </p>
+            <CinematicBody>
+              The audit places you in one of six families &mdash; the named identity
+              that drives your loop &mdash; and pins your specific moment: the
+              exact wedge, window, and script the pattern runs on.
+            </CinematicBody>
+          </div>
+        </CinematicScrim>
+        <div className="mt-2" />
 
         {/* Six-family preview grid. Editorial entries with hairline rules,
             not card chrome. Family name in serif, signature in serif italic. */}

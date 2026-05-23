@@ -22,6 +22,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { cacheLife, cacheTag } from 'next/cache'
+import {
+  CinematicScrim,
+  CinematicEyebrow,
+  CinematicDisplay,
+  CinematicBody,
+} from '@/components/cinematic'
 import { BreadcrumbSchema } from '@/app/structured-data'
 
 
@@ -75,35 +81,24 @@ export default async function EapPage() {
         ]}
       />
 
-      <article className="space-y-24 pb-12">
-        {/* ─────────────────────────────────────────────────────────
-            1. HEADER
-            ───────────────────────────────────────────────────────── */}
-        <header className="space-y-8">
-          <div className="flex items-center gap-3">
-            <span className="h-px w-12 bg-orange-500" />
-            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              EAP v0.1 · Apache 2.0
-            </span>
-          </div>
-
-          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
+      <CinematicScrim bleedToCream className="-mx-6 -mt-24 px-6 pt-32 pb-20 md:-mx-12 md:px-12 md:pt-40 md:pb-28">
+        <header className="mx-auto max-w-5xl space-y-10">
+          <CinematicEyebrow label="EAP v0.1 · Apache 2.0" />
+          <CinematicDisplay as="h1" variant="hero">
             Every device. Every LLM.{' '}
-            <span className="italic text-orange-600">One protocol.</span>
-          </h1>
-
-          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+            <span className="italic text-orange-300">One protocol.</span>
+          </CinematicDisplay>
+          <CinematicBody>
             EAP is the universal coordinator for cross-device LLM
             action. iPhone, Watch, Mac, browser, home — any LLM can
             reach any device under a unified consent layer.
-          </p>
-
-          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-            <strong className="font-serif font-normal italic">
+          </CinematicBody>
+          <CinematicBody>
+            <strong className="font-serif font-normal italic text-[#f8f1e4]">
               If MCP connects LLMs to software tools and{' '}
               <Link
                 href="/pap"
-                className="underline decoration-orange-500/40 underline-offset-4 hover:decoration-orange-500"
+                className="underline decoration-orange-300/60 underline-offset-4 hover:decoration-orange-300"
               >
                 PAP
               </Link>{' '}
@@ -111,8 +106,11 @@ export default async function EapPage() {
               every actuator in the user&rsquo;s real life.
             </strong>{' '}
             Hardware, not just software. Action, not just answer.
-          </p>
+          </CinematicBody>
         </header>
+      </CinematicScrim>
+
+      <article className="space-y-24 pb-12">
 
         {/* ─────────────────────────────────────────────────────────
             2. THE CATEGORY INSIGHT — vertical silos vs horizontal

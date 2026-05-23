@@ -28,6 +28,12 @@ import Link from 'next/link'
 import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
 import { TryItLive } from './try-it-live'
+import {
+  CinematicScrim,
+  CinematicEyebrow,
+  CinematicDisplay,
+  CinematicBody,
+} from '@/components/cinematic'
 
 // Cache Components migration: replaces `export const revalidate = 86400`
 // with surgical, tag-based invalidation. Admin marketing edits call
@@ -92,72 +98,94 @@ export default async function ProtocolPage() {
         ]}
       />
 
-      <article className="space-y-24 pb-12">
-        {/* HEADER — behavior-blindness as the category error.
-            Rewritten May 2026 per the full-site protocol audit. The
-            old "four open specs / one reference engine" opener was
-            structurally clean but missed the diagnosis: LLMs are
-            behavior-blind. That diagnosis IS the category — and
-            naming it first is what makes the rest of the page read
-            as the solution, not as an architecture diagram. */}
-        <header className="space-y-8">
-          <div className="flex items-center gap-3">
-            <span className="h-px w-12 bg-orange-500" />
-            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              The protocols
-            </span>
-          </div>
+      {/* HEADER — cinematic dark scrim. The behavior-blindness opener
+          sits in the cinematic surface so the page reads as one
+          coherent chapter shift before dropping into the cream
+          editorial body below. */}
+      <CinematicScrim bleedToCream className="-mx-6 -mt-24 px-6 pt-32 pb-20 md:-mx-12 md:px-12 md:pt-40 md:pb-28">
+        <header className="mx-auto max-w-5xl space-y-10">
+          <CinematicEyebrow label="The protocols" />
 
-          <h1 className="font-serif text-5xl font-normal leading-[1.02] tracking-[-0.025em] text-gray-900 md:text-[5.5rem]">
+          <CinematicDisplay as="h1" variant="hero">
             LLMs are intelligent.{' '}
-            <span className="italic text-orange-600">
+            <span className="italic text-orange-300">
               They&rsquo;re still behavior-blind.
             </span>
-          </h1>
+          </CinematicDisplay>
 
-          <p className="max-w-2xl text-lg leading-[1.65] text-gray-700">
+          <CinematicBody tone="muted">
             Today&rsquo;s foundation models read the context window.
             They don&rsquo;t read the user. They know what you say.
             They don&rsquo;t know what loop you&rsquo;re inside, what
             window your autopilot fires in, or whether this is the
             moment before the same fold or just routine friction.
             That gap is a category — not a feature.
-          </p>
+          </CinematicBody>
 
-          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-            <strong className="font-serif font-normal italic">
+          <CinematicBody tone="muted">
+            <strong className="font-serif font-normal italic text-[#f8f1e4]">
               Stop being a chatbot. Become behavior-aware.
             </strong>{' '}
-            COYL is the protocol layer that closes the gap. Four open
+            COYL is the protocol layer that closes the gap. Five open
             specs that turn any LLM into a behaviorally-grounded agent
-            — read the substrate, propose the intervention, act across
-            the fleet, hold authority across moments — all with the
-            consent surface the user actually trusts.
-          </p>
+            — anchored on the consent the user grants, the loops the
+            user is in, and the safety floor that overrides every
+            other layer when it has to.
+          </CinematicBody>
 
-          <p className="max-w-2xl text-base leading-[1.65] text-gray-600">
-            BIP for behavioral context. PAP for LLM proactive
-            interventions. EAP for cross-device LLM action. UAP for
-            standing authority when the user is absent.{' '}
-            <Link
-              href="/rap"
-              className="text-orange-600 underline-offset-4 hover:underline"
-            >
+          <CinematicBody tone="dim" className="text-base md:text-base">
+            UAP for what the user permits.{' '}
+            <Link href="/uap" className="text-orange-300 underline-offset-4 hover:underline">
+              ↗
+            </Link>{' '}
+            BIP for the loop the user is in. PAP for LLM proactive
+            interventions. EAP for cross-device LLM action.{' '}
+            <Link href="/rap" className="text-orange-300 underline-offset-4 hover:underline">
               RAP
             </Link>{' '}
-            for safety routing — when the AI stops coaching and routes
-            to a human. Apache 2.0. The reference engine is ours.
-          </p>
+            for the safety floor — when the AI stops coaching and
+            routes to a human. Apache 2.0. The reference engine is
+            ours.
+          </CinematicBody>
+        </header>
+      </CinematicScrim>
 
-          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+      <article className="space-y-24 pb-12">
+        {/* CONSENT FOUNDATION — per the user's protocol audit ("UAP
+            is actually the foundation. Without it, BIP/PAP/EAP can
+            become manipulative or creepy. The AI must first know:
+            what did the user authorize me to help with, and how far
+            can I go?"). Sits ABOVE the stack diagram as the framing
+            line for the whole architecture. */}
+        <section className="space-y-8 pt-4">
+          <CinematicEyebrow label="00 · The foundation" tone="muted" />
+          <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            <span className="italic text-orange-600">Consent</span> is the
+            only thing that lets the rest of the stack run safely.
+          </h2>
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+            UAP — the User Authority Protocol — sits at the foundation
+            of the COYL stack. Without it, BIP / PAP / EAP can become
+            manipulative or creepy. The AI must first know:{' '}
+            <em>
+              what did the user authorize me to help with, and how
+              far can I go?
+            </em>{' '}
+            Every other layer reads from UAP before it fires. Every
+            grant is bounded, revocable, kill-switch-first, and
+            auditable. The other four layers are downstream of that
+            answer.
+          </p>
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
             <strong className="font-serif font-normal italic">
               MCP connected LLMs to software systems. The COYL stack
               connects them to the human behavioral system
             </strong>{' '}
-            — read the loop, propose the moment, act across the fleet,
-            hold authority under bounded consent.
+            — and the only reason that&rsquo;s not surveillance is
+            because UAP sits underneath, defining what the user
+            permits, refuses, and can override.
           </p>
-        </header>
+        </section>
 
         {/* THE STACK DIAGRAM */}
         <section className="space-y-10 border-t border-gray-200 pt-12">
@@ -166,20 +194,21 @@ export default async function ProtocolPage() {
               01 · The stack
             </p>
             <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
-              Foundation labs at the top.{' '}
+              UAP at the foundation.{' '}
               <span className="italic text-orange-600">
-                The user at the bottom.
+                RAP as the override.
               </span>{' '}
-              Four protocols in between.
+              Five orthogonal layers, each implementable independently.
             </h2>
             <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
-              Each layer has a single concern. UAP holds standing
-              authority — bounded grants the user issues when the model
-              must act in their absence. EAP carries action across
-              devices, one action at a time. PAP narrows action to
-              behavioral interventions with safety guardrails. BIP is
-              the substrate all three consume — the behavioral state of
-              the user at this moment.
+              UAP holds the user&rsquo;s standing authority — what the
+              model is permitted to do. BIP is the substrate that says
+              what loop the user is in. PAP narrows action to
+              behavioral interventions with safety guardrails. EAP
+              carries action across devices, one action at a time.
+              RAP sits at the override layer: when risk crosses the
+              floor, it stops every other protocol and routes to a
+              human. Each layer can be implemented independently.
             </p>
           </div>
 
@@ -828,54 +857,53 @@ Authorization: <user session, not partner token>
  * room. The orange accent rails reinforce the layering.
  */
 function StackDiagram() {
+  // Reordered May 2026 per the user's protocol audit: consent-first
+  // means UAP belongs at the foundation, not in the middle. RAP sits
+  // at the override-top because when it fires it stops every other
+  // protocol. Visual reads bottom-up — foundation first, override
+  // last — which matches "what loads the system" rather than "where
+  // the request enters."
   return (
     <div className="mx-auto max-w-2xl space-y-3">
       <StackBox
-        kicker="Top of stack"
-        title="Foundation labs"
-        subtitle="Anthropic · OpenAI · Google · …"
-        tone="muted"
-      />
-      <StackConnector />
-      <StackBox
-        kicker="RAP v0.1 · draft"
-        title="Risk assessment + safety routing"
-        subtitle="When the AI stops coaching and routes to human support. Overrides every other layer when it fires."
+        kicker="Override layer · fires when risk crosses the floor"
+        title="RAP v0.1 · draft"
+        subtitle="When the AI stops coaching and routes to a human. Overrides every other layer."
         tone="accent"
       />
       <StackConnector />
       <StackBox
-        kicker="UAP v0.1"
-        title="Standing authority"
-        subtitle="Bounded grants. Kill-switch first. The user-absent layer."
+        kicker="Action layer"
+        title="EAP v0.1 · cross-device action"
+        subtitle="Per-action execution across the device fleet, with consent + reversibility envelopes."
         tone="accent"
       />
       <StackConnector />
       <StackBox
-        kicker="EAP v0.1"
-        title="Cross-device action"
-        subtitle="Per-action action across the device fleet, with consent."
+        kicker="Proposal layer"
+        title="PAP v0.1 · proactive intervention"
+        subtitle="LLMs propose, coordinator arbitrates. Multi-vendor Switzerland for behavioral interrupts."
         tone="accent"
       />
       <StackConnector />
       <StackBox
-        kicker="PAP v0.1"
-        title="LLM proactive intervention"
-        subtitle="Behavioral interventions, arbitrated across competing LLMs."
+        kicker="Substrate layer"
+        title="BIP v0.1 · behavioral context"
+        subtitle="What loop is the user in right now. The primitive other layers read."
         tone="accent"
       />
       <StackConnector />
       <StackBox
-        kicker="BIP v0.1"
-        title="Behavioral context primitives"
-        subtitle="The substrate. Read, emit, consume."
+        kicker="Foundation · what the user permits"
+        title="UAP v0.1 · standing authority"
+        subtitle="The consent surface every other layer reads before firing. Bounded grants. Kill-switch first."
         tone="accent"
       />
       <StackConnector />
       <StackBox
         kicker="Bottom of stack"
-        title="Consumer apps + users"
-        subtitle="coyl.ai consumer · partner apps · wearables"
+        title="The user"
+        subtitle="Who issues UAP grants. Who any of this exists to serve."
         tone="muted"
       />
     </div>

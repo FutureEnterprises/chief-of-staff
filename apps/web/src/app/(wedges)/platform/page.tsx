@@ -27,6 +27,12 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
+import {
+  CinematicScrim,
+  CinematicEyebrow,
+  CinematicDisplay,
+  CinematicBody,
+} from '@/components/cinematic'
 
 
 export const metadata: Metadata = {
@@ -78,36 +84,42 @@ export default async function PlatformPage() {
         ]}
       />
 
-      <article className="space-y-24 pb-12">
-        {/* HEADER */}
-        <header className="space-y-8">
-          <div className="flex items-center gap-3">
-            <span className="h-px w-12 bg-orange-500" />
-            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              The Platform
+      <CinematicScrim bleedToCream className="-mx-6 -mt-24 px-6 pt-32 pb-20 md:-mx-12 md:px-12 md:pt-40 md:pb-28">
+        <header className="mx-auto max-w-5xl space-y-10">
+          <CinematicEyebrow label="The Platform" />
+          <CinematicDisplay as="h1" variant="hero">
+            Stop being a chatbot.{' '}
+            <span className="italic text-orange-300">
+              Become behavior-aware.
             </span>
-          </div>
-
-          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
-            Four protocols.{' '}
-            <span className="italic text-orange-600">
-              One reference engine.
-            </span>
-          </h1>
-
-          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-            COYL is the proactive AI infrastructure layer for human
-            life. Consumer{' '}
+          </CinematicDisplay>
+          <CinematicBody>
+            COYL is the protocol layer that turns any LLM into a
+            behaviorally-grounded agent. Five open specs anchored on
+            consent. Consumer{' '}
             <a
               href="https://coyl.ai"
-              className="underline decoration-orange-500/40 underline-offset-4 hover:decoration-orange-500"
+              className="underline decoration-orange-300/60 underline-offset-4 hover:decoration-orange-300"
             >
               coyl.ai
             </a>{' '}
-            is the proof case. The protocol stack &mdash; BIP, PAP,
-            EAP, UAP &mdash; is the moat.
-          </p>
+            is the proof case. The protocol stack &mdash; UAP, BIP,
+            PAP, EAP, RAP &mdash; is the moat.
+          </CinematicBody>
+          <CinematicBody tone="dim">
+            <strong className="font-serif font-normal italic text-[#f8f1e4]">
+              Without UAP, BIP / PAP / EAP can become manipulative or
+              creepy.
+            </strong>{' '}
+            The AI must first know what the user authorized it to
+            help with — and how far it can go. Every other layer
+            reads UAP before it fires. That&rsquo;s what makes
+            behavior-aware AI honest.
+          </CinematicBody>
         </header>
+      </CinematicScrim>
+
+      <article className="space-y-24 pb-12">
 
         {/* 01 · WHAT THIS IS, EXACTLY */}
         <section className="space-y-8 border-t border-gray-200 pt-12">

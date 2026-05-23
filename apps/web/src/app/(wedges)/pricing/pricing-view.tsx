@@ -27,6 +27,11 @@ import Link from 'next/link'
 import { motion } from 'motion/react'
 import { Check, ArrowRight } from 'lucide-react'
 import { PMPMCalculator } from '@/components/teams/pmpm-calculator'
+import {
+  CinematicScrim,
+  CinematicEyebrow,
+  CinematicBody,
+} from '@/components/cinematic'
 
 type Interval = 'monthly' | 'annual'
 
@@ -76,25 +81,22 @@ export function PricingView() {
 
   return (
     <div className="space-y-24 pb-12">
+      <CinematicScrim bleedToCream className="-mx-6 -mt-24 px-6 pt-32 pb-20 md:-mx-12 md:px-12 md:pt-40 md:pb-28">
+        <header className="mx-auto max-w-5xl space-y-10">
+          <CinematicEyebrow label="Pricing" />
+          <h1 className="font-serif text-5xl font-normal leading-[0.98] tracking-[-0.025em] text-[#f8f1e4] md:text-[6.5rem]">
+            Less than one<br />
+            <span className="italic text-orange-300">bad night.</span>
+          </h1>
+          <CinematicBody>
+            Recover gives you the audit, the archetype, and three interrupts a week.
+            Rewire gives you everything — for $12 a month, or $99 a year as a
+            commitment to yourself. No tiers, no ladders, no upsell traps.
+          </CinematicBody>
+        </header>
+      </CinematicScrim>
+
       <header className="space-y-10">
-        <div className="flex items-center gap-3">
-          <span className="h-px w-12 bg-orange-500" />
-          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-            Pricing
-          </span>
-        </div>
-
-        <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
-          Less than one<br />
-          <span className="italic text-orange-600">bad night.</span>
-        </h1>
-
-        <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-          Free gives you the audit, the archetype, and three interrupts a week.
-          Core gives you everything — for $12 a month, or $99 a year as a
-          commitment to yourself. No tiers, no ladders, no upsell traps.
-        </p>
-
         {/* Monthly / Annual toggle — annual is the commitment device, not the discount */}
         <div className="inline-flex rounded-full border border-gray-200 bg-white p-1">
           <button

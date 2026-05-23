@@ -19,6 +19,12 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
+import {
+  CinematicScrim,
+  CinematicEyebrow,
+  CinematicDisplay,
+  CinematicBody,
+} from '@/components/cinematic'
 
 const DESCRIPTION =
   'The Proactive AI Protocol v0.1. Apache 2.0 open spec for LLMs to propose behavioral interventions in users’ lives — under rate limits, consent scopes, and an audit trail the user controls.'
@@ -73,37 +79,31 @@ export default async function PapPage() {
         ]}
       />
 
-      <article className="space-y-24 pb-12">
-        {/* 1. HEADER */}
-        <header className="space-y-8">
-          <div className="flex items-center gap-3">
-            <span className="h-px w-12 bg-orange-500" />
-            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              PAP v0.1 · Apache 2.0
-            </span>
-          </div>
-
-          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
+      <CinematicScrim bleedToCream className="-mx-6 -mt-24 px-6 pt-32 pb-20 md:-mx-12 md:px-12 md:pt-40 md:pb-28">
+        <header className="mx-auto max-w-5xl space-y-10">
+          <CinematicEyebrow label="PAP v0.1 · Apache 2.0" />
+          <CinematicDisplay as="h1" variant="hero">
             The trust infrastructure for{' '}
-            <span className="italic text-orange-600">proactive AI.</span>
-          </h1>
-
-          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+            <span className="italic text-orange-300">proactive AI.</span>
+          </CinematicDisplay>
+          <CinematicBody>
             PAP is to behavioral state what MCP is to tool calls. The
             open spec any LLM uses to propose interventions in a
             user&rsquo;s life &mdash; under rate limits, consent scopes,
             and an audit trail the user controls.
-          </p>
-
-          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-            <strong className="font-serif font-normal italic">
+          </CinematicBody>
+          <CinematicBody>
+            <strong className="font-serif font-normal italic text-[#f8f1e4]">
               Apache 2.0 from publication.
             </strong>{' '}
             Spec is open. Anyone can implement a Coordinator. COYL
             Cloud is the reference engine that powers consumer + LLM
             partners today.
-          </p>
+          </CinematicBody>
         </header>
+      </CinematicScrim>
+
+      <article className="space-y-24 pb-12">
 
         {/* 2. THE CATEGORY INSIGHT — TRUST IS THE BOTTLENECK */}
         <section className="space-y-6 border-t border-gray-200 pt-12">

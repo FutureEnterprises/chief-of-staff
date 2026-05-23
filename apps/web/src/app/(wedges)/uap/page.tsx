@@ -25,6 +25,12 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
+import {
+  CinematicScrim,
+  CinematicEyebrow,
+  CinematicDisplay,
+  CinematicBody,
+} from '@/components/cinematic'
 
 const DESCRIPTION =
   "The fourth layer of the COYL protocol stack. Standing authority for LLMs to act on a user's behalf, bounded by scope, expiry, rules, and a global kill switch. Apache 2.0 spec — reference engine post-Series-A."
@@ -80,37 +86,27 @@ export default async function UapPage() {
         ]}
       />
 
-      <article className="space-y-24 pb-12">
-        {/* ─────────────────────────────────────────────────────────
-            HEADER
-            ───────────────────────────────────────────────────────── */}
-        <header className="space-y-8">
-          <div className="flex items-center gap-3">
-            <span className="h-px w-12 bg-orange-500" />
-            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              UAP v0.1 · Apache 2.0
-            </span>
-          </div>
-
-          <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
+      <CinematicScrim bleedToCream className="-mx-6 -mt-24 px-6 pt-32 pb-20 md:-mx-12 md:px-12 md:pt-40 md:pb-28">
+        <header className="mx-auto max-w-5xl space-y-10">
+          <CinematicEyebrow label="UAP v0.1 · Apache 2.0 · Foundation layer" />
+          <CinematicDisplay as="h1" variant="hero">
             Standing authority.{' '}
-            <span className="italic text-orange-600">
+            <span className="italic text-orange-300">
               Without standing risk.
             </span>
-          </h1>
-
-          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-            UAP is the fourth layer of the COYL protocol stack. BIP
-            reads the substrate. PAP proposes the moment. EAP acts
-            across the device fleet &mdash; one action at a time.{' '}
-            <strong className="font-serif font-normal italic">
-              UAP is the standing-authority layer.
+          </CinematicDisplay>
+          <CinematicBody>
+            UAP is the foundation of the COYL protocol stack — the
+            consent surface every other layer reads before firing.
+            BIP reads the substrate. PAP proposes the moment. EAP
+            acts across the device fleet. RAP overrides on risk.{' '}
+            <strong className="font-serif font-normal italic text-[#f8f1e4]">
+              All four read UAP first.
             </strong>{' '}
-            It defines the trust contract a user issues to an LLM when
-            they want autonomous action without per-action consent.
-          </p>
-
-          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+            It defines the trust contract a user issues to an LLM
+            when they want autonomous action without per-action consent.
+          </CinematicBody>
+          <CinematicBody>
             This is the layer that converts agentic AI from &ldquo;demo
             that requires the user to babysit every click&rdquo; to
             &ldquo;AI that operates inside scoped authority with
@@ -118,8 +114,11 @@ export default async function UapPage() {
             foundation labs need to ship agentic AI safely &mdash; and
             the layer they cannot ship themselves without owning the
             liability surface.
-          </p>
+          </CinematicBody>
         </header>
+      </CinematicScrim>
+
+      <article className="space-y-24 pb-12">
 
         {/* ─────────────────────────────────────────────────────────
             01 · WHY STANDING AUTHORITY
