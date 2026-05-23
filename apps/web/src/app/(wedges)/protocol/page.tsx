@@ -3,12 +3,13 @@
  *
  * Today this page is the front door for foundation labs (Anthropic,
  * OpenAI, Google), wearable platforms, and consumer-app developers
- * evaluating the COYL stack. It showcases all three open specs as one
+ * evaluating the COYL stack. It showcases all four open specs as one
  * coherent layered protocol:
  *
  *   - BIP — behavioral context primitives (consumer-app substrate)
  *   - PAP — proactive-action protocol (LLM behavioral interventions)
  *   - EAP — execution-action protocol (LLM action across device fleets)
+ *   - UAP — user-authority protocol (standing-authority layer)
  *
  * COYL Cloud is the proprietary reference engine. The specs are open
  * (Apache 2.0). The play mirrors MCP / OAuth / Stripe — own the
@@ -18,7 +19,7 @@
  * mono eyebrow, italic accent, hairline-rule sections, cream background.
  * Code excerpts sit in calm dark surfaces for readability.
  *
- * Sibling dedicated pages (built in parallel session): /pap, /eap.
+ * Sibling dedicated pages (built in parallel session): /pap, /eap, /uap.
  * Developer console + SDK examples live at /developers.
  */
 
@@ -35,29 +36,32 @@ import { TryItLive } from './try-it-live'
 
 export const metadata: Metadata = {
   title:
-    'COYL Protocol — three open specs, one reference engine for proactive AI',
+    'COYL Protocol — four open specs, one reference engine for proactive AI',
   description:
-    'BIP for behavioral context. PAP for LLM proactive interventions. EAP for cross-device LLM action. Three layered open specs (Apache 2.0) and one proprietary reference engine — COYL Cloud — for any foundation lab, wearable, or consumer app that needs to act at the moment before behavior happens.',
+    'BIP for behavioral context. PAP for LLM proactive interventions. EAP for cross-device LLM action. UAP for standing authority. Four layered open specs (Apache 2.0) and one proprietary reference engine — COYL Cloud — for any foundation lab, wearable, or consumer app that needs to act at the moment before behavior happens.',
   keywords: [
     'behavioral interrupt protocol',
     'proactive ai protocol',
     'cross-device llm action',
+    'user authority protocol',
+    'standing authority for ai',
     'coyl protocol stack',
-    'bip pap eap',
+    'bip pap eap uap',
     'open protocol for proactive ai',
     'llm intervention protocol',
+    'agentic ai consent',
     'coyl cloud reference engine',
   ],
   alternates: { canonical: '/protocol' },
   openGraph: {
     title:
-      'COYL Protocol — three open specs. One reference engine.',
+      'COYL Protocol — four open specs. One reference engine.',
     description:
-      'BIP, PAP, EAP — the trust infrastructure for proactive AI. Apache 2.0 open standards with a hosted reference engine.',
+      'BIP, PAP, EAP, UAP — the trust infrastructure for proactive AI. Apache 2.0 open standards with a hosted reference engine.',
     url: 'https://coyl.ai/protocol',
     images: [
       {
-        url: '/api/og?title=Three+open+specs.+One+reference+engine.&kicker=The+Protocols',
+        url: '/api/og?title=Four+open+specs.+One+reference+engine.&kicker=The+Protocols',
         width: 1200,
         height: 630,
       },
@@ -65,11 +69,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'COYL Protocol — BIP + PAP + EAP',
+    title: 'COYL Protocol — BIP + PAP + EAP + UAP',
     description:
-      'Three open specs. One reference engine. The trust infrastructure for proactive AI.',
+      'Four open specs. One reference engine. The trust infrastructure for proactive AI.',
     images: [
-      '/api/og?title=Three+open+specs.+One+reference+engine.&kicker=The+Protocols',
+      '/api/og?title=Four+open+specs.+One+reference+engine.&kicker=The+Protocols',
     ],
   },
 }
@@ -99,7 +103,7 @@ export default async function ProtocolPage() {
           </div>
 
           <h1 className="font-serif text-6xl font-normal leading-[0.95] tracking-[-0.03em] text-gray-900 md:text-[6.5rem]">
-            Three open specs.{' '}
+            Four open specs.{' '}
             <span className="italic text-orange-600">
               One reference engine.
             </span>
@@ -107,15 +111,17 @@ export default async function ProtocolPage() {
 
           <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
             BIP for consumer apps. PAP for LLM behavioral interventions.
-            EAP for cross-device LLM action. Together: the trust
-            infrastructure for proactive AI.
+            EAP for cross-device LLM action. UAP for standing authority
+            when the user is absent. Together: the trust infrastructure
+            for proactive AI.
           </p>
 
           <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
             <strong className="font-serif font-normal italic">
               MCP connected LLMs to software systems. The COYL stack
               connects LLMs to the human behavioral system — read,
-              propose, act, with consent.
+              propose, act, and operate under bounded standing authority,
+              with consent.
             </strong>{' '}
             The specs are open. The reference engine is ours.
           </p>
@@ -132,29 +138,32 @@ export default async function ProtocolPage() {
               <span className="italic text-orange-600">
                 The user at the bottom.
               </span>{' '}
-              Three protocols in between.
+              Four protocols in between.
             </h2>
             <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
-              Each layer has a single concern. EAP carries action across
-              devices. PAP narrows action to behavioral interventions
-              with safety guardrails. BIP is the substrate both
-              consume — the behavioral state of the user at this moment.
+              Each layer has a single concern. UAP holds standing
+              authority — bounded grants the user issues when the model
+              must act in their absence. EAP carries action across
+              devices, one action at a time. PAP narrows action to
+              behavioral interventions with safety guardrails. BIP is
+              the substrate all three consume — the behavioral state of
+              the user at this moment.
             </p>
           </div>
 
           <StackDiagram />
         </section>
 
-        {/* THE THREE PROTOCOL CARDS */}
+        {/* THE FOUR PROTOCOL CARDS */}
         <section className="space-y-16">
           <div className="space-y-6">
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
               02 · The specs
             </p>
             <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
-              Read the substrate. Propose the moment.{' '}
+              Read the substrate. Propose the moment. Act across the fleet.{' '}
               <span className="italic text-orange-600">
-                Act across the fleet.
+                Hold standing authority.
               </span>
             </h2>
           </div>
@@ -349,6 +358,70 @@ Authorization: Bearer <llm_partner_key>
               },
             ]}
           />
+
+          {/* UAP */}
+          <ProtocolCard
+            eyebrow="UAP v0.1 · Apache 2.0"
+            title="User-Authority Protocol"
+            subtitle="The standing-authority layer."
+            href="https://github.com/FutureEnterprises/chief-of-staff/blob/main/docs/protocol/UAP-0.1.md"
+            ctaLabel="Read the spec on GitHub →"
+            paragraphs={[
+              'UAP is the fourth layer of the COYL stack — the trust contract a user issues to an LLM when they want autonomous action without per-action consent. BIP, PAP, and EAP all assume the user is present: the model proposes, the user confirms, the action fires. UAP is for the moments the user is absent. Daily routines. Tomorrow&rsquo;s calendar. Recurring purchases. Scheduled deliveries. The category every foundation lab is shipping in 2026, with no defensible consent model under it.',
+              'UAP defines exactly eight primitives — GRANT, REVOKE, KILL_SWITCH, PRECHECK, EXECUTE, EXPIRE, RULE_DECLARE, AUDIT_QUERY — and a small set of hard invariants. Every grant has a bounded expiry (90 days max, 7 days default). Irreversibles always re-confirm, even under standing grant. The kill switch supersedes every grant, every rule, every in-flight action, and propagates across all surfaces in five seconds. The audit log is append-only, cryptographically signed, and owned by the user — not the LLM, not COYL.',
+              'The strategic read is this: the capability for agentic AI exists today. The trust infrastructure does not. UAP is the layer that lets foundation labs ship agentic AI safely without each inventing a brittle ad-hoc consent model — and the layer that, by virtue of being open-spec, audit-defaulted, kill-switch-first, and cross-LLM portable, cannot be reasonably forked by any single lab without losing the portability that gives it value. The protocol is the trust contract. The trust contract is the moat.',
+            ]}
+            snippets={[
+              {
+                title: 'GRANT request',
+                lang: 'http',
+                code: `POST /api/uap/v1/grant
+Authorization: Bearer coyl_uap_<partner_id>_<secret>
+
+{
+  "user_id": "u_2sj8xks0a",
+  "scopes": [
+    "calendar.write",
+    "messaging.routine",
+    "purchase.recurring"
+  ],
+  "expires_at": "2026-05-29T17:00:00Z",
+  "rules": [
+    { "kind": "spending_cap", "max_per_action_usd": 50 },
+    { "kind": "quiet_hours", "from": "00:00", "to": "07:00",
+      "tz": "America/Los_Angeles" },
+    { "kind": "irreversible_floor",
+      "always_confirm": ["money_transfer", "share_pii"] }
+  ],
+  "consent_artifact": {
+    "version": "0.1",
+    "shown_to_user_at": "2026-05-22T16:58:00Z",
+    "user_response": "explicit_grant",
+    "ui_surface": "settings.standing_authority"
+  }
+}`,
+              },
+              {
+                title: 'KILL_SWITCH request',
+                lang: 'http',
+                code: `POST /api/uap/v1/kill-switch
+Authorization: <user session, not partner token>
+
+{
+  "user_id": "u_2sj8xks0a",
+  "reason": "user_initiated"
+}
+
+→ 200 OK
+{
+  "killed": true,
+  "affected_grant_count": 7,
+  "propagation_deadline": "2026-05-22T17:02:19Z",
+  "audit_url": "https://coyl.ai/audit/uap/kill_aD9k2x"
+}`,
+              },
+            ]}
+          />
         </section>
 
         {/* LIVE PROTOCOL SIMULATOR — per v2 strategy brief, the highest-leverage
@@ -417,26 +490,26 @@ Authorization: Bearer <llm_partner_key>
           </div>
         </section>
 
-        {/* WHY THREE PROTOCOLS, NOT ONE */}
+        {/* WHY FOUR PROTOCOLS, NOT ONE */}
         <section className="space-y-10 border-t border-gray-200 pt-16">
           <div className="space-y-6">
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              03 · Why three, not one
+              03 · Why four, not one
             </p>
             <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
-              Three concerns.{' '}
+              Four concerns.{' '}
               <span className="italic text-orange-600">
-                Three layers.
+                Four layers.
               </span>{' '}
               One coordinator.
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
             <LayerCard
               kicker="BIP — the substrate"
               title="Consumer-side. Read &amp; emit."
-              body="BIP is what consumer apps and wearables implement. It carries behavioral signal in and behavioral state out. It is a substrate, not an action layer. Anything above it consumes it."
+              body="BIP is what consumer apps and wearables implement. It carries behavioral signal in and behavioral state out. It is a substrate, not an action layer. Everything above it consumes it."
             />
             <LayerCard
               kicker="PAP — the behavior layer"
@@ -446,7 +519,12 @@ Authorization: Bearer <llm_partner_key>
             <LayerCard
               kicker="EAP — the action layer"
               title="Cross-device action with consent envelopes."
-              body="EAP is the superset. Any LLM action across any device — watch, phone, browser, lock screen, ambient — flows through EAP. PAP is a subset focused on behavioral interventions. Same audit. Same revocation. Same consent surface."
+              body="EAP carries one action at a time across watch, phone, browser, lock screen, and ambient surfaces. Per-action confirmation for irreversibles. Same audit. Same revocation. Same consent surface — while the user is present."
+            />
+            <LayerCard
+              kicker="UAP — the standing-authority layer"
+              title="User-level. Grant &amp; revoke."
+              body="UAP is for the moments the user is absent. The user issues a bounded grant — scope-limited, time-limited, rule-governed. The model acts under it. Every execute is audit-signed. Expiry is hard. The kill switch revokes everything in five seconds. Foundation labs ship agentic AI on this layer or they ship it unsafe."
             />
           </div>
 
@@ -455,19 +533,24 @@ Authorization: Bearer <llm_partner_key>
               The layering
             </p>
             <p className="mt-4 max-w-3xl font-serif text-2xl font-normal leading-[1.3] text-gray-900 md:text-3xl">
-              EAP is the superset.{' '}
+              UAP holds standing authority.{' '}
               <span className="italic text-orange-600">
-                PAP is a subset focused on behavior.
+                EAP carries one action.
               </span>{' '}
-              BIP is the substrate both consume.
+              PAP narrows to behavior. BIP is the substrate all three
+              consume.
             </p>
             <p className="mt-6 max-w-2xl text-base leading-[1.7] text-gray-700">
               The separation is what lets a wearable implement only BIP
               without taking on action responsibility. It is what lets a
               foundation lab implement PAP for behavioral assistants
               without committing to the full EAP surface. It is what
-              keeps the user&rsquo;s consent surface coherent across
-              every model competing for the same moment.
+              lets a labs partner build agentic-AI features on UAP
+              without re-inventing the consent UI, the audit log, or the
+              kill-switch propagation guarantee. The user&rsquo;s consent
+              surface stays coherent across every model competing for
+              the same moment and across every grant standing in the
+              background.
             </p>
           </div>
         </section>
@@ -662,10 +745,10 @@ Authorization: Bearer <llm_partner_key>
           </blockquote>
 
           <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
-            Three open specs. One reference engine. The trust
+            Four open specs. One reference engine. The trust
             infrastructure for proactive AI — read the substrate,
-            propose the intervention, act across the fleet, with
-            consent.
+            propose the intervention, act across the fleet, hold
+            bounded standing authority, with consent.
           </p>
 
           <div className="flex flex-wrap gap-3">
@@ -680,6 +763,12 @@ Authorization: Bearer <llm_partner_key>
               className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
               Read EAP →
+            </Link>
+            <Link
+              href="/uap"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+            >
+              Read UAP →
             </Link>
             <Link
               href="/developers"
@@ -717,16 +806,23 @@ function StackDiagram() {
       />
       <StackConnector />
       <StackBox
+        kicker="UAP v0.1"
+        title="Standing authority"
+        subtitle="Bounded grants. Kill-switch first. The user-absent layer."
+        tone="accent"
+      />
+      <StackConnector />
+      <StackBox
         kicker="EAP v0.1"
         title="Cross-device action"
-        subtitle="The superset. Any LLM action, any device, with consent."
+        subtitle="Per-action action across the device fleet, with consent."
         tone="accent"
       />
       <StackConnector />
       <StackBox
         kicker="PAP v0.1"
         title="LLM proactive intervention"
-        subtitle="A subset of EAP. Behavioral interventions, arbitrated."
+        subtitle="Behavioral interventions, arbitrated across competing LLMs."
         tone="accent"
       />
       <StackConnector />
@@ -794,8 +890,8 @@ function StackConnector() {
 
 /**
  * A protocol card — eyebrow, title, 2-3 paragraphs, primary CTA, and a
- * stack of three code excerpts (one per key primitive). Used three
- * times: BIP, PAP, EAP.
+ * stack of code excerpts (one per key primitive). Used four times:
+ * BIP, PAP, EAP, UAP.
  */
 function ProtocolCard({
   eyebrow,
