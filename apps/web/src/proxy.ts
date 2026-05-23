@@ -46,6 +46,7 @@ const isPublicRoute = createRouteMatcher([
   '/protocol',
   '/pap',
   '/eap',
+  '/uap',
   '/platform',
   '/developers',
   '/about',
@@ -63,10 +64,11 @@ const isPublicRoute = createRouteMatcher([
   // been removed entirely — playbook now lives at
   // docs/marketing/content-playbook.md (private). Do not re-add to
   // this list without an explicit policy review.
-  // PAP + EAP coordinator endpoints — LLM partners auth via Bearer
+  // PAP + EAP + UAP coordinator endpoints — LLM partners auth via Bearer
   // API keys (coyl_pap_<id>_<secret>) instead of Clerk session cookies.
   '/api/eap/v1/(.*)',
   '/api/pap/v1/(.*)',
+  '/api/uap/v1/(.*)',
   // Live coordinator simulator — public read-only POST endpoint that
   // backs the /protocol "Try the protocol" interactive section. Runs
   // the production confidence-gate function in-process with no DB writes.
@@ -136,6 +138,7 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/protocol',
   '/pap',
   '/eap',
+  '/uap',
   '/platform',
   '/developers',
   '/about',
@@ -151,6 +154,7 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/api/v1/newsletter',
   '/api/v1/sms/intro',
   '/api/v1/protocol/demo',
+  '/api/uap/v1/(.*)',
   '/api/health',
   '/profile/(.*)',
   // Integration OAuth callbacks + webhook receivers must also bypass the

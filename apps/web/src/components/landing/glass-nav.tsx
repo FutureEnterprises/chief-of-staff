@@ -77,6 +77,7 @@ const RESEARCH: DropdownLink[] = [
   { label: 'Protocol', href: '/protocol', description: 'The Behavioral Interrupt Protocol — open spec, Apache 2.0.' },
   { label: 'PAP — Proactive AI', href: '/pap', description: 'Trust infrastructure for LLMs to fire proactive interventions.' },
   { label: 'EAP — Edge AI', href: '/eap', description: 'Cross-device LLM action protocol. Every device, every LLM.' },
+  { label: 'UAP — User Authority', href: '/uap', description: 'Standing-authority layer for agentic AI. The trust contract for autonomous LLMs.' },
   { label: 'Platform', href: '/platform', description: 'Three protocols, one reference engine. Platform overview.' },
   { label: 'Developers', href: '/developers', description: 'Build against BIP. SDKs, code examples, getting started.' },
   { label: 'Press', href: '/press', description: 'AI is leaving the prompt box — for journalists.' },

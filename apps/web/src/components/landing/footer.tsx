@@ -43,6 +43,7 @@ export function LandingFooter() {
     { label: 'Protocol (BIP)', href: '/protocol' },
     { label: 'PAP (Proactive AI)', href: '/pap' },
     { label: 'EAP (Edge AI)', href: '/eap' },
+    { label: 'UAP (User Authority)', href: '/uap' },
     { label: 'Platform overview', href: '/platform' },
     { label: 'Developers', href: '/developers' },
     { label: 'Press kit', href: '/press' },
