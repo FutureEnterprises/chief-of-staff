@@ -48,6 +48,44 @@
 
 ---
 
+## UAP v0.1 LAUNCH — May 22, 2026
+
+### Shipped today (Engineering)
+
+- [x] **UAP-0.1 spec published** — `docs/protocol/UAP-0.1.md`. Four models in Prisma, eight primitives, hard invariants, threat model, surface reservation. Apache 2.0. (anchor commit 794618f)
+- [x] **/uap wedge page live** — public marketing surface mirroring /pap and /eap structure
+- [x] **/protocol expanded to 4-protocol stack** — BIP/PAP/EAP/UAP cards, layer diagram, "Why four, not one" section
+- [x] **Prisma schema + migration** — UAPGrant, UAPRule, UAPAuditEntry, UAPKillSwitchEvent models with all indexes and foreign keys; migration 20260522050000_uap_v0_1 ready for `prisma migrate deploy`
+- [x] **/api/uap/v1/* namespace reserved** — eight route stubs (grant, grant/[id], precheck, execute, kill-switch, audit, rule) returning 501 with spec link. Zero DB writes.
+- [x] **Threat model + irreversibility floor docs** — `UAP-0.1-threat-model.md` and `UAP-0.1-irreversibility-floor.md` companion docs for foundation-lab Trust & Safety review
+- [x] **Nav, footer, sitemap, middleware** — /uap added to all four registration surfaces; /api/uap/v1/(.*) public-route-allowlisted
+- [x] **/platform + /developers updated** — 4-protocol stack reflected; UAP curl GRANT example on /developers
+- [x] **Master list section** — this section
+
+### Deferred to v0.2 + post-Series-A (Engineering)
+
+- [ ] **UAP reference engine** — actual coordinator logic, signed audit log, cryptographic chain. Ships post-Series-A. Today's commits are spec + namespace + UI only.
+- [ ] **Cross-LLM portability test** — when Anthropic or OpenAI integrates UAP, verify a grant issued to Claude is revocable when reissued to GPT.
+- [ ] **Consent UI implementation** — the hosted consent surface at `/consent/uap` per UAP-0.1.md §8 requirements. Heaviest UX work in the protocol; needs a 2-3 month design pass before reference engine ships.
+- [ ] **Kill switch propagation infrastructure** — pub/sub (Supabase Realtime or equivalent) that hits every connected EAP surface in ≤5 seconds. Untested at scale; the v0.1 spec specifies the deadline, the infra to meet it lands with the engine.
+- [ ] **v0.2 open questions** — cross-user grants, probabilistic rules, multi-LLM concurrency, hardware-bound grants, panic semantics differentiation. Tracked in UAP-0.1.md §11.
+
+### Founder action — UAP-specific (next 30 days)
+
+- [ ] **Publish UAP-0.1 launch announcement** — blog post / tweet thread / LinkedIn post linking to the GitHub spec + /uap. Frame: "The fourth protocol in the COYL stack. The trust layer for agentic AI."
+- [ ] **Email outreach to Anthropic Trust & Safety + OpenAI safety team** — UAP is the layer they need. Send them the spec + threat model + irreversibility floor. Ask for a 30-min protocol review call. This is the move that converts UAP from "spec" to "Anthropic + OpenAI both aware and engaging."
+- [ ] **Get the threat model in front of one FDA DTx expert** — bonus credibility for the safety story. Update /advisors if you can convert that conversation to an advisor agreement.
+- [ ] **Talk to one corporate venture or strategic angel about UAP** — Microsoft M12, Google Ventures, OpenAI Startup Fund. Frame as "we just published the trust infrastructure for the agentic AI category." Not asking for money — asking for who they think the consumers of UAP are.
+- [ ] **Update Series A target list with UAP framing** — the acquirer band per v2 strategy doc was $4-6B (pharma + tech platform). UAP raises the foundation-lab band materially — $15-30B for the trust infrastructure layer. Re-pitch the deck reflecting this; the v2 brief's $4-5.5B "weighted EV" is now low.
+
+### Risks that are now real (you should hold these honestly)
+
+- **Standing-authority liability is non-trivial.** UAP-0.1 is spec-only; no LLM is operating under standing authority via COYL yet. That's intentional — the reference engine ships when Series A funds the safety-engineering investment. If a partner builds their own UAP-compatible engine and ships unsafely, COYL is positioned as the spec author and may be perceived as accountable. Mitigation: keep UAP-0.1.md threat model + irreversibility floor canonical; publish public commentary on safe vs unsafe UAP implementations.
+- **Anthropic-builds-it risk applies HERE too.** Same MCP playbook in reverse — Anthropic ships their own "user-authority" model bundled with Claude. Mitigation: publish, evangelize, and get one foundation lab to publicly review UAP-0.1 before they invent their own. The window is roughly 60-90 days from this launch.
+- **Wedge distraction.** UAP is horizontal; COYL's product wedge is recurring autopilot loops. Pre-Series-A, you cannot fully build both. Decision point: how much of the next 90 days is UAP evangelism vs. behavioral-interrupt product/RCT/advisors. Recommend 70/30 in favor of the behavioral wedge until Series A closes, then reverse.
+
+---
+
 ## THIS WEEK — Existential gates
 
 ### Capital + legal posture
