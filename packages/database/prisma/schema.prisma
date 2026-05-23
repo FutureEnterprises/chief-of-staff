@@ -174,6 +174,11 @@ model User {
   orchestrations          Orchestration[]
   sensorSubscriptions     SensorSubscription[]
   panicState              PanicState?
+  // UAP (User-Authority Protocol) relations — standing-authority layer.
+  // See docs/protocol/UAP-0.1.md.
+  uapGrants               UAPGrant[]
+  uapRules                UAPRule[]
+  uapKillSwitchEvents     UAPKillSwitchEvent[]
 
   @@map("users")
 }
@@ -1477,6 +1482,9 @@ model LLMPartner {
   scopeGrants    ScopeGrant[]
   subscriptions  SensorSubscription[]
   orchestrations Orchestration[]
+  // UAP (User-Authority Protocol) standing-authority grants issued to
+  // this partner. See docs/protocol/UAP-0.1.md.
+  uapGrants      UAPGrant[]
 
   @@index([slug])
   @@index([active])
@@ -1780,11 +1788,9 @@ model PanicState {
 
 /**
  * CronHeartbeat — last successful run per named cron / workflow.
- *
  * Surfaces staleness on the admin dashboard. Workflows write their
  * final result here so an operator can spot a wedged job before the
  * next scheduled invocation. One row per named job (upserted).
- *
  * Seeded by /api/cron/* routes that have migrated to the Workflow
  * DevKit (see workflows/*.ts). Best-effort crons stay in their own
  * audit channels until they migrate too.
@@ -1795,4 +1801,94 @@ model CronHeartbeat {
   lastRunMeta Json?
 
   @@map("cron_heartbeats")
+}
+
+// ============================================================
+// UAP — USER-AUTHORITY PROTOCOL v0.1
+// ============================================================
+//
+// Standing-authority layer for autonomous LLM action without
+// per-action consent. See docs/protocol/UAP-0.1.md.
+//
+// Four models + one enum. Reference engine ships post-Series-A
+// (per spec §13); these tables exist now so the route stubs
+// compile and the API surface is reserved.
+
+model UAPGrant {
+  id                String         @id @default(cuid())
+  userId            String
+  llmPartnerId      String
+  scopes            String[] // ["calendar.write", "messaging.routine", ...]
+  expiresAt         DateTime
+  status            UAPGrantStatus @default(ACTIVE)
+  consentArtifact   Json // user_response, ui_surface, shown_at
+  createdAt         DateTime       @default(now())
+  terminatedAt      DateTime?
+  terminationReason String?
+
+  rules      UAPRule[]
+  executions UAPAuditEntry[]
+
+  user    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  partner LLMPartner @relation(fields: [llmPartnerId], references: [id])
+
+  @@index([userId, status])
+  @@index([llmPartnerId, status])
+  @@index([expiresAt])
+  @@map("uap_grants")
+}
+
+enum UAPGrantStatus {
+  ACTIVE
+  REVOKED_BY_USER
+  EXPIRED
+  KILLED_GLOBALLY
+}
+
+model UAPRule {
+  id        String   @id @default(cuid())
+  grantId   String? // null when rule is global (user-level, applies to all grants)
+  userId    String // always set
+  kind      String // "spending_cap" | "quiet_hours" | "irreversible_floor" | ...
+  params    Json
+  createdAt DateTime @default(now())
+
+  grant UAPGrant? @relation(fields: [grantId], references: [id], onDelete: Cascade)
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, grantId])
+  @@map("uap_rules")
+}
+
+model UAPAuditEntry {
+  id              String   @id @default(cuid())
+  grantId         String
+  userId          String
+  llmPartnerId    String
+  operation       String // "execute" | "precheck" | "grant" | "revoke" | "kill"
+  actionKind      String? // when operation=execute
+  decision        String // "allowed" | "denied" | "queued" | "killed"
+  decisionReason  String?
+  postTermination Boolean  @default(false)
+  signature       String // ed25519 sig of the row contents
+  prevHash        String? // chain link to previous audit row for this user
+  createdAt       DateTime @default(now())
+
+  grant UAPGrant @relation(fields: [grantId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([grantId, createdAt])
+  @@map("uap_audit_entries")
+}
+
+model UAPKillSwitchEvent {
+  id               String    @id @default(cuid())
+  userId           String    @unique // one active kill per user; multiple historic
+  initiatedAt      DateTime  @default(now())
+  propagatedAt     DateTime?
+  affectedGrantIds String[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("uap_kill_switch_events")
 }
