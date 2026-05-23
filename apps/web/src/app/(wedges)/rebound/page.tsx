@@ -99,7 +99,7 @@ export default async function ReboundPage() {
           </CinematicBody>
           <div className="flex flex-wrap gap-3 pt-2">
             <Link
-              href="/audit?ref=rebound"
+              href="/rebound/quiz?ref=rebound-hero"
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-7 py-3.5 text-sm font-semibold text-white shadow-[0_8px_28px_-8px_rgba(255,102,0,0.55)] transition-transform hover:-translate-y-0.5"
             >
               Take the 60-second regain risk quiz
@@ -199,7 +199,7 @@ export default async function ReboundPage() {
 
           <div className="pt-2">
             <Link
-              href="/audit?ref=rebound-archetypes"
+              href="/rebound/quiz?ref=rebound-archetypes"
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-7 py-3.5 text-sm font-semibold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] hover:shadow-[0_0_28px_rgba(255,102,0,0.5)]"
             >
               Take the 60-second regain risk quiz
@@ -324,7 +324,7 @@ export default async function ReboundPage() {
           </blockquote>
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/audit?ref=rebound-close"
+              href="/rebound/quiz?ref=rebound-close"
               className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
               Find my rebound pattern →

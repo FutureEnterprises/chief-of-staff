@@ -78,6 +78,8 @@ export function PricingView() {
   // not "save 31%". Do not surface the % off.
   const corePrice = interval === 'monthly' ? '12' : '8.25'
   const coreCadence = interval === 'monthly' ? '/mo' : '/mo, billed yearly'
+  const reboundPrice = interval === 'monthly' ? '29' : '16.58'
+  const reboundCadence = interval === 'monthly' ? '/mo' : '/mo, billed yearly'
 
   return (
     <div className="space-y-24 pb-12">
@@ -85,13 +87,18 @@ export function PricingView() {
         <header className="mx-auto max-w-5xl space-y-10">
           <CinematicEyebrow label="Pricing" />
           <h1 className="font-serif text-5xl font-normal leading-[0.98] tracking-[-0.025em] text-[#f8f1e4] md:text-[6.5rem]">
-            Less than one<br />
-            <span className="italic text-orange-300">bad night.</span>
+            Three plans.<br />
+            <span className="italic text-orange-300">Pick the one for you.</span>
           </h1>
           <CinematicBody>
-            Recover gives you the audit, the archetype, and three interrupts a week.
-            Rewire gives you everything — for $12 a month, or $99 a year as a
-            commitment to yourself. No tiers, no ladders, no upsell traps.
+            <strong className="font-serif font-normal italic text-[#f8f1e4]">
+              Generic behavioral patterns?
+            </strong>{' '}
+            Recover (free) or Rewire ($12/mo).{' '}
+            <strong className="font-serif font-normal italic text-[#f8f1e4]">
+              On Ozempic, Wegovy, or Zepbound and worried about regain?
+            </strong>{' '}
+            Rebound ($29/mo) is built for you.
           </CinematicBody>
         </header>
       </CinematicScrim>
@@ -129,8 +136,12 @@ export function PricingView() {
         </div>
       </header>
 
-      {/* Two editorial tier cards. No table comparison. */}
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* Three editorial tier cards: Recover (free) + Rewire (paid generic)
+          + Rebound (paid GLP-1). Each card carries a "FOR" tag at the
+          top so the segmentation is immediate — generic-behavior visitors
+          read left-to-right toward Rewire; GLP-1 visitors see Rebound
+          highlighted as the right answer for their use case. */}
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Free — the sample */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -240,31 +251,109 @@ export function PricingView() {
             ))}
           </ul>
         </motion.div>
+
+        {/* Rebound — the GLP-1-specific tier. Visually emphasized
+            (orange-tinted card surface + "FOR GLP-1" tag) so the visitor
+            on Ozempic/Wegovy/Zepbound recognizes "this one is for me"
+            without reading the feature list. */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.16, duration: 0.4 }}
+          className="relative flex flex-col rounded-2xl border-2 border-orange-500 bg-gradient-to-br from-orange-50 via-white to-white p-8 shadow-[0_24px_60px_-24px_rgba(255,102,0,0.25)]"
+        >
+          <div className="absolute -top-3 left-6">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white shadow-[0_0_16px_rgba(255,102,0,0.35)]">
+              For GLP-1 maintenance
+            </span>
+          </div>
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] italic text-orange-700">
+            Rebound
+          </p>
+          <p className="mb-10 mt-4 max-w-md font-serif text-2xl font-normal italic leading-[1.2] text-gray-900">
+            Keep the weight off after the shot.
+          </p>
+
+          <div className="mb-2 flex items-baseline gap-2">
+            <span className="font-serif text-7xl font-normal tracking-[-0.03em] text-gray-900 tabular-nums">
+              ${reboundPrice}
+            </span>
+            <span className="text-sm text-gray-600">{reboundCadence}</span>
+          </div>
+          <p className="mb-10 max-w-md text-sm leading-[1.65] text-gray-600">
+            {interval === 'monthly' ? (
+              <>
+                The anti-regain layer for people on or tapering off
+                Ozempic, Wegovy, or Zepbound. Targets the 9 PM kitchen,
+                weekend collapse, stress eating, and reward-language
+                scripts the shot doesn&rsquo;t catch.
+              </>
+            ) : (
+              <>
+                <span className="font-semibold text-gray-900">Annual · $199. Commit to the year.</span>{' '}
+                Less than one regain week. The maintenance protocol your
+                prescriber wishes you had.
+              </>
+            )}
+          </p>
+
+          <Link
+            href={`/sign-up?ref=pricing-rebound-${interval}`}
+            className="mb-10 inline-flex w-fit items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)] transition-all duration-200 hover:shadow-[0_0_28px_rgba(255,102,0,0.5)]"
+          >
+            {interval === 'monthly' ? 'Start Rebound · $29/mo' : 'Commit · $199/year'}
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+
+          <ul className="space-y-3">
+            {[
+              'Everything in Rewire',
+              'Regain Risk Quiz + your rebound archetype',
+              'Highest-risk-window-specific interrupts (9 PM, weekend, stress, reward)',
+              'GLP-1 maintenance protocol (post-taper relapse-prevention plan)',
+              'Clinician summary export for your prescriber',
+              'Cambridge meta-analysis-grounded outcome tracking',
+            ].map((f) => (
+              <li key={f} className="flex items-start gap-2 text-sm text-gray-700">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-orange-600" />
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-6 text-xs leading-[1.5] text-gray-500">
+            Behavioral support, not medical treatment. Talk to your
+            prescriber about dosing and taper schedule.
+          </p>
+        </motion.div>
       </section>
 
-      {/* GLP-1 hand-off note. We pulled the $19.99 tier off this page; users on
-          the drug have a dedicated upsell on /glp1. Mention it here so the
-          high-intent reader doesn't feel orphaned. */}
-      <section className="border-t border-gray-200 pt-16">
+      {/* Rebound deep-dive hand-off — Rebound is now an in-page tier
+          card, but the dedicated /rebound landing carries the
+          maintenance research (60% regain stat), the four-family
+          breakdown, and the clinic channel pricing. High-intent GLP-1
+          visitors get the deeper read. */}
+      <section className="border-t border-orange-500 pt-16">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_auto] md:items-end">
           <div>
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              On a GLP-1?
+              On a GLP-1 and want the deeper read?
             </p>
             <h2 className="mt-3 max-w-2xl font-serif text-3xl font-normal leading-[1.1] tracking-[-0.02em] text-gray-900 md:text-4xl">
-              There’s a dedicated <span className="italic text-orange-600">GLP-1 Plus</span> upgrade.
+              The Rebound maintenance{' '}
+              <span className="italic text-orange-600">research + protocol.</span>
             </h2>
             <p className="mt-4 max-w-xl text-base leading-[1.65] text-gray-600">
-              Rebound-window protocol, clinician summary export, and a
-              post-taper relapse-prevention plan. For people on or coming off
-              Wegovy, Ozempic, or Zepbound.
+              The Cambridge meta-analysis (60% regain at one year), the
+              four rebound archetypes (Night / Weekend / Stress / Reward),
+              the clinic channel pricing for prescribers and medspas.
             </p>
           </div>
           <Link
-            href="/glp1"
-            className="inline-flex w-fit items-center gap-2 rounded-full border border-gray-200 px-6 py-3 text-sm font-medium text-gray-900 transition-all hover:border-orange-400"
+            href="/rebound"
+            className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-500 bg-white px-6 py-3 text-sm font-medium text-orange-700 transition-all hover:bg-orange-50"
           >
-            See GLP-1 Plus
+            See Rebound in full
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>

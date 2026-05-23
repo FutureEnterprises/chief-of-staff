@@ -125,7 +125,7 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               className="mt-10 flex flex-wrap items-center gap-4"
             >
               <Link
-                href="/rebound"
+                href="/rebound/quiz"
                 className="group relative flex items-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-8 py-4 text-base font-semibold text-white shadow-[0_8px_28px_-8px_rgba(255,102,0,0.55)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_18px_44px_-12px_rgba(255,102,0,0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e0d0b]"
               >
                 <span className="relative z-10">
