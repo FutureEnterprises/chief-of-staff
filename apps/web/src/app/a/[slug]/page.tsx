@@ -45,14 +45,33 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const a = buildArchetype(parsed.wedge, parsed.window, parsed.script)
   // Archetype OG variant — the viral atom. Renders family name + signature
-  // script + specific moment into a 1200×630 card sized for Twitter/X,
-  // iMessage, Slack, LinkedIn link previews. Different from the generic
-  // `?title=…&kicker=…` route — this one IS the screenshot people share.
+  // script + specific moment + prevalence stat into a 1200×630 card sized
+  // for Twitter/X, iMessage, Slack, LinkedIn link previews. Different from
+  // the generic `?title=…&kicker=…` route — this one IS the screenshot
+  // people share.
+  //
+  // Round-3 audit fix: previously this OG URL omitted the stat param, so
+  // generic audit shares fell back to the "I'M" eyebrow even though the
+  // underlying FAMILIES table has razor-sharp prevalence copy on every
+  // archetype ("69% of you tell yourself this — and 0% of you have ever
+  // been right about it"). Now the prevalence line IS the eyebrow — the
+  // first thing a viewer reads on the Twitter/iMessage preview.
+  //
+  // The renderer truncates stat at 56 chars but our prevalence lines run
+  // longer; we trim to the first phrase so the eyebrow stays on one line.
+  // The full prevalence copy still renders inside the /a/[slug] page body
+  // (see PrevalenceLine below), so nothing is hidden — just compressed
+  // for the share card. Pattern: take everything before the em-dash if
+  // present, else first 56 chars.
+  const fullStat = a.family.prevalenceCopy
+  const dashIndex = fullStat.indexOf('—')
+  const shareStat = (dashIndex > 0 ? fullStat.slice(0, dashIndex) : fullStat).trim().slice(0, 56)
   const ogUrl =
     `/api/og?variant=archetype` +
     `&family=${encodeURIComponent(a.family.name)}` +
     `&signature=${encodeURIComponent(a.family.signature)}` +
-    `&specific=${encodeURIComponent(a.specific.name)}`
+    `&specific=${encodeURIComponent(a.specific.name)}` +
+    `&stat=${encodeURIComponent(shareStat)}`
 
   const shareTitle = `I'm ${a.family.name}`
   const shareDescription = `${a.family.signature} ${a.family.essence} Find your autopilot family at coyl.ai/audit.`
