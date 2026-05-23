@@ -1861,7 +1861,7 @@ model UAPRule {
 }
 
 model UAPAuditEntry {
-  id              String   @id @default(cuid())
+  id              String  @id @default(cuid())
   grantId         String
   userId          String
   llmPartnerId    String
@@ -1869,10 +1869,20 @@ model UAPAuditEntry {
   actionKind      String? // when operation=execute
   decision        String // "allowed" | "denied" | "queued" | "killed"
   decisionReason  String?
-  postTermination Boolean  @default(false)
-  signature       String // ed25519 sig of the row contents
+  postTermination Boolean @default(false)
+  signature       String // ed25519 sig of the row contents (audit-chain integrity)
   prevHash        String? // chain link to previous audit row for this user
-  createdAt       DateTime @default(now())
+
+  // v0.1.1 — outgoing-action provenance. Distinct from `signature` above
+  // (which secures the audit-chain row). These columns secure the OUTGOING
+  // payload that representation-action recipients verify against.
+  // See docs/protocol/UAP-0.1.md §5.5.
+  provenanceSignature String? // ed25519 sig of the canonical provenance payload
+  provenancePublicKey String? // base64 user public key the recipient verifies against
+  provenanceAlgorithm String? // "ed25519" in v0.1.1; reserved for future algs
+  provenancePayload   Json? // canonical signed payload per §5.5
+
+  createdAt DateTime @default(now())
 
   grant UAPGrant @relation(fields: [grantId], references: [id])
 

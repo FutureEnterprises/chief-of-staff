@@ -62,6 +62,19 @@
 - [x] **/platform + /developers updated** — 4-protocol stack reflected; UAP curl GRANT example on /developers
 - [x] **Master list section** — this section
 
+### v0.1.1 patch shipped (same day, evening)
+
+After external pushback identified the "agent-as-representative" gap that v0.1 left implicit, shipped UAP-0.1.1 in-place:
+
+- [x] **9th primitive `PROVENANCE_SIGN` added** — every EXECUTE whose action is a representation action (send_message, calendar_rsvp, payment, public_post, share, DM) MUST attach a cryptographic provenance signature visible to the recipient. Without this, a recipient cannot distinguish "AI-mediated message" from "compromised account" — that distinction is the entire trust contract.
+- [x] **§5.5 wire format** — ed25519 payload `{v, agent, subject, grant_id, audit_id, action_kind, recipient_hint, issued_at, audit_url}`. Attached per-medium: `X-UAP-Provenance` header on email/HTTP, `[via @coyl/<short_audit>]` inline tag on public posts/DMs.
+- [x] **T9 threat (spoofed provenance)** added to spec §6 — coordinator holds user signing key in HSM-equivalent; compromised keys rotated via KILL_SWITCH → re-derivation → audit-chain hash-chain remains intact.
+- [x] **Invariant 9** added to spec §3 — "Provenance is required for representation actions. Implementations that omit provenance are NOT UAP-compliant; they are anti-pattern."
+- [x] **Endpoint `GET /api/uap/v1/provenance/[auditId]`** — public, unauthenticated; recipients verify here. Stub returning 501 with spec link.
+- [x] **Schema additions** — `UAPAuditEntry.provenanceSignature` + `provenancePublicKey` + `provenanceAlgorithm` + `provenancePayload`. Migration `20260522060000_uap_v0_1_1_provenance`. Additive — does not break v0.1 data.
+
+The v0.1.1 patch addresses the central pushback: v0.1 was bearer-token-authenticated standing authority. v0.1.1 adds the user-signed envelope that lets the LLM act AS the user to third parties with verifiable provenance. The pushback Path-A/B/C decision was held — staying on Path B (4th protocol layer) with the provenance primitive added.
+
 ### Deferred to v0.2 + post-Series-A (Engineering)
 
 - [ ] **UAP reference engine** — actual coordinator logic, signed audit log, cryptographic chain. Ships post-Series-A. Today's commits are spec + namespace + UI only.

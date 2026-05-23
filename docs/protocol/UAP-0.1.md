@@ -1,6 +1,8 @@
-# UAP — User-Authority Protocol v0.1
+# UAP — User-Authority Protocol v0.1.1
 
-> Status: **DRAFT** · Released 2026-05-22 · Apache 2.0 · Specification only — reference engine ships post-Series-A.
+> Status: **DRAFT** · Released 2026-05-22 · Last revised 2026-05-22 (v0.1.1 — provenance primitive added) · Apache 2.0 · Specification only — reference engine ships post-Series-A.
+>
+> **v0.1 → v0.1.1 changelog (2026-05-22 evening):** added 9th primitive `PROVENANCE_SIGN` (§2.9 + §5.5), threat T9 (spoofed provenance, §6), invariant 9 (provenance required for representation actions, §3), endpoint `GET /api/uap/v1/provenance/{audit_id}` (§9), schema fields `provenanceSignature` / `provenancePublicKey` / `provenanceAlgorithm` on `UAPAuditEntry`. Closes the "agent-as-representative" gap that v0.1 omitted — actions performed AS the user to other humans and systems now carry cryptographic provenance the recipient can verify.
 
 The fourth layer of the COYL protocol stack. BIP reads the substrate. PAP proposes the moment. EAP acts across the device fleet — one action at a time. **UAP is the standing-authority layer.** It defines the trust contract a user issues to an LLM when they want autonomous action without per-action consent.
 
@@ -47,9 +49,21 @@ RULE_DECLARE   User pre-declines a class of action ("never spend > $50 without
                grant would otherwise allow.
 AUDIT_QUERY    User reads everything performed under grant G, or all grants for
                LLM Y, or all activity for user U. Read-only, append-only log.
+
+PROVENANCE_SIGN  (v0.1.1) For every EXECUTE whose action is a REPRESENTATION
+               action (agent acts AS the user to another human or system —
+               email reply, calendar RSVP, payment, DM, public post), the
+               coordinator attaches a cryptographic provenance signature to
+               the outgoing action. The signature is verifiable by the
+               recipient. The recipient sees "authored by <agent> on behalf
+               of <user>, grant <id>, audit at <url>" — not a forged
+               from-the-user message. v0.1 left this implicit; v0.1.1 makes
+               it a first-class primitive.
 ```
 
 Two operations are non-negotiable: **KILL_SWITCH** and **AUDIT_QUERY**. Every UAP-compliant implementation must expose them with no scope restrictions, no auth burden beyond user identity, and no rate limit. If a user wants to kill all standing authority, they get that in one click. If a user wants to read every action taken on their behalf, they get that in one query.
+
+The third non-negotiable, as of v0.1.1, is **PROVENANCE_SIGN**. An implementation that lets an LLM act AS the user without a verifiable provenance signature is not UAP-compliant. The recipient of a representation action MUST be able to distinguish "AI-mediated message on behalf of the user" from "directly-authored message by the user." Failing to surface that distinction is the difference between agentic AI safety and agentic AI fraud.
 
 ---
 
@@ -92,6 +106,16 @@ These cannot be relaxed by any implementation. They define the protocol.
 ✱ Negative authority precedes positive authority. A rule that pre-declines
   an action class is stronger than any grant. RULE_DECLARE writes a row
   that supersedes every overlapping grant, even fresh ones.
+
+✱ (v0.1.1) Provenance is required for representation actions. Any EXECUTE
+  whose action acts AS the user to another human or external system —
+  send_message, calendar_rsvp, public_post, payment, share — MUST attach
+  a cryptographic provenance signature visible to the recipient. The
+  signature binds (agent_id, grant_id, action_kind, audit_url, timestamp)
+  with the user's ed25519 signing key. Recipients verify signature +
+  ping the audit_url to confirm the action is real and not revoked.
+  Implementations that omit provenance on representation actions are NOT
+  UAP-compliant; they are anti-pattern.
 ```
 
 ---
@@ -226,6 +250,43 @@ Authorization: <user session, not partner token>
 
 Returns within 1 second. Propagates to every connected EAP surface within 5 seconds. Active grants flip to `terminal:killed_globally`. The endpoint is rate-limit-exempt and authentication-light — a user in crisis must be able to kill all standing authority even if they cannot remember their password (out-of-band recovery is policy, not protocol).
 
+### §5.5 — Provenance signature envelope (v0.1.1)
+
+Every EXECUTE whose action is a *representation action* (the agent acts AS the user to another human or external system) MUST carry a provenance signature on the outgoing action. The signature is ed25519, computed over the canonical JSON of the provenance payload using the user's UAP signing key (derived per-user at first-grant time; rotatable).
+
+**Payload (canonical JSON, sorted keys):**
+
+```json
+{
+  "v": "uap-0.1.1",
+  "agent": "anthropic-claude-opus-4",
+  "subject": "did:coyl:u_2sj8xks0a",
+  "grant_id": "grnt_8x4kls7a9d",
+  "audit_id": "aud_4kx9s7ad",
+  "action_kind": "send_message",
+  "recipient_hint": "external:user@example.com",
+  "issued_at": "2026-05-22T17:02:14Z",
+  "audit_url": "https://coyl.ai/audit/uap/aud_4kx9s7ad"
+}
+```
+
+**Signature attachment (per medium):**
+
+- Email: `X-UAP-Provenance: <base64(payload)>.<base64(signature)>` header; clients verify and render a "AI-mediated · authored by Claude on behalf of Iman" pill
+- HTTP API (Stripe, calendar, etc.): `Uap-Provenance` header with same format
+- Web posts (Twitter, LinkedIn): the post body includes a short `[via @coyl/<short_audit>]` tag linking to the audit_url; the underlying API call carries the full header
+- Direct messages (Slack, Discord, etc.): same `[via @coyl/<short_audit>]` tag inline
+
+**Verification:**
+
+```
+GET /api/uap/v1/provenance/{audit_id}
+```
+
+Returns the payload, the agent's public key, the user's public key, the grant status (active / revoked / expired / killed), and the signed audit-chain entry. Recipient verifiers should hit this URL, compare the public key in the response to the public key bundled with their copy of the payload, and confirm the grant is still `active`. A grant in any terminal state means the action MAY have been authorized at issue-time but is no longer one the user stands behind — recipient SHOULD treat such actions as advisory, not as the user's word.
+
+**Why this matters:** v0.1's bearer-token-authenticated EXECUTE is sufficient for COYL to know who the LLM partner is. It is NOT sufficient for the recipient of a representation action to know "this email actually was authored by Claude on behalf of Iman, with consent." Without v0.1.1's signature envelope, a recipient cannot distinguish "AI-mediated message" from "compromised account" from "human sender." That distinction is the entire trust contract.
+
 ---
 
 ## §6. Threat Model
@@ -277,6 +338,20 @@ T8  Social-engineering of consent UI: the consent UI is rendered inside a
     Mitigation: the consent UI MUST be hosted by the UAP coordinator (not
     the partner). Partners initiate GRANT via redirect; the user sees the
     actual scope-list, expiry, and rules on a COYL-hosted page.
+
+T9  (v0.1.1) Spoofed provenance: an attacker forges a UAP provenance
+    signature to make a malicious action appear AI-mediated-with-consent
+    when it isn't. (E.g., sending phishing email with a fake X-UAP-Provenance
+    header to bypass the recipient's spam filter that whitelists UAP-signed
+    messages.)
+    Mitigation: provenance signatures are ed25519 with the user's public
+    key fetchable at GET /api/uap/v1/provenance/{audit_id}; the coordinator
+    is the only entity that signs valid envelopes (it holds the user's
+    UAP signing key in HSM-equivalent storage). A forged envelope fails
+    signature verification at the recipient. Compromised user signing
+    keys are rotated via KILL_SWITCH → coordinator-mediated re-derivation
+    → all outstanding grants re-signed; audit chain remains intact via
+    the chained-hash invariant in §3.
 ```
 
 A `UAP-0.1-threat-model.md` companion document expands each scenario with attack chains, instrumentation requirements, and incident-response steps. That document is the canonical reference for any partner doing a Trust & Safety review.
@@ -345,14 +420,19 @@ The COYL reference engine ships a hosted consent UI at `coyl.ai/consent/uap` tha
 These API routes are reserved under the UAP namespace as of v0.1. Implementations should not introduce conflicting routes under `/api/uap/v1/*`.
 
 ```
-POST   /api/uap/v1/grant             → issue a new standing grant
-GET    /api/uap/v1/grant/[id]        → read grant metadata + status
-DELETE /api/uap/v1/grant/[id]        → user-initiated revoke
-POST   /api/uap/v1/precheck          → would action A under grant G be allowed?
-POST   /api/uap/v1/execute           → execute action A under grant G
-POST   /api/uap/v1/kill-switch       → global kill (user-authenticated)
-GET    /api/uap/v1/audit             → user reads their UAP audit history
-POST   /api/uap/v1/rule              → declare a pre-decline rule
+POST   /api/uap/v1/grant                       → issue a new standing grant
+GET    /api/uap/v1/grant/[id]                  → read grant metadata + status
+DELETE /api/uap/v1/grant/[id]                  → user-initiated revoke
+POST   /api/uap/v1/precheck                    → would action A under grant G be allowed?
+POST   /api/uap/v1/execute                     → execute action A under grant G
+POST   /api/uap/v1/kill-switch                 → global kill (user-authenticated)
+GET    /api/uap/v1/audit                       → user reads their UAP audit history
+POST   /api/uap/v1/rule                        → declare a pre-decline rule
+GET    /api/uap/v1/provenance/[audit_id]       → (v0.1.1) verify a provenance signature;
+                                                  returns payload, agent pub key, user pub key,
+                                                  grant status, and audit-chain entry. Public,
+                                                  unauthenticated — recipients of representation
+                                                  actions verify signatures here.
 ```
 
 The reference engine's library layout lives under `apps/web/src/lib/uap/`:
@@ -412,20 +492,30 @@ model UAPRule {
 }
 
 model UAPAuditEntry {
-  id              String   @id @default(cuid())
-  grantId         String
-  userId          String
-  llmPartnerId    String
-  operation       String   // "execute" | "precheck" | "grant" | "revoke" | "kill"
-  actionKind      String?  // when operation=execute
-  decision        String   // "allowed" | "denied" | "queued" | "killed"
-  decisionReason  String?
-  postTermination Boolean  @default(false)
-  signature       String   // ed25519 sig of the row contents
-  prevHash        String?  // chain link to previous audit row for this user
-  createdAt       DateTime @default(now())
+  id                   String   @id @default(cuid())
+  grantId              String
+  userId               String
+  llmPartnerId         String
+  operation            String   // "execute" | "precheck" | "grant" | "revoke" | "kill"
+  actionKind           String?  // when operation=execute
+  decision             String   // "allowed" | "denied" | "queued" | "killed"
+  decisionReason       String?
+  postTermination      Boolean  @default(false)
+  signature            String   // ed25519 sig of the row contents (audit-chain integrity)
+  prevHash             String?  // chain link to previous audit row for this user
 
-  grant           UAPGrant @relation(fields: [grantId], references: [id])
+  // v0.1.1 — outgoing-action provenance. Set when actionKind is a
+  // representation action (send_message, calendar_rsvp, payment, etc.).
+  // Distinct from `signature` above (which secures the audit-chain row).
+  // This signature secures the outgoing payload the recipient sees.
+  provenanceSignature  String?  // ed25519 sig of the §5.5 provenance payload
+  provenancePublicKey  String?  // base64 user public key the recipient should verify against
+  provenanceAlgorithm  String?  // "ed25519" in v0.1.1; reserved for future algs
+  provenancePayload    Json?    // canonical payload that was signed; v0.1.1 shape per §5.5
+
+  createdAt            DateTime @default(now())
+
+  grant                UAPGrant @relation(fields: [grantId], references: [id])
 
   @@index([userId, createdAt])
   @@index([grantId, createdAt])
