@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { computeExecutionScore } from '@/lib/services/execution-score.service'
 import { batchProcess } from '@/lib/batch'
 
@@ -56,5 +57,6 @@ export async function GET(req: Request) {
     if (users.length < PAGE_SIZE) break
   }
 
+  await recordHeartbeat('score', { processed })
   return NextResponse.json({ processed, timestamp: now.toISOString() })
 }

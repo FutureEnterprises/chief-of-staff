@@ -4,6 +4,7 @@ import { Resend } from 'resend'
 import { generateText } from 'ai'
 import { SYSTEM_PROMPTS, AI_MODEL_FAST } from '@repo/ai'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { batchProcess } from '@/lib/batch'
 
 export const maxDuration = 300
@@ -154,5 +155,6 @@ ${dangerWindows.map((w) => `- ${w.label} (${['Sun','Mon','Tue','Wed','Thu','Fri'
     if (users.length < PAGE_SIZE) break
   }
 
+  await recordHeartbeat('autopilot-autopsy', { sent })
   return NextResponse.json({ sent, timestamp: now.toISOString() })
 }

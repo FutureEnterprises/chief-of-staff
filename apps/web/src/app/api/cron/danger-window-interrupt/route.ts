@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { Resend } from 'resend'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { batchProcess } from '@/lib/batch'
 import { classifyState } from '@/lib/user-state'
 import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
@@ -309,5 +310,6 @@ export async function GET(req: Request) {
     if (users.length < PAGE_SIZE) break
   }
 
+  await recordHeartbeat('danger-window-interrupt', { fired, suppressed })
   return NextResponse.json({ fired, suppressed, timestamp: now.toISOString() })
 }

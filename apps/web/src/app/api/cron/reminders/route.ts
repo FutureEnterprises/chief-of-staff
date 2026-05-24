@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { scheduleAttentionEvents, isWithinUserTimeWindow } from '@/lib/services/reminder.service'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { batchProcess } from '@/lib/batch'
 
 export const maxDuration = 300
@@ -84,5 +85,6 @@ export async function GET(req: Request) {
     if (users.length < PAGE_SIZE) break
   }
 
+  await recordHeartbeat('reminders', results)
   return NextResponse.json({ success: true, ...results })
 }

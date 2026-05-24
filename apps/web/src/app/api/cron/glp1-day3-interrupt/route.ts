@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { sendWebPushForUser } from '@/lib/web-push'
 import { shouldFire } from '@/lib/notification-prefs'
 
@@ -205,5 +206,6 @@ export async function GET(req: Request) {
     if (users.length < PAGE_SIZE) break
   }
 
+  await recordHeartbeat('glp1-day3-interrupt', { candidates, fired, suppressed })
   return NextResponse.json({ ok: true, candidates, fired, suppressed })
 }

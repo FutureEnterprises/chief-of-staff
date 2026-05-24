@@ -4,6 +4,7 @@ import { Resend } from 'resend'
 import { generateText } from 'ai'
 import { SYSTEM_PROMPTS, AI_MODEL_FAST } from '@repo/ai'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { batchProcess } from '@/lib/batch'
 
 export const maxDuration = 300
@@ -322,6 +323,8 @@ MONTH-OVER-MONTH DELTA:
     cursor = users[users.length - 1]!.id
     if (users.length < PAGE_SIZE) break
   }
+
+  await recordHeartbeat('autopilot-map-monthly', { sent, skipped, monthRange })
 
   return NextResponse.json({
     sent,

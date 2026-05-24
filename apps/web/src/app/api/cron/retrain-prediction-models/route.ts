@@ -23,6 +23,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { batchProcess } from '@/lib/batch'
 import { trainAndPersistModel } from '@/lib/prediction-model'
 
@@ -96,6 +97,14 @@ export async function GET(req: Request) {
       skipped++
     }
   }
+
+  await recordHeartbeat('retrain-prediction-models', {
+    retrained,
+    skipped,
+    errored,
+    candidateCount: candidates.length,
+    eligibleCount: eligible.length,
+  })
 
   return NextResponse.json({
     ok: true,

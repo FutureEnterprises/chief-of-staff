@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { Resend } from 'resend'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { batchProcess } from '@/lib/batch'
 
 export const maxDuration = 300
@@ -116,5 +117,6 @@ export async function GET(req: Request) {
     if (users.length < PAGE_SIZE) break
   }
 
+  await recordHeartbeat('weekly', { sent })
   return NextResponse.json({ sent, timestamp: now.toISOString() })
 }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { Resend } from 'resend'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { batchProcess } from '@/lib/batch'
 import { buildModelSnapshot, type SnapshotPeriod } from '@/lib/model-snapshot'
 
@@ -149,6 +150,7 @@ export async function GET(req: Request) {
     if (users.length < PAGE_SIZE) break
   }
 
+  await recordHeartbeat('model-snapshot', { generated, sent, errored })
   return NextResponse.json({ generated, sent, errored, timestamp: now.toISOString() })
 }
 

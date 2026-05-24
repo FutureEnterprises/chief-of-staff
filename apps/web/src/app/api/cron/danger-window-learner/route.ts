@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { start } from 'workflow/api'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { handleDangerWindowLearner } from '@/workflows/danger-window-learner'
 
 /**
@@ -25,9 +26,20 @@ export async function GET(req: Request) {
 
   try {
     const run = await start(handleDangerWindowLearner)
+    // Route-level heartbeat (separate name from the workflow's own
+    // 'danger-window-learner' heartbeat) so the founder can spot a
+    // wedged workflow.start() vs a wedged worker independently.
+    await recordHeartbeat('danger-window-learner-dispatch', {
+      ok: true,
+      runId: run.runId,
+    })
     return NextResponse.json({ ok: true, runId: run.runId })
   } catch (err) {
     console.error('[cron] danger-window-learner workflow.start failed', err)
+    await recordHeartbeat('danger-window-learner-dispatch', {
+      ok: false,
+      error: err instanceof Error ? err.message : 'unknown',
+    })
     // Return 200 so the Vercel Cron schedule doesn't enter alarm state;
     // the failure is logged + visible in the Workflow dashboard.
     return NextResponse.json(

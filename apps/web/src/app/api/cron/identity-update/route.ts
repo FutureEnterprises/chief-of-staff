@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import type { IdentityState } from '@repo/database'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 
 export const maxDuration = 60
 
@@ -96,6 +97,7 @@ export async function GET(req: Request) {
     if (users.length < 200) break
   }
 
+  await recordHeartbeat('identity-update', { updated, unchanged })
   return NextResponse.json({ updated, unchanged, timestamp: now.toISOString() })
 }
 

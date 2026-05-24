@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma, Prisma } from '@repo/database'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { batchProcess } from '@/lib/batch'
 import {
   inferInterruptFeedback,
@@ -190,6 +191,14 @@ export async function GET(req: Request) {
     for (const r of results) {
       if (r.error) errored++
     }
+  })
+
+  await recordHeartbeat('auto-tag-interrupt-feedback', {
+    scanned: candidates.length,
+    taggedCaughtMe,
+    taggedIgnored,
+    deferred,
+    errored,
   })
 
   return NextResponse.json({

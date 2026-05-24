@@ -4,6 +4,7 @@ import { Resend } from 'resend'
 import { NightReviewEmail } from '@repo/email'
 import { isWithinUserTimeWindow } from '@/lib/services/reminder.service'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { batchProcess } from '@/lib/batch'
 import * as React from 'react'
 
@@ -89,5 +90,6 @@ export async function GET(req: Request) {
     if (users.length < PAGE_SIZE) break
   }
 
+  await recordHeartbeat('night', results)
   return NextResponse.json({ success: true, ...results })
 }

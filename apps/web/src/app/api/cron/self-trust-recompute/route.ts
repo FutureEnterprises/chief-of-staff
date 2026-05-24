@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { batchProcess } from '@/lib/batch'
 import { computeSelfTrustScore } from '@/lib/self-trust-score'
 
@@ -92,5 +93,6 @@ export async function GET(req: Request) {
     if (users.length < PAGE_SIZE) break
   }
 
+  await recordHeartbeat('self-trust-recompute', { computed, errored })
   return NextResponse.json({ computed, errored, timestamp: now.toISOString() })
 }

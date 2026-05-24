@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { Resend } from 'resend'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { getFamily, parseFamilySlug } from '@/lib/audit-archetype'
 
 export const maxDuration = 60
@@ -38,6 +39,7 @@ export async function GET(req: Request) {
   })
 
   if (pending.length === 0) {
+    await recordHeartbeat('scheduled-interrupts', { processed: 0, sent: 0, failed: 0 })
     return NextResponse.json({ ok: true, processed: 0 })
   }
 
@@ -142,6 +144,11 @@ export async function GET(req: Request) {
     }
   }
 
+  await recordHeartbeat('scheduled-interrupts', {
+    processed: pending.length,
+    sent,
+    failed,
+  })
   return NextResponse.json({ ok: true, processed: pending.length, sent, failed })
 }
 

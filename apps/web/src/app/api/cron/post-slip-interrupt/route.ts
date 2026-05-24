@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { Resend } from 'resend'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { classifyState } from '@/lib/user-state'
 import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
 import { sendWebPushForUser } from '@/lib/web-push'
@@ -236,6 +237,13 @@ export async function GET(req: Request) {
 
     fired++
   }
+
+  await recordHeartbeat('post-slip-interrupt', {
+    processed: candidates.length,
+    fired,
+    suppressed,
+    errors,
+  })
 
   return NextResponse.json({
     processed: candidates.length,

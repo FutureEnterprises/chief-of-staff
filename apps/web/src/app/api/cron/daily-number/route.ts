@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { batchProcess } from '@/lib/batch'
 import { sendWebPushForUser } from '@/lib/web-push'
 import {
@@ -164,6 +165,14 @@ export async function GET(req: Request) {
     cursor = users[users.length - 1]!.id
     if (users.length < PAGE_SIZE) break
   }
+
+  await recordHeartbeat('daily-number', {
+    generated,
+    pushed,
+    errored,
+    skippedWrongHour,
+    skippedAlreadyGenerated,
+  })
 
   return NextResponse.json({
     generated,

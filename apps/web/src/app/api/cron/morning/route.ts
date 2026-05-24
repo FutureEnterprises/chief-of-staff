@@ -5,6 +5,7 @@ import { MorningCheckinEmail } from '@repo/email'
 import { isWithinUserTimeWindow } from '@/lib/services/reminder.service'
 import { batchProcess } from '@/lib/batch'
 import { verifyCronAuth } from '@/lib/cron-auth'
+import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import * as React from 'react'
 
 export const maxDuration = 300
@@ -77,5 +78,6 @@ export async function GET(req: Request) {
     if (users.length < PAGE_SIZE) break
   }
 
+  await recordHeartbeat('morning', results)
   return NextResponse.json({ success: true, ...results })
 }
