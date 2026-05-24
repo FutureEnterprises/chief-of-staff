@@ -8,16 +8,20 @@ import { useUser, SignOutButton } from '@clerk/nextjs'
 import { CoylLogo } from '@/components/brand/logo'
 
 /**
- * GlassNav — May 2026 two-track IA.
+ * GlassNav — May 2026 two-track IA, consumer-only surface.
  *
- * Restructured per the founder strategic decision to separate the
- * consumer-facing surface (Rebound — the GLP-1 anti-regain wedge)
- * from the protocol-tier surface (BIP/PAP/EAP/UAP/RAP — the
- * developer/M&A/foundation-lab story). Two surfaces, one company,
- * preserved independently so consumer execution and protocol
- * execution can run in parallel without trampling each other.
+ * Per rounds 2 + 3 of the consumer-facing audit, the protocol-tier
+ * surface (BIP/PAP/EAP/UAP/RAP, Platform overview, Developers) is
+ * STRIPPED from this nav. The full subdomain split (developers.coyl.ai)
+ * is deferred until the Microsoft Viva conversation lands; the lighter
+ * middle path is to keep the consumer nav purely consumer-facing.
  *
- * Structure:
+ * Protocol surfaces remain reachable:
+ *   - by direct URL (/bip, /pap, /eap, /uap, /rap, /platform, /developers)
+ *   - via the /protocol hub page (linked from the footer's quiet
+ *     "Developers & foundation-lab partners" handoff)
+ *
+ * Consumer-facing structure (the only structure now):
  *
  *   PRIMARY (consumer)
  *     Rebound          — the anti-regain wedge landing
@@ -25,62 +29,24 @@ import { CoylLogo } from '@/components/brand/logo'
  *     How it works     — the 3-second-window mechanism
  *     Pricing          — Recover / Rewire / Rebound
  *
- *   PROTOCOL (developer + M&A)
- *     Protocol         — dropdown to the full 5-spec stack
- *
  * Other surfaces (research, manifesto, advisors, vertical-specific
- * wedge pages) live in the footer for direct-link traffic but stay
- * off the primary nav so neither audience is fighting two stories.
+ * wedge pages) live in the footer for direct-link traffic.
  */
-
-type DropdownLink = {
-  label: string
-  href: string
-  description?: string
-}
-
-type DropdownKey = 'protocol' | null
-
-/**
- * The protocol-tier menu — single dropdown that houses every
- * developer / M&A / foundation-lab surface. Visually demoted to a
- * subtle "Protocol" trigger at the right end of the primary nav so
- * the consumer story leads and the protocol thesis is one click
- * deep but never hidden.
- */
-const PROTOCOL: DropdownLink[] = [
-  { label: 'Platform overview', href: '/platform', description: 'Five protocols, one reference engine. The M&A + partner-facing story.' },
-  { label: 'Protocol stack', href: '/protocol', description: '"Stop being a chatbot. Become behavior-aware." The full stack.' },
-  { label: 'UAP — Standing Consent', href: '/uap', description: 'The foundation. What the user permits, refuses, can override.' },
-  { label: 'BIP — Behavioral Context', href: '/bip', description: 'The substrate. What loop the user is in right now.' },
-  { label: 'PAP — Proactive Intervention', href: '/pap', description: 'LLMs propose, coordinator arbitrates. Cross-vendor Switzerland.' },
-  { label: 'EAP — Cross-Device Action', href: '/eap', description: 'Per-action execution across the user’s device fleet.' },
-  { label: 'RAP — Safety Routing', href: '/rap', description: 'When the AI stops coaching and routes to a human.' },
-  { label: 'Developers', href: '/developers', description: 'SDKs, code examples, getting started against COYL.' },
-]
 
 export function GlassNav() {
-  const [open, setOpen] = useState<DropdownKey>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const navRef = useRef<HTMLElement>(null)
 
-  // Click-outside closes desktop dropdowns. Mobile drawer has its own
-  // close affordance.
+  // Escape closes the mobile drawer. No desktop dropdowns to close
+  // since the consumer nav is now a flat link surface.
   useEffect(() => {
-    function onClick(e: MouseEvent) {
-      if (!navRef.current) return
-      if (!navRef.current.contains(e.target as Node)) setOpen(null)
-    }
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') {
-        setOpen(null)
         setMobileOpen(false)
       }
     }
-    document.addEventListener('mousedown', onClick)
     document.addEventListener('keydown', onKey)
     return () => {
-      document.removeEventListener('mousedown', onClick)
       document.removeEventListener('keydown', onKey)
     }
   }, [])
@@ -99,53 +65,40 @@ export function GlassNav() {
       }}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12">
-        <Link href="/" className="group" onClick={() => setOpen(null)}>
+        <Link href="/" className="group">
           <CoylLogo size="md" theme="light" />
         </Link>
 
-        {/* Desktop nav — consumer-led primary surface */}
+        {/* Desktop nav — consumer-led primary surface.
+            Protocol dropdown removed per the rounds 2 + 3 audit:
+            consumer focus, full subdomain split deferred until Viva
+            conversation. Protocol pages stay reachable by URL and via
+            the /protocol hub linked from the footer. */}
         <div className="hidden items-center gap-1 text-sm font-medium tracking-wide text-gray-600 md:flex">
           <Link
             href="/rebound"
             className="rounded-full px-3 py-1.5 transition-colors hover:text-gray-900"
-            onClick={() => setOpen(null)}
           >
             Rebound
           </Link>
           <Link
             href="/audit"
             className="rounded-full px-3 py-1.5 transition-colors hover:text-gray-900"
-            onClick={() => setOpen(null)}
           >
             Take the audit
           </Link>
           <Link
             href="/how-it-works"
             className="rounded-full px-3 py-1.5 transition-colors hover:text-gray-900"
-            onClick={() => setOpen(null)}
           >
             How it works
           </Link>
           <Link
             href="/pricing"
             className="rounded-full px-3 py-1.5 transition-colors hover:text-gray-900"
-            onClick={() => setOpen(null)}
           >
             Pricing
           </Link>
-
-          {/* Subtle protocol-tier menu — visually demoted to a small
-              divider + muted trigger so the consumer audience reads
-              the primary nav as the story while developer / M&A
-              visitors find the protocol surface one click in. */}
-          <span aria-hidden className="mx-2 h-4 w-px bg-gray-300" />
-          <DropdownTrigger
-            label="Protocol"
-            id="protocol"
-            open={open === 'protocol'}
-            onToggle={() => setOpen(open === 'protocol' ? null : 'protocol')}
-            onEnter={() => setOpen('protocol')}
-          />
         </div>
 
         {/* Mobile hamburger */}
@@ -163,20 +116,8 @@ export function GlassNav() {
             Signed-out users see the standard signup CTA.
             Mobile gets the same pair inside the drawer; desktop hides
             here and shows in the drawer per the `hidden md:flex` rule. */}
-        <NavAuthCta onCloseDropdowns={() => setOpen(null)} />
+        <NavAuthCta onCloseDropdowns={() => {}} />
       </div>
-
-      {/* Desktop dropdown panel — protocol only */}
-      <AnimatePresence>
-        {open === 'protocol' && (
-          <DropdownPanel
-            key="protocol"
-            links={PROTOCOL}
-            eyebrow="For developers, foundation labs, and partners"
-            onClose={() => setOpen(null)}
-          />
-        )}
-      </AnimatePresence>
 
       {/* Mobile drawer */}
       <AnimatePresence>
@@ -188,88 +129,9 @@ export function GlassNav() {
   )
 }
 
-function DropdownTrigger({
-  label,
-  id,
-  open,
-  onToggle,
-  onEnter,
-}: {
-  label: string
-  id: string
-  open: boolean
-  onToggle: () => void
-  onEnter: () => void
-}) {
-  return (
-    <button
-      type="button"
-      aria-expanded={open}
-      aria-controls={`${id}-panel`}
-      onClick={onToggle}
-      onMouseEnter={onEnter}
-      className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-mono uppercase tracking-[0.18em] transition-colors ${
-        open ? 'text-orange-700' : 'text-gray-500 hover:text-gray-900'
-      }`}
-    >
-      {label}
-      <svg
-        width="10"
-        height="10"
-        viewBox="0 0 10 10"
-        fill="none"
-        className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-      >
-        <path d="M2 4l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </button>
-  )
-}
-
-function DropdownPanel({
-  links,
-  eyebrow,
-  onClose,
-}: {
-  links: DropdownLink[]
-  eyebrow?: string
-  onClose: () => void
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.18, ease: 'easeOut' }}
-      className="absolute left-0 right-0 top-full hidden border-b border-gray-200 bg-white shadow-[0_24px_60px_-24px_rgba(0,0,0,0.18)] md:block"
-    >
-      <div className="mx-auto max-w-7xl px-6 py-6 md:px-12">
-        {eyebrow && (
-          <p className="mb-4 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-            {eyebrow}
-          </p>
-        )}
-        <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              onClick={onClose}
-              className="group flex flex-col gap-1 rounded-2xl border border-transparent p-4 transition-colors hover:border-orange-200 hover:bg-orange-50"
-            >
-              <span className="text-sm font-semibold text-gray-900 group-hover:text-orange-700">
-                {l.label}
-              </span>
-              {l.description && (
-                <span className="text-xs leading-relaxed text-gray-600">{l.description}</span>
-              )}
-            </Link>
-          ))}
-        </div>
-      </div>
-    </motion.div>
-  )
-}
+// DropdownTrigger + DropdownPanel removed alongside the PROTOCOL nav
+// dropdown (rounds 2 + 3 audit: consumer focus, subdomain split
+// deferred). No remaining consumer nav surface uses a dropdown.
 
 function MobileDrawer({ onClose }: { onClose: () => void }) {
   return (
@@ -308,8 +170,10 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
           </ul>
         </div>
 
-        {/* Secondary — protocol surface */}
-        <MobileSection title="Protocol · for developers + partners" links={PROTOCOL} onClose={onClose} />
+        {/* Protocol mobile section removed — consumer focus per rounds
+            2 + 3 audit. Protocol pages stay reachable by direct URL
+            and via the /protocol hub linked from the footer. Full
+            subdomain split deferred until Viva conversation lands. */}
 
         <div className="mt-10">
           <NavAuthCta onCloseDropdowns={onClose} fullWidth />
@@ -441,36 +305,5 @@ function MobileLink({
   )
 }
 
-function MobileSection({
-  title,
-  links,
-  onClose,
-}: {
-  title: string
-  links: DropdownLink[]
-  onClose: () => void
-}) {
-  return (
-    <div className="mb-8">
-      <p className="mb-3 font-mono text-[10px] font-bold uppercase tracking-widest text-orange-600">
-        {title}
-      </p>
-      <ul className="space-y-1">
-        {links.map((l) => (
-          <li key={l.href}>
-            <Link
-              href={l.href}
-              onClick={onClose}
-              className="flex flex-col rounded-xl px-3 py-2 hover:bg-orange-50"
-            >
-              <span className="text-base font-semibold text-gray-900">{l.label}</span>
-              {l.description && (
-                <span className="text-xs text-gray-600">{l.description}</span>
-              )}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
+// MobileSection removed — only the PROTOCOL mobile section used it,
+// and that section is now stripped from the consumer drawer.

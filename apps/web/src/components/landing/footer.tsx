@@ -42,13 +42,14 @@ export function LandingFooter() {
     // signal under-construction. Pages still exist at /advisors and
     // /clinical-board for anyone with a direct link.
     { label: 'For clinicians', href: '/clinician' },
-    { label: 'Psyche AI', href: '/psyche' },
-    { label: 'Protocol (BIP)', href: '/protocol' },
-    { label: 'PAP (Proactive AI)', href: '/pap' },
-    { label: 'EAP (Edge AI)', href: '/eap' },
-    { label: 'UAP (User Authority)', href: '/uap' },
-    { label: 'Platform overview', href: '/platform' },
-    { label: 'Developers', href: '/developers' },
+    // Protocol-spec entries (Psyche AI, Protocol/BIP, PAP, EAP, UAP,
+    // Platform overview, Developers) STRIPPED from this column per
+    // rounds 2 + 3 audit. Consumer focus — the protocol surface
+    // confuses non-developer visitors. Pages stay reachable by direct
+    // URL (/psyche, /protocol, /bip, /pap, /eap, /uap, /platform,
+    // /developers) and via the quiet "Developers & foundation-lab
+    // partners" link in the bottom-bar of this footer. Full subdomain
+    // split deferred until the Microsoft Viva conversation lands.
     { label: 'Press kit', href: '/press' },
     { label: 'Safety', href: '/safety' },
     { label: 'Research + outcomes', href: '/research' },
