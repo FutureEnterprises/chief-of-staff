@@ -22,7 +22,7 @@
  */
 
 import { useEffect, useState, useCallback } from 'react'
-import { Bell, Plus, Trash2, Loader2 } from 'lucide-react'
+import { Bell, Plus, Trash2, Loader2, MessageSquare } from 'lucide-react'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -52,6 +52,15 @@ type Schedule = {
 }
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+type Reply = {
+  id: string
+  channel: 'SMS' | 'EMAIL'
+  fromAddress: string
+  body: string
+  receivedAt: string
+  processed: boolean
+}
 
 export function CheckinsCard() {
   const [schedules, setSchedules] = useState<Schedule[]>([])
@@ -189,32 +198,96 @@ function ScheduleRow({
 }) {
   const summary = summarizeSchedule(s)
   return (
-    <div className="glass flex items-start justify-between gap-3 rounded-xl p-3">
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-foreground">{s.label}</p>
-        <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-          {summary} &middot; {s.channel}
-        </p>
+    <div className="glass rounded-xl p-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-foreground">{s.label}</p>
+          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+            {summary} &middot; {s.channel}
+          </p>
+        </div>
+        <div className="flex flex-shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onToggle(!s.active)}
+            className={`text-[10px] font-mono font-semibold uppercase tracking-[0.18em] ${
+              s.active ? 'text-orange-300' : 'text-gray-500'
+            }`}
+          >
+            {s.active ? 'Active' : 'Paused'}
+          </button>
+          <button
+            type="button"
+            onClick={onDelete}
+            aria-label="Delete check-in"
+            className="text-gray-400 hover:text-red-400"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
-      <div className="flex flex-shrink-0 items-center gap-2">
-        <button
-          type="button"
-          onClick={() => onToggle(!s.active)}
-          className={`text-[10px] font-mono font-semibold uppercase tracking-[0.18em] ${
-            s.active ? 'text-orange-300' : 'text-gray-500'
-          }`}
-        >
-          {s.active ? 'Active' : 'Paused'}
-        </button>
-        <button
-          type="button"
-          onClick={onDelete}
-          aria-label="Delete check-in"
-          className="text-gray-400 hover:text-red-400"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
-      </div>
+      <RepliesBadge scheduleId={s.id} />
+    </div>
+  )
+}
+
+/**
+ * Lightweight badge that shows reply count + a hoverable preview of the
+ * last 3 messages. Only renders if there are replies — silent until the
+ * user has actually engaged. Fetches once per schedule when the card
+ * mounts; this trades one extra round-trip per row for not having to
+ * extend the main /api/v1/checkin-schedules GET response shape.
+ */
+function RepliesBadge({ scheduleId }: { scheduleId: string }) {
+  const [replies, setReplies] = useState<Reply[] | null>(null)
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      try {
+        const res = await fetch(`/api/v1/checkin-schedules/${scheduleId}/replies`)
+        if (!res.ok) return
+        const data = (await res.json()) as { count: number; replies: Reply[] }
+        if (!cancelled) setReplies(data.replies)
+      } catch {
+        // Silent — replies are non-critical UI.
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [scheduleId])
+
+  if (!replies || replies.length === 0) return null
+
+  const top = replies.slice(0, 3)
+
+  return (
+    <div className="mt-2 border-t border-white/[0.04] pt-2">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-orange-300 hover:bg-orange-500/20"
+      >
+        <MessageSquare className="h-2.5 w-2.5" />
+        {replies.length} {replies.length === 1 ? 'reply' : 'replies'}
+      </button>
+      {open && (
+        <ul className="mt-2 space-y-1.5">
+          {top.map((r) => (
+            <li
+              key={r.id}
+              className="rounded-md bg-white/[0.02] p-2 text-[11px] leading-[1.4] text-muted-foreground"
+            >
+              <p className="line-clamp-3 text-foreground/80">{r.body}</p>
+              <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/70">
+                {r.channel} &middot; {new Date(r.receivedAt).toLocaleString()}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

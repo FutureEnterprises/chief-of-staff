@@ -62,6 +62,10 @@
       "schedule": "* * * * *"
     },
     {
+      "path": "/api/cron/inbound-process",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/autopilot-map-monthly",
       "schedule": "0 10 1 * *"
     },

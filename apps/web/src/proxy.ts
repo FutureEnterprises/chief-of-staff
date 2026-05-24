@@ -105,6 +105,11 @@ const isPublicRoute = createRouteMatcher([
   '/api/v1/teams/install',
   '/api/v1/slack/events',
   '/api/v1/slack/install',
+  // Inbound message webhooks — Twilio (SMS replies) and Resend (email
+  // replies) cannot send a Clerk JWT. Authentication is provided by the
+  // provider signature header, verified inside each route handler.
+  '/api/v1/inbound/twilio',
+  '/api/v1/inbound/email',
 ])
 
 /**
@@ -195,6 +200,10 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/api/v1/teams/install',
   '/api/v1/slack/events',
   '/api/v1/slack/install',
+  // Inbound webhooks — provider-signature-authenticated; must bypass the
+  // dev-instance Clerk handshake so Twilio and Resend can POST back.
+  '/api/v1/inbound/twilio',
+  '/api/v1/inbound/email',
 ])
 
 const secretKey = process.env.CLERK_SECRET_KEY

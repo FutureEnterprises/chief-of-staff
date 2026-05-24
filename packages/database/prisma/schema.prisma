@@ -181,6 +181,9 @@ model User {
   uapGrants               UAPGrant[]
   uapRules                UAPRule[]
   uapKillSwitchEvents     UAPKillSwitchEvent[]
+  // Inbound messages (SMS replies, parsed emails) — the other side of
+  // the user-defined CheckinSchedule loop. See InboundMessage below.
+  inboundMessages         InboundMessage[]
 
   @@map("users")
 }
@@ -1256,6 +1259,10 @@ model CheckinSchedule {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
+  // Inbound replies linked back to this schedule via the 12-hour window
+  // heuristic in the Twilio / Resend inbound webhooks.
+  inboundMessages InboundMessage[]
+
   @@index([userId, active])
   @@index([active, nextFiresAt])
   @@map("checkin_schedules")
@@ -2080,4 +2087,63 @@ model UAPKillSwitchEvent {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("uap_kill_switch_events")
+}
+
+// ============================================================
+// INBOUND MESSAGES — replies into the check-in loop
+//
+// The user-defined CheckinSchedule cron pushes SMS (via Twilio) and
+// email (via Resend) at the configured times. Until now the nudge was
+// one-way; users got the message but couldn't talk back to the system.
+//
+// This table captures the return channel:
+//   - SMS replies land at /api/v1/inbound/twilio (Twilio webhook,
+//     signature-verified via TWILIO_AUTH_TOKEN + X-Twilio-Signature)
+//   - Email replies land at /api/v1/inbound/email   (Resend inbound
+//     webhook, signature-verified via Svix)
+//
+// Each inbound is matched back to a User (by phone via SmsSignup, or
+// by from-address email match) and — when the inbound arrived within
+// 12 hours of a CheckinSchedule fire — linked to `originScheduleId`.
+//
+// A separate cron (/api/cron/inbound-process, */5 min) flips
+// processed=true after routing the row through excuse-detection so the
+// inbound text becomes data the same way /api/chat messages do.
+// ============================================================
+
+model InboundMessage {
+  id        String         @id @default(cuid())
+  userId    String
+  channel   InboundChannel
+  // E.164 phone for SMS, RFC-5322 mailbox for EMAIL.
+  fromAddress String
+  body      String         @db.Text
+  receivedAt DateTime      @default(now())
+
+  // Set when the inbound arrived within 12 hours of a CheckinSchedule
+  // fire we sent the user. Lets the UI render "X replies" badges next
+  // to the originating schedule in /settings.
+  originScheduleId String?
+
+  // Flips true after the inbound-process cron has routed the row
+  // through excuse-detection / chat-pipeline downstream.
+  processed Boolean @default(false)
+
+  // Provider-specific envelope — Twilio MessageSid, Resend / SES
+  // Message-ID, raw headers, etc. Json so we don't migrate every time
+  // a provider adds a field we want to capture.
+  metadata Json?
+
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originSchedule CheckinSchedule? @relation(fields: [originScheduleId], references: [id], onDelete: SetNull)
+
+  @@index([userId, receivedAt(sort: Desc)])
+  @@index([processed])
+  @@index([originScheduleId])
+  @@map("inbound_messages")
+}
+
+enum InboundChannel {
+  SMS
+  EMAIL
 }
