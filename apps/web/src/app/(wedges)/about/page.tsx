@@ -140,8 +140,8 @@ export default async function AboutPage() {
               </p>
               <p className="font-mono text-[11px] leading-[1.7] tracking-[0.04em] text-gray-500">
                 PhD, Organizational Psychology &middot; Disruptive
-                Strategy (AI focus), Harvard &middot; AI Strategy
-                certificate, Cornell
+                Strategy certificate (AI focus), Harvard &middot; AI
+                Strategy certificate, Cornell
               </p>
 
               {/* Founder origin — six movements, May 2026 romanced
@@ -191,7 +191,7 @@ export default async function AboutPage() {
               </p>
               <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
                 What changed wasn&rsquo;t more psychology. It was a
-                Disruptive Strategy course at Harvard, focused on what
+                Disruptive Strategy certificate at Harvard, focused on what
                 emergent AI was actually about to do &mdash; and an AI
                 Strategy certificate at Cornell that gave the
                 disruption a shape. Sitting in those rooms I watched the
