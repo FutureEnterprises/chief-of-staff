@@ -58,6 +58,10 @@
       "schedule": "* * * * *"
     },
     {
+      "path": "/api/cron/custom-checkins",
+      "schedule": "* * * * *"
+    },
+    {
       "path": "/api/cron/autopilot-map-monthly",
       "schedule": "0 10 1 * *"
     },

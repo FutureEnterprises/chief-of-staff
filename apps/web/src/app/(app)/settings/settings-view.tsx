@@ -26,6 +26,7 @@ import { PaywallDialog } from '@/components/paywall/paywall-dialog'
 import { Bell, Zap, User as UserIcon, Heart, Flame, Syringe, Download, Trash2, AlertTriangle, X } from 'lucide-react'
 import { useClerk } from '@clerk/nextjs'
 import { GiftCoylCard } from '@/components/referral/gift-card'
+import { CheckinsCard } from './checkins-card'
 
 interface SettingsViewProps {
   user: User
@@ -244,6 +245,16 @@ export function SettingsView({ user }: SettingsViewProps) {
             to disable, never marketing. */}
         <StaggerItem>
           <NotificationPrefsCard user={user} />
+        </StaggerItem>
+
+        {/* User-defined recurring check-ins (CheckinSchedule table).
+            Sits next to NotificationPrefs because both are
+            consent-shaped "how do you want me to reach you" surfaces,
+            but check-ins are USER-AUTHORED cadences, not platform-
+            authored interrupts. Read/write hits /api/v1/checkin-
+            schedules. Cron fires from /api/cron/custom-checkins. */}
+        <StaggerItem>
+          <CheckinsCard />
         </StaggerItem>
 
         {/* Drive profile + personalized replacement menu. Per

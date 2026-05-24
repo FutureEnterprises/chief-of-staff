@@ -159,6 +159,8 @@ model User {
   predictionModels        PredictionModel[]
   dailyNumbers            DailyNumber[]
   redirectChoices         RedirectChoice[]
+  // User-defined recurring check-ins. See CheckinSchedule below.
+  checkinSchedules        CheckinSchedule[]
   // Referrals
   referralsMade           Referral[]                 @relation("Referrer")
   referralsReceived       Referral[]                 @relation("Referred")
@@ -1188,6 +1190,87 @@ enum ScheduledInterruptStatus {
   SENT
   FAILED
   CANCELED
+}
+
+// ============================================================
+// CUSTOM CHECK-IN SCHEDULES — user-defined recurring nudges.
+//
+// Distinct from ScheduledInterrupt (one-shot, system-generated, anonymous)
+// and from User.morningCheckinTime / User.nightCheckinTime (two legacy
+// daily slots, system-controlled). This table is ADDITIVE: it lets a
+// signed-in user define their own recurring cadences in addition to the
+// legacy morning/night. Use cases the founder named: "hourly" (e.g.
+// every 4 hours within a waking window), "nightly" (daily at a chosen
+// PM time), "monthly" (review cadence), plus weekly.
+//
+// Fired by /api/cron/custom-checkins on a 1-minute tick. The cron picks
+// rows where active = true AND nextFiresAt <= now + 1 min lookahead,
+// sends via the row's channel, then advances nextFiresAt via the
+// computeNextFire helper in lib/services/checkin-schedule.service.ts.
+//
+// Per-cadence time fields are intentionally nullable + cadence-shaped
+// (rather than a single cron-expression string) so the settings UI can
+// stay declarative — no cron literacy required and no eval-style
+// expression surface to defend against.
+
+model CheckinSchedule {
+  id             String          @id @default(cuid())
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // User-visible label, e.g. "Afternoon walk reminder" or "Sunday review".
+  // Free text but capped at 80 chars at the API layer.
+  label          String
+
+  cadence        CheckinCadence
+  channel        CheckinChannel  @default(EMAIL)
+
+  // For HOURLY cadence — fires every {intervalHours} hours INSIDE the
+  // [windowStart, windowEnd] local-time window. Both stored as "HH:MM"
+  // strings interpreted in the user's timezone. windowStart < windowEnd
+  // assumed; e.g. "09:00" / "21:00" → 9 AM through 9 PM only.
+  intervalHours  Int?
+  windowStart    String?
+  windowEnd      String?
+
+  // For DAILY cadence — fires once per day at this local time.
+  dailyTime      String?
+
+  // For WEEKLY cadence — day-of-week (0=Sun..6=Sat) at local time.
+  weeklyDay      Int?
+  weeklyTime     String?
+
+  // For MONTHLY cadence — day-of-month (1..28 enforced at API; 29-31
+  // skipped on months that don't have them) at local time.
+  monthlyDay     Int?
+  monthlyTime    String?
+
+  active         Boolean         @default(true)
+  lastFiredAt    DateTime?
+  nextFiresAt    DateTime?
+
+  // Optional short message body the user wants delivered. If null the
+  // service falls back to a default per-cadence prompt.
+  message        String?
+
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([userId, active])
+  @@index([active, nextFiresAt])
+  @@map("checkin_schedules")
+}
+
+enum CheckinCadence {
+  HOURLY
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum CheckinChannel {
+  EMAIL
+  SMS
 }
 
 // ============================================================
