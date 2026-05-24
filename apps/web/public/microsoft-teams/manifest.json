@@ -1,0 +1,98 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.16",
+  "version": "0.2.0",
+  "id": "REPLACE_WITH_AZURE_AD_APP_ID",
+  "developer": {
+    "name": "COYL",
+    "websiteUrl": "https://coyl.ai",
+    "privacyUrl": "https://coyl.ai/privacy",
+    "termsOfUseUrl": "https://coyl.ai/terms",
+    "mpnId": ""
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "name": {
+    "short": "COYL",
+    "full": "COYL — Behavioral Interrupt Layer"
+  },
+  "description": {
+    "short": "Catch yourself before you do it again. AI for the moment before behavior happens.",
+    "full": "COYL is the behavioral interrupt layer for Microsoft Teams. Built on the open Behavioral Interrupt Protocol (BIP) + four sibling specs (PAP, EAP, UAP, RAP), COYL lives in the three-second window between intention and action — the moment focus dies, the moment a follow-up gets dropped, the moment a hard meeting ends and the reward script fires. Four AI-powered interrupt classes ship inside Teams as adaptive cards: Focus Defender (protects scheduled deep work), Follow-Through Pinger (catches outbound emails about to fall stale), Meeting Decliner (surfaces the calendar-pressure your team is folding under), and Recovery Coach (60-second resets between high-cortisol windows). Honest about what COYL is: behavioral support, not medical treatment. Not a replacement for therapy, coaching, or clinical care — the layer underneath all of them, so the moment-by-moment accountability that used to require someone in the room finally exists for everyone."
+  },
+  "accentColor": "#FF6600",
+  "bots": [
+    {
+      "botId": "REPLACE_WITH_AZURE_AD_APP_ID",
+      "scopes": ["personal", "team", "groupChat"],
+      "supportsFiles": false,
+      "isNotificationOnly": false,
+      "commandLists": [
+        {
+          "scopes": ["personal"],
+          "commands": [
+            {
+              "title": "today",
+              "description": "Show your current daily number + active pattern."
+            },
+            {
+              "title": "slip",
+              "description": "Record a slip if a commitment broke in the last few hours."
+            },
+            {
+              "title": "focus",
+              "description": "Protect the next scheduled focus block on your calendar."
+            },
+            {
+              "title": "help",
+              "description": "Show what COYL inside Teams can do."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "configurableTabs": [],
+  "staticTabs": [
+    {
+      "entityId": "coyl-today",
+      "name": "Today",
+      "contentUrl": "https://coyl.ai/today?embedded=teams",
+      "websiteUrl": "https://coyl.ai/today",
+      "scopes": ["personal"]
+    },
+    {
+      "entityId": "coyl-settings",
+      "name": "Settings",
+      "contentUrl": "https://coyl.ai/settings?embedded=teams",
+      "websiteUrl": "https://coyl.ai/settings",
+      "scopes": ["personal"]
+    }
+  ],
+  "permissions": ["identity", "messageTeamMembers"],
+  "validDomains": ["coyl.ai", "*.coyl.ai"],
+  "webApplicationInfo": {
+    "id": "REPLACE_WITH_AZURE_AD_APP_ID",
+    "resource": "https://coyl.ai"
+  },
+  "authorization": {
+    "permissions": {
+      "resourceSpecific": [
+        {
+          "name": "ChannelMessage.Read.Group",
+          "type": "Application"
+        },
+        {
+          "name": "ChannelMeetingParticipant.Read.Group",
+          "type": "Application"
+        }
+      ]
+    }
+  },
+  "showLoadingIndicator": true,
+  "isFullScreen": false,
+  "defaultBlockUntilAdminAction": false,
+  "publisherDocsUrl": "https://coyl.ai/protocol"
+}

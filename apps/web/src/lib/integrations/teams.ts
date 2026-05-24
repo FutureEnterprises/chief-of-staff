@@ -356,6 +356,163 @@ export async function verifyTeamsBotRequest(req: Request): Promise<boolean> {
   return true
 }
 
+// ────────────────────────────────────────────────────────────────────
+// ARCHETYPE INTERRUPT CARDS — the four COYL-differentiated interrupts
+// that ship inside Teams (and AppSource v0.2 submission).
+//
+// Every COYL interrupt fits one of these four classes. The card factory
+// returns a fully-formed AdaptiveCardPayload that callers feed into
+// sendTeamsCard(). Buttons on each card become Action.Submit posts that
+// the bot route in /api/v1/teams/bot/messages already handles.
+//
+// Design principle: each card has at most ONE primary CTA + at most
+// TWO secondary actions. Adaptive Card cognitive load research (and
+// the Teams UI guidelines) put hard caps at 4 actions; we stop at 3
+// to keep the surface contemplative, not busy.
+//
+// Class:                    For archetype:           Fires when:
+//   FOCUS_DEFENDER           One-More-Tabber          15 min before a Calendar focus block
+//   FOLLOW_THROUGH_PINGER    9 PM Negotiator, Spiral  Sent email with >48h no reply to ranked contact
+//   MEETING_DECLINER         Capitulator              Meeting density >70% × 3 consecutive days
+//   RECOVERY_COACH           Deserver, post-slip      Back-to-back heavy meetings just ended
+// ────────────────────────────────────────────────────────────────────
+
+export type InterruptClass =
+  | 'FOCUS_DEFENDER'
+  | 'FOLLOW_THROUGH_PINGER'
+  | 'MEETING_DECLINER'
+  | 'RECOVERY_COACH'
+
+export type InterruptContext = {
+  /** Optional COYL archetype slug for telemetry (the family the user pinned to). */
+  archetype?: string
+  /** Free-form context the card factory consumes (commitments, contact name, etc.). */
+  data?: Record<string, string | number | undefined>
+}
+
+/**
+ * Build a Focus Defender adaptive card.
+ *
+ * Fires 15 minutes before a Calendar event tagged as a focus block.
+ * Pulls the user's three open commitments (lives on the Commitments
+ * table) and presents them as the "what you said you'd finish" anchor.
+ * Primary CTA silences Teams + auto-declines internal interrupts for
+ * the duration of the focus block via the Bot's calendar permissions.
+ */
+export function buildFocusDefenderCard(ctx: InterruptContext = {}): AdaptiveCardPayload {
+  const commitments = (ctx.data?.commitments as string) || 'Three open commitments on your list.'
+  const minutesUntil = (ctx.data?.minutesUntil as number) ?? 15
+  return {
+    headline: `Focus block in ${minutesUntil} min.`,
+    subhead: `What you said you'd finish:\n${commitments}\n\nWant me to silence Teams + decline interrupts for the duration?`,
+    fallbackText: `Focus block in ${minutesUntil} min — protect it?`,
+    actions: [
+      { title: 'Protect the block', value: 'focus_defender.protect' },
+      { title: 'Snooze 5 min', value: 'focus_defender.snooze' },
+      { title: 'Cancel block', value: 'focus_defender.cancel' },
+    ],
+  }
+}
+
+/**
+ * Build a Follow-Through Pinger adaptive card.
+ *
+ * Fires when an outbound email to a ranked-important contact has been
+ * sitting >48h without a reply. The "9 PM Negotiator" and "Spiral
+ * Extender" archetypes are the highest-leverage targets — both fold on
+ * follow-through under load. The card surfaces the original message
+ * snippet so the user doesn't have to context-switch back to Outlook
+ * to remember what they promised.
+ */
+export function buildFollowThroughPingerCard(ctx: InterruptContext = {}): AdaptiveCardPayload {
+  const contact = (ctx.data?.contact as string) || 'someone you care about'
+  const promiseDay = (ctx.data?.promiseDay as string) || 'a few days ago'
+  const snippet = (ctx.data?.snippet as string) || ''
+  return {
+    headline: `You promised ${contact} a response.`,
+    subhead: snippet
+      ? `From your sent message ${promiseDay}:\n"${snippet}"\n\nSend now while it's small?`
+      : `${promiseDay}. Send now while it's small?`,
+    fallbackText: `Follow-up overdue: ${contact}`,
+    actions: [
+      { title: 'Draft a reply', value: 'follow_through.draft' },
+      { title: 'Snooze 1 day', value: 'follow_through.snooze' },
+      { title: "Won't do", value: 'follow_through.decline' },
+    ],
+  }
+}
+
+/**
+ * Build a Meeting Decliner adaptive card.
+ *
+ * Fires when calendar density crosses a threshold (>70% of day in
+ * meetings, ≥3 days running). The "Capitulator" archetype is the
+ * primary target — they fold under social/calendar pressure rather
+ * than appetite or fatigue. The card pre-identifies two meetings on
+ * tomorrow's calendar that can be declined without consequence (e.g.,
+ * optional invitees, status meetings, meetings where the user hasn't
+ * been a speaker in the last three occurrences).
+ */
+export function buildMeetingDeclinerCard(ctx: InterruptContext = {}): AdaptiveCardPayload {
+  const density = (ctx.data?.density as string) || '78%'
+  const days = (ctx.data?.days as number) ?? 3
+  const candidates = (ctx.data?.candidates as string) || 'Two meetings tomorrow could be declined without consequence.'
+  return {
+    headline: `You've been in meetings ${density} of the last ${days} days.`,
+    subhead: `${candidates}\n\nWant me to draft the declines?`,
+    fallbackText: `Meeting density elevated — review tomorrow's calendar?`,
+    actions: [
+      { title: 'Show the candidates', value: 'meeting_decliner.show' },
+      { title: 'Not today', value: 'meeting_decliner.dismiss' },
+    ],
+  }
+}
+
+/**
+ * Build a Recovery Coach adaptive card.
+ *
+ * Fires after a "high cortisol" window — back-to-back heavy meetings
+ * just ended, a deadline just slipped, an email exchange ran hot. The
+ * "Deserver" archetype is the primary target: they reach for the
+ * reward script ("I worked hard, I earned this") in exactly this
+ * moment. The card offers a 60-second recovery ritual instead.
+ */
+export function buildRecoveryCoachCard(ctx: InterruptContext = {}): AdaptiveCardPayload {
+  const trigger = (ctx.data?.trigger as string) || 'A hard window just ended.'
+  const nextEvent = (ctx.data?.nextEvent as string) || 'Next thing on calendar is in a few minutes.'
+  return {
+    headline: trigger,
+    subhead: `${nextEvent}\n\n60 seconds of recovery before the next thing — keep the reward script quiet?`,
+    fallbackText: 'Recovery moment available.',
+    actions: [
+      { title: 'Take 60 seconds', value: 'recovery_coach.breath' },
+      { title: 'Stretch instead', value: 'recovery_coach.stretch' },
+      { title: 'Skip', value: 'recovery_coach.skip' },
+    ],
+  }
+}
+
+/**
+ * Dispatch a class string to its card factory. Used by the
+ * /api/v1/teams/interrupt/[tenantId] notify-by-class endpoint and any
+ * future cron that wants to pick a class by signal pattern.
+ */
+export function buildInterruptCard(
+  cls: InterruptClass,
+  ctx: InterruptContext = {},
+): AdaptiveCardPayload {
+  switch (cls) {
+    case 'FOCUS_DEFENDER':
+      return buildFocusDefenderCard(ctx)
+    case 'FOLLOW_THROUGH_PINGER':
+      return buildFollowThroughPingerCard(ctx)
+    case 'MEETING_DECLINER':
+      return buildMeetingDeclinerCard(ctx)
+    case 'RECOVERY_COACH':
+      return buildRecoveryCoachCard(ctx)
+  }
+}
+
 // Re-export encryption helpers for parity with other integration libs —
 // notify routes use these when storing per-tenant secrets on event rows.
 export { encryptToken, decryptToken }

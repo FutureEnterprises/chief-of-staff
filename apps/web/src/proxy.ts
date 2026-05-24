@@ -110,6 +110,10 @@ const isPublicRoute = createRouteMatcher([
   // provider signature header, verified inside each route handler.
   '/api/v1/inbound/twilio',
   '/api/v1/inbound/email',
+  // Microsoft Teams app manifest + icons — fetched anonymously by Microsoft
+  // AppSource crawlers, the Teams client during sideload, and Vercel's
+  // CDN for static asset distribution. Must be public.
+  '/microsoft-teams/(.*)',
 ])
 
 /**
@@ -204,6 +208,8 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   // dev-instance Clerk handshake so Twilio and Resend can POST back.
   '/api/v1/inbound/twilio',
   '/api/v1/inbound/email',
+  // Microsoft Teams app manifest + icons — public static assets.
+  '/microsoft-teams/(.*)',
 ])
 
 const secretKey = process.env.CLERK_SECRET_KEY
