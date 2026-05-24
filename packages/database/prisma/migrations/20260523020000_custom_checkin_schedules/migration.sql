@@ -37,3 +37,11 @@ CREATE INDEX "checkin_schedules_active_nextFiresAt_idx" ON "checkin_schedules"("
 
 -- AddForeignKey
 ALTER TABLE "checkin_schedules" ADD CONSTRAINT "checkin_schedules_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Defense-in-depth RLS. Every COYL public-schema table is accessed
+-- exclusively via Prisma using the service role (which bypasses RLS),
+-- so the application keeps working with zero changes. The lock-down
+-- here prevents any accidental exposure via the anon Supabase REST
+-- client from leaking rows. No public policies on purpose — service
+-- role is the only authorized reader/writer.
+ALTER TABLE "checkin_schedules" ENABLE ROW LEVEL SECURITY;
