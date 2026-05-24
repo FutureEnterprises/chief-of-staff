@@ -35,7 +35,11 @@ import { prisma } from '@repo/database'
  *     shape Resend ships). All other event types are ack'd 200.
  */
 
-export const dynamic = 'force-dynamic'
+// Note: do NOT add `export const dynamic = 'force-dynamic'` — Next 16
+// with cacheComponents enabled (see next.config.ts) rejects that route
+// segment config at build time. Routes are dynamic by default unless
+// they declare `'use cache'`, so the inbound webhook is dynamic
+// automatically without the explicit flag.
 export const maxDuration = 30
 
 type ResendInboundPayload = {

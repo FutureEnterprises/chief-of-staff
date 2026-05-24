@@ -36,7 +36,10 @@ import { prisma } from '@repo/database'
  *     null. The inbound is still captured for the excuse-detection pass.
  */
 
-export const dynamic = 'force-dynamic'
+// Note: do NOT add `export const dynamic = 'force-dynamic'` — Next 16
+// with cacheComponents enabled (see next.config.ts) rejects that route
+// segment config at build time. Routes are dynamic by default unless
+// they declare `'use cache'`, so this webhook is dynamic automatically.
 export const maxDuration = 30
 
 /**
