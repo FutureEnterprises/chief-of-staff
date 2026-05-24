@@ -304,21 +304,89 @@ export async function rememberTeamsConversation(
 /**
  * Bot Framework JWT signing keys are advertised at a well-known OpenID
  * Connect discovery URL. Production-grade verification fetches the JWKS
- * and verifies the RS256 signature against the kid embedded in the JWT
- * header.
+ * (JSON Web Key Set), looks up the signing key by the `kid` header
+ * field of the inbound JWT, and verifies the RS256 signature against
+ * the modulus + exponent on that key.
  *
- * v0.1 implementation:
- *   - Parses the Bearer token from the Authorization header
- *   - Decodes the JWT payload (no signature check yet)
- *   - Validates `aud` matches MS_BOT_APP_ID
- *   - Validates `iss` is from the Bot Framework issuer set
- *   - Validates `exp` is in the future
+ * v0.2 implementation (this commit, May 2026):
+ *   - Bearer token + JWT structure validation
+ *   - Header `kid` extraction
+ *   - JWKS fetch from
+ *     https://login.botframework.com/v1/.well-known/keys (the openid-
+ *     configuration document's jwks_uri value)
+ *   - In-memory JWKS cache with 24h TTL (Microsoft rotates keys but
+ *     stably enough that 24h is a safe ceiling; the cache reloads on
+ *     a `kid` miss too, so a key rotation is handled within ~5 sec)
+ *   - RS256 signature verification via Node's crypto.createVerify
+ *   - aud / iss / exp claim checks (same as v0.1)
  *
- * TODO(prod): pull JWKS from the openid-configuration jwks_uri, cache
- * by kid, verify signature with crypto.verify('RSA-SHA256', ...). Until
- * then this is defence-in-depth, NOT a sole auth layer — pair with
- * the proxy.ts public-matcher gate + tenant-level allow-listing.
+ * This closes the v0.1 TODO that pointed at JWKS verification. The
+ * proxy.ts public-matcher gate + TeamsWorkspace tenant allow-list
+ * remain as defence-in-depth.
+ *
+ * Returns false on any failure path; callers translate that into a
+ * 401 / 403 at the route layer. Errors are swallowed intentionally —
+ * we don't want a Bot Framework outage (e.g. JWKS endpoint down) to
+ * surface a 500 that Microsoft's connector might interpret as our
+ * problem; failing closed with a 401 is the right behavior.
  */
+
+type JwksKey = {
+  kid: string
+  kty: string
+  n?: string
+  e?: string
+}
+type JwksCacheEntry = { keys: Record<string, JwksKey>; loadedAt: number }
+let cachedJwks: JwksCacheEntry | null = null
+const JWKS_TTL_MS = 24 * 60 * 60 * 1000
+
+async function fetchJwks(force = false): Promise<Record<string, JwksKey> | null> {
+  const now = Date.now()
+  if (!force && cachedJwks && now - cachedJwks.loadedAt < JWKS_TTL_MS) {
+    return cachedJwks.keys
+  }
+  try {
+    const res = await fetch('https://login.botframework.com/v1/.well-known/keys', {
+      headers: { Accept: 'application/json' },
+    })
+    if (!res.ok) return cachedJwks?.keys ?? null
+    const data = (await res.json()) as { keys?: JwksKey[] }
+    if (!Array.isArray(data.keys)) return cachedJwks?.keys ?? null
+    const byKid: Record<string, JwksKey> = {}
+    for (const k of data.keys) {
+      if (k.kid) byKid[k.kid] = k
+    }
+    cachedJwks = { keys: byKid, loadedAt: now }
+    return byKid
+  } catch {
+    return cachedJwks?.keys ?? null
+  }
+}
+
+/**
+ * Convert a JWKS RSA public-key (modulus + exponent in base64url) into
+ * a Node-usable PEM string via the JsonWebKey → KeyObject path. Node's
+ * crypto.createPublicKey accepts a JWK directly when format='jwk'.
+ */
+function jwkToPublicKey(key: JwksKey): crypto.KeyObject | null {
+  if (key.kty !== 'RSA' || !key.n || !key.e) return null
+  try {
+    return crypto.createPublicKey({
+      key: { kty: 'RSA', n: key.n, e: key.e } as crypto.JsonWebKey,
+      format: 'jwk',
+    })
+  } catch {
+    return null
+  }
+}
+
+function base64UrlToBuffer(b64url: string): Buffer {
+  const b64 = b64url.replace(/-/g, '+').replace(/_/g, '/')
+  const pad = b64.length % 4 === 0 ? '' : '='.repeat(4 - (b64.length % 4))
+  return Buffer.from(b64 + pad, 'base64')
+}
+
 export async function verifyTeamsBotRequest(req: Request): Promise<boolean> {
   const auth = req.headers.get('authorization') ?? req.headers.get('Authorization')
   if (!auth || !auth.toLowerCase().startsWith('bearer ')) return false
@@ -328,22 +396,23 @@ export async function verifyTeamsBotRequest(req: Request): Promise<boolean> {
   const config = getTeamsConfig()
   if (!config) return false
 
+  const [headerB64, payloadB64, signatureB64] = parts as [string, string, string]
+
+  let header: Record<string, unknown>
   let payload: Record<string, unknown>
   try {
-    const b64 = parts[1]!.replace(/-/g, '+').replace(/_/g, '/')
-    const pad = b64.length % 4 === 0 ? '' : '='.repeat(4 - (b64.length % 4))
-    const json = Buffer.from(b64 + pad, 'base64').toString('utf8')
-    payload = JSON.parse(json) as Record<string, unknown>
+    header = JSON.parse(base64UrlToBuffer(headerB64).toString('utf8')) as Record<string, unknown>
+    payload = JSON.parse(base64UrlToBuffer(payloadB64).toString('utf8')) as Record<string, unknown>
   } catch {
     return false
   }
 
+  // Claim checks — fast, no network. Run before signature so a bad
+  // aud/iss/exp fails without burning a JWKS round-trip.
   const aud = payload.aud
   if (typeof aud !== 'string' || aud !== config.appId) return false
 
   const iss = payload.iss
-  // Microsoft rotates issuer strings periodically — these are the two
-  // currently advertised in the openid-configuration document.
   const allowedIssuers = new Set([
     'https://api.botframework.com',
     'https://api.botframework.com/v1.0',
@@ -353,7 +422,36 @@ export async function verifyTeamsBotRequest(req: Request): Promise<boolean> {
   const exp = payload.exp
   if (typeof exp !== 'number' || exp * 1000 < Date.now()) return false
 
-  return true
+  // Signature verification. Header.alg must be RS256; anything else is
+  // a downgrade attempt (and Bot Framework never issues anything but
+  // RS256 today). Header.kid identifies which JWKS key to use.
+  const alg = header.alg
+  if (alg !== 'RS256') return false
+  const kid = header.kid
+  if (typeof kid !== 'string' || kid.length === 0) return false
+
+  let jwks = await fetchJwks()
+  let signingKey = jwks?.[kid] ?? null
+  if (!signingKey) {
+    // Key rotation just happened — force a refetch once before failing.
+    jwks = await fetchJwks(true)
+    signingKey = jwks?.[kid] ?? null
+  }
+  if (!signingKey) return false
+
+  const publicKey = jwkToPublicKey(signingKey)
+  if (!publicKey) return false
+
+  try {
+    const signedData = `${headerB64}.${payloadB64}`
+    const signature = base64UrlToBuffer(signatureB64)
+    const verifier = crypto.createVerify('RSA-SHA256')
+    verifier.update(signedData)
+    verifier.end()
+    return verifier.verify(publicKey, signature)
+  } catch {
+    return false
+  }
 }
 
 // ────────────────────────────────────────────────────────────────────

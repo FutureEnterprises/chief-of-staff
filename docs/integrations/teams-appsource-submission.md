@@ -131,42 +131,45 @@ purchase-order support for enterprise.
 
 ---
 
-## 5. PMPM vs PUPM — the rename
+## 5. PMPM vs PUPM — final stance (updated)
 
-COYL's site currently uses "PMPM" (Per Member Per Month) across
-`/teams`, `/work`, `/clinician`, and the `PMPMCalculator` component.
-That's correct for two audiences:
+Earlier drafts of this doc recommended renaming PMPM to "per-seat"
+on `/teams` and `/work`. **That recommendation has been reversed
+after re-reading those pages' positioning copy.**
+
+COYL's site uses "PMPM" (Per Member Per Month) across `/teams`,
+`/work`, `/clinician`, and the `PMPMCalculator` component. PMPM is
+**correct** for the audiences these pages speak to:
 
 - **Healthcare buyers** (clinics, health plans, self-funded employers
-  buying COYL as a benefit). PMPM is their lingua franca because it
-  signals "this is a benefits/wellness product priced in the way
-  insurance products are priced."
-- **Benefits administrators** at Fortune-500 HR teams. Same reasoning.
+  buying COYL as a clinical benefit). PMPM is their lingua franca.
+- **HR / People-Ops / Benefits Administrators** at the employers
+  `/teams` and `/work` are targeting. PMPM signals "this is a
+  benefits product priced like the rest of our benefits stack" —
+  a feature, not a bug.
 
-But PMPM is **wrong** for:
+PMPM is **wrong** in exactly one place:
 
-- **Microsoft AppSource + Viva ISV channels.** IT buyers don't have
-  the PMPM vocabulary. They expect "per seat" or "PUPM."
-- **Pure-tech enterprise buyers** (engineering org leaders, CTOs).
-  PMPM reads as healthcare jargon and triggers HIPAA-adjacent
-  friction they don't want.
-- **General consumer audiences.** Confusing — "Per Member Per Month"
-  in B2C context creates the wrong mental model.
+- **Microsoft channel materials.** AppSource listings, Viva ISV
+  documentation, Microsoft Partner Center attestations, and any
+  COYL-authored marketing aimed at an IT buyer (CTO, CIO, Director
+  of Engineering Productivity). IT buyers don't have PMPM vocabulary;
+  they expect "per seat" or "per-user-per-month (PUPM)."
 
-**Recommendation:**
+**Final policy:**
 
-1. Keep PMPM language on `/clinician` and any healthcare-buyer
-   surface. It's correct there.
-2. Switch `/teams` and `/work` (employer/IT audience) to "per seat"
-   or PUPM. Rename the `PMPMCalculator` component to
-   `SeatPricingCalculator` and refactor copy.
-3. On AppSource and Microsoft channel materials, never use PMPM.
-4. The pitch deck (`docs/pitch/seed-deck.md`) should clarify which
-   channel uses which framing — investors will ask.
+| Surface | Vocabulary |
+|---|---|
+| `/clinician`, `/rebound/for-clinicians` | PMPM |
+| `/teams`, `/work` (HR audience) | PMPM |
+| `PMPMCalculator` component | Keep as PMPM |
+| Microsoft AppSource listing copy | per-seat / PUPM |
+| Viva ISV partner application | per-seat / PUPM |
+| Microsoft Partner Center attestation | per-seat / PUPM |
+| Pitch deck (`docs/pitch/seed-deck.md`) | Both — disclosed by channel |
 
-A scoped rename PR can flip the workplace surfaces in one focused
-commit when bandwidth opens up. Until then, the duality is honest:
-COYL prices PMPM for healthcare, per-seat for IT.
+No code rename needed. The AppSource listing copy (written separately
+from the COYL site) uses per-seat exclusively.
 
 ---
 

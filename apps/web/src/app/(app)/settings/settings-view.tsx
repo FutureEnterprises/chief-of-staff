@@ -27,6 +27,7 @@ import { Bell, Zap, User as UserIcon, Heart, Flame, Syringe, Download, Trash2, A
 import { useClerk } from '@clerk/nextjs'
 import { GiftCoylCard } from '@/components/referral/gift-card'
 import { CheckinsCard } from './checkins-card'
+import { TeamsCard } from './teams-card'
 
 interface SettingsViewProps {
   user: User
@@ -255,6 +256,20 @@ export function SettingsView({ user }: SettingsViewProps) {
             schedules. Cron fires from /api/cron/custom-checkins. */}
         <StaggerItem>
           <CheckinsCard />
+        </StaggerItem>
+
+        {/* Microsoft Teams integration. Sits next to CheckinsCard
+            because both are user-authored "how do you want me to reach
+            you" surfaces. Renders a graceful placeholder when the Graph
+            integration isn't yet deployed (the agent shipping it
+            concurrently is wiring up /api/v1/teams/auth/* endpoints —
+            until those land, the card's auth/status fetch falls back
+            to a "coming with next deploy" message). Behind the
+            placeholder: 4 archetype-aware interrupt classes (Focus
+            Defender, Follow-Through Pinger, Meeting Decliner, Recovery
+            Coach) and per-class opt-out. */}
+        <StaggerItem>
+          <TeamsCard />
         </StaggerItem>
 
         {/* Drive profile + personalized replacement menu. Per
