@@ -104,6 +104,11 @@ const isPublicRoute = createRouteMatcher([
   '/api/v1/integrations/withings/webhook',
   '/api/v1/teams/bot/messages',
   '/api/v1/teams/install',
+  // Microsoft Graph delegated-OAuth callback — Microsoft can't send a
+  // Clerk JWT on the redirect-back. User attribution comes from the
+  // HMAC-signed `state` payload, verified inside the route handler.
+  // The /connect step on the other side stays Clerk-protected.
+  '/api/v1/teams/auth/callback',
   '/api/v1/slack/events',
   '/api/v1/slack/install',
   // Inbound message webhooks — Twilio (SMS replies) and Resend (email
@@ -204,6 +209,10 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/api/v1/integrations/withings/webhook',
   '/api/v1/teams/bot/messages',
   '/api/v1/teams/install',
+  // Graph OAuth callback bypasses the dev-instance Clerk handshake for
+  // the same reason as the Dexcom/Libre/Withings callbacks — Microsoft
+  // redirects here without a session cookie.
+  '/api/v1/teams/auth/callback',
   '/api/v1/slack/events',
   '/api/v1/slack/install',
   // Inbound webhooks — provider-signature-authenticated; must bypass the

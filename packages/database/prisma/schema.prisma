@@ -184,6 +184,10 @@ model User {
   // Inbound messages (SMS replies, parsed emails) — the other side of
   // the user-defined CheckinSchedule loop. See InboundMessage below.
   inboundMessages         InboundMessage[]
+  // Microsoft Graph OAuth tokens — per-user delegated access for
+  // calendar + email signal pulls used by /api/cron/teams-graph-pull.
+  // See TeamsUserAuth below.
+  teamsUserAuth           TeamsUserAuth?
 
   @@map("users")
 }
@@ -1523,6 +1527,43 @@ model TeamsWorkspace {
 
   @@index([tenantId])
   @@map("teams_workspaces")
+}
+
+/**
+ * TeamsUserAuth — per-user Microsoft Graph OAuth tokens.
+ *
+ * Distinct from TeamsWorkspace (one row per tenant, written at admin-
+ * consent time) and from the Bot Framework credentials (which are
+ * tenant-spanning bot identity, not per-user). This row holds the
+ * delegated Graph access — the access + refresh token the user granted
+ * COYL so the /api/cron/teams-graph-pull poller can read their calendar
+ * and email and auto-fire the four archetype interrupt classes.
+ *
+ * Tokens are encrypted at rest via encryptToken() from dexcom.ts
+ * (AES-256-GCM, key from INTEGRATION_ENCRYPTION_KEY). The cron's "due
+ * for refresh" scan uses the (tenantId, tokenExpiresAt) index.
+ *
+ * scopesGranted is the subset Microsoft actually returned in the token
+ * response — we ask for Calendars.Read + Mail.Read + User.Read +
+ * offline_access but the user may consent to fewer, and the cron skips
+ * signal classes whose scope isn't granted.
+ */
+model TeamsUserAuth {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  tenantId            String
+  accessTokenCipher   String   @db.Text
+  refreshTokenCipher  String   @db.Text
+  tokenExpiresAt      DateTime
+  scopesGranted       String[] // e.g. ["Calendars.Read", "Mail.Read", "User.Read"]
+  lastRefreshedAt     DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, tokenExpiresAt])
+  @@map("teams_user_auths")
 }
 
 // ============================================================
