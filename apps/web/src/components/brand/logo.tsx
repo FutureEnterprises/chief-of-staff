@@ -16,40 +16,46 @@ const sizes = {
 }
 
 /**
- * CoylMark — modern geometric "C".
+ * CoylMark — HELD PAUSE · LOZENGE.
  *
- * Bold open arc forming the letter C. ~270° of a circle, heavy stroke,
- * round endcaps. Orange→red gradient from top to bottom-right gives the
- * mark visual momentum — reads like a C being drawn left-to-right, not
- * a static O with a hole. The opening on the right keeps the negative
- * space active so the eye finishes the shape itself.
+ * Hairline 270° arc opening to the right, with a precise filled
+ * lozenge (rotated square diamond) at the geometric center. The arc
+ * is the bracket; the lozenge is the moment being held. The
+ * composition reads as "something captured within boundaries."
  *
- * Why a clean C, not the previous broken-loop:
- *   • The broken-loop concept tried to encode "interrupted pattern" in
- *     the silhouette. It read as a generic loading spinner at small
- *     sizes and lost its meaning entirely below 16px.
- *   • A bold C is the universally-readable letterform, plays directly
- *     against the wordmark, and references the brand name (COYL) AND
- *     the etymology (coil) without needing a visual gimmick.
- *   • Sized for favicon legibility: the 4px stroke at 24px viewBox is
- *     thick enough to survive the 16×16 browser tab raster.
+ * Editorial-luxury aesthetic — matches the Letter / Aesop / A24 /
+ * Hermès / Bulgari reference set already running through the site
+ * (Instrument Serif italic, cream backgrounds, hairline rules). The
+ * lozenge is the section-divider dingbat from fine printing — a
+ * jewel-like fixed point.
  *
  * Geometric properties:
  *   • viewBox 0 0 24 24 — scales crisply from 16px favicon to 1024px
  *     iOS app icon.
- *   • Arc center (12, 12), radius 8, stroke-width 4. Keeps the inner
- *     bowl readable while the stroke fills enough visual weight.
- *   • Arc spans from ≈345° down through 180° to ≈15° (the long way
- *     around) leaving a 30° gap on the right — the C opening.
- *   • Linear gradient #ff6600 → #ef4444 oriented top → bottom-right so
- *     the warmer hue reads first (we're left-to-right readers).
+ *   • Arc center (12, 12), radius 9.5, stroke-width 1.75. The
+ *     hairline weight (≈7.3% of size) holds at 16px favicon while
+ *     reading as restrained at hero/billboard scale.
+ *   • Arc spans from 1:30 (18.72, 5.28) the long way counter-
+ *     clockwise to 4:30 (18.72, 18.72), leaving a 90° opening on the
+ *     right.
+ *   • Endcaps butt (not round) — sharper, more editorial.
+ *   • Lozenge: 3.2 × 3.2 unit rect rotated 45° about (12, 12). Fills
+ *     ≈17% of the arc's interior — visible at all sizes without
+ *     competing with the arc.
+ *   • Solid orange #ff6600 (no gradient). Hermès orange does the
+ *     work alone; gradients read as 2018-vintage tech.
  *
- * Per-size unique gradient id so multiple marks on the same page don't
- * clash via the global SVG id namespace.
+ * Replaces the previous bold gradient C (which read close to Capital
+ * One / Citrix / Cox) with a distinct silhouette unused by any
+ * competitor in behavioral health or proactive-AI.
+ *
+ * Selected from the /logo-options review on 2026-05-22. The three
+ * variants considered: SPARK (asterisk center), CROSS (+ center —
+ * rejected for medical-cross semantic that conflicts with the
+ * /safety page's "not a medical device" positioning), and LOZENGE
+ * (chosen).
  */
 export function CoylMark({ size = 30, className }: { size?: number; className?: string }) {
-  const gradId = `coyl-c-${size}`
-
   return (
     <svg
       width={size}
@@ -60,29 +66,23 @@ export function CoylMark({ size = 30, className }: { size?: number; className?: 
       className={className}
       aria-hidden="true"
     >
-      <defs>
-        <linearGradient
-          id={gradId}
-          x1="4"
-          y1="4"
-          x2="20"
-          y2="20"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop offset="0%" stopColor="#ff6600" />
-          <stop offset="100%" stopColor="#ef4444" />
-        </linearGradient>
-      </defs>
-
-      {/* The C — 270° arc opening on the right. Endpoints calculated so
-          the arc takes the long way around (large-arc flag 1, sweep
-          flag 0 = counter-clockwise) leaving the right side open. */}
+      {/* The hairline 270° arc — bracket. */}
       <path
-        d="M 19.7 7.5 A 8 8 0 1 0 19.7 16.5"
-        stroke={`url(#${gradId})`}
-        strokeWidth="4"
-        strokeLinecap="round"
+        d="M 18.72 5.28 A 9.5 9.5 0 1 0 18.72 18.72"
+        stroke="#ff6600"
+        strokeWidth="1.75"
+        strokeLinecap="butt"
         fill="none"
+      />
+      {/* The lozenge — the moment being held. Rotated 3.2px square
+          centered at the geometric midpoint. */}
+      <rect
+        x="10.4"
+        y="10.4"
+        width="3.2"
+        height="3.2"
+        transform="rotate(45 12 12)"
+        fill="#ff6600"
       />
     </svg>
   )

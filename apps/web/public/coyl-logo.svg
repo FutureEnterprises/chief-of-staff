@@ -1,39 +1,51 @@
-<svg width="200" height="48" viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="220" height="56" viewBox="0 0 220 56" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!--
     COYL wordmark — SVG version for OG previews, social cards, and
     anywhere we need a flat image asset instead of the React component.
-    The "O" in COYL is replaced by the geometric C-mark so the logo
-    is self-contained: the eye reads the C-shape, then "OYL," then
-    completes the word "COYL" mentally. The C-mark also doubles as the
-    standalone product symbol — favicon, app icon, social avatar.
-    Kept geometrically consistent with apps/web/src/components/brand/logo.tsx.
-  -->
-  <defs>
-    <linearGradient id="coyl-wordmark-grad" x1="16" y1="10" x2="32" y2="42" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#ff6600"/>
-      <stop offset="100%" stop-color="#ef4444"/>
-    </linearGradient>
-  </defs>
 
-  <!-- The C-mark sits where the "C" letterform would go. The wordmark
-       continues with "OYL" beside it. Geometric arc, 270° opening on
-       the right, 5px stroke at this scale matches the 34pt font weight. -->
-  <g transform="translate(8 4)">
+    Composition: HELD PAUSE · LOZENGE mark left, "COYL" wordmark right
+    with the Y in orange. Mark sits in a 48px box aligned to the
+    wordmark baseline; gap = 14px.
+
+    Mark geometry matches apps/web/src/components/brand/logo.tsx
+    exactly. Wordmark uses system-sans fallback so OG-card parsers
+    (Twitter, LinkedIn, iMessage, Slack) render reliably without web
+    font dependency. Production hero + nav use the React component;
+    this SVG is the flat-asset backup.
+
+    Tagline "CONTROL YOUR LIFE" removed — the brand has dropped the
+    acronym lore (per the May 2026 rebrand). The wordmark stands alone.
+
+    Selected from the /logo-options review on 2026-05-22.
+  -->
+
+  <!-- Mark — HELD PAUSE · LOZENGE, scaled 2× from the 24-unit viewBox -->
+  <g transform="translate(4 4) scale(2)">
     <path
-      d="M 30 12 A 12 12 0 1 0 30 28"
-      stroke="url(#coyl-wordmark-grad)"
-      stroke-width="5"
-      stroke-linecap="round"
+      d="M 18.72 5.28 A 9.5 9.5 0 1 0 18.72 18.72"
+      stroke="#ff6600"
+      stroke-width="1.75"
+      stroke-linecap="butt"
       fill="none"
+    />
+    <rect
+      x="10.4"
+      y="10.4"
+      width="3.2"
+      height="3.2"
+      transform="rotate(45 12 12)"
+      fill="#ff6600"
     />
   </g>
 
-  <!-- "OYL" — wordmark continuation. Y stays orange to honor the
-       brand rule (Y is the accent letter across all surfaces). -->
-  <text x="46" y="36" font-family="-apple-system, 'Inter', sans-serif" font-size="34" font-weight="700" letter-spacing="-1.5" fill="#1a1a1a">
-    O<tspan fill="#ff6600">Y</tspan>L
-  </text>
-
-  <!-- Tagline -->
-  <text x="0" y="46" font-family="-apple-system, 'Inter', sans-serif" font-size="8" letter-spacing="2.5" fill="#1a1a1a" opacity="0.4">CONTROL YOUR LIFE</text>
+  <!-- Wordmark — "COYL" with the Y in orange. -->
+  <text
+    x="66"
+    y="40"
+    font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-weight="700"
+    font-size="36"
+    letter-spacing="-1.8"
+    fill="#1a1a1a"
+  >CO<tspan fill="#ff6600">Y</tspan>L</text>
 </svg>

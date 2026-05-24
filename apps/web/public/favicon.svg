@@ -1,16 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
   <!--
-    COYL favicon — mirrors the CoylMark React component.
-    Bold geometric C, 270° arc opening on the right.
-    See apps/web/src/components/brand/logo.tsx for the rationale.
-    Kept geometrically identical so tab favicon, nav logo, and OG
-    previews all read as the same mark.
+    COYL favicon — HELD PAUSE · LOZENGE.
+
+    Hairline 270° arc + filled lozenge at center. Mirrors the
+    CoylMark React component verbatim so tab favicon, nav logo, and
+    OG previews read as the same mark.
+
+    Selected from the /logo-options review on 2026-05-22.
+    See apps/web/src/components/brand/logo.tsx for rationale.
   -->
-  <defs>
-    <linearGradient id="g" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#ff6600"/>
-      <stop offset="100%" stop-color="#ef4444"/>
-    </linearGradient>
-  </defs>
-  <path d="M 19.7 7.5 A 8 8 0 1 0 19.7 16.5" stroke="url(#g)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path
+    d="M 18.72 5.28 A 9.5 9.5 0 1 0 18.72 18.72"
+    stroke="#ff6600"
+    stroke-width="1.75"
+    stroke-linecap="butt"
+    fill="none"
+  />
+  <rect
+    x="10.4"
+    y="10.4"
+    width="3.2"
+    height="3.2"
+    transform="rotate(45 12 12)"
+    fill="#ff6600"
+  />
 </svg>
