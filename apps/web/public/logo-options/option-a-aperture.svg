@@ -1,0 +1,41 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!--
+    OPTION A — APERTURE.
+
+    Solid filled disk in COYL orange with a single precise wedge cut
+    from 12 o'clock. The wedge spans ~8 degrees, apex at the geometric
+    center. The negative-space slice IS the interrupt — the moment
+    before behavior happens, rendered as a deliberate breath in the
+    form.
+
+    Construction:
+      • Disk radius 11 around (12,12)
+      • Wedge: 8° wide, centered at 12 o'clock
+      • Arc starts at angle +4° (just east of top), goes the long way
+        clockwise around to angle -4° (+356°), then closes through
+        the center.
+
+    Why this design:
+      • A bold solid disk is the most distinct silhouette in the
+        category. Headspace, Calm, Lyra, Noom, Whoop — all use rounded
+        type or gradient marks. A solid disk with a precise wedge is
+        unmistakable at thumbnail and reads sharply at favicon.
+      • The wedge is small enough (~8°) that the silhouette stays
+        round, not Pac-Man-shaped. Looking closely reveals the cut.
+      • Solid fill (no gradient) is more editorial than the existing
+        orange→red gradient. Hermès orange does the work alone.
+      • Scales: at 16px favicon the wedge is sub-pixel but the overall
+        round-with-detail reads. At 1024px app icon the wedge is a
+        clean precise mark.
+
+    The semantic claim: "AI for the moment before behavior happens" —
+    the disk is the closed loop of autopilot; the wedge is the
+    moment COYL catches.
+  -->
+  <path
+    d="M 12.768 1.027
+       A 11 11 0 1 1 11.232 1.027
+       L 12 12 Z"
+    fill="#ff6600"
+  />
+</svg>

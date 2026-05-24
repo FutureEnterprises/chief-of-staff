@@ -1,0 +1,68 @@
+<svg viewBox="0 0 240 56" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!--
+    OPTION C — ENGRAVED.
+
+    No separate mark. The brand is the wordmark. COYL set tight in
+    Instrument Serif (italic), with the Y descender extended into a
+    deliberate stamped/engraved flourish. A single hairline orange
+    accent under the wordmark suggests the rule of editorial typography
+    rather than the badge of a tech logo.
+
+    Construction notes (this SVG is a layout reference — the production
+    React component will render the wordmark with the actual web font
+    Instrument Serif so glyph quality matches every other heading on the
+    site):
+      • COYL set in Instrument Serif Italic, 48pt, tight tracking
+      • Y descender extended ~30% past baseline
+      • Hairline orange rule (1px) under the wordmark, length = wordmark
+        width minus 30% (asymmetric, ends short of the Y descender)
+      • Color: charcoal #1a1a1a for the letters; orange #ff6600 for the
+        rule only. No orange in the letters themselves.
+
+    Why this design:
+      • The luxury houses (Hermès, Bulgari, Aesop, A24, Letter magazine)
+        don't have marks — they have wordmarks. A wordmark says "we are
+        confident enough in our name that we don't need a glyph."
+      • Eliminates the favicon-vs-wordmark drift entirely. There is only
+        one logo. The favicon becomes a single italic Y in orange.
+      • Matches the site's editorial aesthetic exactly — Instrument
+        Serif italic is already the accent face on every hero. The
+        logo IS the typography.
+      • Risk: no standalone glyph for app icons, social avatars, or
+        partner co-branding. Mitigation: ship a square variant where
+        a single large italic Y serves as the standalone glyph; pairs
+        cleanly with the wordmark.
+
+    The semantic claim: "The behavioral interface for AI" — the
+    typography itself is the interface. No symbol to translate. The
+    name does the work.
+  -->
+
+  <!-- The wordmark.
+       Rendered as flat SVG text here for the preview page. Production
+       implementation renders this via Next/Font Instrument Serif so the
+       glyph quality matches every editorial heading on coyl.ai. -->
+  <text
+    x="0"
+    y="42"
+    font-family="'Instrument Serif', 'IBM Plex Serif', Georgia, serif"
+    font-style="italic"
+    font-weight="400"
+    font-size="48"
+    letter-spacing="-1.5"
+    fill="#1a1a1a"
+  >COYL</text>
+
+  <!-- The hairline orange rule. Length ends ~30% short of the wordmark
+       width to keep the composition asymmetric and editorial, not
+       balanced like a corporate logo. -->
+  <line
+    x1="0"
+    y1="50"
+    x2="80"
+    y2="50"
+    stroke="#ff6600"
+    stroke-width="1"
+    stroke-linecap="butt"
+  />
+</svg>
