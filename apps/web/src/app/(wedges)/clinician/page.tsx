@@ -92,7 +92,14 @@ const WHAT_YOU_GET = [
   'Real-time pre-slip behavioral signals on your panel',
   'Anonymized aggregate cohort metrics',
   'Per-patient intervention effectiveness reporting',
-  'HIPAA-compliant BAA-covered data infrastructure',
+  // Softened May 2026 per docs/regulatory/compliance-posture-may-2026.md.
+  // The prior "HIPAA-compliant BAA-covered" framing materially overstated
+  // the program state (no BAA template, no upstream BAAs, no breach
+  // notification policy yet). Same FTC enforcement pattern that hit
+  // BetterHelp / GoodRx / Premom. New language matches what /clinical-
+  // study already says and is what an outside-counsel review will allow
+  // through.
+  'HIPAA-aligned data layer · BAA available on request',
   'White-label option for clinic branding',
 ] as const
 

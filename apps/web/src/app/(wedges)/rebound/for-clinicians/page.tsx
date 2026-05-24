@@ -333,7 +333,7 @@ export default async function ReboundForCliniciansPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-orange-500" />
-                  <span>HIPAA-aware data layer, BAA executed before the pilot starts</span>
+                  <span>HIPAA-aligned data layer &middot; BAA available on request before the pilot starts</span>
                 </li>
               </ul>
             </div>
