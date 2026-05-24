@@ -32,12 +32,14 @@ import { BreadcrumbSchema } from '@/app/structured-data'
 export const metadata: Metadata = {
   title: 'About COYL — built by someone who needed it',
   description:
-    "COYL is built by Iman Schrock — founder of the behavioral interface for AI. The founder's own behavior was the first dataset.",
+    "COYL is built by Iman Schrock, PhD — an organizational psychologist who studied AI disruption at Harvard and Cornell and then built the behavioral interrupt protocol he needed at 11 PM on a Tuesday. The founder's own behavior was the first dataset.",
   keywords: [
     'about coyl',
     'iman schrock',
+    'iman schrock phd',
     'coyl founder',
     'behavioral interface founder',
+    'organizational psychology ai',
     'who built coyl',
   ],
   alternates: { canonical: '/about' },
@@ -131,21 +133,40 @@ export default async function AboutPage() {
 
             <div className="space-y-6">
               <h2 className="font-serif text-3xl font-normal leading-[1.1] tracking-[-0.02em] text-gray-900 md:text-4xl">
-                Iman Schrock
+                Iman Schrock, <span className="italic text-orange-600">PhD</span>
               </h2>
               <p className="font-mono text-[11px] font-medium uppercase tracking-[0.28em] text-gray-500">
                 Founder &middot; COYL
               </p>
+              <p className="font-mono text-[11px] leading-[1.7] tracking-[0.04em] text-gray-500">
+                PhD, Organizational Psychology &middot; Disruptive
+                Strategy (AI focus), Harvard &middot; AI Strategy
+                certificate, Cornell
+              </p>
 
-              {/* Founder origin — three movements. The first paragraph
-                  is the kitchen scene, told in the present tense the
-                  brand voice keeps coming back to. The second is the
-                  pattern recognition that turns one bad Tuesday into a
-                  thesis. The third is the build. Kept honest: no
-                  fabricated employers, schools, or fund names — just the
-                  arc the rest of the site is downstream of. When real
-                  career credentials are ready to publish, drop them in
-                  as a fourth paragraph under "Before COYL." */}
+              {/* Founder origin — six movements, May 2026 romanced
+                  rewrite per founder-told story. The arc:
+                    1. Kitchen scene (italic) — the personal mirror.
+                    2. The lens — PhD in organizational psychology +
+                       lifelong fascination with the behavior-intention
+                       gap. The literature meeting the life.
+                    3. The mirror — weight lost twice, regained twice,
+                       autopilot recognized in real time.
+                    4. The ignition — Harvard Disruptive Strategy
+                       course (AI focus) + Cornell AI Strategy
+                       certificate. Psychology + AI agree.
+                    5. The build — protocols that let LLMs step outside
+                       the chatbot box and live in the three-second
+                       window before behavior.
+                    6. The principle — NOT a replacement for therapy,
+                       physicians, psychologists, or real coaches. The
+                       layer underneath. The disruption is that the
+                       access cost of "someone in the room" falls to
+                       the floor.
+                    + closing dataset disclosure.
+                  Tone: heartfelt, editorial, no gimmicks. The credentials
+                  earn their place by anchoring the synthesis; they aren't
+                  a brag. */}
               <p className="max-w-2xl font-serif text-xl italic leading-[1.5] text-gray-800 md:text-2xl">
                 It was 11:14 PM on a Tuesday. The freezer drawer had been
                 opened, closed, and reopened three times in twenty
@@ -155,26 +176,54 @@ export default async function AboutPage() {
                 drawer for the third time that week.
               </p>
               <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-                The pattern was obvious in retrospect. It always is. The
-                meeting that ran past 9 PM. The Friday I told myself
-                I&rsquo;d close the laptop early and didn&rsquo;t. The
-                Sunday I promised the gym and lost to the couch. Every
-                behavior I&rsquo;ve ever wanted to change has a moment
-                &mdash; a thin three-second window between the impulse
-                and the action &mdash; where an outside voice could have
-                caught me. No app I&rsquo;d ever built, used, or read
-                about lived in that window. Therapy showed up Tuesday at
-                3 PM. Coaching showed up in a weekly text. The habit
-                trackers showed up the next morning, after the slip, with
-                a guilt notification I&rsquo;d swipe away.
+                I&rsquo;d spent most of my adult life studying behavior.
+                A doctorate in organizational psychology. A lifelong
+                fascination with the gap between what people say they
+                will do and what they actually do under load. I knew the
+                literature. I knew the frameworks. And the hand reaching
+                for the freezer drawer belonged to someone who had lost
+                the weight twice already and gained it back twice.
+                Watching it happen in real time was the moment the
+                question I&rsquo;d been studying academically became the
+                question I was living in my own kitchen. The pattern
+                wasn&rsquo;t a finding in someone else&rsquo;s data set.
+                It was running on autopilot in mine.
               </p>
               <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-                The architecture to live in those three seconds
-                didn&rsquo;t exist. So I started building it. COYL is
-                what came out: a behavioral interrupt protocol, four
-                open specs underneath it, a reference engine that runs
-                them, and a single quiet promise &mdash; that the next
-                time the pattern fires, something will be there.
+                What changed wasn&rsquo;t more psychology. It was a
+                Disruptive Strategy course at Harvard, focused on what
+                emergent AI was actually about to do &mdash; and an AI
+                Strategy certificate at Cornell that gave the
+                disruption a shape. Sitting in those rooms I watched the
+                two halves of my work, the psychology and the
+                technology, stop arguing with each other and start
+                agreeing. The intervention I&rsquo;d needed at 11:14 PM
+                didn&rsquo;t exist because nobody had given AI permission
+                to live in the moment before the slip. They&rsquo;d
+                given it permission to chat after.
+              </p>
+              <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+                COYL is what came out. A behavioral interrupt protocol,
+                four open specs underneath it, a reference engine that
+                runs them &mdash; built so a large language model can
+                step outside the chatbot box and intervene at the exact
+                three-second window where decisions actually get made.
+                Not a coach you summon. Not a tracker that grades you
+                the next morning. Something that lives in the moment,
+                with the right context, with the right script, with one
+                quiet sentence at the threshold.
+              </p>
+              <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+                This is not a replacement for therapy. It is not a
+                replacement for your physician or your psychologist or
+                your real coach. It is the layer underneath all of them
+                &mdash; the moment-by-moment accountability that, until
+                now, was only available to people who could afford
+                someone in the room. COYL is what happens when the
+                protocol underneath that &ldquo;someone in the
+                room&rdquo; finally exists, and the access cost falls to
+                the floor. Coaching, as it&rsquo;s been dispersed for a
+                hundred years, is about to look different.
               </p>
               <p className="max-w-2xl text-base leading-[1.7] text-gray-600">
                 The founder&rsquo;s own behavior was the first dataset.
