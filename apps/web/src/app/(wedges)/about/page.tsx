@@ -14,14 +14,16 @@
  * why-now → advisory + clinical board callouts → recurring anchor →
  * press contact.
  *
- * Photo placeholder: when the founder is ready to ship a real
- * portrait, drop the file at `apps/web/public/founder/iman.jpg` —
- * the existing /public folder is already statically served. No
- * Next/Image until the asset lands; styled div placeholder keeps
- * the layout reserved.
+ * Founder portrait shipped May 2026 — apps/web/public/founder/iman.jpg
+ * (800x800 square JPEG, served statically). Replaced the monogram
+ * placeholder block that previously held this slot; the Q3 2026 mono
+ * label disappeared with it. If the photo ever needs to be updated,
+ * swap the file at the same path (or change the src below) and the
+ * cache tag will invalidate on next revalidation.
  */
 
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
@@ -106,29 +108,25 @@ export default async function AboutPage() {
 
           <div className="grid grid-cols-1 gap-12 md:grid-cols-[auto_1fr] md:gap-16">
             {/*
-              Founder mark — monogram block that reads as an intentional
-              brand element, not a portrait placeholder. The explicit
-              "Portrait · Q3 2026" mono label below disambiguates this
-              for the auditor who reads the standalone IS as a missing
-              image. When a real photo lands, drop it at
-              apps/web/public/founder/iman.jpg, swap the inner span for
-              an <Image src="/founder/iman.jpg" .../>, and remove the
-              mono label.
+              Founder portrait — real photo (800x800 JPEG) replacing
+              the prior monogram placeholder. The rounded-2xl orange-
+              tinged border is preserved as the brand frame so the
+              cinematic surface stays consistent with the rest of the
+              page. priority=true: this image is above the fold on
+              /about and a paid-acquisition visitor reads it inside
+              the LCP window. quality=92: matches the editorial
+              treatment, JPEG source is already optimized.
             */}
-            <div className="flex flex-col items-start gap-3">
-              <div
-                aria-hidden
-                className="relative h-64 w-64 shrink-0 overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-100 via-orange-50 to-[#fafaf7] md:h-72 md:w-72"
-              >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="font-serif text-7xl italic leading-none text-orange-600/80 md:text-8xl">
-                    IS
-                  </span>
-                </div>
-              </div>
-              <span className="font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-gray-400">
-                Founder mark &middot; portrait Q3 2026
-              </span>
+            <div className="relative h-64 w-64 shrink-0 overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-100 via-orange-50 to-[#fafaf7] md:h-72 md:w-72">
+              <Image
+                src="/founder/iman.jpg"
+                alt="Iman Schrock, founder of COYL"
+                width={576}
+                height={576}
+                quality={92}
+                priority
+                className="h-full w-full object-cover"
+              />
             </div>
 
             <div className="space-y-6">
