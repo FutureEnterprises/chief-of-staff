@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -145,7 +146,46 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function AutopilotMapSharePage({ params }: PageProps) {
+/**
+ * Page shell is intentionally synchronous (no `async`) and contains
+ * NO Prisma access at the root. The data-dependent body is rendered
+ * inside <Suspense>, which satisfies Next 16's cacheComponents rule
+ * that uncached data must live behind a Suspense boundary.
+ *
+ * Mirrors the proven /i/[code] pattern. The 'use cache' approach
+ * doesn't apply here because we can't statically prerender every
+ * possible shareSlug — they're generated on-demand by a weekly cron.
+ */
+export default function AutopilotMapSharePage({ params }: PageProps) {
+  return (
+    <Suspense fallback={<SharePageFallback />}>
+      <SharePageBody params={params} />
+    </Suspense>
+  )
+}
+
+function SharePageFallback() {
+  // Keep the chrome stable so the page doesn't shift while the
+  // snapshot loads. The grid below collapses into a neutral cream
+  // skeleton, matching the editorial look of the final render.
+  return (
+    <main className="min-h-screen bg-[#fafaf7] text-gray-900">
+      <header className="border-b border-gray-200 bg-[#fafaf7]/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
+          <Link href="/" className="text-gray-900">
+            <CoylLogo size="sm" theme="light" />
+          </Link>
+        </div>
+      </header>
+      <div className="mx-auto max-w-5xl px-6 pt-14 pb-32 md:pt-20">
+        <div className="h-3 w-32 animate-pulse rounded-full bg-orange-200/60" />
+        <div className="mt-8 h-24 w-3/4 animate-pulse rounded-2xl bg-gray-200/60" />
+      </div>
+    </main>
+  )
+}
+
+async function SharePageBody({ params }: PageProps) {
   const { slug } = await params
   const snap = await loadSnapshot(slug)
   if (!snap) notFound()

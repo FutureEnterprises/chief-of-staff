@@ -25,15 +25,23 @@ import { prisma } from '@repo/database'
  * begins returning real data without any further code change here.
  */
 export async function GET() {
-  try {
-    const { userId: clerkId } = await auth()
-    if (!clerkId) {
-      return NextResponse.json(
-        { status: 'unauthenticated' },
-        { status: 401 },
-      )
-    }
+  // IMPORTANT: keep `auth()` OUTSIDE the try/catch. In Next 16 with
+  // cacheComponents, the prerender pass uses a thrown sentinel error
+  // from headers()/auth() to mark the route as dynamic. Catching it
+  // here makes Next think the route is static, then at runtime the
+  // dynamic access throws "headers() rejects when the prerender is
+  // complete" — which is exactly what blocked deploys
+  // ec109c5..afa505e. The runtime try/catch below only needs to guard
+  // the Prisma calls (sibling-agent schema-drift defense).
+  const { userId: clerkId } = await auth()
+  if (!clerkId) {
+    return NextResponse.json(
+      { status: 'unauthenticated' },
+      { status: 401 },
+    )
+  }
 
+  try {
     const user = await prisma.user.findUnique({
       where: { clerkId },
       select: { id: true },

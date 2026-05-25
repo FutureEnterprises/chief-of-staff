@@ -32,7 +32,11 @@
         "VERCEL_ENV",
         "VERCEL_URL",
         "VERCEL_REGION",
-        "VERCEL_GIT_COMMIT_SHA"
+        "VERCEL_GIT_COMMIT_SHA",
+        "INTEGRATION_ENCRYPTION_KEY",
+        "MS_GRAPH_CLIENT_ID",
+        "MS_GRAPH_CLIENT_SECRET",
+        "MS_GRAPH_REDIRECT_URI"
       ]
     },
     "dev": {
