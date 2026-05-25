@@ -11,6 +11,55 @@
 
 ---
 
+## v3 EXTERNAL AUDIT — May 24, 2026
+
+> External strategic assessment received from a third reader. Convergent
+> with v1 + v2 on several findings, net-new on three. Engineering
+> response shipped same day; founder-only items tracked below.
+
+### Engineering (already shipped, today)
+- [x] **Share-card title leads with stat** — `/a/[slug]` metadata title was `"<archetype> — my COYL autopilot"` even though the OG image already used the prevalence stat as eyebrow. Title now `"<archetype>: <signature script>"` so text-only link parsers (browser tab, twitter card fallback, OG description) lead with the viral element. (commit `207d151`)
+- [x] **Terms page §3 — stale "task-tracking productivity platform" copy fixed.** Rewritten around behavioral support, danger-window interrupts, recovery flow, Autopilot Map. Explicit "behavioral support, not medical treatment" with link to /safety. Metadata description aligned. (commit `207d151`)
+- [x] **WhatItCatches breadth band expanded 3→6 patterns + "same engine" line.** Addresses v3 concern that multiple vertical pages forced user self-segmentation, WITHOUT killing the multi-vertical engine moat. Added 3 new cards (work follow-through, decision-support, recovery) and a connective paragraph: *"Same coordinator. Different windows. COYL catches food at 9 PM, tab switches at 11 AM, follow-ups that drift past Thursday..."* (commit `472c723`)
+- [x] **Autopilot Map MVP shipped — schema + cron + share page + OG render + signed-in page integration.** Real "Spotify Wrapped for self-sabotage" — the v3 critique's highest-leverage organic-growth ask, previously mockup-only. (5 files in 3 commits: `a778190`, `26d8883`, `ec109c5`)
+  - New `AutopilotMapSnapshot` Prisma model + additive migration `20260524010000_autopilot_map_snapshot`
+  - Weekly cron `/api/cron/autopilot-map-snapshot` (Mondays 6 AM UTC) aggregates top excuse, peak danger window, recovery rate, pattern signature from real `Excuse` + `SlipRecord` + `DangerWindow` data; upserts on `(userId, weekStart)`; per-user try/catch
+  - Public share page `/m/[slug]` renders the 4-card snapshot (editorial cream + orange + charcoal); robots:noindex
+  - OG image render `/api/og/autopilot-map/[slug]` returns 1200×630 PNG for Twitter / iMessage / Slack / LinkedIn previews; tombstone "this map has been revoked" fallback on missing snapshot
+  - `/autopilot-map` page now renders signed-in users' real most-recent map above the existing marketing content via `<YourAutopilotMapBanner />` client component (Path B chosen — fetch via `/api/v1/autopilot-map/me` API route, defensive prisma access for cache-components compatibility)
+  - Three-state UX: signed-out → unchanged marketing page; signed-in + no snapshot → "first map publishes Monday 6 AM UTC" banner; signed-in + snapshot → 4-card real-data section with share button
+
+### V3 findings ALREADY DONE (not action — convergent signal validating rounds 2+3 work)
+- [x] **Archetype OG image leads with prevalence stat** — shipped in round-3 audit. v3 reviewer was reading cached version.
+- [x] **Protocols stripped from primary nav, footer-only + `/protocol` hub** — shipped in rounds 2+3. v3 reviewer was reading cached version.
+
+### Founder action — convergent findings still on YOU
+These items were flagged in v1, v2, AND v3 audits. Three separate readings, same diagnosis. Highest-leverage moves remaining:
+
+- [ ] **(Item 6) One real advisor name on `/advisors`** — flagged in 4 audits now (v1 external, v2 founder-corrected, v3 external, recent marketing audit). Currently 6 cards saying "Seat open — confirming Q3 2026" — that's a public IOU with a deadline. Once Q3 closes without names, every returning visitor sees a missed promise. **Concrete sub-steps:**
+  1. Pick ONE warm target — the ex-Novo-Nordisk pharma BD, the JITAI PhD candidate, an ex-Headspace VP, OR an FDA DTx expert (the last would also reinforce the UAP threat model)
+  2. Send the warm intro request to whoever in your network knows them best (LinkedIn search → mutual connections → ask for introduction)
+  3. First meeting: 30 min, pitch is "be the 1st named advisor in a 6-seat board; 0.1% equity vesting over 2 years; quarterly check-ins"
+  4. Sign advisor agreement (Stripe Atlas + Carta have templates) and update `apps/web/src/app/(wedges)/advisors/page.tsx` line 71 area with the real name + photo + 1-line bio
+  5. Total time: 1-2 weeks calendar, ~2 hrs of active founder work
+
+- [ ] **(Item 7) Tier 0 revenue infrastructure** — Stripe live keys, Clerk production keys, DNS for deliverability, Vercel production env vars. **The `STRIPE_SECRET_KEY` in .env.local is literally `"sk_..."` placeholder**, and Clerk is on `pk_test_/sk_test_` dev keys. You cannot accept a dollar today. **Concrete sub-steps (~2.5 hrs total):**
+  1. **Stripe — activate live mode** (60 min): Stripe dashboard → activate live mode → create products (COYL Core $12/mo, COYL Core Annual $99/yr, COYL GLP-1 Plus $19.99/mo) → copy live keys + price IDs into Vercel env (Production scope only)
+  2. **Clerk — create production instance** (30 min): Clerk dashboard → create production instance for `coyl.ai` → copy `pk_live_*` + `sk_live_*` → set in Vercel Production env (the dev-key workaround in `proxy.ts` becomes redundant but harmless)
+  3. **Vercel env vars** (20 min): set `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRO_PRICE_ID`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `RESEND_API_KEY`, `CRON_SECRET` in Production scope. (Build warns about the last two on every deploy.)
+  4. **Stripe webhook → prod URL** (10 min): Stripe dashboard → Developers → Webhooks → add endpoint `https://coyl.ai/api/webhooks/stripe` → copy signing secret to `STRIPE_WEBHOOK_SECRET`
+  5. **DNS for deliverability** (30 min): TXT records for SPF (`v=spf1 include:resend.com ~all`), DKIM (from Resend dashboard), DMARC (`v=DMARC1; p=quarantine; rua=mailto:postmaster@coyl.ai`)
+  6. **End-to-end purchase smoke test** (20 min): buy Core on YOUR card → verify Clerk account upgraded to PRO → verify welcome email arrived → refund yourself in Stripe
+
+### V3 findings I'm explicitly pushing back on
+Documented here so you don't accept them uncritically:
+
+- ⚠ **v3 said "pick one flagship wedge."** Doing this kills the multi-vertical engine moat — the entire defensibility argument is that the same coordinator catches food at 9pm AND tab switches at 11am AND late follow-ups. Going single-wedge reverts COYL to "a GLP-1 app" or "a productivity app" — both crowded categories with no protocol story. The fix shipped (WhatItCatches 6-pattern expansion) addresses the first-touch confusion concern WITHOUT collapsing the engine claim.
+- ⚠ **v3 said "move protocol specs to developer subdomain."** Doing this splits SEO across two domains, separate hosting, loses cross-link credibility. Footer-only + single `/developers` hub (already shipped in rounds 2+3) achieves the same consumer-narrative effect at zero infrastructure cost.
+- ⚠ **v3 said "RAP is a placeholder."** False — RAP-0.1.md was drafted May 23. Spec-stage, same as UAP — not abandoned, just very recent. v3 reviewer didn't see it.
+
+---
+
 ## v2 STRATEGY SPRINT — May 22, 2026
 
 > Per `/Users/imanschrock/Downloads/coyl_v2.pdf` (Founder-corrected
