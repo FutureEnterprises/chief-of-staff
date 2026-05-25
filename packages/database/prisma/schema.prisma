@@ -1,6 +1,17 @@
 generator client {
   provider      = "prisma-client-js"
-  output        = "../../../apps/web/.prisma/client"
+  // Output INSIDE this package so consumers always resolve via the
+  // package boundary (`@repo/database`) rather than reaching across
+  // workspaces into `apps/web/.prisma/client`. The previous out-of-
+  // package path produced two recurring Turbopack warnings on every
+  // build:
+  //   - "unexpected export *" (Prisma client is CommonJS, Turbopack
+  //     can't statically tree-shake it through cross-workspace re-exports)
+  //   - "Encountered unexpected file in NFT list ... apps/web/next.config.ts"
+  //     (tracing the path back through the workspace boundary pulled
+  //     in next.config.ts unintentionally)
+  // Keeping the generated client inside the package eliminates both.
+  output        = "../src/generated/client"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 

@@ -11,8 +11,26 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   outputFileTracingRoot: path.join(__dirname, '../../'),
   outputFileTracingIncludes: {
-    '/**': ['apps/web/.prisma/client/**/*'],
+    // Prisma generated client lives inside @repo/database. The
+    // generated runtime files (query engine WASM, binary engines,
+    // libquery_engine-*.node) aren't statically traceable through
+    // the package re-export, so we tell NFT to ship them with every
+    // serverless function that imports `@repo/database`. Path was
+    // previously `apps/web/.prisma/client/**/*` when the generator
+    // wrote across the workspace boundary; that produced Turbopack
+    // warnings on every build (see packages/database/prisma/schema.prisma).
+    '/**': ['packages/database/src/generated/client/**/*'],
   },
+  // Treat Prisma's generated client as an external runtime dependency
+  // instead of bundling it. Prisma's `library.js` loads the binary
+  // query engine via `require('./' + engineFile)` — a dynamic require
+  // that Turbopack can't statically trace, which surfaced as the
+  // "Encountered unexpected file in NFT list" warning on every build.
+  // `serverExternalPackages` short-circuits that: Turbopack treats
+  // these names as opaque externals, the runtime resolves them as
+  // normal Node modules, and the engine binaries get shipped by the
+  // outputFileTracingIncludes glob above.
+  serverExternalPackages: ['@prisma/client', '@repo/database'],
   async headers() {
     return [
       {

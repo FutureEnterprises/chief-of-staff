@@ -1,0 +1,5 @@
+# Prisma generated client — written by `prisma generate` (runs on
+# postinstall and `pnpm db:generate`). Engine binaries are platform-
+# specific and large; consumers regenerate on install. Path matches
+# `output` in prisma/schema.prisma.
+src/generated/
