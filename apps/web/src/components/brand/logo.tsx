@@ -11,44 +11,57 @@ interface CoylLogoProps {
   theme?: 'light' | 'dark' | 'auto'
 }
 
+/**
+ * Mark intrinsic aspect ratio — the founder's mark is LANDSCAPE because
+ * the sonar arcs extend right of the C. Master PNG is 527×400 (ratio
+ * ~1.3175). When sizing the mark by height, the width follows from
+ * this constant. Centralized so callers don't have to reason about it.
+ */
+const MARK_ASPECT = 527 / 400 // ≈ 1.3175
+
+/** Convert a height target to the landscape (width, height) pair. */
+function markBox(height: number): { width: number; height: number } {
+  return { width: Math.round(height * MARK_ASPECT), height }
+}
+
 const sizes = {
-  sm: { icon: 22, text: 'text-sm', gap: 'gap-1.5' },
-  md: { icon: 30, text: 'text-lg', gap: 'gap-2' },
-  lg: { icon: 44, text: 'text-2xl', gap: 'gap-3' },
-  xl: { icon: 60, text: 'text-4xl', gap: 'gap-4' },
+  sm: { iconH: 26, text: 'text-sm', gap: 'gap-2' },
+  md: { iconH: 36, text: 'text-lg', gap: 'gap-2.5' },
+  lg: { iconH: 52, text: 'text-2xl', gap: 'gap-3' },
+  xl: { iconH: 72, text: 'text-4xl', gap: 'gap-4' },
 }
 
 /**
  * CoylMark — the founder's official COYL mark (May 24 2026 final).
  *
  * Stops the SVG iteration loop. The mark is now sourced from the
- * founder-supplied master PNG at /public/coyl-logo-full.png, cropped
- * to a square mark-only at /public/coyl-mark.png. The chrome half-C
- * with black interior, 4-point compass star, and sonar arcs are all
- * baked into the image — no in-code geometry, no theme variants, no
- * animation. If the brand identity changes, replace coyl-mark.png +
- * coyl-logo-full.png and every consumer picks it up.
+ * founder-supplied master PNG, cropped tight to the mark's alpha
+ * bounding box at /public/coyl-mark.png (527×400 landscape — the
+ * sonar arcs extend right of the half-ring C, so the natural shape
+ * is wider than tall). The chrome half-C with black interior,
+ * 4-point compass star, and sonar arcs are all baked into the
+ * image — no in-code geometry, no theme variants, no animation.
  *
  * Why PNG over SVG: the chrome-3D shading, black inner-fill, and
  * golden sonar ripples in the founder's reference are a rendered
- * piece of art, not a vector. SVG approximations of it consistently
- * came out muddy. The PNG is the source of truth.
+ * piece of art, not a vector. SVG approximations consistently came
+ * out muddy. The PNG is the source of truth.
  *
- * Animation: none. The static mark IS the brand. If we want a pulse
- * later, do it in CSS on the wrapping element (transform: scale on
- * hover) rather than re-introducing animated SVG.
+ * Sizing API: `size` = desired HEIGHT in px. Width is computed from
+ * the natural aspect ratio (no padding, no distortion). If the brand
+ * identity changes, replace coyl-mark.png + coyl-logo-full.png and
+ * every consumer picks it up.
  */
-export function CoylMark({ size = 30, className }: { size?: number; className?: string }) {
+export function CoylMark({ size = 36, className }: { size?: number; className?: string }) {
+  const { width, height } = markBox(size)
   return (
     <Image
       src="/coyl-mark.png"
       alt="COYL"
-      width={size}
-      height={size}
+      width={width}
+      height={height}
       priority
       className={cn('shrink-0 select-none', className)}
-      // Master is 512×512; the next-image optimizer downsamples to
-      // exactly the rendered size on demand.
     />
   )
 }
@@ -67,11 +80,11 @@ export function CoylLogo({
   showWordmark = true,
   size = 'md',
 }: CoylLogoProps) {
-  const { icon, text, gap } = sizes[size]
+  const { iconH, text, gap } = sizes[size]
 
   return (
     <div className={cn('flex items-center', gap, className)}>
-      <CoylMark size={icon} />
+      <CoylMark size={iconH} />
       {showWordmark && (
         <span
           className={cn(
