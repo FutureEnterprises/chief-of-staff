@@ -1,46 +1,46 @@
-<svg width="220" height="56" viewBox="0 0 220 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="240" height="56" viewBox="0 0 240 56" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!--
-    COYL wordmark — SVG version for OG previews, social cards, and
-    anywhere we need a flat image asset instead of the React component.
+    COYL wordmark — AZURE FACET · PULSING SIGNAL · mark + COYL text.
 
-    Composition: HELD PAUSE · LOZENGE mark left, "COYL" wordmark right
-    with the Y in orange. Mark sits in a 48px box aligned to the
-    wordmark baseline; gap = 14px.
+    OG preview / social card asset. Mark sits left at 48×48px, "COYL"
+    wordmark right with orange Y. Mark geometry mirrors the React
+    CoylMark component + favicon.svg exactly.
 
-    Mark geometry matches apps/web/src/components/brand/logo.tsx
-    exactly. Wordmark uses system-sans fallback so OG-card parsers
-    (Twitter, LinkedIn, iMessage, Slack) render reliably without web
-    font dependency. Production hero + nav use the React component;
-    this SVG is the flat-asset backup.
+    The sparkle animates via inline <style>; OG image renderers
+    (next/og) rasterize the first frame (resting), so social previews
+    see a clean static mark. Live <img> renders animate in-browser.
 
-    Tagline "CONTROL YOUR LIFE" removed — the brand has dropped the
-    acronym lore (per the May 2026 rebrand). The wordmark stands alone.
-
-    Selected from the /logo-options review on 2026-05-22.
+    No tagline. The wordmark stands alone (acronym lore dropped per
+    the May 2026 rebrand).
   -->
+  <style>
+    @keyframes coyl-wm-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.55; transform: scale(0.78); }
+    }
+    .coyl-wm-sparkle {
+      animation: coyl-wm-pulse 2.4s ease-in-out infinite;
+      transform-origin: 25px 33px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .coyl-wm-sparkle { animation: none; }
+    }
+  </style>
 
-  <!-- Mark — HELD PAUSE · LOZENGE, scaled 2× from the 24-unit viewBox -->
+  <!-- Mark — scaled 2× from 24-unit viewBox -->
   <g transform="translate(4 4) scale(2)">
+    <polygon points="13,2 22.5,22 1.5,22" fill="#ff6600"/>
+    <polygon points="13,9 18.5,20 6.5,20" fill="#fafaf7"/>
     <path
-      d="M 18.72 5.28 A 9.5 9.5 0 1 0 18.72 18.72"
-      stroke="#ff6600"
-      stroke-width="1.75"
-      stroke-linecap="butt"
-      fill="none"
-    />
-    <rect
-      x="10.4"
-      y="10.4"
-      width="3.2"
-      height="3.2"
-      transform="rotate(45 12 12)"
+      class="coyl-wm-sparkle"
+      d="M 12.5 13.5 L 13.3 16 L 15.5 16.5 L 13.3 17 L 12.5 19.5 L 11.7 17 L 9.5 16.5 L 11.7 16 Z"
       fill="#ff6600"
     />
   </g>
 
-  <!-- Wordmark — "COYL" with the Y in orange. -->
+  <!-- Wordmark — "COYL" with orange Y -->
   <text
-    x="66"
+    x="68"
     y="40"
     font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
     font-weight="700"

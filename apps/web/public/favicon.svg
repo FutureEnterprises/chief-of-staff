@@ -1,27 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
   <!--
-    COYL favicon — HELD PAUSE · LOZENGE.
+    COYL favicon — AZURE FACET · PULSING SIGNAL.
 
-    Hairline 270° arc + filled lozenge at center. Mirrors the
-    CoylMark React component verbatim so tab favicon, nav logo, and
-    OG previews read as the same mark.
+    Solid orange A-frame triangle with a tilted apex (Azure-style),
+    cream-cutout inner triangle, 4-point compass sparkle pulsing in
+    the negative-space center. Geometry identical to the CoylMark
+    React component (apps/web/src/components/brand/logo.tsx) so tab
+    favicon, nav logo, and OG previews all read as one mark.
 
-    Selected from the /logo-options review on 2026-05-22.
-    See apps/web/src/components/brand/logo.tsx for rationale.
+    Inline <style> drives the sparkle pulse — browsers honor SVG
+    keyframe animations on <link rel="icon" type="image/svg+xml">.
+    Reduced-motion respected.
+
+    Selected May 24 2026 — replaces the LOZENGE mark (which the
+    founder felt was too quiet). The A-frame + pulse hits.
   -->
+  <style>
+    @keyframes coyl-fav-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.55; transform: scale(0.78); }
+    }
+    .coyl-fav-sparkle {
+      animation: coyl-fav-pulse 2.4s ease-in-out infinite;
+      transform-origin: 12.5px 16.5px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .coyl-fav-sparkle { animation: none; }
+    }
+  </style>
+  <polygon points="13,2 22.5,22 1.5,22" fill="#ff6600"/>
+  <polygon points="13,9 18.5,20 6.5,20" fill="#fafaf7"/>
   <path
-    d="M 18.72 5.28 A 9.5 9.5 0 1 0 18.72 18.72"
-    stroke="#ff6600"
-    stroke-width="1.75"
-    stroke-linecap="butt"
-    fill="none"
-  />
-  <rect
-    x="10.4"
-    y="10.4"
-    width="3.2"
-    height="3.2"
-    transform="rotate(45 12 12)"
+    class="coyl-fav-sparkle"
+    d="M 12.5 13.5 L 13.3 16 L 15.5 16.5 L 13.3 17 L 12.5 19.5 L 11.7 17 L 9.5 16.5 L 11.7 16 Z"
     fill="#ff6600"
   />
 </svg>

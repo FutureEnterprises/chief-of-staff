@@ -16,44 +16,37 @@ const sizes = {
 }
 
 /**
- * CoylMark — HELD PAUSE · LOZENGE.
+ * CoylMark — AZURE FACET · PULSING SIGNAL.
  *
- * Hairline 270° arc opening to the right, with a precise filled
- * lozenge (rotated square diamond) at the geometric center. The arc
- * is the bracket; the lozenge is the moment being held. The
- * composition reads as "something captured within boundaries."
+ * Two-shape composition:
+ *   1. Solid filled A-frame — outer triangle with a tilted apex (Azure-
+ *      style asymmetry) cut by an inner triangle to leave a negative
+ *      space at center. Reads as a faceted "A" with weight, not as a
+ *      flat outline.
+ *   2. 4-point compass sparkle in the negative space center, pulsing.
+ *      The sparkle is the moment of awareness — the interrupt firing,
+ *      visible. CSS keyframe pulses opacity + scale on a 2.4s loop;
+ *      `prefers-reduced-motion` halts the animation per A11y guidance.
  *
- * Editorial-luxury aesthetic — matches the Letter / Aesop / A24 /
- * Hermès / Bulgari reference set already running through the site
- * (Instrument Serif italic, cream backgrounds, hairline rules). The
- * lozenge is the section-divider dingbat from fine printing — a
- * jewel-like fixed point.
+ * Why this replaces the LOZENGE mark (May 2026 → May 2026 revision):
+ * the previous hairline-C + lozenge was editorial-quiet but failed at
+ * the founder's "doesn't hit" test. The A-frame brings Azure-style
+ * sculptural weight, the sparkle introduces a pulse that telegraphs
+ * "live behavioral signal" — both upgrades the previous mark lacked.
  *
  * Geometric properties:
- *   • viewBox 0 0 24 24 — scales crisply from 16px favicon to 1024px
- *     iOS app icon.
- *   • Arc center (12, 12), radius 9.5, stroke-width 1.75. The
- *     hairline weight (≈7.3% of size) holds at 16px favicon while
- *     reading as restrained at hero/billboard scale.
- *   • Arc spans from 1:30 (18.72, 5.28) the long way counter-
- *     clockwise to 4:30 (18.72, 18.72), leaving a 90° opening on the
- *     right.
- *   • Endcaps butt (not round) — sharper, more editorial.
- *   • Lozenge: 3.2 × 3.2 unit rect rotated 45° about (12, 12). Fills
- *     ≈17% of the arc's interior — visible at all sizes without
- *     competing with the arc.
- *   • Solid orange #ff6600 (no gradient). Hermès orange does the
- *     work alone; gradients read as 2018-vintage tech.
+ *   • viewBox 0 0 24 24 — scales 16px favicon → 1024px iOS app icon.
+ *   • Outer facet: triangle (13,2)→(22.5,22)→(1.5,22). Apex shifted
+ *     1px right of geometric center → Azure-style forward tilt.
+ *   • Inner cut-out (negative space): (13,9)→(18.5,20)→(6.5,20). Same
+ *     tilt; cream background bleeds through.
+ *   • Sparkle: 4-point cross at (12.5, 16.5), outer span ~5.5px,
+ *     inner waist ~1.4px. Slightly right of geometric center to
+ *     balance the outer tilt.
+ *   • Solid orange #ff6600 throughout. No gradients.
  *
- * Replaces the previous bold gradient C (which read close to Capital
- * One / Citrix / Cox) with a distinct silhouette unused by any
- * competitor in behavioral health or proactive-AI.
- *
- * Selected from the /logo-options review on 2026-05-22. The three
- * variants considered: SPARK (asterisk center), CROSS (+ center —
- * rejected for medical-cross semantic that conflicts with the
- * /safety page's "not a medical device" positioning), and LOZENGE
- * (chosen).
+ * Animation: see `.coyl-sparkle-pulse` keyframe in globals.css. Falls
+ * back to a non-animated static sparkle if reduced-motion is set.
  */
 export function CoylMark({ size = 30, className }: { size?: number; className?: string }) {
   return (
@@ -66,23 +59,26 @@ export function CoylMark({ size = 30, className }: { size?: number; className?: 
       className={className}
       aria-hidden="true"
     >
-      {/* The hairline 270° arc — bracket. */}
-      <path
-        d="M 18.72 5.28 A 9.5 9.5 0 1 0 18.72 18.72"
-        stroke="#ff6600"
-        strokeWidth="1.75"
-        strokeLinecap="butt"
-        fill="none"
+      {/* Outer facet — solid orange A-frame triangle with right-tilt. */}
+      <polygon points="13,2 22.5,22 1.5,22" fill="#ff6600" />
+      {/* Inner cut-out — same-tilt smaller triangle. Fill defaults to
+          cream (#fafaf7) for marketing surfaces; the
+          `.coyl-mark-inner` class lets globals.css override the fill
+          to warm-dark (#0e0c0a) under `.dark` or `[data-theme='dark']`
+          wrappers (app surfaces). */}
+      <polygon
+        className="coyl-mark-inner"
+        points="13,9 18.5,20 6.5,20"
+        fill="#fafaf7"
       />
-      {/* The lozenge — the moment being held. Rotated 3.2px square
-          centered at the geometric midpoint. */}
-      <rect
-        x="10.4"
-        y="10.4"
-        width="3.2"
-        height="3.2"
-        transform="rotate(45 12 12)"
+      {/* 4-point compass sparkle — the pulsing signal. The CSS class
+          drives the keyframe animation; transform-origin keeps the
+          pulse centered on the sparkle's geometric midpoint. */}
+      <path
+        className="coyl-sparkle-pulse"
+        d="M 12.5 13.5 L 13.3 16 L 15.5 16.5 L 13.3 17 L 12.5 19.5 L 11.7 17 L 9.5 16.5 L 11.7 16 Z"
         fill="#ff6600"
+        style={{ transformOrigin: '12.5px 16.5px' }}
       />
     </svg>
   )
