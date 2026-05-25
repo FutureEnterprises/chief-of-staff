@@ -172,7 +172,14 @@ export default function HowItWorksPage() {
           Recovery &rarr; Learning. Every broken promise runs this. So does every one
           you keep. The loop is what separates COYL from a chatbot or a reminder app.
         </p>
-        <div className="pt-6">
+        <p className="max-w-3xl text-sm leading-[1.65] text-gray-500">
+          <strong className="font-semibold text-orange-600">Step 4 is the
+          three-second window.</strong> Between the excuse loading and the action
+          firing, there&rsquo;s a half-breath where the script can still be
+          re-routed. That&rsquo;s where COYL fires. Every other step exists to
+          make step 4 land more accurately.
+        </p>
+        <div className="pt-10">
           <CoreLoop />
         </div>
       </section>
