@@ -16,13 +16,22 @@ import { motion, useInView } from 'motion/react'
 import { useRef } from 'react'
 
 /**
- * <WhatItCatches /> — the three wedges, one tight band.
+ * <WhatItCatches /> — the six wedges, one tight band.
  *
  * Replaces what used to be three separate callout components
  * (Glp1Callout + ProcrastinationCallout + TeamsCallout). Per the
  * Refero synthesis (Linear, Vapi, Metaview, Dovetail): award-winning
  * SaaS homepages do not stack 3-4 full-bleed callouts — they show
  * the breadth in one section, with breath.
+ *
+ * V3 audit expansion (2026-05-24): expanded from 3 cards to 6 to
+ * make the "same engine across verticals" point visible at first
+ * touch. The v3 critique correctly flagged that 5 separate vertical
+ * pages competing for homepage attention forced users to self-
+ * segment ("is this about my eating, my focus, my work?"). The
+ * answer: same coordinator, different windows. The breadth band
+ * now SHOWS that with six patterns in a 2×3 grid, each linking to
+ * its dedicated vertical page for the deep dive.
  *
  * The eyebrow names the moment; each card names ONE specific autopilot
  * loop in the user's voice; the link goes to the dedicated wedge page
@@ -40,21 +49,42 @@ export function WhatItCatches() {
       // /research where the clinical narrative lives.
       eyebrow: 'NIGHT · FRIDGE',
       title: '"Not hungry. Just restless."',
-      body: 'The 9 PM kitchen. The "I worked hard today" script. The script the willpower can’t touch.',
+      body: 'The 9 PM kitchen. The "I worked hard today" script. The script willpower can’t touch.',
       href: '/weight-loss',
       cta: 'Late-night kitchen',
     },
     {
-      eyebrow: 'FOCUS · WORK',
+      eyebrow: 'FOCUS · TAB',
       title: '"One more tab won’t hurt."',
       body: 'The doom-scroll. The Reddit pivot mid-deep-work. The afternoon collapse.',
       href: '/procrastination',
       cta: 'Procrastination',
     },
     {
-      eyebrow: 'RECURRING LOOPS',
+      eyebrow: 'FOLLOW-THROUGH · DEAL',
+      title: '"I’ll send it tomorrow."',
+      body: 'The email that drifts. The follow-up that dies in the inbox. The commitment that felt real Tuesday and is gone Thursday.',
+      href: '/work',
+      cta: 'Work follow-through',
+    },
+    {
+      eyebrow: 'DECISIONS · LATE',
+      title: '"I’ll decide in the morning."',
+      body: 'The choice you defer past the window where it still mattered. The plan that needed today’s yes.',
+      href: '/decision-support',
+      cta: 'Decision support',
+    },
+    {
+      eyebrow: 'RECOVERY · POST-SLIP',
+      title: '"I already blew it."',
+      body: 'The Monday-reset trap. The streak abandon. The spiral that starts with one slip and ends three days later.',
+      href: '/recovery',
+      cta: 'Recovery engine',
+    },
+    {
+      eyebrow: 'RECURRING · LOOP',
       title: '"Just this once."',
-      body: 'The scroll. The checking. The same exact decision at the same exact time. Behavioral support — not clinical crisis.',
+      body: 'Same exact decision, same exact time, same exact script. The loop you keep running. Behavioral support — not clinical crisis.',
       href: '/recurring-loops',
       cta: 'Recurring loops',
     },
@@ -78,9 +108,18 @@ export function WhatItCatches() {
           Whatever you keep doing<br />
           <span className="italic text-orange-600">that you don&rsquo;t mean to.</span>
         </h2>
+        {/* The "same engine" line — addresses the v3 audit's concern
+            that 5+ vertical pages forced users to self-segregate.
+            One sentence collapses the verticals into one engine; the
+            cards below show the breadth without re-fragmenting. */}
+        <p className="mt-6 max-w-2xl text-base leading-[1.7] text-gray-700">
+          Same coordinator. Different windows. COYL catches food at 9 PM, tab
+          switches at 11 AM, follow-ups that drift past Thursday, and the
+          decision you keep deferring — through one engine, not six apps.
+        </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
         {wedges.map((w, i) => (
           <motion.div
             key={w.eyebrow}
