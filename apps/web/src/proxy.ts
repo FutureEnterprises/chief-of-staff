@@ -81,6 +81,11 @@ const isPublicRoute = createRouteMatcher([
   '/api/eap/v1/(.*)',
   '/api/pap/v1/(.*)',
   '/api/uap/v1/(.*)',
+  // RAP coordinator endpoints — risk-assessment partner API. UAP-key
+  // authenticated for assess/escalation/status; Clerk-session for audit
+  // + reopen. Lives at the same /api/<protocol>/v1/<verb> shape as
+  // EAP/PAP/UAP. See docs/protocol/RAP-0.1.md and apps/web/src/lib/rap/.
+  '/api/rap/v1/(.*)',
   // Live coordinator simulator — public read-only POST endpoint that
   // backs the /protocol "Try the protocol" interactive section. Runs
   // the production confidence-gate function in-process with no DB writes.
@@ -208,6 +213,11 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/api/og/(.*)',
   '/api/share/(.*)',
   '/api/uap/v1/(.*)',
+  // RAP coordinator endpoints — risk-assessment partner API. UAP-key
+  // authenticated for assess/escalation/status; Clerk-session for audit
+  // + reopen. Lives at the same /api/<protocol>/v1/<verb> shape as
+  // EAP/PAP/UAP. See docs/protocol/RAP-0.1.md and apps/web/src/lib/rap/.
+  '/api/rap/v1/(.*)',
   '/api/health',
   '/profile/(.*)',
   // Integration OAuth callbacks + webhook receivers must also bypass the
