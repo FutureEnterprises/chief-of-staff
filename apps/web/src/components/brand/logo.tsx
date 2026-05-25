@@ -65,21 +65,23 @@ export function CoylMark({ size = 30, className }: { size?: number; className?: 
       aria-hidden="true"
     >
       <defs>
-        {/* Warm-chrome gradient for the C — cream highlight at top,
-            charcoal-brown shadow at bottom. Works on cream + warm-dark
-            backgrounds without modification. */}
+        {/* True silver chrome — no warm tint. Pure metallic gradient
+            (highlight → silver → mid-gray → deep shadow) so the C reads
+            as polished metal, not beige leather. Works on cream + dark
+            without modification. */}
         <linearGradient id="coyl-chrome" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#f8f3e8" />
-          <stop offset="38%" stopColor="#cfc7b8" />
-          <stop offset="72%" stopColor="#6e6555" />
-          <stop offset="100%" stopColor="#2a2520" />
+          <stop offset="0%" stopColor="#fafafa" />
+          <stop offset="35%" stopColor="#c8c8c8" />
+          <stop offset="70%" stopColor="#5a5a5a" />
+          <stop offset="100%" stopColor="#1a1a1a" />
         </linearGradient>
-        {/* Halo behind the star — radial cream-to-orange-to-transparent
-            so the star appears to glow into the surrounding negative space. */}
+        {/* Halo — single-color radial of the brand orange #ff6600 at
+            decreasing opacity. Bright white center for the hot core,
+            then straight to brand orange. No #ff8a3d dilution. */}
         <radialGradient id="coyl-halo" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0%" stopColor="#fff4e0" stopOpacity="0.95" />
-          <stop offset="30%" stopColor="#ff8a3d" stopOpacity="0.55" />
-          <stop offset="70%" stopColor="#ff6600" stopOpacity="0.18" />
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="22%" stopColor="#ff6600" stopOpacity="0.75" />
+          <stop offset="65%" stopColor="#ff6600" stopOpacity="0.22" />
           <stop offset="100%" stopColor="#ff6600" stopOpacity="0" />
         </radialGradient>
       </defs>
@@ -132,25 +134,23 @@ export function CoylMark({ size = 30, className }: { size?: number; className?: 
           on a warm glow. Non-animated; the motion lives in the star + arcs. */}
       <circle cx="19" cy="16" r="6.5" fill="url(#coyl-halo)" />
 
-      {/* 4-point compass star — three nested diamonds.
-          Outer: orange compass cross. Middle: lighter inner cross.
-          Center: bright white dot. The whole group pulses (scale + opacity)
-          on the same heartbeat as the legacy sparkle did. The transform
-          origin is set via .coyl-star-pulse in globals.css (fill-box +
-          center → bbox-center of the symmetric star group). */}
+      {/* 4-point compass star — sharp, two-layer.
+          Outer compass: solid brand orange #ff6600 (no dilution).
+          Inner cross: pure white for the hot core. The whole group
+          pulses (scale + opacity) on the same heartbeat as the
+          legacy sparkle. Transform-origin set via .coyl-star-pulse
+          in globals.css. */}
       <g className="coyl-star-pulse">
-        {/* Outer 4-point compass — orange */}
+        {/* Outer 4-point compass — brand orange, longer spikes */}
         <path
-          d="M 19 9.5 L 19.7 16 L 19 22.5 L 18.3 16 Z M 12.5 16 L 19 15.3 L 25.5 16 L 19 16.7 Z"
-          fill="#ff8a3d"
+          d="M 19 8.5 L 19.85 16 L 19 23.5 L 18.15 16 Z M 11.5 16 L 19 15.15 L 26.5 16 L 19 16.85 Z"
+          fill="#ff6600"
         />
-        {/* Inner brighter compass — cream */}
+        {/* Inner cross — pure white core */}
         <path
-          d="M 19 12 L 19.4 16 L 19 20 L 18.6 16 Z M 15 16 L 19 15.6 L 23 16 L 19 16.4 Z"
-          fill="#fff4e0"
+          d="M 19 13 L 19.35 16 L 19 19 L 18.65 16 Z M 16 16 L 19 15.65 L 22 16 L 19 16.35 Z"
+          fill="#ffffff"
         />
-        {/* Center hot spot */}
-        <circle cx="19" cy="16" r="0.7" fill="#ffffff" />
       </g>
     </svg>
   )
@@ -317,7 +317,7 @@ export function CoylLockup({
         >
           <span>Intent</span>
           <span style={{ margin: '0 0.6em', opacity: 0.6 }}>·</span>
-          <span style={{ color: '#ff8a3d' }}>3 seconds</span>
+          <span style={{ color: '#ff6600' }}>3 seconds</span>
           <span style={{ margin: '0 0.6em', opacity: 0.6 }}>·</span>
           <span>Outcome</span>
         </p>
