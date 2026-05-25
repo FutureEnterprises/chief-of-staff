@@ -91,7 +91,8 @@ export async function GET(req: Request) {
 
   let chainValid = false
   try {
-    chainValid = await verifyAuditChain(entries)
+    const result = await verifyAuditChain(user.id)
+    chainValid = result.valid
   } catch (err) {
     console.warn('[uap/audit] verifyAuditChain failed', {
       err: err instanceof Error ? err.message : 'unknown',

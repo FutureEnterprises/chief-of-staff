@@ -156,7 +156,7 @@ export async function DELETE(
 
   let revoked
   try {
-    revoked = await revokeGrant(id, { reason: 'user_initiated' })
+    revoked = await revokeGrant({ grantId: id, userId: user.id, reason: 'user_initiated' })
   } catch (err) {
     console.error('[uap/grant/[id]] revokeGrant failed', {
       err: err instanceof Error ? err.message : 'unknown',

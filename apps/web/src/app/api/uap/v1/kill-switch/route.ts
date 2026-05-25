@@ -101,7 +101,7 @@ export async function POST(req: Request) {
 
   const origin = safeOrigin(req)
   return NextResponse.json({
-    killed_at: result.initiatedAt.toISOString(),
+    killed_at: result.killedAt.toISOString(),
     affected_grant_ids: result.affectedGrantIds,
     audit_url: `${origin}/audit/uap?user_id=${encodeURIComponent(user.id)}`,
   })

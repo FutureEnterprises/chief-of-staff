@@ -22,8 +22,11 @@ import { randomBytes } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { authenticateUAPPartner } from '@/lib/uap/uap-partner-auth'
 import { decideExecute } from '@/lib/uap/coordinator'
-import { loadGrant, loadRules } from '@/lib/uap/grant-store'
-import { isUserKilled } from '@/lib/uap/kill-switch'
+import { loadGrant } from '@/lib/uap/grant-store'
+import { isUserKilledGlobally } from '@/lib/uap/kill-switch'
+import { isPanicActive } from '@/lib/coordinator/panic-check'
+import { isInQuietHours } from '@/lib/coordinator/quiet-hours'
+import { checkLLMPartnerRateLimit } from '@/lib/coordinator/rate-limit'
 import { writeAuditEntry } from '@/lib/uap/audit'
 import { signProvenance } from '@/lib/uap/provenance'
 import {
@@ -118,10 +121,8 @@ export async function POST(req: Request) {
     )
   }
 
-  const [rules, killed] = await Promise.all([
-    loadRules({ userId: grant.userId, grantId: grant.id }),
-    isUserKilled(grant.userId),
-  ])
+  // Coordinator loads rules + checks kill-switch itself via injected
+  // deps (see decideExecute call below). No pre-load needed.
 
   const input: UAPExecuteInput = {
     grantId: grant.id,
@@ -152,10 +153,12 @@ export async function POST(req: Request) {
   let decision
   try {
     decision = await decideExecute(input, {
-      grant,
-      rules,
-      userKilled: killed,
-      now,
+      loadGrantWithRules: loadGrant,
+      isUserKilledGlobally,
+      isPanicActive,
+      isInQuietHours,
+      checkPartnerRateLimit: checkLLMPartnerRateLimit,
+      now: () => now,
     })
   } catch (err) {
     console.error('[uap/execute] decideExecute threw', {
@@ -191,8 +194,6 @@ export async function POST(req: Request) {
         auditId,
         actionKind: action.kind,
         recipientHint: input.recipient?.hint ?? '',
-        issuedAt: now,
-        auditUrl: `${safeOrigin(req)}/audit/uap/${auditId}`,
       })
     } catch (err) {
       console.error('[uap/execute] provenance sign failed', {

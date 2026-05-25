@@ -14,8 +14,11 @@
 import { NextResponse } from 'next/server'
 import { authenticateUAPPartner } from '@/lib/uap/uap-partner-auth'
 import { decideExecute } from '@/lib/uap/coordinator'
-import { loadGrant, loadRules } from '@/lib/uap/grant-store'
-import { isUserKilled } from '@/lib/uap/kill-switch'
+import { loadGrant } from '@/lib/uap/grant-store'
+import { isUserKilledGlobally } from '@/lib/uap/kill-switch'
+import { isPanicActive } from '@/lib/coordinator/panic-check'
+import { isInQuietHours } from '@/lib/coordinator/quiet-hours'
+import { checkLLMPartnerRateLimit } from '@/lib/coordinator/rate-limit'
 import type { UAPExecuteInput } from '@/lib/uap/types'
 
 type Body = {
@@ -104,10 +107,8 @@ export async function POST(req: Request) {
     )
   }
 
-  const [rules, killed] = await Promise.all([
-    loadRules({ userId: grant.userId, grantId: grant.id }),
-    isUserKilled(grant.userId),
-  ])
+  // Coordinator loads rules + checks kill-switch itself via injected
+  // deps below — no pre-load needed.
 
   const input: UAPExecuteInput = {
     grantId: grant.id,
@@ -137,10 +138,12 @@ export async function POST(req: Request) {
   let decision
   try {
     decision = await decideExecute(input, {
-      grant,
-      rules,
-      userKilled: killed,
-      now: new Date(),
+      loadGrantWithRules: loadGrant,
+      isUserKilledGlobally,
+      isPanicActive,
+      isInQuietHours,
+      checkPartnerRateLimit: checkLLMPartnerRateLimit,
+      now: () => new Date(),
     })
   } catch (err) {
     console.error('[uap/precheck] decideExecute threw', {

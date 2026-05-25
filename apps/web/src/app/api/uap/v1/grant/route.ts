@@ -149,7 +149,18 @@ export async function POST(req: Request) {
       llmPartnerId: partner.id,
       scopes: body.scopes as UAPScope[],
       expiresAt,
-      consentArtifact: body.consent_artifact as object,
+      consentArtifact: {
+        version: typeof (body.consent_artifact as Record<string, unknown>)?.version === 'string'
+          ? ((body.consent_artifact as Record<string, unknown>).version as string)
+          : 'uap-0.1.1',
+        shownToUserAt: typeof (body.consent_artifact as Record<string, unknown>)?.shown_to_user_at === 'string'
+          ? new Date((body.consent_artifact as Record<string, unknown>).shown_to_user_at as string)
+          : new Date(),
+        userResponse: 'explicit_grant' as const,
+        uiSurface: typeof (body.consent_artifact as Record<string, unknown>)?.ui_surface === 'string'
+          ? ((body.consent_artifact as Record<string, unknown>).ui_surface as string)
+          : 'unknown',
+      },
       rules,
     })
   } catch (err) {
