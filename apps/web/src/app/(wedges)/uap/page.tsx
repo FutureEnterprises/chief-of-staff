@@ -565,7 +565,7 @@ const PRIMITIVES: Array<{ id: string; kicker: string; body: string }> = [
   {
     id: 'RULE_DECLARE',
     kicker: 'Primitive 07 · pre-decline',
-    body: "User pre-declines a class of action — \"never spend > $50 without asking,\" \"never send messages after midnight,\" \"never share with X.\" Rules supersede grants. A rule violation auto-denies even if the grant would otherwise allow. Negative authority precedes positive authority.",
+    body: 'User pre-declines a class of action — “never spend > $50 without asking,” “never send messages after midnight,” “never share with X.” Rules supersede grants. A rule violation auto-denies even if the grant would otherwise allow. Negative authority precedes positive authority.',
   },
   {
     id: 'AUDIT_QUERY',
@@ -601,7 +601,7 @@ const INVARIANTS: Array<{ title: string; body: string }> = [
   },
   {
     title: 'No ambient grants.',
-    body: 'There is no "always-on" authority. Every grant has a scope, an expiry, and a rule set. A grant that omits any of these is invalid and must be rejected at GRANT time.',
+    body: 'There is no “always-on” authority. Every grant has a scope, an expiry, and a rule set. A grant that omits any of these is invalid and must be rejected at GRANT time.',
   },
   {
     title: 'Negative authority precedes positive authority.',
@@ -621,7 +621,7 @@ const THREATS: Array<{
     attack:
       'LLM is tricked into using its grant authority on behalf of an attacker. A malicious calendar invite contains text the LLM interprets as a user instruction to forward credentials.',
     mitigation:
-      'Every EXECUTE includes the trigger source. Rules can refuse actions whose trigger is "incoming_external_input." The consent_artifact establishes user intent at grant time.',
+      'Every EXECUTE includes the trigger source. Rules can refuse actions whose trigger is “incoming_external_input.” The consent_artifact establishes user intent at grant time.',
   },
   {
     id: 'T2',
@@ -684,11 +684,11 @@ const THREATS: Array<{
 const CONSENT_REQS: Array<{ title: string; body: string }> = [
   {
     title: 'Plain-English scope list',
-    body: 'Scopes rendered as plain-English sentences, NOT scope identifiers. "Can schedule events on your calendar" — never "calendar.write." The user must be able to read the consent dialog without prior protocol training.',
+    body: 'Scopes rendered as plain-English sentences, NOT scope identifiers. “Can schedule events on your calendar” — never “calendar.write.” The user must be able to read the consent dialog without prior protocol training.',
   },
   {
     title: 'Expiry as a date and time',
-    body: 'Expiry displayed in the consent dialog as a date+time, not a duration. "Until Friday May 29 at 5 PM" — never "7 days." Duration framing hides the calendar reality from the user.',
+    body: 'Expiry displayed in the consent dialog as a date+time, not a duration. “Until Friday May 29 at 5 PM” — never “7 days.” Duration framing hides the calendar reality from the user.',
   },
   {
     title: 'Default to the shortest reasonable expiry',

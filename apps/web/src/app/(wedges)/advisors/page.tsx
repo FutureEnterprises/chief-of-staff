@@ -31,20 +31,25 @@ import { cacheLife, cacheTag } from 'next/cache'
 import { BreadcrumbSchema } from '@/app/structured-data'
 
 /**
- * ROUND-3 AUDIT GATE — May 2026.
+ * ROUND-4 AUDIT GATE — May 25 2026.
  *
- * The audit re-raised the "no real advisor names" critique even after
- * round-2 hid this surface from the footer and About callouts. Per
- * founder decision in the round-3 question set: gate the page itself
- * with notFound() until at least one credible advisor name can be
- * published. "Forming" reads as a weak signal; a clean 404 is the
- * cleaner answer for direct-URL visitors (e.g. auditors guessing the
- * sibling URL of /clinical-board).
+ * Round 3 gated this page with notFound() (clean 404 for direct
+ * visitors). Round 4 audit reflagged that the 404 still breaks
+ * inbound links — press mentions, old tweets, partner emails,
+ * sibling-URL guesses from /clinical-board. A 404 reads as "this
+ * company is broken," not "this surface is pending."
  *
- * When a real advisor confirms: comment out the GATE_ACTIVE constant
- * below, edit the ADVISORS array to surface the named seat, and the
- * page lights back up. The full page layout / metadata / cinematic
- * structure below is preserved so the unhiding is a one-line revert.
+ * Resolution: a permanent (308) redirect /advisors → /about lives
+ * in apps/web/next.config.ts. The redirect intercepts at the edge
+ * BEFORE this page renders, so this notFound() is now a
+ * belt-and-braces fallback if a deploy ever drops the redirect.
+ *
+ * When a real advisor confirms:
+ *   1. Drop the /advisors entry from next.config.ts redirects()
+ *   2. Set GATE_ACTIVE = false below
+ *   3. Edit the ADVISORS array to surface the named seat
+ * The full page layout / metadata / cinematic structure below is
+ * preserved so the unhiding is a 3-line change.
  */
 const GATE_ACTIVE = true
 

@@ -88,7 +88,10 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      { source: '/favicon.ico', destination: '/favicon.svg', permanent: false },
+      // /favicon.ico → Next.js icon.png convention (favicon.svg was
+      // retired in the May 24 logo swap). 308 permanent so the old
+      // path stays valid for any clients that cached it.
+      { source: '/favicon.ico', destination: '/icon.png', permanent: true },
       // May 2026 slug rename: the old URL signaled clinical pathology
       // the page explicitly disclaims. Footer/nav labels were already
       // "Recurring loops"; URL now matches. 301 preserves SEO equity.
@@ -99,6 +102,14 @@ const nextConfig: NextConfig = {
       // redirect so inbound links + Google search results continue to
       // route to the live wedge.
       { source: '/glp1', destination: '/rebound', permanent: true },
+      // /advisors is gated until a real named advisor is published
+      // (see apps/web/src/app/(wedges)/advisors/page.tsx for the
+      // history). Until then, any inbound link — press mention, old
+      // tweet, partner email, sibling-URL guess from /clinical-board —
+      // gets a permanent redirect to /about instead of a 404. The
+      // notFound() inside the page.tsx becomes a belt-and-braces
+      // fallback if a deploy ever drops this redirect.
+      { source: '/advisors', destination: '/about', permanent: true },
     ]
   },
   experimental: {
