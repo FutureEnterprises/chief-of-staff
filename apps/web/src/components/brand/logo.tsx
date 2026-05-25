@@ -1,10 +1,13 @@
-'use client'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 interface CoylLogoProps {
   className?: string
   showWordmark?: boolean
   size?: 'sm' | 'md' | 'lg' | 'xl'
+  /** @deprecated theme prop is no longer used — the PNG ships with its
+   * own chrome shading and the wordmark color is baked in. Kept on the
+   * prop type for backward compatibility with existing call sites. */
   theme?: 'light' | 'dark' | 'auto'
 }
 
@@ -16,176 +19,66 @@ const sizes = {
 }
 
 /**
- * CoylMark — SIGNAL · CAUGHT (May 24 2026 revision).
+ * CoylMark — the founder's official COYL mark (May 24 2026 final).
  *
- * Half-ring "C" catches a radiating signal. Reads as both the letter C
- * and the verb "catch" — the founder's promise visualized.
+ * Stops the SVG iteration loop. The mark is now sourced from the
+ * founder-supplied master PNG at /public/coyl-logo-full.png, cropped
+ * to a square mark-only at /public/coyl-mark.png. The chrome half-C
+ * with black interior, 4-point compass star, and sonar arcs are all
+ * baked into the image — no in-code geometry, no theme variants, no
+ * animation. If the brand identity changes, replace coyl-mark.png +
+ * coyl-logo-full.png and every consumer picks it up.
  *
- *   1. Warm-chrome half-ring on the left, opening to the right. Drawn as
- *      a thick stroked arc with rounded caps so the ends read clean at
- *      every size from 16px favicon to 1024px iOS icon. The chrome
- *      gradient (warm cream → warm charcoal) gives 3D sculptural weight
- *      and is luminance-balanced for both #fafaf7 marketing surfaces and
- *      #0e0c0a app surfaces without theme-swap logic.
- *   2. 4-point compass star inside the C's opening — three layers stacked
- *      (orange diamond cross, lighter inner cross, white center dot) for
- *      a bright sun-like core with orange edges. Pulses on a 2.4s loop.
- *   3. Three sonar arcs to the right of the star, propagating outward in
- *      staggered phase. Tells the eye "the signal is live, the catch is
- *      happening now" — not a static badge.
+ * Why PNG over SVG: the chrome-3D shading, black inner-fill, and
+ * golden sonar ripples in the founder's reference are a rendered
+ * piece of art, not a vector. SVG approximations of it consistently
+ * came out muddy. The PNG is the source of truth.
  *
- * Why this replaces the AZURE FACET mark (May 24 2026 → May 24 2026):
- * the A-frame was sculptural but the metaphor (a literal triangle) was
- * orthogonal to the product. The half-ring + signal is *the product's
- * actual mechanism* rendered as a glyph — visual identity and product
- * thesis collapsed into one shape. Founder feedback on the A-frame:
- * "horrendous." This shape was selected from a two-option pair (orange
- * chrome / purple chrome); orange picked for palette consistency.
- *
- * Geometric properties (viewBox 0 0 32 32):
- *   • C arc: center (11, 16), radius 8.5, stroke 3.5, rounded caps,
- *     opening from −45° to +45° relative to the +x axis (90° gap).
- *   • Star: center (19, 16), 4-point compass, vertical span 13,
- *     horizontal span 13, with 3 nested layers.
- *   • Sonar arcs: 3 concentric ~135° arcs at radii 4 / 6 / 8 from the
- *     star, each ~0.8s out of phase, ease-out.
- *
- * Animations: see `.coyl-star-pulse` and `.coyl-ripple-1/2/3` in
- * globals.css. All halt under `prefers-reduced-motion`.
+ * Animation: none. The static mark IS the brand. If we want a pulse
+ * later, do it in CSS on the wrapping element (transform: scale on
+ * hover) rather than re-introducing animated SVG.
  */
 export function CoylMark({ size = 30, className }: { size?: number; className?: string }) {
   return (
-    <svg
+    <Image
+      src="/coyl-mark.png"
+      alt="COYL"
       width={size}
       height={size}
-      viewBox="0 0 32 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      aria-hidden="true"
-    >
-      <defs>
-        {/* True silver chrome — no warm tint. Pure metallic gradient
-            (highlight → silver → mid-gray → deep shadow) so the C reads
-            as polished metal, not beige leather. Works on cream + dark
-            without modification. */}
-        <linearGradient id="coyl-chrome" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#fafafa" />
-          <stop offset="35%" stopColor="#c8c8c8" />
-          <stop offset="70%" stopColor="#5a5a5a" />
-          <stop offset="100%" stopColor="#1a1a1a" />
-        </linearGradient>
-        {/* Halo — single-color radial of the brand orange #ff6600 at
-            decreasing opacity. Bright white center for the hot core,
-            then straight to brand orange. No #ff8a3d dilution. */}
-        <radialGradient id="coyl-halo" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-          <stop offset="22%" stopColor="#ff6600" stopOpacity="0.75" />
-          <stop offset="65%" stopColor="#ff6600" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#ff6600" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-
-      {/* Half-ring C — thick stroked arc, opens right. The two endpoint
-          coordinates (17.01, 9.99) and (17.01, 22.01) sit at ±45° from
-          horizontal on a circle of radius 8.5 centered at (11, 16). The
-          large-arc-flag=1 + sweep-flag=0 selects the long arc through
-          the left side, producing a C that opens toward the signal. */}
-      <path
-        d="M 17.01 9.99 A 8.5 8.5 0 1 0 17.01 22.01"
-        stroke="url(#coyl-chrome)"
-        strokeWidth={3.5}
-        strokeLinecap="round"
-        fill="none"
-      />
-
-      {/* Sonar arcs — three concentric ripples emanating right from the
-          star. Each animates outward (scale + opacity) on a 2.4s loop,
-          phase-offset to create a continuous propagation feel. The
-          transform-origin (set in globals.css) anchors each ripple's
-          scale to the star center (19, 16) so they fan outward from
-          the source instead of thickening in place. */}
-      <path
-        className="coyl-ripple-1"
-        d="M 21 12.54 A 4 4 0 0 1 21 19.46"
-        stroke="#ff6600"
-        strokeWidth={0.85}
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        className="coyl-ripple-2"
-        d="M 22 10.81 A 6 6 0 0 1 22 21.19"
-        stroke="#ff6600"
-        strokeWidth={0.8}
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        className="coyl-ripple-3"
-        d="M 23 9.07 A 8 8 0 0 1 23 22.93"
-        stroke="#ff6600"
-        strokeWidth={0.75}
-        strokeLinecap="round"
-        fill="none"
-      />
-
-      {/* Halo — sits behind the star so the star reads as a bright core
-          on a warm glow. Non-animated; the motion lives in the star + arcs. */}
-      <circle cx="19" cy="16" r="6.5" fill="url(#coyl-halo)" />
-
-      {/* 4-point compass star — sharp, two-layer.
-          Outer compass: solid brand orange #ff6600 (no dilution).
-          Inner cross: pure white for the hot core. The whole group
-          pulses (scale + opacity) on the same heartbeat as the
-          legacy sparkle. Transform-origin set via .coyl-star-pulse
-          in globals.css. */}
-      <g className="coyl-star-pulse">
-        {/* Outer 4-point compass — brand orange, longer spikes */}
-        <path
-          d="M 19 8.5 L 19.85 16 L 19 23.5 L 18.15 16 Z M 11.5 16 L 19 15.15 L 26.5 16 L 19 16.85 Z"
-          fill="#ff6600"
-        />
-        {/* Inner cross — pure white core */}
-        <path
-          d="M 19 13 L 19.35 16 L 19 19 L 18.65 16 Z M 16 16 L 19 15.65 L 22 16 L 19 16.35 Z"
-          fill="#ffffff"
-        />
-      </g>
-    </svg>
+      priority
+      className={cn('shrink-0 select-none', className)}
+      // Master is 512×512; the next-image optimizer downsamples to
+      // exactly the rendered size on demand.
+    />
   )
 }
 
 /**
- * Full COYL logotype — mark + wordmark for nav/footer/header use. The
- * wordmark stays as a simple "CO[Y orange]L" because it has to read
- * cleanly at 14px in nav and 48px in marketing without re-tuning. For
- * the elaborate hero-lockup wordmark (pill-O + tagline + microcopy from
- * the May 24 brand refresh), use <CoylLockup /> instead.
+ * Full COYL logotype — mark + wordmark for nav/footer/header use.
+ *
+ * The wordmark stays as a simple text "CO[Y orange]L" rather than
+ * inlining the founder's full PNG (which includes the wordmark
+ * already), because nav contexts need a tight inline layout with
+ * mark + text side-by-side at small sizes. For the full vertical
+ * PNG lockup, use <CoylLockup /> below.
  */
 export function CoylLogo({
   className,
   showWordmark = true,
   size = 'md',
-  theme = 'auto',
 }: CoylLogoProps) {
   const { icon, text, gap } = sizes[size]
-
-  const wordmarkClass = cn(
-    'font-bold tracking-[-0.04em] leading-none select-none',
-    text,
-    theme === 'dark'
-      ? 'text-[#f5f5f0]'
-      : theme === 'light'
-        ? 'text-[#1a1a1a]'
-        : 'text-foreground',
-  )
 
   return (
     <div className={cn('flex items-center', gap, className)}>
       <CoylMark size={icon} />
       {showWordmark && (
-        <span className={wordmarkClass}>
+        <span
+          className={cn(
+            'font-bold tracking-[-0.04em] leading-none select-none text-foreground',
+            text,
+          )}
+        >
           CO<span style={{ color: '#ff6600' }}>Y</span>L
         </span>
       )}
@@ -199,129 +92,30 @@ export function CoylIcon({ size = 32, className }: { size?: number; className?: 
 }
 
 /**
- * CoylLockup — marketing hero variant with the pill-O wordmark, tagline,
- * and the "INTENT · 3 SECONDS · OUTCOME" microcopy strip. Reserve for
- * hero contexts where the mark deserves to breathe — splash screens,
- * the homepage hero, OG share renders. Not for inline nav use.
+ * CoylLockup — the founder's full vertical lockup PNG (mark + COYL
+ * wordmark with the orange pill-O), used in marketing hero contexts
+ * where the mark deserves to breathe. Splash screens, hero blocks,
+ * social/OG renders. Not for inline nav.
  *
- * The "O" of COYL is rendered as an outlined orange stadium shape — a
- * hollow vessel echoing the half-ring C above it (both are "catchers").
- * The C/Y/L glyphs are light-weight sans-serif white; the only color
- * accents are the pill-O outline, the mark's signal, and the "3 SECONDS"
- * pivot in the microcopy strip.
+ * The PNG is 1024×1024 square. Render at whatever size the caller
+ * needs and the next-image optimizer downsamples on demand.
  */
 export function CoylLockup({
   className,
-  showTagline = true,
-  showStrip = true,
-  theme = 'dark',
+  size = 320,
 }: {
   className?: string
-  showTagline?: boolean
-  showStrip?: boolean
-  theme?: 'light' | 'dark'
+  /** Rendered display size in px. The PNG square is 1024×1024 master. */
+  size?: number
 }) {
-  const isDark = theme === 'dark'
-  const letterColor = isDark ? '#f5f0e6' : '#1a1a1a'
-  const taglineColor = isDark ? '#e8e1d2' : '#1a1a1a'
-  const muted = isDark ? '#7c7466' : '#5a5550'
-
   return (
-    <div className={cn('flex flex-col items-center text-center', className)}>
-      <div className="mb-6 md:mb-10">
-        <CoylMark size={140} />
-      </div>
-
-      {/* Wordmark — C [pill-O] Y L. The pill-O is a hollow stadium-
-          shaped outline in #ff6600. We render it as an inline SVG sized
-          relative to the surrounding font (em units) so it scales with
-          the wordmark and stays vertically centered on the cap-height. */}
-      <div
-        className="flex items-baseline"
-        style={{
-          fontFamily:
-            "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif",
-          fontWeight: 300,
-          fontSize: 'clamp(48px, 8vw, 96px)',
-          letterSpacing: '0.04em',
-          color: letterColor,
-          lineHeight: 1,
-        }}
-      >
-        <span>C</span>
-        <span
-          aria-hidden
-          className="inline-flex items-center justify-center"
-          style={{
-            width: '0.82em',
-            height: '0.74em',
-            margin: '0 0.04em',
-            transform: 'translateY(-0.04em)',
-          }}
-        >
-          <svg
-            viewBox="0 0 100 92"
-            xmlns="http://www.w3.org/2000/svg"
-            style={{ width: '100%', height: '100%' }}
-          >
-            <rect
-              x="4"
-              y="4"
-              width="92"
-              height="84"
-              rx="42"
-              ry="42"
-              fill="none"
-              stroke="#ff6600"
-              strokeWidth="6"
-            />
-          </svg>
-        </span>
-        {/* Visually-hidden O so screen readers and search bots see COYL */}
-        <span className="sr-only">O</span>
-        <span>Y</span>
-        <span>L</span>
-      </div>
-
-      {showTagline && (
-        <p
-          className="mt-6 font-mono uppercase tracking-[0.28em]"
-          style={{
-            color: taglineColor,
-            fontSize: 'clamp(11px, 1.3vw, 16px)',
-            fontWeight: 400,
-          }}
-        >
-          Catch yourself before you do it again
-          <sup
-            style={{
-              fontSize: '0.6em',
-              marginLeft: '0.2em',
-              verticalAlign: 'super',
-              color: muted,
-            }}
-          >
-            ™
-          </sup>
-        </p>
-      )}
-
-      {showStrip && (
-        <p
-          className="mt-5 font-mono uppercase tracking-[0.32em]"
-          style={{
-            fontSize: 'clamp(9px, 1.05vw, 13px)',
-            fontWeight: 500,
-            color: muted,
-          }}
-        >
-          <span>Intent</span>
-          <span style={{ margin: '0 0.6em', opacity: 0.6 }}>·</span>
-          <span style={{ color: '#ff6600' }}>3 seconds</span>
-          <span style={{ margin: '0 0.6em', opacity: 0.6 }}>·</span>
-          <span>Outcome</span>
-        </p>
-      )}
-    </div>
+    <Image
+      src="/coyl-logo-full.png"
+      alt="COYL — Catch yourself before you do it again"
+      width={size}
+      height={size}
+      priority
+      className={cn('select-none', className)}
+    />
   )
 }

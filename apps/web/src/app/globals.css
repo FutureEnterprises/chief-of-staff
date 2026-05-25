@@ -283,66 +283,18 @@
 }
 
 /*
- * COYL brand mark — SIGNAL · CAUGHT (May 24 2026 revision).
+ * COYL brand mark — retired all in-code SVG animation (May 24 2026 final).
  *
- * The mark renders a half-ring C catching a radiating signal. Two
- * animation families:
+ * The brand mark now ships as a static PNG (apps/web/public/coyl-mark.png
+ * + apps/web/public/coyl-logo-full.png) rendered via next/image in
+ * components/brand/logo.tsx. The previous animated-SVG families —
+ * .coyl-star-pulse, .coyl-ripple-1/-2/-3, .coyl-sparkle-pulse,
+ * .coyl-mark-inner — were retired because the founder-supplied PNG
+ * is a rendered piece of art (3D chrome shading, baked black inner
+ * fill, golden ripples). SVG approximations consistently came out
+ * muddy. The PNG is the source of truth.
  *
- *   1. .coyl-star-pulse — the 4-point compass star at the center of
- *      the C's opening pulses on a 2.4s heartbeat (opacity + scale).
- *      Same cadence as the legacy sparkle; the mark feels alive.
- *
- *   2. .coyl-ripple-1/-2/-3 — three sonar arcs propagate outward to
- *      the right of the star on a 2.4s loop, phase-staggered (0s,
- *      0.8s, 1.6s). Each arc scales from 0.7× to 1.4× while fading
- *      from 0.7 opacity to 0 — reads as a continuous outward wave.
- *
- * Both families halt under prefers-reduced-motion. Both also apply
- * transform-box: fill-box so the SVG transform-origin resolves to
- * the path's own bounding-box center, not the SVG root.
- *
- * The legacy .coyl-sparkle-pulse + .coyl-mark-inner rules are
- * retired alongside the AZURE FACET mark they served.
+ * If we want a pulse effect in the future, prefer CSS animation on
+ * the wrapping element (transform: scale on hover, opacity fade,
+ * etc.) rather than re-introducing animated SVG geometry.
  */
-@keyframes coyl-star-pulse {
-  0%, 100% { opacity: 1;    transform: scale(1); }
-  50%      { opacity: 0.62; transform: scale(0.88); }
-}
-.coyl-star-pulse {
-  animation: coyl-star-pulse 2.4s ease-in-out infinite;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-@keyframes coyl-ripple {
-  0%   { opacity: 0;    transform: scale(0.7); }
-  18%  { opacity: 0.7;  transform: scale(0.85); }
-  100% { opacity: 0;    transform: scale(1.45); }
-}
-/* No transform-box → defaults to view-box on SVG elements, so the
-   transform-origin coordinates resolve in SVG user units. Anchoring at
-   (19, 16) — the star center — makes the ripples propagate OUTWARD
-   from the source rather than thickening in place. */
-.coyl-ripple-1,
-.coyl-ripple-2,
-.coyl-ripple-3 {
-  animation: coyl-ripple 2.4s ease-out infinite;
-  transform-origin: 19px 16px;
-  opacity: 0;
-}
-.coyl-ripple-2 { animation-delay: -0.8s; }
-.coyl-ripple-3 { animation-delay: -1.6s; }
-
-@media (prefers-reduced-motion: reduce) {
-  .coyl-star-pulse,
-  .coyl-ripple-1,
-  .coyl-ripple-2,
-  .coyl-ripple-3 {
-    animation: none;
-  }
-  /* Static fallback: show the ripples at their resting visible state
-     so the mark still reads as a radiating signal, just without motion. */
-  .coyl-ripple-1 { opacity: 0.55; }
-  .coyl-ripple-2 { opacity: 0.32; }
-  .coyl-ripple-3 { opacity: 0.18; }
-}

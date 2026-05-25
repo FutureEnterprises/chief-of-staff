@@ -73,10 +73,11 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   manifest: '/site.webmanifest',
-  icons: {
-    icon: '/favicon.svg',
-    apple: '/favicon.svg',
-  },
+  // No explicit icons: ... — Next.js 16 auto-discovers
+  // src/app/icon.png (favicon) and src/app/apple-icon.png (Apple
+  // touch icon). Both are the founder's chrome-half-C mark cropped
+  // from /public/coyl-logo-full.png. Don't add an `icons:` override
+  // here unless intentionally bypassing the file convention.
   openGraph: {
     type: 'website',
     siteName: 'COYL',
