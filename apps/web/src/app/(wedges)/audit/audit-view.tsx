@@ -25,6 +25,7 @@ import {
   type ScriptId,
   type Archetype,
 } from '@/lib/audit-archetype'
+import { reboundEquivalent } from '@/lib/family-taxonomy-map'
 import {
   CinematicScrim,
   CinematicEyebrow,
@@ -578,6 +579,36 @@ export function AuditView() {
                 <span>{archetype.specific.name}</span>
               </p>
             </div>
+
+            {/* GLP-1 taxonomy bridge — only shown for weight-wedge users.
+                Per v4 audit recommendation, instead of collapsing the
+                six general families into the four Rebound families
+                (which would lose signal), we surface the mapping when
+                the user is in the weight wedge — they're the audience
+                most likely on or considering a GLP-1. See
+                lib/family-taxonomy-map.ts for the calibrated mapping. */}
+            {archetype.wedge === 'weight' && (
+              <div className="mt-3 rounded-2xl border border-orange-400/25 bg-orange-500/[0.08] p-4 backdrop-blur-sm">
+                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-orange-300">
+                  In GLP-1 terms
+                </p>
+                <p className="mt-2 text-base font-semibold text-[#f5efe6]">
+                  You&rsquo;re a{' '}
+                  <span className="text-orange-300">
+                    {reboundEquivalent(archetype.family.slug).label}
+                  </span>
+                  .
+                </p>
+                <p className="mt-1 text-xs leading-[1.6] text-[#a59a87]">
+                  If you&rsquo;re on or coming off Ozempic / Wegovy / Zepbound, the
+                  Rebound quiz tunes COYL to the post-taper window.{' '}
+                  <Link href="/rebound/quiz" className="text-orange-300 underline-offset-4 hover:underline">
+                    Take the Rebound quiz →
+                  </Link>
+                </p>
+              </div>
+            )}
+
             <ArchetypeShareButton archetype={archetype} />
           </div>
 
