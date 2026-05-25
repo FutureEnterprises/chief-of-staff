@@ -292,6 +292,72 @@ export default async function ReboundPage() {
           </div>
         </section>
 
+        {/* 04b · PRESCRIBER TEASER — surfaced per the v4 audit's note
+            that /rebound buried the clinician path. Full pitch +
+            dashboard + referral form live at /rebound/for-clinicians;
+            this section gives the prescriber an immediate read on the
+            value prop without making them hunt for it. */}
+        <section className="space-y-6 border-t border-gray-200 pt-12">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            04b · For GLP-1 prescribers
+          </p>
+          <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.1] tracking-[-0.02em] text-gray-900 md:text-4xl">
+            Your patients lose weight on the shot.{' '}
+            <span className="italic text-orange-600">COYL keeps it off after.</span>
+          </h2>
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+            60% of weight loss returns within a year of discontinuation
+            (Wilding et al., 2022, <em>Diabetes Obes Metab</em>). The
+            shot suppresses appetite while it&rsquo;s active. COYL trains
+            the behavioral pattern that holds the loss after the
+            prescription ends.
+          </p>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="border-t border-orange-500 pt-4">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-orange-600">
+                Free for providers
+              </p>
+              <p className="mt-2 text-sm leading-[1.65] text-gray-700">
+                Clinician dashboard, BAA, white-label enrollment material — no
+                seat fee. First 25 patient seats free during your pilot.
+              </p>
+            </div>
+            <div className="border-t border-orange-500 pt-4">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-orange-600">
+                Patient-side billing
+              </p>
+              <p className="mt-2 text-sm leading-[1.65] text-gray-700">
+                $12–18 PMPM via patient direct-billing OR your clinic&rsquo;s
+                PBM. EMR webhook integration (Athena, Epic, Elation, Healthie).
+              </p>
+            </div>
+            <div className="border-t border-orange-500 pt-4">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-orange-600">
+                What you see
+              </p>
+              <p className="mt-2 text-sm leading-[1.65] text-gray-700">
+                Aggregate cohort retention. Per-patient slip frequency. Same-
+                night recovery rate. Regain signals 6+ weeks before scale data
+                would show it.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3 pt-4">
+            <Link
+              href="/rebound/for-clinicians"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+            >
+              See the clinician dashboard →
+            </Link>
+            <a
+              href="mailto:clinic@coyl.ai?subject=GLP-1+prescriber+pilot+inquiry"
+              className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              Start a free pilot
+            </a>
+          </div>
+        </section>
+
         {/* 05 · SAFETY POSTURE */}
         <section className="space-y-6 border-t border-gray-200 pt-12">
           <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">

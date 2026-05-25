@@ -102,6 +102,22 @@ const SCRIPTS: { id: ScriptId; quote: string }[] = [
   { id: 'social', quote: '"I couldn\u2019t say no."' },
 ]
 
+/**
+ * After Q1 (wedge), give the user a probabilistic family preview.
+ * Per the v4 audit's "show partial result after 1-2 questions" \u2014 the
+ * intent is to tap curiosity early so completion rate climbs. Mapping
+ * is the most-common family seen for each wedge in the live data, NOT
+ * a hard classification (the real archetype needs all three answers).
+ */
+const WEDGE_TO_LIKELY_FAMILY: Record<WedgeId, string> = {
+  weight: 'The 9 PM Negotiator',
+  work: 'The One-More-Tabber',
+  destructive: 'The Spiral Extender',
+  consistency: 'The Monday Resetter',
+  spending: 'The Deserver',
+  focus: 'The One-More-Tabber',
+}
+
 // buildInterrupts moved to @/lib/audit-archetype so the server-side
 // /api/v1/audit/capture route and the email template can share the
 // exact strings the audit result page shows.
@@ -417,10 +433,27 @@ export function AuditView() {
     )
   }
 
-  // Q2: the window.
+  // Q2: the window. Carries the early-preview teaser per the v4 audit:
+  // after Q1 we already know the LIKELY family. Show it as a small
+  // banner above the question so the user feels the pattern landing
+  // BEFORE they finish — taps curiosity, lowers Q3 drop-off.
   if (step === 2) {
+    const likelyFamily = wedge ? WEDGE_TO_LIKELY_FAMILY[wedge] : null
     return (
       <StepWrap stepIndex={2} title="When does it usually fire?" subtitle="The block of time where the script most often runs.">
+        {likelyFamily && (
+          <div className="mb-6 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-orange-600">
+              Early read · still narrowing
+            </p>
+            <p className="mt-1 font-serif text-lg font-normal italic leading-[1.25] text-gray-900">
+              You&rsquo;re looking like {likelyFamily}.
+            </p>
+            <p className="mt-1 text-xs leading-[1.6] text-gray-600">
+              Two more questions and we&rsquo;ll know the exact pattern + the script that fires.
+            </p>
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
           {WINDOWS.map((w) => (
             <button

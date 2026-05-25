@@ -58,7 +58,7 @@ export function LandingFooter() {
     { label: 'Decision support', href: '/decision-support' },
     { label: 'Recurring loops', href: '/recurring-loops' },
     { label: 'Autopilot map', href: '/autopilot-map' },
-    { label: 'Changelog', href: '/changelog' },
+    { label: "What's new (changelog)", href: '/changelog' },
   ]
 
   const legal = [
