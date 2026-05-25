@@ -14,6 +14,7 @@
 import { NextResponse } from 'next/server'
 import { authenticateUAPPartner } from '@/lib/uap/uap-partner-auth'
 import { decideExecute } from '@/lib/uap/coordinator'
+import { isUserCoachingPathClosed } from '@/lib/rap/store'
 import { loadGrant } from '@/lib/uap/grant-store'
 import { isUserKilledGlobally } from '@/lib/uap/kill-switch'
 import { isPanicActive } from '@/lib/coordinator/panic-check'
@@ -143,6 +144,7 @@ export async function POST(req: Request) {
       isPanicActive,
       isInQuietHours,
       checkPartnerRateLimit: checkLLMPartnerRateLimit,
+      isUserCoachingPathClosed,
       now: () => new Date(),
     })
   } catch (err) {

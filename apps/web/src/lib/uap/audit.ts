@@ -90,10 +90,15 @@ import type { UAPAuditInput, UAPProvenancePayload } from './types'
  * dev-mode signatures provide NO security guarantee. They exist solely
  * so the chain-verification code path is exercisable locally.
  */
+// Generated once with crypto.generateKeyPairSync('ed25519') on
+// 2026-05-25 and verified to be a MATCHING pair (the prior values
+// here were two independently-generated unrelated keypairs, which
+// broke verifyAuditChain in dev). Raw 32-byte forms — the audit
+// module accepts raw or DER-wrapped input via decodeKey().
 const DEV_FALLBACK_PRIVATE_KEY_BASE64 =
-  'MC4CAQAwBQYDK2VwBCIEIBfZkD2YJv8u/MlW6c0gT4QzOgFqBQv8m5TX1tHrZk2X'
+  'WiAk5l86CvUXEsk1jsWXYEvT+dPTOzMniZxuDLfmmOQ='
 const DEV_FALLBACK_PUBLIC_KEY_BASE64 =
-  'MCowBQYDK2VwAyEAFsd5VShE+w9pn5KZ8Hcv8WoVJ6gC+kAyCmI4iZ0OBuw='
+  '6FhiEfUxyCHaUtjmxAAaQs8I3cDeZbyP1Mx3bRvznNM='
 
 let cachedPrivateKey: KeyObject | null = null
 let cachedPublicKey: KeyObject | null = null

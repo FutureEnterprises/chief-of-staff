@@ -103,6 +103,18 @@ export type UAPDeps = {
 
   /** Test-injectable clock. Default `() => new Date()`. */
   now?: () => Date
+
+  /** RAP coaching-path gate. If the user is in a closed coaching-path
+   *  window (CRISIS_INDICATION or LEGAL_OR_MEDICAL_EMERGENCY recently
+   *  classified by RAP), every UAP EXECUTE must deny with
+   *  `rap_coaching_path_closed` — RAP supersedes every grant per
+   *  RAP-0.1.md §2.
+   *
+   *  Optional: if not provided, the route handler is expected to wire
+   *  in `isUserCoachingPathClosed` from `@/lib/rap/store`. Tests can
+   *  inject a fake. Mirrors PAP coordinator's
+   *  EvaluateProposalDeps.isUserCoachingPathClosed. */
+  isUserCoachingPathClosed?: (userId: string) => Promise<boolean>
 }
 
 /* ──────────────────── Action-kind → scope mapping ──────────────────── */
@@ -220,6 +232,34 @@ export async function decideExecute(
   deps: UAPDeps,
 ): Promise<UAPDecision> {
   const now = (deps.now ?? (() => new Date()))()
+
+  // ── 0. RAP coaching-path supersedes every grant ───────────────────
+  // Per RAP-0.1.md §2, CRISIS_INDICATION or LEGAL_OR_MEDICAL_EMERGENCY
+  // closes the coaching path. UAP standing-authority EXECUTEs MUST
+  // refuse during that window — RAP supersedes every grant, every
+  // rule, every kill-switch grace period. We check this BEFORE loading
+  // the grant so a closed coaching path can't be probed against grant
+  // existence (information disclosure mitigation, symmetric to step 2).
+  //
+  // Mirrors PAP coordinator's gate-0 RAP check (see lib/coordinator/
+  // index.ts evaluateProposal). When `deps.isUserCoachingPathClosed`
+  // is omitted (test or partial wiring), the gate is skipped — the
+  // production route handlers wire in lib/rap/store#isUserCoachingPathClosed.
+  if (deps.isUserCoachingPathClosed) {
+    let closed = false
+    try {
+      closed = await deps.isUserCoachingPathClosed(input.userId)
+    } catch {
+      // Fail-open on a RAP read error: don't block a legitimate UAP
+      // EXECUTE because the RAP store had a transient outage. PAP uses
+      // the same posture. If RAP availability becomes critical, flip
+      // to fail-closed here and update the threat model.
+      closed = false
+    }
+    if (closed) {
+      return { decision: 'denied', reason: 'rap_coaching_path_closed' }
+    }
+  }
 
   // ── 1. Grant exists? ──────────────────────────────────────────────
   const grant = await deps.loadGrantWithRules(input.grantId)

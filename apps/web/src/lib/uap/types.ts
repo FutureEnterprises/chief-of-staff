@@ -115,6 +115,10 @@ export type UAPDenialReason =
   | 'unknown_scope'
   | 'invalid_input'
   | 'partner_not_authorized'
+  /** RAP CRISIS_INDICATION or LEGAL_OR_MEDICAL_EMERGENCY closed the
+   *  coaching path. Supersedes every grant per RAP-0.1 §2. Mirrors PAP
+   *  coordinator's `rap_coaching_path_closed` denial reason. */
+  | 'rap_coaching_path_closed'
 
 /* ──────────────────── Inputs ──────────────────── */
 

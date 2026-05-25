@@ -126,25 +126,53 @@ export async function initiateKillSwitch(params: {
 /* ──────────────────── isUserKilledGlobally ──────────────────── */
 
 /**
- * Returns whether a kill event is currently "in flight" for the user.
+ * Returns whether the user is in a 5-second post-kill propagation
+ * window during which no new EXECUTE may run, regardless of per-grant
+ * status. Per UAP-0.1.md §3 the kill switch supersedes every grant,
+ * every rule, every in-flight action — propagation deadline is 5
+ * seconds across all connected surfaces, and actions completing
+ * during that window must be tagged `post_kill` (T6 in the threat
+ * model).
  *
- * v0.1.1 semantic: kill is atomic at the DB layer. There is no
- * in-flight window the coordinator needs to gate against here — the
- * decision tree (see coordinator.ts) already detects killed grants via
- * `grant.status === 'KILLED_GLOBALLY'`, which the atomic transaction
- * in `initiateKillSwitch` flips inside the same instant the kill is
- * recorded. After the kill, the user is free to issue fresh grants;
- * those grants are not blocked by the historical kill event.
+ * Implementation:
+ *   1. Read the user's most-recent UAPKillSwitchEvent (table has
+ *      userId @unique — at most one row exists per user).
+ *   2. If no kill event ever fired → false.
+ *   3. If the kill is still within KILL_PROPAGATION_WINDOW_MS of
+ *      `initiatedAt` → true (the coordinator denies during this
+ *      window even if the user issues fresh grants).
+ *   4. Otherwise → false. (After 5s the per-grant
+ *      `status = 'KILLED_GLOBALLY'` is what blocks the killed grants;
+ *      fresh post-kill grants are valid.)
  *
- * This function is exposed for API symmetry with the spec and for
- * future-proofing (v0.2 may model an explicit in-flight propagation
- * window for async surface fanout). In v0.1.1 it always returns
- * `false` — callers should not depend on it for security decisions.
+ * v0.1.1 → v0.2 evolution: the "window" model is a stand-in for full
+ * async surface fanout. In v0.2 this function will consult
+ * subscriber-acknowledgement tables to confirm every EAP surface has
+ * propagated the kill.
  *
- * @returns always `false` in v0.1.1
+ * Fail-safe: any DB error returns `true` (deny rather than allow).
  */
-export async function isUserKilledGlobally(_userId: string): Promise<boolean> {
-  return false
+export const KILL_PROPAGATION_WINDOW_MS = 5_000
+
+export async function isUserKilledGlobally(userId: string): Promise<boolean> {
+  if (!userId) return false
+  try {
+    const event = await prisma.uAPKillSwitchEvent.findUnique({
+      where: { userId },
+      select: { initiatedAt: true },
+    })
+    if (!event) return false
+    const ageMs = Date.now() - event.initiatedAt.getTime()
+    return ageMs >= 0 && ageMs <= KILL_PROPAGATION_WINDOW_MS
+  } catch (err) {
+    // Fail-safe: a DB read failure denies. Better to refuse one action
+    // than to fire after a kill the read couldn't confirm wasn't active.
+    console.error('[uap/kill-switch] isUserKilledGlobally read failed', {
+      err: err instanceof Error ? err.message : 'unknown',
+      userId,
+    })
+    return true
+  }
 }
 
 /* ──────────────────── loadKillSwitchEvent ──────────────────── */

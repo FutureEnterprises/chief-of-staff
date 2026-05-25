@@ -312,21 +312,39 @@ describe('initiateKillSwitch — idempotency', () => {
 
 /* ──────────────────── isUserKilledGlobally ──────────────────── */
 
-describe('isUserKilledGlobally — v0.1.1 contract', () => {
+describe('isUserKilledGlobally — 5-second propagation window', () => {
   it('returns false before any kill', async () => {
-    // v0.1.1 semantic: this function ALWAYS returns false (the gate is
-    // satisfied by grant.status === KILLED_GLOBALLY, not by a separate
-    // in-flight check). Documented in kill-switch.ts.
     expect(await isUserKilledGlobally(USER_KILL)).toBe(false)
   })
 
-  it('returns false after a kill (the v0.1.1 contract)', async () => {
+  it('returns true within the 5-second propagation window after a kill', async () => {
     seedGrant()
     await initiateKillSwitch({ userId: USER_KILL })
-    // The function exposes an API-symmetric "always false" in v0.1.1;
-    // the kill is observable via grant.status flips and the
-    // loadKillSwitchEvent row, not via this primitive.
+    // The user just killed — the post-kill window is open. Per
+    // UAP-0.1.md §3 + T6, the coordinator denies new EXECUTEs in
+    // this window even if the user issues fresh grants. The check
+    // reads the UAPKillSwitchEvent row's initiatedAt timestamp and
+    // compares against KILL_PROPAGATION_WINDOW_MS (5_000ms).
+    expect(await isUserKilledGlobally(USER_KILL)).toBe(true)
+  })
+
+  it('returns false after the propagation window elapses', async () => {
+    seedGrant()
+    // Plant the kill event with an initiatedAt that's >5s old. The
+    // mock store accepts whatever we set; the function reads it and
+    // computes age against Date.now().
+    killStore.set(USER_KILL, {
+      id: 'ksw_aged',
+      userId: USER_KILL,
+      initiatedAt: new Date(Date.now() - 10_000),
+      propagatedAt: new Date(Date.now() - 9_000),
+      affectedGrantIds: [],
+    })
     expect(await isUserKilledGlobally(USER_KILL)).toBe(false)
+  })
+
+  it('returns false for an empty userId (defensive)', async () => {
+    expect(await isUserKilledGlobally('')).toBe(false)
   })
 })
 
