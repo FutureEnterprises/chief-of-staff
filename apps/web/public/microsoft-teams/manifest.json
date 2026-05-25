@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
   "manifestVersion": "1.16",
   "version": "0.2.0",
-  "id": "REPLACE_WITH_AZURE_AD_APP_ID",
+  "id": "db3cb2d8-691c-4d0d-a16f-05f08d1e9676",
   "developer": {
     "name": "COYL",
     "websiteUrl": "https://coyl.ai",
@@ -25,7 +25,7 @@
   "accentColor": "#FF6600",
   "bots": [
     {
-      "botId": "REPLACE_WITH_AZURE_AD_APP_ID",
+      "botId": "db3cb2d8-691c-4d0d-a16f-05f08d1e9676",
       "scopes": ["personal", "team", "groupChat"],
       "supportsFiles": false,
       "isNotificationOnly": false,
@@ -74,7 +74,7 @@
   "permissions": ["identity", "messageTeamMembers"],
   "validDomains": ["coyl.ai", "*.coyl.ai"],
   "webApplicationInfo": {
-    "id": "REPLACE_WITH_AZURE_AD_APP_ID",
+    "id": "db3cb2d8-691c-4d0d-a16f-05f08d1e9676",
     "resource": "https://coyl.ai"
   },
   "authorization": {
