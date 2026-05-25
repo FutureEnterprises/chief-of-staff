@@ -188,6 +188,12 @@ model User {
   // calendar + email signal pulls used by /api/cron/teams-graph-pull.
   // See TeamsUserAuth below.
   teamsUserAuth           TeamsUserAuth?
+  // Autopilot Map weekly Wrapped snapshots — one row per week per user
+  // (Mon 00:00 UTC weekStart). Produced by /api/cron/autopilot-map-snapshot
+  // every Monday 06:00 UTC summarizing the week just ended. Powers the
+  // public /m/[slug] share-card route and the in-app /autopilot-map page
+  // when it switches from mockup to real data. See AutopilotMapSnapshot.
+  autopilotMapSnapshots   AutopilotMapSnapshot[]
 
   @@map("users")
 }
@@ -2187,4 +2193,62 @@ model InboundMessage {
 enum InboundChannel {
   SMS
   EMAIL
+}
+
+// ============================================================
+// AUTOPILOT MAP — WEEKLY WRAPPED SNAPSHOT
+// ============================================================
+//
+// One row per user per ISO week (weekStart = Monday 00:00 UTC of the
+// summarized week). Produced by /api/cron/autopilot-map-snapshot every
+// Monday 06:00 UTC for the week that just ended. The marketing page at
+// /autopilot-map promises a four-card "Spotify Wrapped for self-sabotage"
+// artifact — this row holds the deterministic, pre-aggregated data those
+// four cards render from, plus a public shareSlug for /m/[slug].
+//
+// The four cards (matching the existing mockup on the marketing page):
+//   1. Top excuse this week        → topExcuse + topExcuseCount
+//   2. Peak danger window          → peakWindowLabel + peakWindowSlips
+//   3. Recovery streak             → slipsThisWeek + recoveredCount + recoveryRate
+//   4. Pattern signature sentence  → patternSignature
+//
+// Re-running the cron upserts on (userId, weekStart) so the row is
+// idempotent — useful if we need to backfill or fix an aggregation bug.
+// shareSlug is generated once on first insert and preserved across
+// upserts so any URL already in the wild keeps resolving.
+//
+// Cascade on User delete: when a user is removed, every snapshot row
+// goes with them. /m/[slug] would then return 404 — which is exactly
+// what we want for deleted accounts.
+model AutopilotMapSnapshot {
+  id        String   @id @default(cuid())
+  userId    String
+  weekStart DateTime // Monday 00:00 UTC of the snapshot week
+  weekLabel String // human-readable label, e.g. "Week of May 19"
+
+  // Card 1 — Top excuse this week
+  topExcuse      String? // ExcuseCategory enum value (e.g. "DELAY")
+  topExcuseCount Int?
+
+  // Card 2 — Peak danger window
+  peakWindowLabel String? // e.g. "Wed 9-11 PM"
+  peakWindowSlips Int?
+
+  // Card 3 — Recovery streak
+  slipsThisWeek  Int?
+  recoveredCount Int? // slips recovered within 24h
+  recoveryRate   Int? // % integer for display, 0..100
+
+  // Card 4 — Pattern signature (a sentence)
+  patternSignature String? // e.g. "9 PM Negotiator: 4 night-fridge slips, 3 recovered"
+
+  // Sharable artifact
+  shareSlug   String   @unique // public route /m/[slug] would render this
+  publishedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStart])
+  @@index([userId, weekStart])
+  @@map("autopilot_map_snapshots")
 }
