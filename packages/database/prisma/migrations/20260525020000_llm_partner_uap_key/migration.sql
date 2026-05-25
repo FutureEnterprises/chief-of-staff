@@ -1,0 +1,23 @@
+-- LLMPartner gains a second bcrypt-hashed API-key column for UAP.
+--
+-- COYL's foundation-lab partner table previously carried a single
+-- `apiKeyHash` column shared across protocols; in practice that meant
+-- a partner integrating both PAP and UAP either had to use the same
+-- secret on both surfaces (poor blast-radius hygiene) or be
+-- represented by two LLMPartner rows (awkward for accounting, audit
+-- correlation, and rate-limit budgeting).
+--
+-- This migration adds `uapApiKeyHash` (nullable) so one partner row
+-- can independently hold PAP and UAP credentials. Existing partners
+-- are unaffected — uapApiKeyHash defaults to NULL and remains NULL
+-- until an admin explicitly mints a UAP key via
+-- /admin/llm-partners/<id> → "Mint UAP key".
+--
+-- The new column is verified by apps/web/src/lib/uap/uap-partner-auth.ts
+-- when a Bearer `coyl_uap_*` token is presented.
+--
+-- IF NOT EXISTS guard so re-running this migration on a database that
+-- already received the column out-of-band (e.g. via Supabase MCP
+-- apply_migration during dev) is a no-op rather than a hard error.
+
+ALTER TABLE "llm_partners" ADD COLUMN IF NOT EXISTS "uapApiKeyHash" TEXT;

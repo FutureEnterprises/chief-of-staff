@@ -3,6 +3,9 @@ import { notFound } from 'next/navigation'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
 import { revalidatePath } from 'next/cache'
+import { cookies, headers } from 'next/headers'
+import { randomBytes } from 'node:crypto'
+import bcrypt from 'bcryptjs'
 import { isAdmin } from '@/lib/admin-auth'
 
 export const metadata = { title: 'LLM partner — COYL Admin', robots: { index: false } }
@@ -18,11 +21,44 @@ export const metadata = { title: 'LLM partner — COYL Admin', robots: { index: 
  *   • Active scope grants (most recent 100, with user id + scope +
  *     granted-at)
  *   • Last 50 EAPAuditEntry rows scoped to this partner
- *   • Actions: rotate key, deactivate (soft-delete)
+ *   • Actions: rotate PAP key (links to dedicated rotate-key page),
+ *     mint UAP key (in-page server action with one-shot reveal),
+ *     deactivate (soft-delete)
  *
  * The (admin)/layout email gate + the second-line ADMIN_USER_IDS
  * check both have to pass before any DB read happens.
+ *
+ * --- UAP key reveal (server-side flash) -------------------------
+ *
+ * Minting a UAP key has to surface the plaintext exactly once. We
+ * keep this page a server component (it owns five expensive Promise.all
+ * queries) and avoid moving to a separate /mint-uap-key client route
+ * by using a short-lived httpOnly flash cookie:
+ *
+ *   1. `mintUapKey` server action mints + hashes the secret, persists
+ *      uapApiKeyHash on the partner, writes an EAPAuditEntry, then
+ *      sets cookie `coyl_uap_mint_flash` (httpOnly, secure, sameSite=
+ *      strict, maxAge=120s) scoped to the partner's detail path.
+ *   2. revalidatePath re-renders the page; the cookie reader below
+ *      detects the flash, renders the orange one-time-reveal panel
+ *      with the plaintext + copy affordance.
+ *   3. `dismissUapMintFlash` server action clears the cookie when
+ *      the operator clicks "Got it" — the secret is now gone from
+ *      every surface (DB has only the bcrypt hash; the cookie is
+ *      cleared; the browser must have copied it manually).
+ *
+ * The flash cookie is httpOnly so client-side JS can't exfiltrate it,
+ * sameSite=strict so it never leaves the operator's session, and
+ * scoped to /admin so it doesn't leak across the rest of the app.
  */
+
+/** Cookie name for the one-time UAP-key flash reveal. */
+const UAP_MINT_FLASH_COOKIE = 'coyl_uap_mint_flash'
+/** bcrypt work factor — mirrors lib/llm-partner-keys.ts:BCRYPT_COST. */
+const UAP_MINT_BCRYPT_COST = 12
+/** Wire-format prefix — mirrors lib/uap/uap-partner-auth.ts:TOKEN_PREFIX. */
+const UAP_TOKEN_PREFIX = 'coyl_uap_'
+
 export default async function LLMPartnerDetailPage({
   params,
 }: {
@@ -50,6 +86,107 @@ export default async function LLMPartnerDetailPage({
     revalidatePath(`/admin/llm-partners/${partnerId}`)
     revalidatePath('/admin/llm-partners')
   }
+
+  // Server-action: mint (or rotate) the partner's UAP key. Same
+  // primitives as /api/admin/llm-partners/[id]/mint-uap-key — kept
+  // inline here so the in-page affordance doesn't depend on a CSRF-
+  // tokenized client fetch. After persisting the bcrypt hash, the
+  // plaintext is stashed in a path-scoped, httpOnly flash cookie that
+  // the page renders ONCE and the dismiss action clears.
+  async function mintUapKey(formData: FormData) {
+    'use server'
+    const partnerId = String(formData.get('partnerId') ?? '')
+    const { userId: actorId } = await auth()
+    if (!actorId || !isAdmin(actorId)) return
+
+    const partnerRow = await prisma.lLMPartner.findUnique({
+      where: { id: partnerId },
+      select: { id: true, slug: true, uapApiKeyHash: true },
+    })
+    if (!partnerRow) return
+
+    // crypto.randomBytes(32) → 64-char hex secret. Mirrors
+    // lib/llm-partner-keys.ts:generateApiKey().
+    const keySecret = randomBytes(32).toString('hex')
+    const uapApiKeyHash = await bcrypt.hash(keySecret, UAP_MINT_BCRYPT_COST)
+
+    await prisma.lLMPartner.update({
+      where: { id: partnerId },
+      data: { uapApiKeyHash },
+    })
+
+    const wasRotation = partnerRow.uapApiKeyHash !== null
+
+    // Best-effort IP capture from the standard Vercel forwarded headers.
+    const hdrs = await headers()
+    const ipAddress =
+      hdrs.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+      hdrs.get('x-real-ip')?.trim() ??
+      null
+
+    await prisma.eAPAuditEntry.create({
+      data: {
+        userId: actorId,
+        llmPartnerId: partnerRow.id,
+        eventKind: 'llm_partner_uap_key_minted',
+        referenceId: partnerRow.id,
+        ipAddress,
+        payloadJson: {
+          actorClerkId: actorId,
+          partnerSlug: partnerRow.slug,
+          protocol: 'uap',
+          wasRotation,
+          source: 'admin_ui_inline',
+        },
+      },
+    })
+
+    const wireToken = `${UAP_TOKEN_PREFIX}${partnerRow.id}_${keySecret}`
+    const cookieStore = await cookies()
+    cookieStore.set({
+      name: UAP_MINT_FLASH_COOKIE,
+      value: wireToken,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      // Scope tightly to the partner-detail surface. The cookie will
+      // not be sent to any other route — including other partners'
+      // detail pages — limiting blast radius if the operator opens
+      // multiple partner tabs.
+      path: `/admin/llm-partners/${partnerRow.id}`,
+      maxAge: 120,
+    })
+
+    revalidatePath(`/admin/llm-partners/${partnerRow.id}`)
+  }
+
+  // Server-action: clear the flash cookie after the operator
+  // acknowledges they've copied the plaintext. Idempotent — safe to
+  // call even if the cookie has already expired.
+  async function dismissUapMintFlash(formData: FormData) {
+    'use server'
+    const partnerId = String(formData.get('partnerId') ?? '')
+    const { userId: actorId } = await auth()
+    if (!actorId || !isAdmin(actorId)) return
+    const cookieStore = await cookies()
+    cookieStore.set({
+      name: UAP_MINT_FLASH_COOKIE,
+      value: '',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: `/admin/llm-partners/${partnerId}`,
+      maxAge: 0,
+    })
+    revalidatePath(`/admin/llm-partners/${partnerId}`)
+  }
+
+  // Read the flash cookie (if present). This is the one-shot reveal
+  // payload the page renders below.
+  const cookieStore = await cookies()
+  const uapMintFlash =
+    cookieStore.get(UAP_MINT_FLASH_COOKIE)?.value || null
+  const uapKeyMinted = partner.uapApiKeyHash !== null
 
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
 
@@ -106,7 +243,12 @@ export default async function LLMPartnerDetailPage({
             <span className={partner.active ? 'text-emerald-400' : 'text-gray-500'}>
               {partner.active ? 'active' : 'inactive'}
             </span>{' '}
-            · key …{partner.apiKeyLastFour}
+            · pap …{partner.apiKeyLastFour} ·{' '}
+            <span
+              className={uapKeyMinted ? 'text-emerald-400' : 'text-gray-500'}
+            >
+              {uapKeyMinted ? 'uap provisioned' : 'uap not minted'}
+            </span>
           </p>
         </div>
         <Link
@@ -283,14 +425,58 @@ export default async function LLMPartnerDetailPage({
         )}
       </section>
 
+      {/* UAP key — one-time plaintext reveal (post-mint) */}
+      {uapMintFlash && (
+        <section className="border border-orange-500/40 bg-orange-500/[0.05] p-6">
+          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-orange-500">
+            UAP key issued — save this now, you will NOT see it again
+          </p>
+          <p className="mt-3 text-sm text-gray-300">
+            COYL stores only a bcrypt hash of this token in
+            <code className="mx-1 font-mono">uapApiKeyHash</code>. If
+            it's lost, you'll have to mint a new one (which invalidates
+            this value). Share it with the foundation lab via a secure
+            channel (1Password, signed envelope) — never Slack, never
+            email body. The token authenticates UAP routes only; PAP
+            credentials are independent.
+          </p>
+          <div className="mt-5 break-all border border-white/[0.1] bg-black p-4 font-mono text-[12px] text-emerald-300">
+            {uapMintFlash}
+          </div>
+          <form action={dismissUapMintFlash} className="mt-4">
+            <input type="hidden" name="partnerId" value={partner.id} />
+            <button
+              type="submit"
+              className="border border-orange-500 bg-orange-500 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-black hover:bg-orange-400"
+            >
+              Got it — clear from screen
+            </button>
+          </form>
+        </section>
+      )}
+
       {/* Actions */}
       <section className="flex flex-wrap items-center gap-3 border-t border-white/[0.06] pt-6">
         <Link
           href={`/admin/llm-partners/${partner.id}/rotate-key`}
           className="border border-orange-500 bg-orange-500 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-black hover:bg-orange-400"
         >
-          Rotate API key
+          Rotate PAP key
         </Link>
+        <form action={mintUapKey}>
+          <input type="hidden" name="partnerId" value={partner.id} />
+          <button
+            type="submit"
+            className="border border-orange-500/60 bg-orange-500/[0.08] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-orange-300 hover:border-orange-500 hover:bg-orange-500/[0.15]"
+            title={
+              uapKeyMinted
+                ? 'Re-minting will invalidate the current UAP key.'
+                : 'Issues this partner its first UAP key.'
+            }
+          >
+            {uapKeyMinted ? 'Re-mint UAP key' : 'Mint UAP key'}
+          </button>
+        </form>
         <form action={toggleActive}>
           <input type="hidden" name="partnerId" value={partner.id} />
           <input

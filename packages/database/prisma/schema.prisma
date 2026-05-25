@@ -1611,11 +1611,19 @@ model LLMPartner {
   name      String // 'Anthropic Claude Sonnet 3.7'
   publisher String // 'Anthropic'
 
-  // Auth
-  apiKeyHash       String  @unique // bcrypt of API key, never store plaintext
+  // Auth — PAP (Partner-Authority Protocol) key.
+  // Wire format: coyl_pap_<id>_<keySecret>.
+  apiKeyHash       String  @unique // bcrypt of PAP API key, never store plaintext
   apiKeyLastFour   String // last 4 chars for display only
   active           Boolean @default(true)
   rateLimitPerHour Int     @default(1000)
+
+  // Auth — UAP (User-Authority Protocol) key.
+  // Distinct from the PAP key above so a single partner row can hold
+  // either or both. Nullable: partners onboarded for PAP only have no
+  // UAP key minted yet. Wire format: coyl_uap_<id>_<keySecret>.
+  // Verified by lib/uap/uap-partner-auth.ts.
+  uapApiKeyHash String?
 
   // Commercial
   pricingTier   String   @default("usage") // 'free' | 'usage' | 'enterprise' | 'strategic'

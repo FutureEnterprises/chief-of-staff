@@ -13,9 +13,12 @@
  *
  * UAP shares the LLMPartner table with PAP/EAP: a partner integrating
  * both protocols holds two distinct keys (one with the coyl_pap_
- * prefix, one with coyl_uap_), each backed by its own LLMPartner row.
- * The prefix on the wire is the only protocol marker — the partner
- * id and bcrypt verification are mechanically identical.
+ * prefix verified against `apiKeyHash`, one with the coyl_uap_ prefix
+ * verified against `uapApiKeyHash`). The prefix on the wire is the
+ * only protocol marker; the partner id and bcrypt verification are
+ * mechanically identical, but each protocol has its own independently-
+ * rotated secret on the same partner row so a UAP credential cannot
+ * be used to call a PAP endpoint and vice versa.
  *
  * Failed-auth attempts are recorded in EAPAuditEntry (the shared
  * cross-protocol audit table) so the admin dashboard can surface
@@ -153,7 +156,18 @@ export async function authenticateUAPPartner(req: Request): Promise<UAPPartnerAu
     }
   }
 
-  const ok = await verifyApiKey(validated.keySecret, partner.apiKeyHash)
+  // UAP verification uses the partner's UAP-scoped key (uapApiKeyHash),
+  // NOT the PAP key (apiKeyHash). A partner that has not been issued a
+  // UAP key yet cannot authenticate against UAP routes even if their
+  // PAP key is valid — distinct protocols, distinct credentials.
+  if (!partner.uapApiKeyHash) {
+    await recordFailedAuth(req, partner.id, 'uap_key_not_minted')
+    return {
+      error: NextResponse.json({ error: 'Invalid token' }, { status: 401 }),
+    }
+  }
+
+  const ok = await verifyApiKey(validated.keySecret, partner.uapApiKeyHash)
   if (!ok) {
     await recordFailedAuth(req, partner.id, 'bad_secret')
     return {
