@@ -1,60 +1,140 @@
 /**
- * POST /api/uap/v1/rule — UAP v0.1 reserved endpoint
- * (declare a pre-decline rule).
+ * POST /api/uap/v1/rule — declare a pre-decline rule.
  *
- * This is a STUB. The User-Authority Protocol v0.1 spec at
- * docs/protocol/UAP-0.1.md reserves this route as part of the
- * §9 surface reservation. The reference engine ships post-Series-A.
+ * User-authenticated (Clerk session). Per UAP-0.1.md §3: "Negative
+ * authority precedes positive authority. A rule that pre-declines an
+ * action class is stronger than any grant. RULE_DECLARE writes a row
+ * that supersedes every overlapping grant, even fresh ones."
  *
- * Today's behavior: 501 with a body pointing the caller at the
- * spec. No database side effects. No partner authentication checks
- * (those land with the reference engine).
- *
- * Endpoint shape per spec §2 (RULE_DECLARE) and §5:
- *   POST /api/uap/v1/rule
- *   Authorization: <user session>
- *   {
- *     "user_id": "u_2sj8xks0a",
- *     "grant_id": "grnt_8x4kls7a9d",  // optional; null = user-global rule
- *     "kind": "spending_cap" | "quiet_hours" | "irreversible_floor" | ...,
- *     "params": { "max_per_action_usd": 50 }
- *   }
- *
- * Per spec §2: "RULE_DECLARE — User pre-declines a class of action
- * ('never spend > $50 without asking', 'never send messages after
- * midnight', 'never share with X'). Rules supersede grants. A rule
- * violation auto-denies even if the grant would otherwise allow."
- *
- * Per spec §3 hard invariant: "Negative authority precedes positive
- * authority. A rule that pre-declines an action class is stronger
- * than any grant. RULE_DECLARE writes a row that supersedes every
- * overlapping grant, even fresh ones."
- *
- * See UAP-0.1.md for the eight primitives, the hard invariants,
- * the threat model, and the consent UI requirements.
+ * When `grant_id` is null/omitted, the rule is USER-LEVEL and
+ * applies to every current AND future grant. When `grant_id` is
+ * supplied, the rule scopes to that grant only (it dies with the
+ * grant via the ON DELETE CASCADE in the schema).
  */
 
 import { NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { prisma } from '@repo/database'
+import { addRule, loadGrant } from '@/lib/uap/grant-store'
+import type { UAPRuleKind } from '@/lib/uap/types'
+
+const ALLOWED_RULE_KINDS: UAPRuleKind[] = [
+  'spending_cap',
+  'quiet_hours',
+  'irreversible_floor',
+  'recipient_allowlist',
+  'recipient_denylist',
+  'frequency_cap',
+  'time_of_day_block',
+]
+
+type Body = {
+  grant_id?: string | null
+  kind?: string
+  params?: Record<string, unknown>
+}
 
 export async function POST(req: Request) {
-  let body: unknown = null
+  const { userId: clerkId } = await auth()
+  if (!clerkId) return errorResponse(401, 'unauthenticated', 'Sign in required.')
+
+  const user = await prisma.user.findUnique({
+    where: { clerkId },
+    select: { id: true },
+  })
+  if (!user) return errorResponse(404, 'user_not_found', 'No matching user.')
+
+  let body: Body
   try {
-    body = await req.json()
+    body = (await req.json()) as Body
   } catch {
-    // empty / malformed bodies are fine at the stub stage
+    return errorResponse(400, 'invalid_json', 'Request body is not valid JSON.')
+  }
+
+  if (!body.kind || typeof body.kind !== 'string') {
+    return errorResponse(400, 'missing_kind', 'Field `kind` is required.')
+  }
+  if (!ALLOWED_RULE_KINDS.includes(body.kind as UAPRuleKind)) {
+    return errorResponse(
+      400,
+      'unknown_rule_kind',
+      'Rule kind is not part of UAP-0.1.',
+      { allowed_kinds: ALLOWED_RULE_KINDS, received: body.kind },
+    )
+  }
+
+  const params =
+    body.params && typeof body.params === 'object'
+      ? (body.params as Record<string, unknown>)
+      : {}
+
+  // grant_id is optional + nullable. null/undefined → user-level rule.
+  const grantId =
+    typeof body.grant_id === 'string' && body.grant_id.length > 0
+      ? body.grant_id
+      : null
+
+  // If grant-scoped, the grant must belong to the calling user.
+  if (grantId !== null) {
+    let grant
+    try {
+      grant = await loadGrant(grantId)
+    } catch (err) {
+      console.error('[uap/rule] loadGrant failed', {
+        err: err instanceof Error ? err.message : 'unknown',
+        grantId,
+      })
+      return errorResponse(500, 'load_failed', 'Unable to load grant.')
+    }
+    if (!grant) {
+      return errorResponse(404, 'grant_not_found', `No grant with id ${grantId}.`)
+    }
+    if (grant.userId !== user.id) {
+      return errorResponse(
+        403,
+        'not_grant_user',
+        'This grant does not belong to you.',
+      )
+    }
+  }
+
+  let rule
+  try {
+    rule = await addRule({
+      userId: user.id,
+      grantId,
+      kind: body.kind as UAPRuleKind,
+      params,
+    })
+  } catch (err) {
+    console.error('[uap/rule] addRule failed', {
+      err: err instanceof Error ? err.message : 'unknown',
+      userId: user.id,
+      kind: body.kind,
+    })
+    return errorResponse(500, 'rule_persist_failed', 'Unable to persist rule.')
   }
 
   return NextResponse.json(
     {
-      error: 'uap_v0_1_spec_reserved',
-      message:
-        'UAP-0.1 reserves this endpoint. The reference engine ships post-Series-A.',
-      spec: 'https://github.com/FutureEnterprises/chief-of-staff/blob/main/docs/protocol/UAP-0.1.md',
-      endpoint: '/api/uap/v1/rule',
-      received_at: new Date().toISOString(),
-      received_keys:
-        body && typeof body === 'object' ? Object.keys(body) : [],
+      rule_id: rule.id,
+      kind: rule.kind,
+      params: rule.params,
+      applies_to: grantId === null ? 'user' : 'grant',
+      ...(grantId === null ? {} : { grant_id: grantId }),
     },
-    { status: 501 },
+    { status: 201 },
+  )
+}
+
+function errorResponse(
+  status: number,
+  error: string,
+  message: string,
+  detail?: unknown,
+) {
+  return NextResponse.json(
+    detail !== undefined ? { error, message, detail } : { error, message },
+    { status },
   )
 }

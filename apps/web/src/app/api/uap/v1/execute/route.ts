@@ -1,64 +1,290 @@
 /**
- * POST /api/uap/v1/execute — UAP v0.1 reserved endpoint
- * (execute action under a standing grant).
+ * POST /api/uap/v1/execute — execute action under a standing grant.
  *
- * This is a STUB. The User-Authority Protocol v0.1 spec at
- * docs/protocol/UAP-0.1.md reserves this route as part of the
- * §9 surface reservation. The reference engine ships post-Series-A.
+ * Partner-authenticated. The decision/persistence flow is:
  *
- * Today's behavior: 501 with a body pointing the caller at the
- * spec. No database side effects. No partner authentication checks
- * (those land with the reference engine).
+ *   1. Authenticate partner.
+ *   2. Load grant + rules + kill-state (fresh, never cached — T2).
+ *   3. coordinator.decideExecute() — pure decision over those inputs.
+ *   4. If allowed AND action is a representation action: provenance-sign
+ *      the outgoing payload, then persist the audit row WITH provenance.
+ *   5. If allowed AND action is internal: persist audit row without sig.
+ *   6. If denied / needs_per_action_confirmation: persist anyway —
+ *      denials are audit-worthy per UAP-0.1.md §3.
+ *   7. Return decision + audit_id + provenance envelope (when present).
  *
- * Endpoint shape per spec §5 wire format:
- *   POST /api/uap/v1/execute
- *   Authorization: Bearer coyl_uap_<partner_id>_<secret>
- *   {
- *     "grant_id": "grnt_8x4kls7a9d",
- *     "action": {
- *       "kind": "calendar.write",
- *       "operation": "schedule_event",
- *       "params": { "...domain-specific..." },
- *       "reversibility": "reversible"
- *     },
- *     "context": {
- *       "trigger": "morning_planning_routine",
- *       "confidence": 0.88
- *     }
- *   }
- *
- * The reference engine will: (1) verify the Bearer token, (2) load
- * and re-validate the grant server-side (no cached grants per T2),
- * (3) check scope match, (4) apply rules (quiet_hours, spending_cap,
- * irreversible_floor), (5) write a signed/chained UAPAuditEntry,
- * and (6) return the decision. See §7 for the coordinator sketch
- * and §3 for hard invariants.
- *
- * See UAP-0.1.md for the eight primitives, the hard invariants,
- * the threat model, and the consent UI requirements.
+ * To avoid a double-write for representation actions, we pre-mint the
+ * auditId, embed it in the provenance payload before signing, then
+ * persist the audit row once with the signature attached.
  */
 
+import { randomBytes } from 'node:crypto'
 import { NextResponse } from 'next/server'
+import { authenticateUAPPartner } from '@/lib/uap/uap-partner-auth'
+import { decideExecute } from '@/lib/uap/coordinator'
+import { loadGrant, loadRules } from '@/lib/uap/grant-store'
+import { isUserKilled } from '@/lib/uap/kill-switch'
+import { writeAuditEntry } from '@/lib/uap/audit'
+import { signProvenance } from '@/lib/uap/provenance'
+import {
+  UAP_REPRESENTATION_ACTIONS,
+  type UAPExecuteInput,
+  type UAPRepresentationAction,
+} from '@/lib/uap/types'
+
+type Body = {
+  grant_id?: string
+  action?: {
+    kind?: string
+    operation?: string
+    reversibility?: string
+    params?: Record<string, unknown>
+  }
+  context?: {
+    trigger?: string
+    confidence?: number
+    reasoning?: string
+  }
+  recipient?: {
+    kind?: string
+    hint?: string
+  }
+}
 
 export async function POST(req: Request) {
-  let body: unknown = null
+  const authResult = await authenticateUAPPartner(req)
+  if (authResult.error) return authResult.error
+  const partner = authResult.partner
+
+  let body: Body
   try {
-    body = await req.json()
+    body = (await req.json()) as Body
   } catch {
-    // empty / malformed bodies are fine at the stub stage
+    return errorResponse(400, 'invalid_json', 'Request body is not valid JSON.')
   }
 
-  return NextResponse.json(
-    {
-      error: 'uap_v0_1_spec_reserved',
-      message:
-        'UAP-0.1 reserves this endpoint. The reference engine ships post-Series-A.',
-      spec: 'https://github.com/FutureEnterprises/chief-of-staff/blob/main/docs/protocol/UAP-0.1.md',
-      endpoint: '/api/uap/v1/execute',
-      received_at: new Date().toISOString(),
-      received_keys:
-        body && typeof body === 'object' ? Object.keys(body) : [],
+  if (!body.grant_id || typeof body.grant_id !== 'string') {
+    return errorResponse(400, 'missing_grant_id', 'Field `grant_id` is required.')
+  }
+  if (!body.action || typeof body.action !== 'object') {
+    return errorResponse(400, 'missing_action', 'Field `action` is required.')
+  }
+  const action = body.action
+  if (
+    typeof action.kind !== 'string' ||
+    typeof action.operation !== 'string' ||
+    typeof action.reversibility !== 'string'
+  ) {
+    return errorResponse(
+      400,
+      'invalid_action',
+      '`action.kind`, `action.operation`, and `action.reversibility` are required.',
+    )
+  }
+  if (
+    action.reversibility !== 'reversible' &&
+    action.reversibility !== 'irreversible' &&
+    action.reversibility !== 'reversible_within_window'
+  ) {
+    return errorResponse(
+      400,
+      'invalid_reversibility',
+      '`action.reversibility` must be reversible | irreversible | reversible_within_window.',
+    )
+  }
+
+  // ── Fresh-load grant + rules + kill state (T2 defense) ───────────
+  let grant
+  try {
+    grant = await loadGrant(body.grant_id)
+  } catch (err) {
+    console.error('[uap/execute] loadGrant failed', {
+      err: err instanceof Error ? err.message : 'unknown',
+    })
+    return errorResponse(500, 'load_failed', 'Unable to load grant.')
+  }
+  if (!grant) {
+    // No grant id to attach an audit row to — return the bare denial.
+    return NextResponse.json(
+      { decision: 'denied', reason: 'grant_not_found' },
+      { status: 200 },
+    )
+  }
+  if (grant.llmPartnerId !== partner.id) {
+    return errorResponse(
+      403,
+      'partner_not_authorized',
+      'This grant was not issued to your partner account.',
+    )
+  }
+
+  const [rules, killed] = await Promise.all([
+    loadRules({ userId: grant.userId, grantId: grant.id }),
+    isUserKilled(grant.userId),
+  ])
+
+  const input: UAPExecuteInput = {
+    grantId: grant.id,
+    partnerId: partner.id,
+    userId: grant.userId,
+    action: {
+      kind: action.kind,
+      operation: action.operation,
+      reversibility: action.reversibility,
+      params: (action.params ?? {}) as Record<string, unknown>,
     },
-    { status: 501 },
+    context: body.context ?? {},
+    recipient:
+      body.recipient && typeof body.recipient === 'object'
+        ? {
+            kind: body.recipient.kind as
+              | 'external_email'
+              | 'external_phone'
+              | 'internal_user'
+              | 'external_url'
+              | 'external_handle',
+            hint: String(body.recipient.hint ?? ''),
+          }
+        : undefined,
+  }
+
+  const now = new Date()
+  let decision
+  try {
+    decision = await decideExecute(input, {
+      grant,
+      rules,
+      userKilled: killed,
+      now,
+    })
+  } catch (err) {
+    console.error('[uap/execute] decideExecute threw', {
+      err: err instanceof Error ? err.message : 'unknown',
+      grantId: grant.id,
+    })
+    return errorResponse(
+      500,
+      'coordinator_failed',
+      'Coordinator threw evaluating the action.',
+    )
+  }
+
+  // ── Pre-mint the audit id so we can embed it in the provenance
+  //    payload BEFORE signing. The audit lib accepts an externally
+  //    supplied id (`auditId`) when present, or generates one when
+  //    omitted. This keeps representation-action persistence to one
+  //    audit write per execute.
+  const auditId = `aud_${randomBytes(12).toString('hex')}`
+
+  const isRepresentation = UAP_REPRESENTATION_ACTIONS.includes(
+    action.kind as UAPRepresentationAction,
   )
+
+  let provenanceEnvelope: Awaited<ReturnType<typeof signProvenance>> | null =
+    null
+  if (decision.decision === 'allowed' && isRepresentation) {
+    try {
+      provenanceEnvelope = await signProvenance({
+        partnerId: partner.id,
+        userId: grant.userId,
+        grantId: grant.id,
+        auditId,
+        actionKind: action.kind,
+        recipientHint: input.recipient?.hint ?? '',
+        issuedAt: now,
+        auditUrl: `${safeOrigin(req)}/audit/uap/${auditId}`,
+      })
+    } catch (err) {
+      console.error('[uap/execute] provenance sign failed', {
+        err: err instanceof Error ? err.message : 'unknown',
+        auditId,
+      })
+      return errorResponse(
+        500,
+        'provenance_sign_failed',
+        'Representation provenance signing failed. Do not transmit the action.',
+      )
+    }
+  }
+
+  // Single audit write — provenance fields populated only on
+  // signed representation actions. Denials still persist (§3).
+  let auditRow
+  try {
+    auditRow = await writeAuditEntry({
+      auditId,
+      grantId: grant.id,
+      userId: grant.userId,
+      llmPartnerId: partner.id,
+      operation: 'execute',
+      actionKind: action.kind,
+      decision: decision.decision,
+      decisionReason:
+        decision.decision === 'denied' ||
+        decision.decision === 'needs_per_action_confirmation'
+          ? decision.reason
+          : undefined,
+      postTermination: grant.status !== 'ACTIVE',
+      ...(provenanceEnvelope
+        ? {
+            provenanceSignature: provenanceEnvelope.signature,
+            provenancePublicKey: provenanceEnvelope.publicKey,
+            provenanceAlgorithm: provenanceEnvelope.algorithm,
+            provenancePayload: provenanceEnvelope.payload,
+          }
+        : {}),
+    } as Parameters<typeof writeAuditEntry>[0])
+  } catch (err) {
+    console.error('[uap/execute] audit write failed', {
+      err: err instanceof Error ? err.message : 'unknown',
+      grantId: grant.id,
+      auditId,
+    })
+    return errorResponse(
+      500,
+      'audit_write_failed',
+      'Unable to write audit row; execution rolled back.',
+    )
+  }
+
+  return NextResponse.json({
+    decision: decision.decision,
+    ...(decision.decision === 'denied' ||
+    decision.decision === 'needs_per_action_confirmation'
+      ? { reason: decision.reason, detail: decision.detail }
+      : {}),
+    audit_id: auditRow.id,
+    executed_at: now.toISOString(),
+    ...(provenanceEnvelope
+      ? {
+          provenance: {
+            payload: provenanceEnvelope.payload,
+            signature: provenanceEnvelope.signature,
+            public_key: provenanceEnvelope.publicKey,
+            algorithm: provenanceEnvelope.algorithm,
+          },
+        }
+      : {}),
+  })
+}
+
+function errorResponse(
+  status: number,
+  error: string,
+  message: string,
+  detail?: unknown,
+) {
+  return NextResponse.json(
+    detail !== undefined ? { error, message, detail } : { error, message },
+    { status },
+  )
+}
+
+function safeOrigin(req: Request): string {
+  try {
+    const u = new URL(req.url)
+    return `${u.protocol}//${u.host}`
+  } catch {
+    return 'https://coyl.ai'
+  }
 }

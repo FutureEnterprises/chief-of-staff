@@ -1,59 +1,220 @@
 /**
- * POST /api/uap/v1/grant — UAP v0.1 reserved endpoint (issue grant).
+ * POST /api/uap/v1/grant — UAP v0.1 issue a new standing grant.
  *
- * This is a STUB. The User-Authority Protocol v0.1 spec at
- * docs/protocol/UAP-0.1.md reserves this route as part of the
- * §9 surface reservation. The reference engine ships post-Series-A.
+ * Partner-authenticated (Bearer `coyl_uap_*`). Validates the request
+ * envelope, persists a UAPGrant + its inline rules in one shot,
+ * writes an audit row (operation='grant'), and returns the grant
+ * handle + companion URLs.
  *
- * Today's behavior: 501 with a body pointing the caller at the
- * spec. No database side effects. No partner authentication checks
- * (those land with the reference engine).
+ * Per UAP-0.1.md §5 wire format. The grant's max lifetime is 90
+ * days from issue — anything farther out is rejected as a v0.1
+ * constraint (renewal is a separate consent ceremony in §4).
  *
- * Endpoint shape per spec §5 wire format:
- *   POST /api/uap/v1/grant
- *   Authorization: Bearer coyl_uap_<partner_id>_<secret>
- *   {
- *     "user_id": "u_2sj8xks0a",
- *     "scopes": ["calendar.write", "messaging.routine", "purchase.recurring"],
- *     "expires_at": "2026-05-29T17:00:00Z",
- *     "rules": [
- *       { "kind": "spending_cap", "max_per_action_usd": 50 },
- *       { "kind": "quiet_hours", "from": "00:00", "to": "07:00", "tz": "America/Los_Angeles" },
- *       { "kind": "irreversible_floor", "always_confirm": ["money_transfer", "share_pii"] }
- *     ],
- *     "consent_artifact": {
- *       "version": "0.1",
- *       "shown_to_user_at": "2026-05-22T16:58:00Z",
- *       "user_response": "explicit_grant",
- *       "ui_surface": "settings.standing_authority"
- *     }
- *   }
- *
- * See UAP-0.1.md for the eight primitives, the hard invariants,
- * the threat model, and the consent UI requirements.
+ * Hard invariants we enforce here (per §3):
+ *  - explicit consent artifact present + user_response === 'explicit_grant'
+ *  - every requested scope is in UAP_SCOPES
+ *  - expires_at within 90 days of now
  */
 
 import { NextResponse } from 'next/server'
+import { authenticateUAPPartner } from '@/lib/uap/uap-partner-auth'
+import { createGrant } from '@/lib/uap/grant-store'
+import { writeAuditEntry } from '@/lib/uap/audit'
+import { UAP_SCOPES, type UAPScope, type UAPRuleKind } from '@/lib/uap/types'
+
+const MAX_GRANT_LIFETIME_MS = 90 * 24 * 60 * 60 * 1000 // 90 days
+
+type Body = {
+  user_id?: string
+  scopes?: string[]
+  expires_at?: string
+  rules?: Array<{ kind?: string; params?: Record<string, unknown> }>
+  consent_artifact?: {
+    version?: string
+    shown_to_user_at?: string
+    user_response?: string
+    ui_surface?: string
+    [k: string]: unknown
+  }
+}
 
 export async function POST(req: Request) {
-  let body: unknown = null
+  const authResult = await authenticateUAPPartner(req)
+  if (authResult.error) return authResult.error
+  const partner = authResult.partner
+
+  let body: Body
   try {
-    body = await req.json()
+    body = (await req.json()) as Body
   } catch {
-    // empty / malformed bodies are fine at the stub stage
+    return errorResponse(400, 'invalid_json', 'Request body is not valid JSON.')
   }
 
+  // ── Required fields ──────────────────────────────────────────────
+  if (!body.user_id || typeof body.user_id !== 'string') {
+    return errorResponse(400, 'missing_user_id', 'Field `user_id` is required.')
+  }
+  if (!Array.isArray(body.scopes) || body.scopes.length === 0) {
+    return errorResponse(
+      400,
+      'missing_scopes',
+      'Field `scopes` must be a non-empty array.',
+    )
+  }
+  if (!body.expires_at || typeof body.expires_at !== 'string') {
+    return errorResponse(
+      400,
+      'missing_expires_at',
+      'Field `expires_at` is required (ISO 8601 UTC).',
+    )
+  }
+  if (!body.consent_artifact || typeof body.consent_artifact !== 'object') {
+    return errorResponse(
+      400,
+      'missing_consent_artifact',
+      'Field `consent_artifact` is required per UAP-0.1 §3.',
+    )
+  }
+
+  // ── Scope validation ─────────────────────────────────────────────
+  const unknownScopes = body.scopes.filter(
+    (s) => !UAP_SCOPES.includes(s as UAPScope),
+  )
+  if (unknownScopes.length > 0) {
+    return errorResponse(
+      400,
+      'unknown_scope',
+      `One or more scopes are not part of UAP-0.1.`,
+      { unknown_scopes: unknownScopes, allowed_scopes: UAP_SCOPES },
+    )
+  }
+
+  // ── Expiry validation ────────────────────────────────────────────
+  const now = new Date()
+  const expiresAt = new Date(body.expires_at)
+  if (Number.isNaN(expiresAt.getTime())) {
+    return errorResponse(
+      400,
+      'invalid_expires_at',
+      '`expires_at` is not a valid ISO 8601 date.',
+    )
+  }
+  if (expiresAt.getTime() <= now.getTime()) {
+    return errorResponse(
+      400,
+      'expires_in_past',
+      '`expires_at` must be in the future.',
+    )
+  }
+  if (expiresAt.getTime() - now.getTime() > MAX_GRANT_LIFETIME_MS) {
+    return errorResponse(
+      400,
+      'expires_too_far',
+      'UAP-0.1 caps grant lifetime at 90 days. Reissue near expiry.',
+    )
+  }
+
+  // ── Consent artifact validation ──────────────────────────────────
+  if (body.consent_artifact.user_response !== 'explicit_grant') {
+    return errorResponse(
+      400,
+      'consent_not_explicit',
+      'Consent artifact must record `user_response === "explicit_grant"`.',
+    )
+  }
+
+  // ── Rule shape validation (light — store does the real work) ─────
+  const rules: Array<{ kind: UAPRuleKind; params: Record<string, unknown> }> = []
+  if (Array.isArray(body.rules)) {
+    for (const r of body.rules) {
+      if (!r || typeof r !== 'object' || typeof r.kind !== 'string') {
+        return errorResponse(
+          400,
+          'invalid_rule',
+          'Each rule needs a `kind` string and a `params` object.',
+        )
+      }
+      rules.push({
+        kind: r.kind as UAPRuleKind,
+        params: (r.params ?? {}) as Record<string, unknown>,
+      })
+    }
+  }
+
+  // ── Persist ──────────────────────────────────────────────────────
+  let grant
+  try {
+    grant = await createGrant({
+      userId: body.user_id,
+      llmPartnerId: partner.id,
+      scopes: body.scopes as UAPScope[],
+      expiresAt,
+      consentArtifact: body.consent_artifact as object,
+      rules,
+    })
+  } catch (err) {
+    console.error('[uap/grant] createGrant failed', {
+      err: err instanceof Error ? err.message : 'unknown',
+      partnerId: partner.id,
+      userId: body.user_id,
+    })
+    return errorResponse(
+      500,
+      'grant_persist_failed',
+      'Unable to persist grant. The audit log was not written.',
+    )
+  }
+
+  // ── Audit ────────────────────────────────────────────────────────
+  try {
+    await writeAuditEntry({
+      grantId: grant.id,
+      userId: body.user_id,
+      llmPartnerId: partner.id,
+      operation: 'grant',
+      decision: 'allowed',
+      postTermination: false,
+    })
+  } catch (err) {
+    // Audit write failure is logged but doesn't roll back the grant —
+    // the grant is real, so the partner needs the handle. The audit
+    // gap will surface on the next chain-verify pass.
+    console.warn('[uap/grant] audit write failed', {
+      err: err instanceof Error ? err.message : 'unknown',
+      grantId: grant.id,
+    })
+  }
+
+  const origin = safeOrigin(req)
   return NextResponse.json(
     {
-      error: 'uap_v0_1_spec_reserved',
-      message:
-        'UAP-0.1 reserves this endpoint. The reference engine ships post-Series-A.',
-      spec: 'https://github.com/FutureEnterprises/chief-of-staff/blob/main/docs/protocol/UAP-0.1.md',
-      endpoint: '/api/uap/v1/grant',
-      received_at: new Date().toISOString(),
-      received_keys:
-        body && typeof body === 'object' ? Object.keys(body) : [],
+      grant_id: grant.id,
+      status: 'active',
+      expires_at: expiresAt.toISOString(),
+      audit_url: `${origin}/audit/uap/${grant.id}`,
+      kill_switch_url: `${origin}/kill`,
     },
-    { status: 501 },
+    { status: 201 },
   )
+}
+
+function errorResponse(
+  status: number,
+  error: string,
+  message: string,
+  detail?: unknown,
+) {
+  return NextResponse.json(
+    detail !== undefined ? { error, message, detail } : { error, message },
+    { status },
+  )
+}
+
+function safeOrigin(req: Request): string {
+  try {
+    const u = new URL(req.url)
+    return `${u.protocol}//${u.host}`
+  } catch {
+    return 'https://coyl.ai'
+  }
 }

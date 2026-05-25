@@ -1,59 +1,129 @@
 /**
- * POST /api/uap/v1/kill-switch — UAP v0.1 reserved endpoint
- * (global revoke across all LLMs and all grants).
+ * POST /api/uap/v1/kill-switch — global revoke across every LLM partner.
  *
- * This is a STUB. The User-Authority Protocol v0.1 spec at
- * docs/protocol/UAP-0.1.md reserves this route as part of the
- * §9 surface reservation. The reference engine ships post-Series-A.
+ * User-authenticated (Clerk session). NOT partner-authenticated — per
+ * UAP-0.1.md §5 the kill switch is the user's primitive, not the
+ * partner's. The endpoint is rate-limit-exempt and returns within
+ * 1 second; propagation to connected EAP surfaces fires within 5
+ * seconds via the kill-switch lib.
  *
- * Today's behavior: 501 with a body pointing the caller at the
- * spec. No database side effects. No partner authentication checks
- * (those land with the reference engine).
- *
- * Endpoint shape per spec §5 wire format:
- *   POST /api/uap/v1/kill-switch
- *   Authorization: <user session, NOT partner token>
- *   {
- *     "user_id": "u_2sj8xks0a",
- *     "reason": "user_initiated"
- *   }
- *
- * Per spec §5: "Returns within 1 second. Propagates to every
- * connected EAP surface within 5 seconds. Active grants flip to
- * terminal:killed_globally. The endpoint is rate-limit-exempt and
- * authentication-light — a user in crisis must be able to kill all
- * standing authority even if they cannot remember their password
- * (out-of-band recovery is policy, not protocol)."
- *
- * One of the two non-negotiable primitives per §2 (the other is
- * AUDIT_QUERY). KILL_SWITCH supersedes every grant, every rule,
- * every in-flight action.
- *
- * See UAP-0.1.md for the eight primitives, the hard invariants,
- * the threat model, and the consent UI requirements.
+ * Spec invariant (§3): kill supersedes every grant, every rule,
+ * every in-flight action. The lib flips every active grant for the
+ * user to KILLED_GLOBALLY in a single transaction.
  */
 
 import { NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { prisma } from '@repo/database'
+import { initiateKillSwitch } from '@/lib/uap/kill-switch'
+import { writeAuditEntry } from '@/lib/uap/audit'
+
+type Body = {
+  user_id?: string
+  reason?: string
+}
 
 export async function POST(req: Request) {
-  let body: unknown = null
-  try {
-    body = await req.json()
-  } catch {
-    // empty / malformed bodies are fine at the stub stage
+  // User auth only — partner Bearer tokens are rejected at this surface.
+  const { userId: clerkId } = await auth()
+  if (!clerkId) {
+    return errorResponse(401, 'unauthenticated', 'Sign in required.')
+  }
+  const user = await prisma.user.findUnique({
+    where: { clerkId },
+    select: { id: true },
+  })
+  if (!user) {
+    return errorResponse(404, 'user_not_found', 'No matching user.')
   }
 
+  let body: Body
+  try {
+    body = (await req.json()) as Body
+  } catch {
+    return errorResponse(400, 'invalid_json', 'Request body is not valid JSON.')
+  }
+
+  if (!body.user_id || typeof body.user_id !== 'string') {
+    return errorResponse(400, 'missing_user_id', 'Field `user_id` is required.')
+  }
+  // Authorization check: the authenticated user must match the
+  // user_id in the body. The kill switch is a SELF-service primitive.
+  if (body.user_id !== user.id) {
+    return errorResponse(
+      403,
+      'user_mismatch',
+      'You can only kill your own standing authority.',
+    )
+  }
+
+  const reason =
+    typeof body.reason === 'string' && body.reason.length > 0
+      ? body.reason
+      : 'user_initiated'
+
+  let result
+  try {
+    result = await initiateKillSwitch({ userId: user.id, reason })
+  } catch (err) {
+    console.error('[uap/kill-switch] initiateKillSwitch failed', {
+      err: err instanceof Error ? err.message : 'unknown',
+      userId: user.id,
+    })
+    return errorResponse(
+      500,
+      'kill_switch_failed',
+      'Kill switch could not be initiated. Try again immediately.',
+    )
+  }
+
+  // Write a single audit row per kill event. The kill itself
+  // supersedes individual grants, so this row is keyed off a
+  // synthetic grantId='__kill__' or the first affected grant —
+  // the lib decides. We write best-effort: audit failure must NOT
+  // block the kill response (the user needs the 1s SLA).
+  try {
+    await writeAuditEntry({
+      grantId: result.affectedGrantIds[0] ?? '__kill__',
+      userId: user.id,
+      llmPartnerId: '__kill__',
+      operation: 'kill',
+      decision: 'allowed',
+      decisionReason: reason,
+      postTermination: false,
+    })
+  } catch (err) {
+    console.warn('[uap/kill-switch] audit write failed', {
+      err: err instanceof Error ? err.message : 'unknown',
+      userId: user.id,
+    })
+  }
+
+  const origin = safeOrigin(req)
+  return NextResponse.json({
+    killed_at: result.initiatedAt.toISOString(),
+    affected_grant_ids: result.affectedGrantIds,
+    audit_url: `${origin}/audit/uap?user_id=${encodeURIComponent(user.id)}`,
+  })
+}
+
+function errorResponse(
+  status: number,
+  error: string,
+  message: string,
+  detail?: unknown,
+) {
   return NextResponse.json(
-    {
-      error: 'uap_v0_1_spec_reserved',
-      message:
-        'UAP-0.1 reserves this endpoint. The reference engine ships post-Series-A.',
-      spec: 'https://github.com/FutureEnterprises/chief-of-staff/blob/main/docs/protocol/UAP-0.1.md',
-      endpoint: '/api/uap/v1/kill-switch',
-      received_at: new Date().toISOString(),
-      received_keys:
-        body && typeof body === 'object' ? Object.keys(body) : [],
-    },
-    { status: 501 },
+    detail !== undefined ? { error, message, detail } : { error, message },
+    { status },
   )
+}
+
+function safeOrigin(req: Request): string {
+  try {
+    const u = new URL(req.url)
+    return `${u.protocol}//${u.host}`
+  } catch {
+    return 'https://coyl.ai'
+  }
 }
