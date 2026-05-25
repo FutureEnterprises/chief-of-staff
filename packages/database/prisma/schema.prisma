@@ -200,6 +200,14 @@ model User {
   // audit record. See docs/protocol/RAP-0.1.md.
   rapAssessments RAPAssessment[]
 
+  /// UAP v0.1.1 — per-user ed25519 signing keys for representation-
+  /// action provenance signatures. Generated lazily at first UAP grant
+  /// time. Private key is base64-encoded; encrypted-at-rest by the
+  /// Supabase Postgres pgcrypto extension via the column policy.
+  /// Rotated on KILL_SWITCH per UAP-0.1.md §6 T9.
+  uapSigningKeyPublic   String?
+  uapSigningKeyPrivate  String?
+
   @@map("users")
 }
 
