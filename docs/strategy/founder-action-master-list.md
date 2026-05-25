@@ -737,7 +737,7 @@ ultrathink and triaged into Tier A (high-leverage fast wins), Tier B
 | A2 | Clinician pricing block on /rebound (free-for-providers + $12-18 PMPM) | c9b5f2f |
 | A3 | "Early read · still narrowing" preview on audit step 2 | c9b5f2f |
 | A5 | Footer changelog label "What's new (changelog)" | c9b5f2f |
-| B3 | /patterns "engine-of-engines" hub + lib/research-stats.ts | 00b4040 |
+| B3 | /patterns-we-catch "engine-of-engines" hub + lib/research-stats.ts | 00b4040 (renamed in hotfix) |
 | B4 | General↔Rebound family bridge + GLP-1 callout on audit result | 00b4040 |
 | B1 | Animated 7-step loop on /how-it-works (step 4 = three-second window) | 98ddc61 |
 
@@ -787,7 +787,7 @@ response:
 ### What was deliberately NOT shipped
 
 - A4 (autopilot map): the auditor flagged a /how-it-works gap that
-  was actually addressed by the /patterns hub (B3). Subsumed.
+  was actually addressed by the /patterns-we-catch hub (B3). Subsumed.
 - B2 (annual pricing): already shipped before this audit landed.
 - C-tier recommendations (RAP build-out, GLP-1 partner pilot,
   longitudinal cohort): not single-day work. Each is a roadmap

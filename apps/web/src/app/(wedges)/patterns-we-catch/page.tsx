@@ -1,5 +1,11 @@
 /**
- * /patterns — the engine-of-engines hub.
+ * /patterns-we-catch — the engine-of-engines hub.
+ *
+ * NB on URL slug: this lives at /patterns-we-catch (not /patterns)
+ * because (app)/patterns/ — the logged-in user's pattern dashboard —
+ * already owns that URL. The marketing-hub copy ("Patterns COYL
+ * catches") drove the slug name; it also matches the breadth-band
+ * label on the homepage and the footer nav.
  *
  * Per the v4 audit (May 2026): "Create a single 'Patterns we catch'
  * page that explains the engine and then links to vertical subpages
@@ -25,7 +31,12 @@ import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
 import { researchStat } from '@/lib/research-stats'
 
-export const revalidate = 86400
+// NB: no `export const revalidate` — Next.js 16's cacheComponents mode
+// is incompatible with the legacy revalidate segment config. The page
+// is fully static (no dynamic data fetches), so it gets statically
+// generated at build time and served from the edge cache without
+// further configuration. For tag-based invalidation in the future,
+// wrap dynamic-data sections in `'use cache'` + cacheLife() instead.
 
 export const metadata: Metadata = {
   title: 'Patterns we catch — one engine, many surfaces',
@@ -38,12 +49,12 @@ export const metadata: Metadata = {
     'jitai consumer app',
     'autopilot loop taxonomy',
   ],
-  alternates: { canonical: '/patterns' },
+  alternates: { canonical: '/patterns-we-catch' },
   openGraph: {
     title: 'Patterns we catch — one engine, many surfaces',
     description:
       'COYL has one coordinator. It catches food at 9 PM, tab switches at 11 AM, follow-ups that drift past Thursday — same engine, six surfaces.',
-    url: 'https://coyl.ai/patterns',
+    url: 'https://coyl.ai/patterns-we-catch',
     images: [
       {
         url: '/api/og?title=Patterns+we+catch&kicker=One+engine.+Many+surfaces.',
@@ -109,7 +120,7 @@ export default function PatternsPage() {
       <BreadcrumbSchema
         items={[
           { name: 'COYL', url: 'https://coyl.ai' },
-          { name: 'Patterns', url: 'https://coyl.ai/patterns' },
+          { name: 'Patterns we catch', url: 'https://coyl.ai/patterns-we-catch' },
         ]}
       />
 
