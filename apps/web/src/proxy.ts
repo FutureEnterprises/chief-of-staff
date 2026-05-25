@@ -50,6 +50,12 @@ const isPublicRoute = createRouteMatcher([
   '/eap',
   '/uap',
   '/rap',
+  // /kill — dedicated UAP global kill-switch surface. Per UAP-0.1.md §8
+  // (kill switch ≤2 taps away) this URL must be reachable to anyone in
+  // crisis even if they're signed out. The POST to
+  // /api/uap/v1/kill-switch itself enforces user identity via Clerk
+  // session; the page just renders the button + drives a sign-in flow.
+  '/kill',
   '/rebound',
   '/rebound/(.*)',
   '/platform',
@@ -185,6 +191,12 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/eap',
   '/uap',
   '/rap',
+  // /kill — dedicated UAP global kill-switch surface. Must bypass the
+  // dev-instance Clerk handshake so a user in crisis can reach
+  // coyl.ai/kill without being 302'd through accounts.dev. The page
+  // itself uses /api/v1/user to detect identity client-side; the
+  // POST to /api/uap/v1/kill-switch still requires the Clerk session.
+  '/kill',
   '/rebound',
   '/rebound/(.*)',
   '/platform',
