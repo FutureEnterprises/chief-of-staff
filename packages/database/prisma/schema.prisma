@@ -195,6 +195,11 @@ model User {
   // when it switches from mockup to real data. See AutopilotMapSnapshot.
   autopilotMapSnapshots   AutopilotMapSnapshot[]
 
+  // RAP v0.1 — risk assessment trail. Every PAP/EAP proposal that
+  // touches this user is classified by RAP; the assessment row is the
+  // audit record. See docs/protocol/RAP-0.1.md.
+  rapAssessments RAPAssessment[]
+
   @@map("users")
 }
 
@@ -1227,47 +1232,47 @@ enum ScheduledInterruptStatus {
 // expression surface to defend against.
 
 model CheckinSchedule {
-  id             String          @id @default(cuid())
-  userId         String
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // User-visible label, e.g. "Afternoon walk reminder" or "Sunday review".
   // Free text but capped at 80 chars at the API layer.
-  label          String
+  label String
 
-  cadence        CheckinCadence
-  channel        CheckinChannel  @default(EMAIL)
+  cadence CheckinCadence
+  channel CheckinChannel @default(EMAIL)
 
   // For HOURLY cadence — fires every {intervalHours} hours INSIDE the
   // [windowStart, windowEnd] local-time window. Both stored as "HH:MM"
   // strings interpreted in the user's timezone. windowStart < windowEnd
   // assumed; e.g. "09:00" / "21:00" → 9 AM through 9 PM only.
-  intervalHours  Int?
-  windowStart    String?
-  windowEnd      String?
+  intervalHours Int?
+  windowStart   String?
+  windowEnd     String?
 
   // For DAILY cadence — fires once per day at this local time.
-  dailyTime      String?
+  dailyTime String?
 
   // For WEEKLY cadence — day-of-week (0=Sun..6=Sat) at local time.
-  weeklyDay      Int?
-  weeklyTime     String?
+  weeklyDay  Int?
+  weeklyTime String?
 
   // For MONTHLY cadence — day-of-month (1..28 enforced at API; 29-31
   // skipped on months that don't have them) at local time.
-  monthlyDay     Int?
-  monthlyTime    String?
+  monthlyDay  Int?
+  monthlyTime String?
 
-  active         Boolean         @default(true)
-  lastFiredAt    DateTime?
-  nextFiresAt    DateTime?
+  active      Boolean   @default(true)
+  lastFiredAt DateTime?
+  nextFiresAt DateTime?
 
   // Optional short message body the user wants delivered. If null the
   // service falls back to a default per-cadence prompt.
-  message        String?
+  message String?
 
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Inbound replies linked back to this schedule via the 12-hour window
   // heuristic in the Twilio / Resend inbound webhooks.
@@ -1537,34 +1542,31 @@ model TeamsWorkspace {
 
 /**
  * TeamsUserAuth — per-user Microsoft Graph OAuth tokens.
- *
  * Distinct from TeamsWorkspace (one row per tenant, written at admin-
  * consent time) and from the Bot Framework credentials (which are
  * tenant-spanning bot identity, not per-user). This row holds the
  * delegated Graph access — the access + refresh token the user granted
  * COYL so the /api/cron/teams-graph-pull poller can read their calendar
  * and email and auto-fire the four archetype interrupt classes.
- *
  * Tokens are encrypted at rest via encryptToken() from dexcom.ts
  * (AES-256-GCM, key from INTEGRATION_ENCRYPTION_KEY). The cron's "due
  * for refresh" scan uses the (tenantId, tokenExpiresAt) index.
- *
  * scopesGranted is the subset Microsoft actually returned in the token
  * response — we ask for Calendars.Read + Mail.Read + User.Read +
  * offline_access but the user may consent to fewer, and the cron skips
  * signal classes whose scope isn't granted.
  */
 model TeamsUserAuth {
-  id                  String   @id @default(cuid())
-  userId              String   @unique
-  tenantId            String
-  accessTokenCipher   String   @db.Text
-  refreshTokenCipher  String   @db.Text
-  tokenExpiresAt      DateTime
-  scopesGranted       String[] // e.g. ["Calendars.Read", "Mail.Read", "User.Read"]
-  lastRefreshedAt     DateTime?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  tenantId           String
+  accessTokenCipher  String    @db.Text
+  refreshTokenCipher String    @db.Text
+  tokenExpiresAt     DateTime
+  scopesGranted      String[] // e.g. ["Calendars.Read", "Mail.Read", "User.Read"]
+  lastRefreshedAt    DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1947,7 +1949,6 @@ model CronHeartbeat {
  * for the next danger window). This row is "email me this so I can
  * come back" — the right top-of-funnel for viral acquisition where
  * most visitors won't yet commit to a scheduled interrupt.
- *
  * convertedUserId is populated when the lead later signs up — the
  * audit-archetype carries through onboarding so the user lands in
  * /today already pattern-mapped.
@@ -2007,17 +2008,15 @@ model AuditFunnelEvent {
 
 /**
  * RetentionSnapshot — daily cohort retention point-in-time record.
- *
  * Written by the daily retention-snapshot cron at 04:00 UTC. One row
  * per (snapshotDate, cohortKind) — cohortKind in {'D1','D7','D14','D30'}.
  * The admin retention dashboard reads the last 30 snapshots per
  * cohort to show trend, not just the live point-in-time.
- *
  * Cohort definitions, relative to snapshotDate S:
- *   D1  — users registered (S-2, S-1], active in (S-1, S]
- *   D7  — users registered (S-14, S-7], active in (S-7, S]
- *   D14 — users registered (S-28, S-14], active in (S-14, S]
- *   D30 — users registered (S-60, S-30], active in (S-30, S]
+ * D1  — users registered (S-2, S-1], active in (S-1, S]
+ * D7  — users registered (S-14, S-7], active in (S-7, S]
+ * D14 — users registered (S-28, S-14], active in (S-14, S]
+ * D30 — users registered (S-60, S-30], active in (S-30, S]
  */
 model RetentionSnapshot {
   id            String   @id @default(cuid())
@@ -2137,6 +2136,90 @@ model UAPKillSwitchEvent {
 }
 
 // ============================================================
+// RAP — Risk Assessment Protocol v0.1
+//
+// The fifth COYL protocol. Risk classification layer that sits
+// orthogonal to BIP/PAP/EAP/UAP and answers "when does an AI agent
+// stop coaching and start escalating to human support?"
+//
+// See docs/protocol/RAP-0.1.md for the spec.
+// ============================================================
+
+/// RAP risk classes — every behavioral moment falls into exactly one.
+/// See RAP-0.1.md §2 for the full definitions.
+enum RAPRiskClass {
+  ROUTINE_FRICTION // default — AI may coach
+  PATTERN_RELAPSE // user crossed back into a left-pattern
+  CRISIS_INDICATION // credible crisis signal — AI stops coaching, refers
+  LEGAL_OR_MEDICAL_EMERGENCY // imminent danger — RAP supersedes everything
+
+  @@map("rap_risk_class")
+}
+
+/// Per-moment risk assessment. NOT a per-user state — a user can be in
+/// ROUTINE_FRICTION at 2:00 PM and CRISIS_INDICATION at 2:47 PM. Each
+/// row is a stateless classification of one signal chain.
+model RAPAssessment {
+  id                 String       @id @default(cuid())
+  userId             String
+  riskClass          RAPRiskClass
+  rationaleSignature String // sha256 of canonical signal-chain JSON
+  classifierVersion  String       @default("rap-v0.1-rules-only")
+
+  // The full inputs that drove the classification — recorded for audit
+  // replay. A Trust & Safety reviewer can re-run the classifier against
+  // this signal chain months later and confirm the same result.
+  signalChain Json
+  ttlSeconds  Int  @default(300)
+
+  // What triggered the assessment
+  triggerKind  String // "pap_proposal" | "eap_action_request" | "manual" | "bip_signal"
+  triggerRefId String? // id of PAPProposal / EAPActionRequest if applicable
+
+  // Routing decision — null when riskClass = ROUTINE_FRICTION (no
+  // routing required). Populated for PATTERN_RELAPSE / CRISIS_INDICATION
+  // / LEGAL_OR_MEDICAL_EMERGENCY per the envelope shapes in RAP-0.1.md §4.
+  routingEnvelope Json?
+
+  // Crisis + emergency assessments close the coaching path for the
+  // session until a human-reviewed re-open is logged. Tracked here so
+  // PAP can refuse new proposals while this is true.
+  coachingPathClosed Boolean   @default(false)
+  pathReopenedAt     DateTime?
+  pathReopenedReason String?
+
+  createdAt DateTime @default(now())
+
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  escalations RAPEscalation[]
+
+  @@index([userId, createdAt])
+  @@index([riskClass, createdAt])
+  @@index([userId, coachingPathClosed])
+  @@map("rap_assessments")
+}
+
+/// Concrete escalation events — record of where RAP routed the user
+/// and what happened next. One assessment can produce multiple
+/// escalations (e.g., 988 + user emergency contact + clinician).
+model RAPEscalation {
+  id             String    @id @default(cuid())
+  assessmentId   String
+  escalatedTo    String // "988" | "741741" | "911" | "user_emergency_contact" | "clinician" | "pod_accountability" | other
+  envelopeKind   String // "crisis_referral" | "emergency_referral" | "pattern_relapse_signal"
+  outcome        String? // "user_called" | "user_dismissed" | "auto_routed" | "human_review_pending"
+  outcomeNotedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  assessment RAPAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@index([escalatedTo, createdAt])
+  @@map("rap_escalations")
+}
+
+// ============================================================
 // INBOUND MESSAGES — replies into the check-in loop
 //
 // The user-defined CheckinSchedule cron pushes SMS (via Twilio) and
@@ -2159,13 +2242,13 @@ model UAPKillSwitchEvent {
 // ============================================================
 
 model InboundMessage {
-  id        String         @id @default(cuid())
-  userId    String
-  channel   InboundChannel
+  id          String         @id @default(cuid())
+  userId      String
+  channel     InboundChannel
   // E.164 phone for SMS, RFC-5322 mailbox for EMAIL.
   fromAddress String
-  body      String         @db.Text
-  receivedAt DateTime      @default(now())
+  body        String         @db.Text
+  receivedAt  DateTime       @default(now())
 
   // Set when the inbound arrived within 12 hours of a CheckinSchedule
   // fire we sent the user. Lets the UI render "X replies" badges next
