@@ -30,6 +30,7 @@
 
 import { prisma } from '@repo/database'
 import type { UAPKillSwitchEvent } from '@repo/database'
+import { broadcastKillSwitch } from './realtime'
 
 /* ──────────────────── initiateKillSwitch ──────────────────── */
 
@@ -106,6 +107,17 @@ export async function initiateKillSwitch(params: {
     })
 
     return { event: eventRow, affectedGrantIds: grantIds }
+  })
+
+  // Fire-and-forget realtime broadcast so subscribers (mobile, browser
+  // extension, watch, web) react in ~hundreds of ms instead of waiting
+  // for their next poll — closes the cross-surface side of the §3 5s
+  // SLA. Exception-safe internally: kill MUST NOT fail if broadcast
+  // plumbing is unreachable.
+  void broadcastKillSwitch(userId, {
+    killedAt: killedAt.toISOString(),
+    affectedGrantIds,
+    reason: params.reason ?? 'user_initiated',
   })
 
   return { event, affectedGrantIds, killedAt }
