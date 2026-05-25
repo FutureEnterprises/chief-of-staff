@@ -7,19 +7,23 @@
  *   evaluateAction         — EAP layer (single-device action)
  *   evaluateOrchestration  — EAP multi-device composite flow
  *
- * Strict gate ordering, cheapest → most expensive:
+ * Strict gate ordering, safety-floor first, then cheapest → most expensive:
  *
- *   1. panic         (1 indexed DB row, absolute deny)
- *   2. quiet hours   (1 indexed DB row, absolute deny)
- *   3. confidence    (pure compute, no DB)
- *   4. rate limit    (4 count queries: partner+global × proposal+action)
- *   5. dedup         (find_many + TF-cosine on up to 50 rows)
+ *   0. RAP coaching-path closed  (1 indexed DB row, absolute deny — PAP only)
+ *   1. panic                     (1 indexed DB row, absolute deny)
+ *   2. quiet hours               (1 indexed DB row, absolute deny)
+ *   3. confidence                (pure compute, no DB)
+ *   4. rate limit                (4 count queries: partner+global × proposal+action)
+ *   5. dedup                     (find_many + TF-cosine on up to 50 rows)
  *
- * Why this order: panic + quiet hours are absolute denies users opted
- * into — they should NEVER be overridden by anything cheaper. Confidence
- * is third because it's free (no DB hit) and the LLM's own score is the
- * fastest signal we have. Rate limit and dedup require multiple DB hits
- * each, so they run last to short-circuit on cheaper denies above.
+ * Why this order: the RAP coaching-path closure is the absolute floor —
+ * a crisis-class assessment closes the path and ALL coaching must stop
+ * until a human re-opens it (RAP-0.1.md §2). After that, panic + quiet
+ * hours are absolute denies users opted into — they should NEVER be
+ * overridden by anything cheaper. Confidence is next because it's free
+ * (no DB hit) and the LLM's own score is the fastest signal we have.
+ * Rate limit and dedup require multiple DB hits each, so they run last
+ * to short-circuit on cheaper denies above.
  *
  * NOTE on transactions: each gate is read-only. The coordinator does
  * NOT write the PAPProposal / ActionRequest row — that's the caller's
@@ -32,6 +36,7 @@ import { isInQuietHours } from './quiet-hours'
 import { isAboveConfidenceThreshold, DEFAULT_CONFIDENCE_THRESHOLD } from './confidence-gate'
 import { checkLLMPartnerRateLimit } from './rate-limit'
 import { checkProposalDedup } from './dedup'
+import { isUserCoachingPathClosed as defaultIsUserCoachingPathClosed } from '@/lib/rap/store'
 
 // Re-export the gates so callers/tests can use them individually.
 export { isPanicActive } from './panic-check'
@@ -72,6 +77,7 @@ export type DenialReason =
   | 'confidence_too_low'
   | 'rate_limited'
   | 'partner_inactive'
+  | 'rap_coaching_path_closed'
 
 export type QueueReason = 'deduplication_pending'
 
@@ -85,10 +91,33 @@ export type ProposalInput = {
   context: { confidence?: number }
 }
 
+/**
+ * Optional dependency-injection slot for the RAP coaching-path gate.
+ * Defaults to the real Prisma-backed store lookup; tests substitute a
+ * stub so they don't need a DB connection to verify the wiring.
+ */
+export type EvaluateProposalDeps = {
+  isUserCoachingPathClosed?: (userId: string) => Promise<boolean>
+}
+
 export async function evaluateProposal(
   proposal: ProposalInput,
   asOf: Date = new Date(),
+  deps: EvaluateProposalDeps = {},
 ): Promise<CoordinatorDecision> {
+  const isCoachingPathClosed =
+    deps.isUserCoachingPathClosed ?? defaultIsUserCoachingPathClosed
+
+  // 0. RAP coaching-path closure — absolute floor. A CRISIS_INDICATION
+  // or LEGAL_OR_MEDICAL_EMERGENCY assessment that closed the coaching
+  // path must silence ALL subsequent PAP proposals for the same user
+  // until a human-reviewed reopen lands (see docs/protocol/RAP-0.1.md
+  // §2). This runs BEFORE panic/quiet-hours/confidence/rate-limit/dedup
+  // because crisis closure supersedes every other gate.
+  if (await isCoachingPathClosed(proposal.userId)) {
+    return { decision: 'denied', reason: 'rap_coaching_path_closed' }
+  }
+
   // 1. Panic — absolute deny
   if (await isPanicActive(proposal.userId, asOf)) {
     return { decision: 'denied', reason: 'panic_active' }
