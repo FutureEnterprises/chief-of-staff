@@ -2,7 +2,8 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'Terms of Service for COYL — the AI productivity platform. Covers account usage, subscription plans, acceptable use, AI features, and liability.',
+  description:
+    'Terms of Service for COYL — the behavioral interrupt protocol. Covers account usage, subscription plans, acceptable use, AI behavioral support, and liability.',
 }
 
 export default function TermsPage() {
@@ -33,15 +34,20 @@ export default function TermsPage() {
 
       <h2>3. The Service</h2>
       <p>
-        COYL is an AI-powered productivity platform that helps you track tasks, commitments, and
-        follow-ups. The Service includes:
+        COYL is an AI-powered behavioral support service that catches recurring autopilot loops —
+        the 3-second window between intention and unwanted action — and surfaces context-aware
+        interrupts so users can re-route a slip in real time rather than after the fact. COYL is
+        behavioral support, not medical treatment, not clinical care, and not a substitute for
+        crisis services (see <a href="/safety">Safety</a> for routing to 988 / SAMHSA / your
+        clinician when those are the right resources). The Service includes:
       </p>
       <ul>
-        <li>Task capture, tracking, and management</li>
-        <li>AI-assisted planning, reviews, and performance assessments</li>
-        <li>Morning and night briefing sessions</li>
-        <li>Follow-up tracking and escalation reminders</li>
-        <li>Email briefings and notifications</li>
+        <li>The Autopilot Audit + archetype mapping</li>
+        <li>Real-time danger-window interrupts (push, SMS, email — your choice)</li>
+        <li>Same-night recovery flow when a slip happens</li>
+        <li>The Autopilot Map — weekly visualization of your patterns</li>
+        <li>AI-assisted reflection (morning and night check-ins, post-slip review)</li>
+        <li>Provider and team surfaces (PMPM-billed organizations only)</li>
         <li>Mobile and web access</li>
       </ul>
 

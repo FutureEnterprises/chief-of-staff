@@ -73,11 +73,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     `&specific=${encodeURIComponent(a.specific.name)}` +
     `&stat=${encodeURIComponent(shareStat)}`
 
-  const shareTitle = `I'm ${a.family.name}`
-  const shareDescription = `${a.family.signature} ${a.family.essence} Find your autopilot family at coyl.ai/audit.`
+  // Lead with the prevalence stat — the most viral element on the page.
+  // Round-3 audit fix (v3 external pass, 2026-05-24) called out that the
+  // OG image already leads with the stat but the HTML <title> + openGraph
+  // title were still falling back to "my COYL autopilot" descriptor text.
+  // Now every surface (browser tab, link preview where image fails to
+  // render, twitter card text, OG alt) leads with the archetype + its
+  // signature script — the line that earns the click.
+  const shareTitle = `${a.family.name}: ${a.family.signature}`
+  const shareDescription = `${a.family.essence} Find your autopilot family at coyl.ai/audit.`
 
   return {
-    title: `${a.family.name} — my COYL autopilot`,
+    title: shareTitle,
     description: shareDescription,
     alternates: { canonical: `/a/${slug}` },
     openGraph: {
@@ -91,7 +98,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
           url: ogUrl,
           width: 1200,
           height: 630,
-          alt: `${a.family.name} — my COYL autopilot`,
+          alt: shareTitle,
         },
       ],
     },
