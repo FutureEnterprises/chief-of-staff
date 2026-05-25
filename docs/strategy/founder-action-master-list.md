@@ -723,6 +723,79 @@ engineering.
 
 ---
 
+## v4 external audit response — shipped May 24, 2026
+
+The v4 audit ("COYL Audit & Growth Plan, May 2026") was read with
+ultrathink and triaged into Tier A (high-leverage fast wins), Tier B
+(structural fixes that pay off through the funnel), and Tier C
+(longer arcs already underway).
+
+### What shipped (commits)
+
+| Item | What | Commit |
+| ---- | ---- | ------ |
+| A2 | Clinician pricing block on /rebound (free-for-providers + $12-18 PMPM) | c9b5f2f |
+| A3 | "Early read · still narrowing" preview on audit step 2 | c9b5f2f |
+| A5 | Footer changelog label "What's new (changelog)" | c9b5f2f |
+| B3 | /patterns "engine-of-engines" hub + lib/research-stats.ts | 00b4040 |
+| B4 | General↔Rebound family bridge + GLP-1 callout on audit result | 00b4040 |
+| B1 | Animated 7-step loop on /how-it-works (step 4 = three-second window) | 98ddc61 |
+
+### What was held
+
+**A1 (lead-with-GLP-1 homepage)** — the auditor's strongest
+recommendation. HELD by founder decision. The hero-variants.tsx
+file carries a round-3 doc-comment documenting an empirical reversal
+of exactly this recommendation based on observed bounce-rate data
+when the GLP-1-led hero shipped. Until we have new data that
+overturns that round-3 finding, the general-autopilot lead stays.
+This is the right call: empirical founder decisions outweigh
+theoretical audit recommendations from outside the data.
+
+### What the auditor got factually wrong
+
+Worth tracking so we don't over-trust the next external audit:
+- Claimed RAP was a placeholder — actually shipped end-to-end
+  (6bc4352, cf92cbf)
+- Claimed annual pricing wasn't built — actually fully shipped
+  including Stripe `interval: 'monthly' | 'annual'` body param
+- Claimed "MY COYL AUTOPILOT" share card headline needed fixing —
+  already fixed in 207d151
+- Claimed UC Irvine 23-min stat was duplicated across /work and
+  /procrastination — only on /procrastination
+
+Net: 4 of the audit's 13 findings were already shipped or
+factually wrong. The 9 valid findings produced 7 ships (above) and
+1 held (A1).
+
+### B3 + B4 architectural payoff (worth flagging)
+
+Two of the shipped items have leverage beyond the immediate audit
+response:
+
+1. **`lib/research-stats.ts`** — single source of truth for every
+   research citation in marketing copy. When the next study lands,
+   we update one constant and every page picks it up. The auditor's
+   specific dedup case was fictional but the principle holds.
+
+2. **`lib/family-taxonomy-map.ts`** — bridges the 6 general audit
+   families to the 4 GLP-1 Rebound families *without* collapsing
+   them (auditor wanted collapse; collapse loses signal). Lets us
+   cross-pollinate between the two funnels in future surfaces
+   without having to re-think the bridge each time.
+
+### What was deliberately NOT shipped
+
+- A4 (autopilot map): the auditor flagged a /how-it-works gap that
+  was actually addressed by the /patterns hub (B3). Subsumed.
+- B2 (annual pricing): already shipped before this audit landed.
+- C-tier recommendations (RAP build-out, GLP-1 partner pilot,
+  longitudinal cohort): not single-day work. Each is a roadmap
+  arc, not an audit response item. Tracked in respective sections
+  above (Engineering follow-ups, Hardware + Distribution Surfaces).
+
+---
+
 ## Sources
 
 This document synthesizes from:
