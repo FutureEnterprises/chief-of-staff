@@ -20,6 +20,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CalendarClock, Clock, Layers, MessageSquareQuote } from 'lucide-react'
+import { YourAutopilotMapBanner } from '@/components/landing/your-autopilot-map-banner'
 
 export const metadata: Metadata = {
   title: 'Autopilot map — your danger windows, visualized',
@@ -56,6 +57,15 @@ export const metadata: Metadata = {
 export default function PatternsMarketingPage() {
   return (
     <div className="space-y-24 pb-12">
+      {/* Personalized banner — renders the signed-in visitor's most
+          recent AutopilotMapSnapshot when one exists, a "publishes
+          Monday" banner if they're signed in but have none yet, or
+          nothing at all for signed-out prospects. Client component so
+          the marketing surface stays statically rendered (Cache
+          Components contract). See its module doc for the full state
+          contract. */}
+      <YourAutopilotMapBanner />
+
       <header className="space-y-10">
         <div className="flex items-center gap-3">
           <span className="h-px w-12 bg-orange-500" />
@@ -328,12 +338,24 @@ export default function PatternsMarketingPage() {
       </section>
 
       <section className="border-t border-gray-200 pt-16">
-        <Link
-          href="/sign-up"
-          className="inline-block rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-        >
-          Map my autopilot
-        </Link>
+        <div className="flex flex-wrap items-center gap-4">
+          <Link
+            href="/sign-up"
+            className="inline-block rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+          >
+            Map my autopilot
+          </Link>
+          {/* Secondary CTA — explicit invitation to non-signed-in
+              visitors who want to see THEIR map, not the example. The
+              signed-in YourAutopilotMapBanner above covers the inverse
+              path (already-authed users see their map inline). */}
+          <Link
+            href="/sign-up"
+            className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            See your real map &rarr;
+          </Link>
+        </div>
       </section>
     </div>
   )
