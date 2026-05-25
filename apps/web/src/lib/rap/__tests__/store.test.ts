@@ -79,7 +79,7 @@ describe('writeAssessment', () => {
     })
 
     expect(mockPrisma.rAPAssessment.create).toHaveBeenCalledTimes(1)
-    const payload = mockPrisma.rAPAssessment.create.mock.calls[0][0].data
+    const payload = (mockPrisma.rAPAssessment.create.mock.calls[0]?.[0] ?? {}).data
     expect(payload.userId).toBe('user_a')
     expect(payload.riskClass).toBe('ROUTINE_FRICTION')
     expect(payload.rationaleSignature).toBe('sha256_hex_of_chain')
@@ -103,7 +103,7 @@ describe('writeAssessment', () => {
       triggerKind: 'bip_signal',
     })
 
-    const payload = mockPrisma.rAPAssessment.create.mock.calls[0][0].data
+    const payload = (mockPrisma.rAPAssessment.create.mock.calls[0]?.[0] ?? {}).data
     expect(payload.coachingPathClosed).toBe(true)
     expect(payload.ttlSeconds).toBe(60)
   })
@@ -120,7 +120,7 @@ describe('writeAssessment', () => {
       triggerKind: 'manual',
     })
 
-    const payload = mockPrisma.rAPAssessment.create.mock.calls[0][0].data
+    const payload = (mockPrisma.rAPAssessment.create.mock.calls[0]?.[0] ?? {}).data
     expect(payload.coachingPathClosed).toBe(true)
     expect(payload.ttlSeconds).toBe(60)
   })
@@ -137,7 +137,7 @@ describe('writeAssessment', () => {
       triggerKind: 'bip_signal',
     })
 
-    const payload = mockPrisma.rAPAssessment.create.mock.calls[0][0].data
+    const payload = (mockPrisma.rAPAssessment.create.mock.calls[0]?.[0] ?? {}).data
     expect(payload.coachingPathClosed).toBe(false)
     expect(payload.ttlSeconds).toBe(600)
   })
@@ -156,7 +156,7 @@ describe('writeAssessment', () => {
       coachingPathClosed: false,
     })
 
-    const payload = mockPrisma.rAPAssessment.create.mock.calls[0][0].data
+    const payload = (mockPrisma.rAPAssessment.create.mock.calls[0]?.[0] ?? {}).data
     expect(payload.ttlSeconds).toBe(30)
     expect(payload.coachingPathClosed).toBe(false)
   })
@@ -179,7 +179,7 @@ describe('writeAssessment', () => {
       routingEnvelope: envelope,
     })
 
-    const payload = mockPrisma.rAPAssessment.create.mock.calls[0][0].data
+    const payload = (mockPrisma.rAPAssessment.create.mock.calls[0]?.[0] ?? {}).data
     expect(payload.routingEnvelope).toEqual(envelope)
   })
 
@@ -195,7 +195,7 @@ describe('writeAssessment', () => {
       triggerKind: 'bip_signal',
     })
 
-    const payload = mockPrisma.rAPAssessment.create.mock.calls[0][0].data
+    const payload = (mockPrisma.rAPAssessment.create.mock.calls[0]?.[0] ?? {}).data
     expect(payload.routingEnvelope).toBe(JsonNullSentinel)
   })
 
@@ -212,7 +212,7 @@ describe('writeAssessment', () => {
       triggerRefId: 'prop_abc',
     })
 
-    const payload = mockPrisma.rAPAssessment.create.mock.calls[0][0].data
+    const payload = (mockPrisma.rAPAssessment.create.mock.calls[0]?.[0] ?? {}).data
     expect(payload.triggerRefId).toBe('prop_abc')
   })
 })
@@ -251,7 +251,7 @@ describe('loadUserAssessments', () => {
     await loadUserAssessments({ userId: 'user_q' })
 
     expect(mockPrisma.rAPAssessment.findMany).toHaveBeenCalledTimes(1)
-    const args = mockPrisma.rAPAssessment.findMany.mock.calls[0][0]
+    const args = (mockPrisma.rAPAssessment.findMany.mock.calls[0]?.[0] as any)
     expect(args.where.userId).toBe('user_q')
     expect(args.orderBy).toEqual({ createdAt: 'desc' })
     expect(args.take).toBe(50)
@@ -262,7 +262,7 @@ describe('loadUserAssessments', () => {
 
     await loadUserAssessments({ userId: 'user_q', limit: 10 })
 
-    const args = mockPrisma.rAPAssessment.findMany.mock.calls[0][0]
+    const args = (mockPrisma.rAPAssessment.findMany.mock.calls[0]?.[0] as any)
     expect(args.take).toBe(10)
   })
 
@@ -271,7 +271,7 @@ describe('loadUserAssessments', () => {
 
     await loadUserAssessments({ userId: 'user_q', limit: 9999 })
 
-    const args = mockPrisma.rAPAssessment.findMany.mock.calls[0][0]
+    const args = (mockPrisma.rAPAssessment.findMany.mock.calls[0]?.[0] as any)
     expect(args.take).toBe(500)
   })
 
@@ -279,7 +279,7 @@ describe('loadUserAssessments', () => {
     mockPrisma.rAPAssessment.findMany.mockResolvedValue([])
 
     await loadUserAssessments({ userId: 'user_q', limit: 0 })
-    const args = mockPrisma.rAPAssessment.findMany.mock.calls[0][0]
+    const args = (mockPrisma.rAPAssessment.findMany.mock.calls[0]?.[0] as any)
     expect(args.take).toBe(1)
   })
 
@@ -289,7 +289,7 @@ describe('loadUserAssessments', () => {
     const since = new Date('2026-05-20T00:00:00.000Z')
     await loadUserAssessments({ userId: 'user_q', since })
 
-    const args = mockPrisma.rAPAssessment.findMany.mock.calls[0][0]
+    const args = (mockPrisma.rAPAssessment.findMany.mock.calls[0]?.[0] as any)
     expect(args.where.createdAt).toEqual({ gte: since })
   })
 
@@ -297,7 +297,7 @@ describe('loadUserAssessments', () => {
     mockPrisma.rAPAssessment.findMany.mockResolvedValue([])
 
     await loadUserAssessments({ userId: 'user_q' })
-    const args = mockPrisma.rAPAssessment.findMany.mock.calls[0][0]
+    const args = (mockPrisma.rAPAssessment.findMany.mock.calls[0]?.[0] as any)
     expect(args.where.createdAt).toBeUndefined()
   })
 })
@@ -314,7 +314,7 @@ describe('isUserCoachingPathClosed', () => {
 
     // The query must filter by user, coachingPathClosed=true, no reopen,
     // and createdAt within the one-hour sliding window.
-    const args = mockPrisma.rAPAssessment.findFirst.mock.calls[0][0]
+    const args = mockPrisma.rAPAssessment.findFirst.mock.calls[0]?.[0] as any
     expect(args.where.userId).toBe('user_crisis')
     expect(args.where.coachingPathClosed).toBe(true)
     expect(args.where.pathReopenedAt).toBeNull()
@@ -354,7 +354,7 @@ describe('reopenCoachingPath', () => {
 
     expect(result).toEqual({ reopenedCount: 1 })
 
-    const args = mockPrisma.rAPAssessment.updateMany.mock.calls[0][0]
+    const args = (mockPrisma.rAPAssessment.updateMany.mock.calls[0]?.[0] ?? {})
     expect(args.where.userId).toBe('user_review')
     expect(args.where.coachingPathClosed).toBe(true)
     expect(args.where.pathReopenedAt).toBeNull()
@@ -416,7 +416,7 @@ describe('recordEscalation', () => {
     })
 
     expect(mockPrisma.rAPEscalation.create).toHaveBeenCalledTimes(1)
-    const data = mockPrisma.rAPEscalation.create.mock.calls[0][0].data
+    const data = (mockPrisma.rAPEscalation.create.mock.calls[0]?.[0] ?? {}).data
     expect(data.assessmentId).toBe('asmt_42')
     expect(data.escalatedTo).toBe('988')
     expect(data.envelopeKind).toBe('crisis_referral')
@@ -434,7 +434,7 @@ describe('recordEscalation', () => {
       outcome: 'user_called',
     })
 
-    const data = mockPrisma.rAPEscalation.create.mock.calls[0][0].data
+    const data = (mockPrisma.rAPEscalation.create.mock.calls[0]?.[0] ?? {}).data
     expect(data.outcome).toBe('user_called')
     expect(data.outcomeNotedAt).toBeInstanceOf(Date)
   })

@@ -54,7 +54,7 @@ describe('broadcastKillSwitch', () => {
     // Exactly one publish call.
     expect(fetchMock).toHaveBeenCalledTimes(1)
 
-    const [url, init] = fetchMock.mock.calls[0]
+    const [url, init] = fetchMock.mock.calls[0] ?? []
     expect(url).toBe('https://example.supabase.co/realtime/v1/api/broadcast')
     expect(init?.method).toBe('POST')
 
