@@ -63,6 +63,12 @@ const isPublicRoute = createRouteMatcher([
   '/i/provider/(.*)',
   '/r/(.*)',
   '/rb/(.*)',
+  // /m/[slug] — Autopilot Map snapshot share pages (Spotify Wrapped
+  // for self-sabotage). Anyone with the link can view the four-card
+  // weekly snapshot; no identity is revealed in the render. Must be
+  // public so social crawlers can scrape OG meta.
+  '/m/(.*)',
+  '/api/og/autopilot-map/(.*)',
   '/api/webhooks/(.*)',
   '/api/cron/(.*)',
   '/api/health',
@@ -187,6 +193,11 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/i/provider/(.*)',
   '/r/(.*)',
   '/rb/(.*)',
+  // Autopilot Map snapshot shares — must also bypass the dev-instance
+  // Clerk handshake so unauthenticated viewers (and Twitter/iMessage/
+  // Slack crawlers) can reach the page and its OG image directly.
+  '/m/(.*)',
+  '/api/og/autopilot-map/(.*)',
   '/api/webhooks/(.*)',
   '/api/cron/(.*)',
   '/api/v1/newsletter',
