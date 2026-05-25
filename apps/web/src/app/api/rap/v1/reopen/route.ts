@@ -73,7 +73,6 @@ export async function POST(req: Request) {
   try {
     const result = await reopenCoachingPath({
       userId: user.id,
-      actorUserId: user.id,
       reason: body.reason.trim(),
     })
     reopenedCount = result.reopenedCount

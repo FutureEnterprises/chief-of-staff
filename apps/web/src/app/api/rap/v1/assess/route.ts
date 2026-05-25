@@ -119,8 +119,8 @@ export async function POST(req: Request) {
         text: typeof s.text === 'string' ? s.text : undefined,
         metadata: (s.metadata ?? {}) as Record<string, unknown>,
         timestamp: typeof s.timestamp === 'string'
-          ? new Date(s.timestamp)
-          : new Date(),
+          ? s.timestamp
+          : new Date().toISOString(),
       })),
       jurisdiction,
     })
@@ -166,15 +166,24 @@ export async function POST(req: Request) {
   // ── Persist ──────────────────────────────────────────────────────
   let assessment
   try {
+    // partner.id not persisted on RAPAssessment row in v0.1 schema —
+    // attribution via the triggerRefId pointer to the partner's PAPProposal/
+    // EAPActionRequest row. v0.2: promote llmPartnerId to first-class column.
+    void partner
     assessment = await writeAssessment({
       userId: body.user_id,
-      llmPartnerId: partner.id,
       riskClass: classification.riskClass,
       rationaleSignature: classification.rationaleSignature,
       classifierVersion: classification.classifierVersion,
       routingEnvelope,
-      triggerKind: proposedAction?.kind ?? 'unknown',
-      jurisdiction,
+      triggerKind: ((): 'pap_proposal' | 'eap_action_request' | 'manual' | 'bip_signal' => {
+        const k = proposedAction?.kind
+        if (k === 'pap_proposal' || k === 'eap_action_request' || k === 'manual' || k === 'bip_signal') return k
+        return 'manual'
+      })(),
+      // jurisdiction not persisted on RAPAssessment row in v0.1 schema —
+      // the routing envelope already encodes jurisdictional lines.
+      // v0.2: promote to first-class column for cross-jurisdiction audit.
       signalChain: body.signal_chain,
       ttlSeconds: classification.ttlSeconds,
     })

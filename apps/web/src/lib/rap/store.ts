@@ -22,7 +22,7 @@
  * See docs/protocol/RAP-0.1.md.
  */
 
-import { prisma } from '@repo/database'
+import { prisma, Prisma } from '@repo/database'
 import type {
   RAPRiskClass,
   RAPAssessment,
@@ -112,10 +112,14 @@ export async function writeAssessment(input: {
       ttlSeconds: ttl,
       triggerKind: input.triggerKind,
       triggerRefId: input.triggerRefId ?? null,
+      // Prisma's Json? column needs the special JsonNull sentinel when
+      // we want to explicitly persist NULL (vs leaving the column DEFAULT
+      // null which is the same value but a different ergonomic path). We
+      // import Prisma from @repo/database below to access the sentinel.
       routingEnvelope:
-        input.routingEnvelope === undefined
-          ? null
-          : (input.routingEnvelope as object | null),
+        input.routingEnvelope == null
+          ? Prisma.JsonNull
+          : (input.routingEnvelope as Prisma.InputJsonValue),
       coachingPathClosed: pathClosed,
     },
   })

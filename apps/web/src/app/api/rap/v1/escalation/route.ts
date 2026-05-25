@@ -86,9 +86,12 @@ export async function POST(req: Request) {
 
   let escalationId: string
   try {
+    // partner.id not persisted in v0.1 schema (RAPEscalation has no
+    // llmPartnerId column); attribution lives in the RAPAssessment row
+    // referenced by assessmentId. v0.2: promote to first-class column.
+    void partner
     const result = await recordEscalation({
       assessmentId: body.assessment_id,
-      llmPartnerId: partner.id,
       escalatedTo: body.escalated_to,
       envelopeKind: body.envelope_kind as
         | 'crisis_referral'
