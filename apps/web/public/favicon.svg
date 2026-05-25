@@ -1,38 +1,80 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
   <!--
-    COYL favicon — AZURE FACET · PULSING SIGNAL.
+    COYL favicon — SIGNAL · CAUGHT (May 24 2026).
 
-    Solid orange A-frame triangle with a tilted apex (Azure-style),
-    cream-cutout inner triangle, 4-point compass sparkle pulsing in
-    the negative-space center. Geometry identical to the CoylMark
-    React component (apps/web/src/components/brand/logo.tsx) so tab
-    favicon, nav logo, and OG previews all read as one mark.
+    Half-ring C in warm chrome catches a 4-point compass star with
+    3 sonar arcs radiating outward. Geometry mirrors the CoylMark
+    React component (apps/web/src/components/brand/logo.tsx) exactly
+    so tab favicon, nav logo, and OG previews all read as one mark.
 
-    Inline <style> drives the sparkle pulse — browsers honor SVG
-    keyframe animations on <link rel="icon" type="image/svg+xml">.
-    Reduced-motion respected.
+    Inline <style> drives the star pulse + sonar ripples — browsers
+    honor SVG keyframe animations on <link rel="icon" type="image/svg+xml">.
+    prefers-reduced-motion respected.
 
-    Selected May 24 2026 — replaces the LOZENGE mark (which the
-    founder felt was too quiet). The A-frame + pulse hits.
+    Selected May 24 2026 — replaces AZURE FACET (which the founder
+    called "horrendous"). The half-ring + signal IS the product's
+    mechanism rendered as a glyph.
   -->
   <style>
-    @keyframes coyl-fav-pulse {
+    @keyframes coyl-fav-star {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50%      { opacity: 0.55; transform: scale(0.78); }
+      50%      { opacity: 0.62; transform: scale(0.88); }
     }
-    .coyl-fav-sparkle {
-      animation: coyl-fav-pulse 2.4s ease-in-out infinite;
-      transform-origin: 12.5px 16.5px;
+    @keyframes coyl-fav-ripple {
+      0%   { opacity: 0;   transform: scale(0.7); }
+      18%  { opacity: 0.7; transform: scale(0.85); }
+      100% { opacity: 0;   transform: scale(1.45); }
     }
+    .coyl-fav-star {
+      animation: coyl-fav-star 2.4s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .coyl-fav-r1, .coyl-fav-r2, .coyl-fav-r3 {
+      animation: coyl-fav-ripple 2.4s ease-out infinite;
+      transform-origin: 19px 16px;
+      opacity: 0;
+    }
+    .coyl-fav-r2 { animation-delay: -0.8s; }
+    .coyl-fav-r3 { animation-delay: -1.6s; }
     @media (prefers-reduced-motion: reduce) {
-      .coyl-fav-sparkle { animation: none; }
+      .coyl-fav-star,
+      .coyl-fav-r1, .coyl-fav-r2, .coyl-fav-r3 { animation: none; }
+      .coyl-fav-r1 { opacity: 0.55; }
+      .coyl-fav-r2 { opacity: 0.32; }
+      .coyl-fav-r3 { opacity: 0.18; }
     }
   </style>
-  <polygon points="13,2 22.5,22 1.5,22" fill="#ff6600"/>
-  <polygon points="13,9 18.5,20 6.5,20" fill="#fafaf7"/>
-  <path
-    class="coyl-fav-sparkle"
-    d="M 12.5 13.5 L 13.3 16 L 15.5 16.5 L 13.3 17 L 12.5 19.5 L 11.7 17 L 9.5 16.5 L 11.7 16 Z"
-    fill="#ff6600"
-  />
+  <defs>
+    <linearGradient id="fav-chrome" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8f3e8"/>
+      <stop offset="38%" stop-color="#cfc7b8"/>
+      <stop offset="72%" stop-color="#6e6555"/>
+      <stop offset="100%" stop-color="#2a2520"/>
+    </linearGradient>
+    <radialGradient id="fav-halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#fff4e0" stop-opacity="0.95"/>
+      <stop offset="30%" stop-color="#ff8a3d" stop-opacity="0.55"/>
+      <stop offset="70%" stop-color="#ff6600" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#ff6600" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Half-ring C, warm chrome, opens right -->
+  <path d="M 17.01 9.99 A 8.5 8.5 0 1 0 17.01 22.01"
+        stroke="url(#fav-chrome)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <!-- Sonar arcs radiating right -->
+  <path class="coyl-fav-r1" d="M 21 12.54 A 4 4 0 0 1 21 19.46"
+        stroke="#ff6600" stroke-width="0.85" stroke-linecap="round" fill="none"/>
+  <path class="coyl-fav-r2" d="M 22 10.81 A 6 6 0 0 1 22 21.19"
+        stroke="#ff6600" stroke-width="0.8" stroke-linecap="round" fill="none"/>
+  <path class="coyl-fav-r3" d="M 23 9.07 A 8 8 0 0 1 23 22.93"
+        stroke="#ff6600" stroke-width="0.75" stroke-linecap="round" fill="none"/>
+  <!-- Halo behind star -->
+  <circle cx="19" cy="16" r="6.5" fill="url(#fav-halo)"/>
+  <!-- 4-point compass star -->
+  <g class="coyl-fav-star">
+    <path d="M 19 9.5 L 19.7 16 L 19 22.5 L 18.3 16 Z M 12.5 16 L 19 15.3 L 25.5 16 L 19 16.7 Z" fill="#ff8a3d"/>
+    <path d="M 19 12 L 19.4 16 L 19 20 L 18.6 16 Z M 15 16 L 19 15.6 L 23 16 L 19 16.4 Z" fill="#fff4e0"/>
+    <circle cx="19" cy="16" r="0.7" fill="#ffffff"/>
+  </g>
 </svg>
