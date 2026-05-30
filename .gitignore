@@ -151,3 +151,11 @@ build
 .DS_Store
 Thumbs.db
 pnpm-lock 2.yaml
+
+# Swift / Xcode build artifacts (apps/ios-rebound)
+.build/
+DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+.swiftpm/
+Package.resolved
