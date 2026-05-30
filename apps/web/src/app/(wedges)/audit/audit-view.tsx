@@ -183,10 +183,14 @@ function readAuditSession(): string {
 }
 
 /**
- * Fire-and-forget funnel beacon. Uses sendBeacon when available
- * (survives page navigation away from /audit) and falls back to
- * fetch with keepalive otherwise. Errors are swallowed — funnel
- * telemetry must never break the audit UX.
+ * Fire-and-forget funnel beacon. Dual-fires:
+ *   1. sendBeacon → /api/v1/audit/event (writes AuditFunnelEvent in
+ *      Postgres — BAA-clean owned data, retention controlled by us).
+ *   2. PostHog capture (funnel/retention visualization, A/B framework,
+ *      feature flags). No-op if NEXT_PUBLIC_POSTHOG_KEY is unset.
+ *
+ * Errors on either path are swallowed — funnel telemetry must never
+ * break the audit UX.
  */
 function fireFunnelEvent(
   kind: 'started' | 'completed' | 'email_captured' | 'signup_started',
@@ -202,23 +206,41 @@ function fireFunnelEvent(
 ): void {
   if (typeof window === 'undefined') return
   const body = JSON.stringify({ kind, ...payload })
+
+  // Path 1 — our owned beacon endpoint.
   try {
     if ('sendBeacon' in navigator) {
       const blob = new Blob([body], { type: 'application/json' })
       navigator.sendBeacon('/api/v1/audit/event', blob)
-      return
+    } else {
+      void fetch('/api/v1/audit/event', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body,
+        keepalive: true,
+      }).catch(() => {})
     }
   } catch {
-    // fall through
+    // swallow
   }
-  void fetch('/api/v1/audit/event', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body,
-    keepalive: true,
-  }).catch(() => {
-    // swallow — telemetry must not break the funnel
-  })
+
+  // Path 2 — PostHog funnel visualization. Dynamic import keeps
+  // posthog-js out of the audit-view chunk for the LCP path.
+  try {
+    void import('@/lib/telemetry/posthog-client').then(({ captureMarketingEvent }) => {
+      const eventName =
+        kind === 'started'
+          ? 'audit.started'
+          : kind === 'completed'
+            ? 'audit.completed'
+            : kind === 'email_captured'
+              ? 'free_tier.signup'
+              : 'signup.started'
+      captureMarketingEvent(eventName, payload)
+    })
+  } catch {
+    // swallow
+  }
 }
 
 export function AuditView() {

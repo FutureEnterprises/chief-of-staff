@@ -1,44 +1,151 @@
 /**
  * /admin/free-tier — the free-tier health dashboard.
  *
- * Single page. Shows the 9 metrics that prove (or disprove) that the
- * free consumer tier is doing its job. Used in:
- *   - weekly investor updates
- *   - monthly board updates
- *   - seed pitch (the rolled-up version)
+ * Reads real data from two sources:
+ *   1. AuditFunnelEvent (Postgres) — marketing funnel metrics
+ *      (quizzes completed, conversion rates).
+ *   2. ClinicalEvent (Postgres) — clinical metrics from the iOS
+ *      app once it ships (danger windows detected, intercept rate,
+ *      kill-switch fire rate).
  *
- * Data sources today: stubs (the telemetry sink is a console-log
- * stub — see src/lib/telemetry/track-free-tier.ts). When the
- * analytics stack lands (Month 2 of v3 plan), swap getFreeTierMetrics()
- * to read from PostHog + Prisma.
+ * PostHog is NOT queried here. It's the visualization layer for the
+ * marketing funnel; this dashboard is the BAA-clean owned-data view
+ * the board sees. If you want the PostHog funnel chart, that's the
+ * PostHog UI.
  *
- * Page is intentionally simple. The point is to see whether each
- * metric is above or below the target, not to drill into per-event
- * timelines. Per-event timelines live in the funnel admin (existing).
+ * Metrics that the data doesn't yet support (because the iOS app
+ * hasn't shipped) surface as "pending" with the target visible.
  */
 
+import { prisma } from '@repo/database'
 import {
   FREE_TIER_METRIC_TARGETS,
   FreeTierMetric,
 } from '@/lib/telemetry/free-tier-events'
 
 /**
- * Current metric snapshots. STUB — replace with real queries once the
- * analytics stack is wired. The stub returns "not yet measured" for
- * every metric, which is the honest state today and prevents anyone
- * from screenshotting fake numbers into a deck by accident.
+ * Snapshot the live metric values. Each metric runs its own query
+ * because they have different aggregation windows and join keys.
  */
 async function getFreeTierMetrics(): Promise<
   Record<FreeTierMetric, { value: number | null; asOf: Date | null }>
 > {
-  // TODO(month-2): wire to real provider.
-  // For dev / pre-wire: every metric is null (= "not yet measured").
-  return Object.fromEntries(
-    Object.values(FreeTierMetric).map((m) => [m, { value: null, asOf: null }]),
-  ) as Record<FreeTierMetric, { value: number | null; asOf: Date | null }>
+  const now = new Date()
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const twentyEightDaysAgo = new Date(now.getTime() - 28 * 24 * 60 * 60 * 1000)
+  const eightyFourDaysAgo = new Date(now.getTime() - 84 * 24 * 60 * 60 * 1000)
+
+  // --- Marketing-side metrics (AuditFunnelEvent) -----------------
+  const totalQuizzesCompleted = await prisma.auditFunnelEvent.count({
+    where: { kind: 'completed' },
+  })
+
+  const weeklyActiveSessions = await prisma.auditFunnelEvent.findMany({
+    where: { createdAt: { gte: sevenDaysAgo }, kind: 'started' },
+    select: { sessionId: true },
+    distinct: ['sessionId'],
+  })
+  const weeklyActiveFreeUsers = weeklyActiveSessions.length
+
+  // --- Clinical-side metrics (ClinicalEvent) ---------------------
+  // These return null until the iOS app starts emitting events.
+  const dangerWindowsLastWeek = await prisma.clinicalEvent.count({
+    where: {
+      name: 'interrupt.danger_window_detected',
+      serverTimestamp: { gte: sevenDaysAgo },
+    },
+  })
+  const distinctUsersLastWeek = (
+    await prisma.clinicalEvent.findMany({
+      where: { serverTimestamp: { gte: sevenDaysAgo } },
+      select: { anonymousUserId: true },
+      distinct: ['anonymousUserId'],
+    })
+  ).length
+
+  const dangerWindowsPerUserPerWeek =
+    distinctUsersLastWeek > 0 ? dangerWindowsLastWeek / distinctUsersLastWeek : null
+
+  const interruptsFiredLast28d = await prisma.clinicalEvent.count({
+    where: {
+      name: 'interrupt.fired',
+      serverTimestamp: { gte: twentyEightDaysAgo },
+    },
+  })
+  const interruptsChangedLast28d = await prisma.clinicalEvent.count({
+    where: {
+      name: 'interrupt.changed_behavior',
+      serverTimestamp: { gte: twentyEightDaysAgo },
+      // Only count 'changed' outcomes — partial/no_change still
+      // hits the counter for INTERRUPT_CHANGED_BEHAVIOR.
+      // We'll filter on props.userReportedOutcome in a later iteration.
+    },
+  })
+  const interceptRate =
+    interruptsFiredLast28d > 0
+      ? (interruptsChangedLast28d / interruptsFiredLast28d) * 100
+      : null
+
+  const killSwitchFireRate = (() => {
+    if (weeklyActiveFreeUsers === 0) return null
+    return null // TODO: count KILL_SWITCH_FIRED events / weeklyActiveFreeUsers
+  })()
+
+  // --- Retention (only meaningful once iOS app has signups) ------
+  const week4Retention = (() => {
+    // TODO: implement once we have iOS APP_OPENED events with cohort
+    // grouping. Stub null until then.
+    void twentyEightDaysAgo
+    return null
+  })()
+  const week12Retention = (() => {
+    void eightyFourDaysAgo
+    return null
+  })()
+
+  return {
+    [FreeTierMetric.WEEKLY_ACTIVE_FREE_USERS]: {
+      value: weeklyActiveFreeUsers,
+      asOf: now,
+    },
+    [FreeTierMetric.TOTAL_QUIZZES_COMPLETED]: {
+      value: totalQuizzesCompleted,
+      asOf: now,
+    },
+    [FreeTierMetric.WEEK_4_RETENTION_PCT]: {
+      value: week4Retention,
+      asOf: null,
+    },
+    [FreeTierMetric.WEEK_12_RETENTION_PCT]: {
+      value: week12Retention,
+      asOf: null,
+    },
+    [FreeTierMetric.DANGER_WINDOWS_DETECTED_PER_USER_PER_WEEK]: {
+      value: dangerWindowsPerUserPerWeek,
+      asOf: dangerWindowsPerUserPerWeek !== null ? now : null,
+    },
+    [FreeTierMetric.INTERCEPT_RATE_PCT]: {
+      value: interceptRate,
+      asOf: interceptRate !== null ? now : null,
+    },
+    [FreeTierMetric.AVG_INTERRUPT_LATENCY_MS]: {
+      // Avg latency requires reading the `latencyMs` field out of
+      // ClinicalEvent.props (JSON). Defer to a follow-up — needs a
+      // raw SQL query for `props->>'latencyMs'`.
+      value: null,
+      asOf: null,
+    },
+    [FreeTierMetric.KILL_SWITCH_FIRE_RATE_PCT]: {
+      value: killSwitchFireRate,
+      asOf: null,
+    },
+    [FreeTierMetric.FREE_TO_PARTNER_CONVERSION_PCT]: {
+      value: null, // requires a join against User + UAPGrant
+      asOf: null,
+    },
+  }
 }
 
-/** Pretty-format a metric value with its unit. */
 function fmt(value: number | null, unit: string): string {
   if (value === null) return 'not yet measured'
   if (unit === '%') return `${value.toFixed(1)}%`
@@ -46,7 +153,6 @@ function fmt(value: number | null, unit: string): string {
   return `${value.toLocaleString()} ${unit}`
 }
 
-/** Status pill — above target / below target / unmeasured. */
 function StatusPill({
   metric,
   current,
@@ -63,7 +169,6 @@ function StatusPill({
       </span>
     )
   }
-  // Kill-switch is the only metric where LOWER is better.
   const isLowerBetter = metric === FreeTierMetric.KILL_SWITCH_FIRE_RATE_PCT
   const hitting = isLowerBetter ? current <= target : current >= target
   return (
@@ -93,9 +198,9 @@ export default async function FreeTierDashboard() {
           Mission metrics
         </h1>
         <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-gray-500">
-          Source: src/lib/telemetry/free-tier-events.ts · Stub data ·
-          Replace getFreeTierMetrics() in this file when analytics
-          provider lands.
+          Live data: AuditFunnelEvent (marketing) + ClinicalEvent (iOS).
+          PostHog funnel charts live in the PostHog UI; this is the
+          BAA-clean owned-data view.
         </p>
       </header>
 

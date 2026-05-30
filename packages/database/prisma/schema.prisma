@@ -2362,3 +2362,75 @@ model AutopilotMapSnapshot {
   @@index([userId, weekStart])
   @@map("autopilot_map_snapshots")
 }
+
+/**
+ * ClinicalEvent — PHI-adjacent free-tier event sink for iOS + future
+ * mobile surfaces. The marketing-funnel events still flow through
+ * AuditFunnelEvent (the established path); ClinicalEvent is the
+ * separate model for the higher-sensitivity clinical event set:
+ * DANGER_WINDOW_DETECTED, INTERRUPT_FIRED, INTERRUPT_CHANGED_BEHAVIOR,
+ * SLIP_REPORTED, RECOVERY_COMPLETED, KILL_SWITCH_FIRED.
+ *
+ * Separated because:
+ *   1. BAA scope — the clinical events need to be inside the BAA-
+ *      covered data boundary; the marketing funnel does not. Keeping
+ *      them in distinct tables makes the audit story obvious.
+ *   2. Retention policy — clinical events follow the user-owned audit
+ *      log retention rules (UAP §AUDIT_QUERY); marketing funnel
+ *      events follow standard product-analytics retention.
+ *   3. Provider routing — marketing events also dual-write to
+ *      PostHog Cloud; clinical events DO NOT leave our infra.
+ *
+ * `anonymousUserId` is the hash of (user.id + per-deploy salt) for
+ * authenticated users, or a stable browser/device cookie hash for
+ * unauthenticated users. Never the raw user id.
+ *
+ * `props` is a typed JSON column — the canonical type lives at
+ * apps/web/src/lib/telemetry/free-tier-events.ts (FreeTierEventPayload).
+ * The shape is the discriminated union there minus the base props
+ * (which are columnar).
+ *
+ * Append-only at the application layer. There is no UPDATE or DELETE
+ * call site for ClinicalEvent — modifications are forbidden by code
+ * convention and (when the BAA is in place) by Postgres RLS.
+ */
+model ClinicalEvent {
+  id                String   @id @default(cuid())
+
+  /// Canonical event name from FreeTierEventName (clinical subset only).
+  /// One of: 'interrupt.danger_window_detected' | 'interrupt.fired' |
+  ///         'interrupt.changed_behavior' | 'slip.reported' |
+  ///         'recovery.completed' | 'kill_switch.fired' | 'app.opened'
+  name              String
+
+  /// SHA-256 hash of (user id + per-deploy salt). Never raw.
+  anonymousUserId   String
+
+  /// Surface that emitted the event. 'ios' | 'apple-watch' |
+  /// 'android' | 'wear-android' | 'web' (the last only for parity).
+  surface           String
+
+  /// App/web build version — for diffing funnels across releases.
+  buildVersion      String
+
+  /// Client-side timestamp from the device's clock. Trust with
+  /// suspicion — devices can be wrong. Always compare against
+  /// `serverTimestamp` when investigating ordering anomalies.
+  clientTimestamp   DateTime
+
+  /// Server-stamped timestamp — the authoritative ordering field.
+  serverTimestamp   DateTime @default(now())
+
+  /// Typed event-specific properties. See FreeTierEventPayload in
+  /// apps/web/src/lib/telemetry/free-tier-events.ts for the schema.
+  props             Json
+
+  /// IP hash for rate-limiting and abuse detection. NEVER raw IP.
+  ipHash            String?
+
+  @@index([serverTimestamp(sort: Desc)])
+  @@index([name])
+  @@index([anonymousUserId, serverTimestamp(sort: Desc)])
+  @@index([name, serverTimestamp(sort: Desc)])
+  @@map("clinical_events")
+}

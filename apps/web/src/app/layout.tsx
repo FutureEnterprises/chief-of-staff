@@ -4,6 +4,7 @@ import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { Instrument_Serif } from 'next/font/google'
 import { CookieConsent } from '@/components/cookie-consent'
+import { PostHogProvider } from '@/components/telemetry/posthog-provider'
 import { OrganizationSchema, WebSiteSchema } from './structured-data'
 import './globals.css'
 
@@ -138,10 +139,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <WebSiteSchema />
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
-        {clerkReady
-          ? <ClerkProvider publishableKey={publishableKey!} afterSignOutUrl="/">{children}</ClerkProvider>
-          : children
-        }
+        <PostHogProvider>
+          {clerkReady
+            ? <ClerkProvider publishableKey={publishableKey!} afterSignOutUrl="/">{children}</ClerkProvider>
+            : children
+          }
+        </PostHogProvider>
         <CookieConsent />
       </body>
     </html>
