@@ -1,0 +1,659 @@
+{
+  "builtTestProducts" : [
+    {
+      "binaryPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.xctest/Contents/MacOS/ReboundDomainPackageTests",
+      "packagePath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound",
+      "productName" : "ReboundDomainPackageTests"
+    }
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.ReboundDomain-arm64-apple-macosx-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/sources",
+      "importPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/Archetype.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/DangerWindowDetector.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/InterruptScript.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/ReboundEvent.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "ReboundDomain",
+      "moduleOutputPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules/ReboundDomain.swiftmodule",
+      "objects" : [
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/Archetype.swift.o",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/DangerWindowDetector.swift.o",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/InterruptScript.swift.o",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/ReboundEvent.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j18",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/include/ReboundDomain-Swift.h",
+        "-swift-version",
+        "5",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "ios_rebound"
+      ],
+      "outputFileMapPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/Archetype.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/DangerWindowDetector.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/InterruptScript.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/ReboundEvent.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules/ReboundDomain.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/Archetype.swift",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/DangerWindowDetector.swift",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/InterruptScript.swift",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/ReboundEvent.swift"
+      ],
+      "tempsPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.ReboundDomainPackageTests-arm64-apple-macosx-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.build/sources",
+      "importPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.derived/runner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules/ReboundDomainTests.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "ReboundDomainPackageTests",
+      "moduleOutputPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules/ReboundDomainPackageTests.swiftmodule",
+      "objects" : [
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.build/runner.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j18",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.build/include/ReboundDomainPackageTests-Swift.h",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "ios_rebound"
+      ],
+      "outputFileMapPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules/ReboundDomainPackageTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.derived/runner.swift"
+      ],
+      "tempsPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.ReboundDomainTests-arm64-apple-macosx-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/sources",
+      "importPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Tests/ReboundTests/DangerWindowDetectorTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules/ReboundDomain.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "ReboundDomainTests",
+      "moduleOutputPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules/ReboundDomainTests.swiftmodule",
+      "objects" : [
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/DangerWindowDetectorTests.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j18",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-swift-version",
+        "5",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "ios_rebound"
+      ],
+      "outputFileMapPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/DangerWindowDetectorTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules/ReboundDomainTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Tests/ReboundTests/DangerWindowDetectorTests.swift"
+      ],
+      "tempsPath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "ReboundDomain" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "ReboundDomain",
+      "-package-name",
+      "ios_rebound",
+      "-c",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/Archetype.swift",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/DangerWindowDetector.swift",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/InterruptScript.swift",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/ReboundEvent.swift",
+      "-I",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j18",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/include/ReboundDomain-Swift.h",
+      "-swift-version",
+      "5",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "ios_rebound",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "ReboundDomainPackageTests" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "ReboundDomainPackageTests",
+      "-package-name",
+      "ios_rebound",
+      "-c",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.derived/runner.swift",
+      "-I",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j18",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.build/include/ReboundDomainPackageTests-Swift.h",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "ios_rebound",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "ReboundDomainTests" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "ReboundDomainTests",
+      "-package-name",
+      "ios_rebound",
+      "-c",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Tests/ReboundTests/DangerWindowDetectorTests.swift",
+      "-I",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j18",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-swift-version",
+      "5",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "ios_rebound",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "ReboundDomain" : [
+
+    ],
+    "ReboundDomainPackageTests" : [
+      "ReboundDomainTests",
+      "ReboundDomain"
+    ],
+    "ReboundDomainTests" : [
+      "ReboundDomain"
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+    "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.derived/runner.swift" : {
+      "inputs" : [
+
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.derived/runner.swift"
+        }
+      ]
+    }
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/Archetype.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/DangerWindowDetector.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/InterruptScript.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Sources/ReboundDomain/ReboundEvent.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/sources"
+    },
+    "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.derived/runner.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.build/sources"
+    },
+    "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/Archetype.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/DangerWindowDetector.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/InterruptScript.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomain.build/ReboundEvent.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/DangerWindowDetectorTests.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainPackageTests.product/Objects.LinkFileList"
+    },
+    "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Tests/ReboundTests/DangerWindowDetectorTests.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/sources"
+    },
+    "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}

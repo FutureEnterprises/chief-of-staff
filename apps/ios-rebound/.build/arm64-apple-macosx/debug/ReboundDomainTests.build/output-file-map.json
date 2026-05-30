@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/primary.swiftdeps"
+  },
+  "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/Tests/ReboundTests/DangerWindowDetectorTests.swift": {
+    "dependencies": "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/DangerWindowDetectorTests.d",
+    "object": "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/DangerWindowDetectorTests.swift.o",
+    "swiftmodule": "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/DangerWindowDetectorTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/DangerWindowDetectorTests.swiftdeps",
+    "diagnostics": "/Users/imanschrock/Documents/GitHub.nosync/coyl/apps/ios-rebound/.build/arm64-apple-macosx/debug/ReboundDomainTests.build/DangerWindowDetectorTests.dia"
+  }
+}

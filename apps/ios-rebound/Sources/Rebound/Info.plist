@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Identity -->
+    <key>CFBundleDisplayName</key>
+    <string>Rebound</string>
+    <key>CFBundleIdentifier</key>
+    <string>ai.coyl.rebound</string>
+    <key>CFBundleShortVersionString</key>
+    <string>0.5.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+
+    <!-- HealthKit usage strings — Apple rejects without these. -->
+    <key>NSHealthShareUsageDescription</key>
+    <string>Rebound reads your heart rate, sleep, and activity to detect the moments when your autopilot is loading. We never sync this data off your phone. The catch happens locally, in three seconds.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>Rebound does not write to your Health data. This permission is present because Apple requires it; we leave it unused.</string>
+
+    <!-- Background modes — needed so the danger-window detector can
+         fire when the app is backgrounded. -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>fetch</string>
+        <string>remote-notification</string>
+    </array>
+
+    <!-- Required capabilities -->
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>armv7</string>
+    </array>
+
+    <!-- Launch screen -->
+    <key>UILaunchScreen</key>
+    <dict/>
+
+    <!-- Scene config (SwiftUI default) -->
+    <key>UIApplicationSceneManifest</key>
+    <dict>
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <false/>
+    </dict>
+
+    <!-- App Transport Security: HTTPS-only + public key pinning for
+         coyl.ai. The pinning ensures we only trust our own backend's
+         certificate chain — a CA compromise doesn't let an attacker
+         MITM our PHI-adjacent traffic.
+
+         SECURITY NOTE: the SPKI hashes below are PLACEHOLDERS.
+         Before TestFlight or App Store submission, compute the real
+         hashes against the live coyl.ai certificate chain via:
+
+             scripts/compute-spki-pin.sh coyl.ai
+             scripts/compute-spki-pin.sh api.coyl.ai
+
+         Pin BOTH the current leaf cert SPKI AND a backup pin (e.g., the
+         intermediate or a future rotation candidate) so a certificate
+         rotation doesn't brick every installed app. Rotation
+         procedure: docs/security/ios-cert-pinning-rotation.md
+         (to author before first prod build). -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <false/>
+        <key>NSPinnedDomains</key>
+        <dict>
+            <key>coyl.ai</key>
+            <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSPinnedLeafIdentities</key>
+                <array>
+                    <!-- PLACEHOLDER: replace with SPKI-SHA256 base64
+                         of the current LEAF certificate served by
+                         coyl.ai. Leaf pinning (vs CA pinning) is the
+                         least-privilege choice — only the exact cert
+                         is trusted, not anyone with a cert from the
+                         same CA. -->
+                    <dict>
+                        <key>SPKI-SHA256-BASE64</key>
+                        <string>REPLACE_WITH_PRIMARY_LEAF_PIN_BEFORE_TESTFLIGHT</string>
+                    </dict>
+                    <!-- PLACEHOLDER: backup leaf pin — pre-stage the
+                         next rotation's leaf SPKI hash here so a cert
+                         rotation doesn't brick installed apps. Update
+                         in pairs per the rotation runbook
+                         (docs/security/ios-cert-pinning-rotation.md,
+                         to author before first prod build). -->
+                    <dict>
+                        <key>SPKI-SHA256-BASE64</key>
+                        <string>REPLACE_WITH_BACKUP_LEAF_PIN_BEFORE_TESTFLIGHT</string>
+                    </dict>
+                </array>
+            </dict>
+        </dict>
+    </dict>
+</dict>
+</plist>
