@@ -21,6 +21,10 @@ const isPublicRoute = createRouteMatcher([
   '/how-coyl-knows-you',
   '/free',
   '/patterns-we-catch',
+  // /card/[slug] — public archetype share-card landing pages (10 of them).
+  // The viral loop lands here; must be reachable without auth so social
+  // crawlers scrape the 9:16 OG image and friends can view the card.
+  '/card/(.*)',
   '/start',
   '/weight-loss',
   '/work',
@@ -173,6 +177,10 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/how-coyl-knows-you',
   '/free',
   '/patterns-we-catch',
+  // /card/[slug] — public archetype share-card landing pages (10 of them).
+  // The viral loop lands here; must be reachable without auth so social
+  // crawlers scrape the 9:16 OG image and friends can view the card.
+  '/card/(.*)',
   '/start',
   '/weight-loss',
   '/work',

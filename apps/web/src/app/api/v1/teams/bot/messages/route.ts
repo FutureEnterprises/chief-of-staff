@@ -24,7 +24,6 @@
 import { prisma } from '@repo/database'
 import {
   buildAdaptiveCardAttachment,
-  provisionTeamsWorkspace,
   rememberTeamsConversation,
   verifyTeamsBotRequest,
   type TeamsActivity,
@@ -214,7 +213,3 @@ export async function POST(req: Request) {
   // Other activity types (typing, contactRelationUpdate, etc.) — 200.
   return Response.json({ ok: true, ignored: activity.type })
 }
-
-// Re-export for the install handler so it can call provisionTeamsWorkspace
-// without a duplicate import.
-export { provisionTeamsWorkspace }
