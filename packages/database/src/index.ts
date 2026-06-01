@@ -25,23 +25,29 @@ import { PrismaClient } from './generated/client'
 // Prisma just falls back to its default search. MUST run before the
 // `new PrismaClient()` call below.
 // ────────────────────────────────────────────────────────────
-if (
-  process.env.AWS_LAMBDA_FUNCTION_NAME &&
-  !process.env.PRISMA_QUERY_ENGINE_LIBRARY
-) {
+// Runtime detector: `/var/task` is the function task root — present when
+// the code actually executes in a Vercel/Lambda function, absent during
+// the build (which runs at /vercel/path0). This is more reliable than
+// AWS_LAMBDA_FUNCTION_NAME, which Vercel's Fluid Compute runtime does not
+// set. The binary existence-check below means even if this runs somewhere
+// unexpected, it only ever sets the env var to a real file.
+if (existsSync('/var/task') && !process.env.PRISMA_QUERY_ENGINE_LIBRARY) {
   try {
     const ENGINE = 'libquery_engine-rhel-openssl-3.0.x.so.node'
     const candidates = [
       `/var/task/packages/database/src/generated/client/${ENGINE}`,
+      `/var/task/apps/web/src/generated/client/${ENGINE}`,
       `/var/task/apps/web/packages/database/src/generated/client/${ENGINE}`,
       `/var/task/node_modules/@repo/database/src/generated/client/${ENGINE}`,
       `/var/task/apps/web/node_modules/@repo/database/src/generated/client/${ENGINE}`,
     ]
     let found = candidates.find((p) => existsSync(p))
 
-    // Fallback: bounded recursive search across the likely Lambda roots.
-    // Runs once per cold start, only if the candidate list missed.
+    // Fallback: bounded recursive search from the task root. Runs once
+    // per cold start only if the candidate list missed. Skips heavy /
+    // irrelevant subtrees so the walk stays cheap.
     if (!found) {
+      const SKIP = new Set(['.next', '.git', 'cache'])
       const walk = (dir: string, depth: number): string | undefined => {
         if (depth < 0) return undefined
         let entries: string[]
@@ -52,7 +58,8 @@ if (
         }
         if (entries.includes(ENGINE)) return `${dir}/${ENGINE}`
         for (const e of entries) {
-          if (e === 'node_modules' && depth > 2) continue // avoid deep nm trees
+          if (SKIP.has(e)) continue
+          if (e === 'node_modules' && depth > 3) continue
           const full = `${dir}/${e}`
           try {
             if (statSync(full).isDirectory()) {
@@ -65,15 +72,20 @@ if (
         }
         return undefined
       }
-      for (const root of ['/var/task/packages', '/var/task/apps']) {
-        found = walk(root, 6)
-        if (found) break
-      }
+      found = walk('/var/task', 8)
     }
 
-    if (found) process.env.PRISMA_QUERY_ENGINE_LIBRARY = found
-  } catch {
-    // best-effort; fall back to Prisma's default engine search
+    if (found) {
+      process.env.PRISMA_QUERY_ENGINE_LIBRARY = found
+      // eslint-disable-next-line no-console
+      console.warn(`[prisma-engine-resolver] using engine at ${found}`)
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn('[prisma-engine-resolver] engine binary NOT found under /var/task')
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn('[prisma-engine-resolver] error:', (e as Error)?.message)
   }
 }
 
