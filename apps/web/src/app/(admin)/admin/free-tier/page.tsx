@@ -17,6 +17,7 @@
  * hasn't shipped) surface as "pending" with the target visible.
  */
 
+import { connection } from 'next/server'
 import { prisma } from '@repo/database'
 import {
   FREE_TIER_METRIC_TARGETS,
@@ -185,6 +186,14 @@ function StatusPill({
 }
 
 export default async function FreeTierDashboard() {
+  // Opt out of static prerendering — this page reads "now" via new Date()
+  // and queries Prisma for live metric snapshots. Under Next.js 16 Cache
+  // Components, Server Components are statically prerendered by default;
+  // reading the current clock during prerender is disallowed unless we
+  // first signal a dynamic data source. connection() is the explicit
+  // "this request is dynamic" hook from next/server.
+  await connection()
+
   const snapshot = await getFreeTierMetrics()
   const metrics = Object.values(FreeTierMetric)
 
