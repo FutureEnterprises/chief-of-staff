@@ -53,10 +53,17 @@ const nextConfig: NextConfig = {
             // that Clerk uses as bot protection on the sign-up form.
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' https://js.stripe.com https://*.clerk.accounts.dev https://*.clerk.dev https://*.clerk.com https://clerk.coyl.ai https://challenges.cloudflare.com",
+              // PostHog (US cloud): the SDK loader pulls static assets
+              // (array.js, recorder, etc.) from us-assets.i.posthog.com,
+              // and sends events/decide calls to us.i.posthog.com. Both
+              // must be allowlisted in script-src + connect-src or the
+              // browser silently blocks the SDK and no events ever arrive
+              // — exactly the "nothing in PostHog" symptom. See
+              // src/lib/telemetry/posthog-client.ts (api_host).
+              "script-src 'self' 'unsafe-inline' https://js.stripe.com https://*.clerk.accounts.dev https://*.clerk.dev https://*.clerk.com https://clerk.coyl.ai https://challenges.cloudflare.com https://us-assets.i.posthog.com",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' https://img.clerk.com https://*.clerk.com https://clerk.coyl.ai https://*.public.blob.vercel-storage.com data:",
-              "connect-src 'self' https://*.clerk.dev https://*.clerk.accounts.dev https://*.clerk.com https://clerk.coyl.ai https://api.stripe.com https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://*.ingest.de.sentry.io",
+              "img-src 'self' https://img.clerk.com https://*.clerk.com https://clerk.coyl.ai https://*.public.blob.vercel-storage.com https://us.i.posthog.com data:",
+              "connect-src 'self' https://*.clerk.dev https://*.clerk.accounts.dev https://*.clerk.com https://clerk.coyl.ai https://api.stripe.com https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://*.ingest.de.sentry.io https://us.i.posthog.com https://us-assets.i.posthog.com",
               "font-src 'self' data:",
               "frame-src https://js.stripe.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk.coyl.ai https://challenges.cloudflare.com https://accounts.google.com",
               "worker-src 'self' blob:",
