@@ -1,4 +1,81 @@
+import { existsSync, readdirSync, statSync } from 'node:fs'
 import { PrismaClient } from './generated/client'
+
+// ────────────────────────────────────────────────────────────
+// Runtime-only Prisma query-engine path resolution (Vercel + Turbopack).
+//
+// Next.js 16 builds with Turbopack, which sanitizes build-machine paths
+// to "/ROOT/..." and leaks them into Prisma's runtime engine-search
+// heuristic. The engine binary IS shipped into the function bundle (via
+// next.config `outputFileTracingIncludes`) but Prisma searches the wrong
+// (mangled) locations and fails with:
+//   "Prisma Client could not locate the Query Engine for runtime
+//    rhel-openssl-3.0.x"
+// which silently breaks EVERY database query in production (writes that
+// run through error-swallowing routes just vanish; routes that surface
+// the error 500).
+//
+// Fix: at Lambda cold-start ONLY — `AWS_LAMBDA_FUNCTION_NAME` is set at
+// runtime but NOT during the Vercel build or `prisma generate`, so this
+// never interferes with the build (an earlier attempt to set
+// PRISMA_QUERY_ENGINE_LIBRARY as a plain Vercel env var broke the build
+// because `prisma generate` validated the runtime-only path) — locate
+// the engine binary on disk and point Prisma straight at it. We check
+// existence before setting, so a wrong guess never makes things worse;
+// Prisma just falls back to its default search. MUST run before the
+// `new PrismaClient()` call below.
+// ────────────────────────────────────────────────────────────
+if (
+  process.env.AWS_LAMBDA_FUNCTION_NAME &&
+  !process.env.PRISMA_QUERY_ENGINE_LIBRARY
+) {
+  try {
+    const ENGINE = 'libquery_engine-rhel-openssl-3.0.x.so.node'
+    const candidates = [
+      `/var/task/packages/database/src/generated/client/${ENGINE}`,
+      `/var/task/apps/web/packages/database/src/generated/client/${ENGINE}`,
+      `/var/task/node_modules/@repo/database/src/generated/client/${ENGINE}`,
+      `/var/task/apps/web/node_modules/@repo/database/src/generated/client/${ENGINE}`,
+    ]
+    let found = candidates.find((p) => existsSync(p))
+
+    // Fallback: bounded recursive search across the likely Lambda roots.
+    // Runs once per cold start, only if the candidate list missed.
+    if (!found) {
+      const walk = (dir: string, depth: number): string | undefined => {
+        if (depth < 0) return undefined
+        let entries: string[]
+        try {
+          entries = readdirSync(dir)
+        } catch {
+          return undefined
+        }
+        if (entries.includes(ENGINE)) return `${dir}/${ENGINE}`
+        for (const e of entries) {
+          if (e === 'node_modules' && depth > 2) continue // avoid deep nm trees
+          const full = `${dir}/${e}`
+          try {
+            if (statSync(full).isDirectory()) {
+              const r = walk(full, depth - 1)
+              if (r) return r
+            }
+          } catch {
+            // unreadable entry — skip
+          }
+        }
+        return undefined
+      }
+      for (const root of ['/var/task/packages', '/var/task/apps']) {
+        found = walk(root, 6)
+        if (found) break
+      }
+    }
+
+    if (found) process.env.PRISMA_QUERY_ENGINE_LIBRARY = found
+  } catch {
+    // best-effort; fall back to Prisma's default engine search
+  }
+}
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
