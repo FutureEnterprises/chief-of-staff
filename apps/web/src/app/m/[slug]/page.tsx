@@ -107,6 +107,32 @@ async function loadSnapshot(slug: string): Promise<SnapshotView | null> {
   }
 }
 
+/**
+ * Build the 9:16 "Week in Patterns" Story-card URL from a snapshot.
+ * The /api/og/recap route is param-driven (edge-safe, no DB). The hero
+ * number is the slip count with a recovery subline. recoveryRate is
+ * normalised — it has been stored as a 0–1 fraction in some cron
+ * versions and a 0–100 int in others; handle both and clamp to 100.
+ */
+function recapImageUrl(snap: SnapshotView): string {
+  const recoveryPct = Math.min(
+    100,
+    Math.round(snap.recoveryRate <= 1 ? snap.recoveryRate * 100 : snap.recoveryRate),
+  )
+  const excuse = EXCUSE_COPY[snap.topExcuse]?.label ?? snap.topExcuse
+  const q = new URLSearchParams({
+    week: snap.weekLabel,
+    big: String(snap.slipsThisWeek),
+    bigLabel: snap.slipsThisWeek === 1 ? 'slip' : 'slips',
+    sub: `You recovered ${snap.recoveredCount} of ${snap.slipsThisWeek}.`,
+    window: snap.peakWindowLabel,
+    excuse,
+    recovery: String(recoveryPct),
+    signature: snap.patternSignature,
+  })
+  return `/api/og/recap?${q.toString()}`
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const snap = await loadSnapshot(slug)
@@ -121,6 +147,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = `An autopilot week — ${snap.weekLabel}. COYL mapped it.`
   const description = `${snap.patternSignature} · ${snap.slipsThisWeek} slips · ${snap.recoveredCount} recovered.`
   const ogImage = `/api/og/autopilot-map/${snap.shareSlug}`
+  const storyImage = recapImageUrl(snap)
 
   return {
     title,
@@ -133,8 +160,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       url: `https://coyl.ai/m/${snap.shareSlug}`,
+      // Landscape first (link unfurls), 9:16 Story card second (vertical
+      // platforms / the in-page "save story card" action).
       images: [
         { url: ogImage, width: 1200, height: 630, alt: 'A week of autopilot, mapped.' },
+        { url: storyImage, width: 1080, height: 1920, alt: 'Your week in patterns.' },
       ],
     },
     twitter: {
@@ -334,6 +364,16 @@ async function SharePageBody({ params }: PageProps) {
               Share on Twitter
             </a>
             <ShareActions shareUrl={shareUrl} shareText={shareText} />
+            {/* 9:16 Story card — open the portrait recap PNG to save it
+                straight to an Instagram/TikTok Story. */}
+            <a
+              href={recapImageUrl(snap)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full bg-[#ff6600] px-4 py-2 text-xs font-bold text-[#0e0d0b] hover:bg-orange-400"
+            >
+              Save story card ↗
+            </a>
           </div>
           <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-gray-500">
             The moment, not the person
