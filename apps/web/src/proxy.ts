@@ -101,6 +101,15 @@ const isPublicRoute = createRouteMatcher([
   // archetype result (capture) or schedule a one-shot interrupt (schedule).
   // Per-IP rate-limited; both routes are open.
   '/api/v1/audit/(.*)',
+  // Free-tier clinical-event ingest — the iOS app (and future mobile
+  // surfaces) POST PHI-adjacent telemetry here keyed by anonymousUserId,
+  // not a Clerk session. Per-IP rate-limited + Zod-validated at the route
+  // level (apps/web/src/app/api/v1/clinical-event/route.ts). Must be public
+  // or Clerk 307s the POST to /sign-in and the iOS telemetry silently dies.
+  // When the iOS app ships to TestFlight, this gets an additional
+  // short-lived ingest-token check per UAP §EXECUTE — but it stays out of
+  // the Clerk session gate.
+  '/api/v1/clinical-event',
   // Open Graph image generator + public share-card endpoint — must be
   // anonymous so Twitter/X, iMessage, Slack, LinkedIn, Discord, Facebook,
   // Threads etc. can fetch link previews. Previously gated behind Clerk,
