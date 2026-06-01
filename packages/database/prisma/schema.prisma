@@ -2434,3 +2434,53 @@ model ClinicalEvent {
   @@index([name, serverTimestamp(sort: Desc)])
   @@map("clinical_events")
 }
+
+/**
+ * WaitlistEntry — the invite-only FOMO engine for the consumer launch.
+ *
+ * Robinhood/Lapse mechanic: join the waitlist, get a shareable invite
+ * code, and jump the line (+5 effective positions) for every friend who
+ * joins through your code. The "effective position" is computed at read
+ * time as joinedPosition - (referralCount * SPOTS_PER_REFERRAL), floored
+ * at 1 — never stored, so the boost math can be tuned without a backfill.
+ *
+ * Anonymous-friendly: email is the only required PII. archetypeSlug is
+ * captured when the visitor came from the audit (segmentation + a warmer
+ * "you're a 9 PM Negotiator — you're #4,210 in line" confirmation).
+ *
+ * NEDA-safe: no health/body/weight fields.
+ */
+model WaitlistEntry {
+  id              String   @id @default(cuid())
+
+  /// Lowercased, trimmed. The dedupe key.
+  email           String   @unique
+
+  /// Short shareable code (e.g. "COYL-7Q2F"). Unique. Drives referrals.
+  inviteCode      String   @unique
+
+  /// The inviteCode this person joined through, if any.
+  referredByCode  String?
+
+  /// Raw join order (1, 2, 3, …). Assigned at insert as count()+1.
+  joinedPosition  Int
+
+  /// How many people have joined through THIS person's inviteCode.
+  referralCount   Int      @default(0)
+
+  /// Archetype slug if they arrived from the audit. Optional.
+  archetypeSlug   String?
+
+  /// Acquisition source tag (e.g. 'audit', 'card', 'tiktok', 'direct').
+  source          String?
+
+  /// IP hash for abuse/dedupe heuristics. Never raw IP.
+  ipHash          String?
+
+  createdAt       DateTime @default(now())
+
+  @@index([inviteCode])
+  @@index([referredByCode])
+  @@index([createdAt(sort: Desc)])
+  @@map("waitlist_entries")
+}

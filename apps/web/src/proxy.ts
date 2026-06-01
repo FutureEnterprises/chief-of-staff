@@ -25,6 +25,12 @@ const isPublicRoute = createRouteMatcher([
   // The viral loop lands here; must be reachable without auth so social
   // crawlers scrape the 9:16 OG image and friends can view the card.
   '/card/(.*)',
+  // /waitlist — invite-only FOMO surface (anonymous join + referral).
+  '/waitlist',
+  // Public consumer-loop APIs: waitlist join/status + live archetype
+  // rarity. Both anonymous, rate-limited + Zod-validated at the route.
+  '/api/v1/waitlist',
+  '/api/v1/archetype-rarity',
   '/start',
   '/weight-loss',
   '/work',
@@ -181,6 +187,12 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   // The viral loop lands here; must be reachable without auth so social
   // crawlers scrape the 9:16 OG image and friends can view the card.
   '/card/(.*)',
+  // /waitlist — invite-only FOMO surface (anonymous join + referral).
+  '/waitlist',
+  // Public consumer-loop APIs: waitlist join/status + live archetype
+  // rarity. Both anonymous, rate-limited + Zod-validated at the route.
+  '/api/v1/waitlist',
+  '/api/v1/archetype-rarity',
   '/start',
   '/weight-loss',
   '/work',

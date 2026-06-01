@@ -27,6 +27,7 @@ import {
   getArchetypeCard,
 } from '@/lib/archetype-cards'
 import { ArchetypeShareActions } from '@/components/share/archetype-share-actions'
+import { ArchetypeRarityPill } from '@/components/share/archetype-rarity-pill'
 
 // No `export const revalidate` — Next.js 16 cacheComponents rejects the
 // segment config. generateStaticParams still statically generates all 10
@@ -107,9 +108,7 @@ export default async function CardPage({
               <p className="mt-1 text-sm font-semibold">{card.window}</p>
             </div>
             <div className="mt-4">
-              <span className="inline-block rounded-full border border-orange-400/40 bg-orange-500/[0.10] px-3 py-1.5 text-[11px]">
-                {card.rarity}
-              </span>
+              <ArchetypeRarityPill slug={slug} name={card.name} fallback={card.rarity} />
             </div>
             <div className="mt-5 flex items-center justify-between border-t border-white/[0.10] pt-3">
               <span className="text-[10px] text-[#8a7f6d]">90-second audit</span>
@@ -131,6 +130,21 @@ export default async function CardPage({
           </div>
 
           <ArchetypeShareActions slug={slug} name={card.name} />
+
+          {/* FOMO bridge — card → waitlist, archetype carried for a warm
+              "we'll open your pattern first" confirmation. */}
+          <div className="rounded-2xl border border-orange-400/25 bg-orange-500/[0.06] p-5">
+            <p className="text-sm leading-[1.6] text-[#cdc2ad]">
+              The app is invite-only.{' '}
+              <Link
+                href={`/waitlist?archetype=${slug}`}
+                className="font-semibold text-orange-400 underline-offset-4 hover:underline"
+              >
+                Request access →
+              </Link>{' '}
+              and we&rsquo;ll open {card.name} first.
+            </p>
+          </div>
 
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5">
             <p className="text-sm leading-[1.6] text-[#a59a87]">
