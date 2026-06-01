@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import '../global.css' // NativeWind — must be imported once at the app root.
+import { useEffect } from 'react'
 import { View, Text } from 'react-native'
 import { Stack } from 'expo-router'
 import { ClerkProvider } from '@clerk/clerk-expo'
@@ -16,9 +17,12 @@ export default function RootLayout() {
   }, [])
 
   if (!CLERK_KEY) {
+    // className here also serves as the NativeWind smoke test — if the
+    // babel/metro pipeline weren't wired, this screen would render
+    // unstyled. Tailwind tokens map to the COYL palette (tailwind.config.js).
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f5f0' }}>
-        <Text style={{ color: '#ef4444', fontSize: 14, textAlign: 'center', padding: 20 }}>
+      <View className="flex-1 items-center justify-center bg-coyl-ink">
+        <Text className="p-5 text-center text-sm text-red-400">
           Missing EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
         </Text>
       </View>
