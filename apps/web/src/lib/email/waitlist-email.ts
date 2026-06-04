@@ -19,7 +19,7 @@ import { getArchetypeCard } from '@/lib/archetype-cards'
 const ORANGE = '#ff6600'
 
 function origin(): string {
-  return (process.env.NEXT_PUBLIC_APP_URL ?? 'https://coyl.ai').replace(/\/$/, '')
+  return (process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.coyl.ai').replace(/\/$/, '')
 }
 
 export type WaitlistEmailInput = {

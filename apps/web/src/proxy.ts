@@ -13,6 +13,10 @@ const isPublicRoute = createRouteMatcher([
   '/',
   '/sign-in(.*)',
   '/sign-up(.*)',
+  // /redeem/[code] — wave-grant claim link (marks the invite redeemed,
+  // sets the access cookie, redirects into sign-up). Public: the user
+  // isn't signed in when they click it from the grant email.
+  '/redeem/(.*)',
   '/terms',
   '/privacy',
   '/cookies',
@@ -176,6 +180,8 @@ const isPublicRoute = createRouteMatcher([
  */
 const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/',
+  // /redeem/[code] — wave-grant claim link; no Clerk context needed.
+  '/redeem/(.*)',
   '/terms',
   '/privacy',
   '/cookies',

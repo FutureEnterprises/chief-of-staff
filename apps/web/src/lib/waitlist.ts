@@ -168,3 +168,128 @@ export async function getWaitlistStatus(inviteCode: string): Promise<WaitlistSta
 export async function getWaitlistTotal(): Promise<number> {
   return prisma.waitlistEntry.count()
 }
+
+/* ───────────────────────────────────────────────────────────────────
+ * Wave grants — the invite-only "open access to the next N" engine.
+ * grantedAt → granted; grantEmailSentAt → emailed; redeemedAt → claimed.
+ * ─────────────────────────────────────────────────────────────────── */
+
+export type WaitlistCounts = {
+  total: number
+  granted: number
+  redeemed: number
+  waiting: number
+}
+
+/** Headline counts for the admin dashboard. */
+export async function getWaitlistCounts(): Promise<WaitlistCounts> {
+  const [total, granted, redeemed] = await Promise.all([
+    prisma.waitlistEntry.count(),
+    prisma.waitlistEntry.count({ where: { grantedAt: { not: null } } }),
+    prisma.waitlistEntry.count({ where: { redeemedAt: { not: null } } }),
+  ])
+  return { total, granted, redeemed, waiting: total - granted }
+}
+
+export type GrantedEntry = {
+  id: string
+  email: string
+  inviteCode: string
+  effectivePosition: number
+  archetypeSlug: string | null
+}
+
+/**
+ * Grant access to the next `count` ungranted entries, ordered by
+ * EFFECTIVE position (referrals factored in — line-jumpers go first).
+ * Sets grantedAt. Returns the granted rows so the caller can email them;
+ * this function never sends email (keeps it pure + testable).
+ *
+ * Effective position is computed in JS (it's never stored), so we pull
+ * the ungranted set and sort — fine for launch-scale lists. If the list
+ * ever reaches 6 figures, switch to a stored/denormalized rank.
+ */
+export async function grantNextWave(count: number): Promise<GrantedEntry[]> {
+  const n = Math.floor(count)
+  if (!Number.isFinite(n) || n <= 0) return []
+
+  const ungranted = await prisma.waitlistEntry.findMany({
+    where: { grantedAt: null },
+    select: {
+      id: true,
+      email: true,
+      inviteCode: true,
+      joinedPosition: true,
+      referralCount: true,
+      archetypeSlug: true,
+    },
+  })
+
+  ungranted.sort(
+    (a, b) =>
+      effectivePosition(a.joinedPosition, a.referralCount) -
+      effectivePosition(b.joinedPosition, b.referralCount),
+  )
+
+  const chosen = ungranted.slice(0, n)
+  if (chosen.length === 0) return []
+
+  await prisma.waitlistEntry.updateMany({
+    where: { id: { in: chosen.map((c) => c.id) } },
+    data: { grantedAt: new Date() },
+  })
+
+  return chosen.map((c) => ({
+    id: c.id,
+    email: c.email,
+    inviteCode: c.inviteCode,
+    effectivePosition: effectivePosition(c.joinedPosition, c.referralCount),
+    archetypeSlug: c.archetypeSlug,
+  }))
+}
+
+/** Mark the grant email as sent (idempotency — never double-email). */
+export async function markGrantEmailSent(id: string): Promise<void> {
+  await prisma.waitlistEntry.update({
+    where: { id },
+    data: { grantEmailSentAt: new Date() },
+  })
+}
+
+export type GrantState = 'unknown' | 'not_granted' | 'granted' | 'redeemed'
+
+/** Validate an invite code at redemption time. */
+export async function getGrantState(inviteCode: string): Promise<{
+  state: GrantState
+  email: string | null
+  archetypeSlug: string | null
+}> {
+  const row = await prisma.waitlistEntry.findUnique({
+    where: { inviteCode },
+    select: { grantedAt: true, redeemedAt: true, email: true, archetypeSlug: true },
+  })
+  if (!row) return { state: 'unknown', email: null, archetypeSlug: null }
+  if (row.redeemedAt) return { state: 'redeemed', email: row.email, archetypeSlug: row.archetypeSlug }
+  if (row.grantedAt) return { state: 'granted', email: row.email, archetypeSlug: row.archetypeSlug }
+  return { state: 'not_granted', email: row.email, archetypeSlug: row.archetypeSlug }
+}
+
+/**
+ * Mark an invite as redeemed (first claim wins, idempotent). Only a
+ * GRANTED code can be redeemed. Returns true if the code is valid to
+ * proceed into sign-up (granted or already redeemed), false otherwise.
+ */
+export async function markRedeemed(inviteCode: string): Promise<boolean> {
+  const row = await prisma.waitlistEntry.findUnique({
+    where: { inviteCode },
+    select: { grantedAt: true, redeemedAt: true },
+  })
+  if (!row || !row.grantedAt) return false
+  if (!row.redeemedAt) {
+    await prisma.waitlistEntry.update({
+      where: { inviteCode },
+      data: { redeemedAt: new Date() },
+    })
+  }
+  return true
+}

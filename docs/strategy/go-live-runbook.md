@@ -62,10 +62,27 @@ Most already exist (other features use them). Confirm each is set on **Productio
 2. Open `/admin/marketing` → read the drafts → **Approve** the good ones → post each to its platform → **Mark posted**.
 3. From here it self-stocks daily (3/run, capped at 12 pending). Your only job is approve + post.
 
-### STEP 5 — DECISION: gate or open? *(founder call — see "Known gaps")*
-The app currently has **open `/sign-up`** while the copy says **invite-only**. Pick one:
-- **(A) Keep `/sign-up` open**, use the waitlist purely as hype + referral capture (lowest friction, ship today). Most "waitlists" are this.
-- **(B) Actually gate `/sign-up` behind invite codes** (max FOMO, Robinhood-style). Requires building invite-code redemption + a "you're in" email (not built — ~half a day of work). Tell me if you want (B).
+### STEP 5 — Open access in waves *(both modes now shipped)*
+The full gated flow is built: **`/admin/waitlist`** shows counts + an
+**"Open a wave"** control. Granting the next N people sets `grantedAt`,
+emails each a **claim link** (`/redeem/[code]` → marks redeemed, drops
+the access cookie, lands them in sign-up).
+
+Pick your mode:
+- **(A) Open** *(default, ship today)* — leave `WAITLIST_GATE_ENABLED`
+  unset. `/sign-up` stays open; the waitlist is hype + referral capture;
+  granting still emails usable invites. Zero risk.
+- **(B) Gated** *(max FOMO)* — set `WAITLIST_GATE_ENABLED="true"` in
+  Vercel. Now the bare `/sign-up` requires a redeemed invite; consumers
+  must come through a wave. **Before flipping it: confirm your B2B/
+  clinical onboarding carries a Clerk invitation ticket or a bypass ref**
+  (team/clinical/partner/org — see `WAITLIST_GATE_BYPASS_REFS`),
+  otherwise it gates them too. Test `/sign-up` in incognito after
+  enabling.
+
+To run a wave (either mode): `/admin/waitlist` → enter N → **Grant** →
+the N people by effective position (line-jumpers first) get the "you're
+in" email.
 
 ### STEP 6 — Mobile app → TestFlight *(parallel; you run the builds)*
 The web craze can launch without the app. When ready:
@@ -87,12 +104,18 @@ These don't block the soft/quiet loop, but they block paid acquisition + press:
 
 ---
 
-## Known gaps — not yet built (be honest about these)
+## Known gaps — remaining
 
-1. **"You're off the waitlist / here's your access" email is NOT built.** Only the *join-confirmation* email exists. For the first wave you can export the Resend audience and send the invite manually; automating the wave-grant is a future task.
-2. **Invite-only is positioning, not enforced** (Step 5). `/sign-up` is open today.
+1. ✅ **Wave-grant email — now BUILT.** `/admin/waitlist` → "Open a wave"
+   grants N people + emails each their `/redeem/[code]` claim link.
+2. ✅ **Invite gating — now BUILT (opt-in).** `WAITLIST_GATE_ENABLED="true"`
+   enforces invite-only at `/sign-up`; default off keeps it open. (Step 5.)
 3. **Reddit auto-posting is intentionally NOT built** — the marketing agent drafts; a human posts. Auto-posting to the GLP-1 subs is a shadowban trap. (Safe auto-post for your *own* X/Threads/newsletter can be wired on request — adapter shells exist.)
 4. **PostHog prod verification is manual** (Step 3) — the wiring is shipped, but "events land" needs one human confirmation.
+5. **App Store HealthKit-weight decision** — `app.json` reads body weight
+   from HealthKit, which conflicts with the NEDA-safe Lifestyle listing.
+   See `docs/marketing/app-store-listing.md` decision #1 (recommend
+   dropping the `weight` read for the consumer launch).
 
 ---
 

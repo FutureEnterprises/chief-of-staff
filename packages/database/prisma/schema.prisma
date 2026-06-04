@@ -2479,8 +2479,22 @@ model WaitlistEntry {
 
   createdAt       DateTime @default(now())
 
+  /// Wave grant — set when this entry is granted app access in a wave
+  /// (admin "open the next N"). Null = still waiting. Grants are ordered
+  /// by effective position so line-jumpers get in first.
+  grantedAt        DateTime?
+
+  /// When the "you're in" grant email was sent. Idempotency guard so a
+  /// re-grant or retry never double-emails the same person.
+  grantEmailSentAt DateTime?
+
+  /// When they claimed their invite link (hit /redeem/[code]). Proxy for
+  /// "sign-up started". Null = granted but hasn't come back yet.
+  redeemedAt       DateTime?
+
   @@index([inviteCode])
   @@index([referredByCode])
   @@index([createdAt(sort: Desc)])
+  @@index([grantedAt])
   @@map("waitlist_entries")
 }
