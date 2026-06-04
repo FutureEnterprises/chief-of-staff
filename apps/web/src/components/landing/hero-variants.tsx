@@ -205,6 +205,25 @@ export function HeroVariants({ variant }: { variant: Variant }) {
                 See Rebound — the anti-regain layer →
               </Link>
             </motion.p>
+
+            {/* Invite-only positioning — the audit is the open front door;
+                app access opens in waves through the waitlist. Quiet line
+                so the audit CTA stays primary, but the invite framing is
+                present from the hero. */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.35, duration: 0.6 }}
+              className="mt-3 max-w-xl text-sm text-[#a59a87]"
+            >
+              COYL is opening in waves.{' '}
+              <Link
+                href="/waitlist"
+                className="font-medium text-orange-300 underline-offset-4 hover:underline"
+              >
+                Request an invite →
+              </Link>
+            </motion.p>
           </div>
 
           {/* Right column — auto-playing MomentLoop, same as prior hero.

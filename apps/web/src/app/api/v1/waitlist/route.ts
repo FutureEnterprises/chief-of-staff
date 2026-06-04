@@ -14,6 +14,7 @@
 
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
+import { Resend } from 'resend'
 import { z } from 'zod'
 import {
   joinWaitlist,
@@ -22,6 +23,7 @@ import {
   hashIp,
   SPOTS_PER_REFERRAL,
 } from '@/lib/waitlist'
+import { renderWaitlistEmail } from '@/lib/email/waitlist-email'
 
 const joinSchema = z.object({
   email: z.string().email().max(254),
@@ -70,6 +72,36 @@ export async function POST(req: Request) {
       ipHash: hashIp(ip),
     })
     const total = await getWaitlistTotal()
+
+    // Fire-and-forget confirmation email — ONLY on a genuinely new join
+    // (never on re-join, so refreshes/double-submits don't re-send). The
+    // email carries their position + invite link, activating the referral
+    // loop. Decoupled from the response; a Resend failure is logged, not
+    // surfaced. Guard mirrors api/v1/audit/capture.
+    const resendKey = process.env.RESEND_API_KEY
+    if (!status.alreadyOnList && resendKey && !resendKey.startsWith('re_...')) {
+      try {
+        const { subject, html, text } = renderWaitlistEmail({
+          position: status.effectivePosition,
+          total,
+          inviteCode: status.inviteCode,
+          archetypeSlug: status.archetypeSlug,
+        })
+        const resend = new Resend(resendKey)
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL ?? 'COYL <hello@coyl.ai>',
+          to: status.email,
+          subject,
+          html,
+          text,
+        })
+      } catch (err) {
+        console.warn('[waitlist] Resend send failed', {
+          err: err instanceof Error ? err.message : 'unknown',
+        })
+      }
+    }
+
     return NextResponse.json(
       {
         position: status.effectivePosition,

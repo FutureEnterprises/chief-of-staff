@@ -99,6 +99,16 @@ export function GlassNav() {
           >
             Pricing
           </Link>
+          {/* Invite-only front door — the waitlist is the craze launch's
+              capture + referral surface (audit → card → waitlist). Given
+              a subtle accent so it reads as the "join" action without
+              displacing the auth CTA. */}
+          <Link
+            href="/waitlist"
+            className="rounded-full px-3 py-1.5 font-semibold text-orange-600 transition-colors hover:text-orange-700"
+          >
+            Waitlist
+          </Link>
         </div>
 
         {/* Mobile hamburger */}
@@ -167,6 +177,7 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
             <MobileLink href="/audit" label="Take the 60-second audit" description="Find your autopilot family." onClose={onClose} />
             <MobileLink href="/how-it-works" label="How it works" description="Detect, interrupt, recover — the 3-step loop." onClose={onClose} />
             <MobileLink href="/pricing" label="Pricing" description="Recover (free) + Rewire ($12/mo) + Rebound." onClose={onClose} />
+            <MobileLink href="/waitlist" label="Join the waitlist" description="COYL is invite-only. Request access + jump the line." onClose={onClose} />
           </ul>
         </div>
 

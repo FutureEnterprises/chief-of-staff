@@ -634,6 +634,52 @@ export function AuditView() {
             <ArchetypeShareButton archetype={archetype} />
           </div>
 
+          {/* Invite-only bridge — the viral-loop wire. Routes the reveal
+              into the craze share surface (/card/[slug], which carries the
+              "1 in N" rarity pill + Web-Share actions that fire
+              audit.shared + the /waitlist CTA) and to the waitlist
+              directly. The six audit family slugs are all valid /card
+              slugs (a subset of the ten ARCHETYPE_CARDS keys), so
+              archetype.family.slug is always a real card + archetype
+              param. Placed at the reveal — peak share impulse. */}
+          <div className="mb-10 overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 to-[#fff7ed] p-6 md:p-8">
+            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-orange-600">
+              Invite-only · opening in waves
+            </p>
+            <h3 className="mt-3 font-serif text-2xl italic leading-tight text-gray-900 md:text-3xl">
+              Get your {archetype.family.name} card. Claim your spot.
+            </h3>
+            <p className="mt-3 max-w-xl text-sm leading-[1.6] text-gray-600">
+              Your archetype card shows how rare your pattern is and is
+              built to share. COYL opens to new members in waves — request
+              access and jump the line for every friend who joins with your
+              link.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Link
+                href={`/card/${archetype.family.slug}`}
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_8px_28px_-8px_rgba(255,102,0,0.55)] transition-transform hover:-translate-y-0.5"
+              >
+                See your card + claim your spot
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+                  <path
+                    d="M1 7h12m0 0L8 2m5 5L8 12"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Link>
+              <Link
+                href={`/waitlist?archetype=${archetype.family.slug}`}
+                className="text-sm font-semibold text-orange-600 underline-offset-4 hover:text-orange-700 hover:underline"
+              >
+                Skip to the waitlist →
+              </Link>
+            </div>
+          </div>
+
           <div className="mb-4 flex items-center gap-3">
             <span className="h-px w-8 bg-emerald-500" />
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-emerald-500">

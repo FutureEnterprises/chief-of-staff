@@ -26,6 +26,7 @@ export function LandingFooter() {
     { label: 'How it works', href: '/how-it-works' },
     { label: 'How COYL knows you', href: '/how-coyl-knows-you' },
     { label: 'Autopilot audit', href: '/audit' },
+    { label: 'Join the waitlist', href: '/waitlist' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Procrastination + focus', href: '/procrastination' },
     { label: 'Rebound (GLP-1)', href: '/rebound' },
