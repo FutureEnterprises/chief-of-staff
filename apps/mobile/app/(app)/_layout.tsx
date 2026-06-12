@@ -15,6 +15,7 @@ import {
   endInterruptActivity,
   setLiveActivityAuthToken,
 } from '../../lib/live-activity'
+import { identify as identifyPurchases } from '../../lib/purchases'
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://www.coyl.ai'
 
@@ -34,7 +35,7 @@ const PUSH_ROUTES: Record<string, string> = {
 }
 
 export default function AppTabLayout() {
-  const { isSignedIn, getToken } = useAuth()
+  const { isSignedIn, userId, getToken } = useAuth()
   const router = useRouter()
   const registrationAttempted = useRef(false)
   // Mirror getToken into a ref so the notification response listener
@@ -44,6 +45,18 @@ export default function AppTabLayout() {
   useEffect(() => {
     getTokenRef.current = getToken
   }, [getToken])
+
+  // Identify the RevenueCat customer as the Clerk user so its app_user_id ===
+  // clerkUserId. This is the join key the web RevenueCat webhook uses to find
+  // the User (by clerkId) when granting/revoking planType. configurePurchases()
+  // runs inside identify(); both no-op gracefully when no RevenueCat key is set
+  // for the platform, so this is safe on Android-without-a-key and in dev.
+  useEffect(() => {
+    if (!isSignedIn || !userId) return
+    identifyPurchases(userId).catch((err) => {
+      console.warn('[COYL] RevenueCat identify failed:', err)
+    })
+  }, [isSignedIn, userId])
 
   // Push-notification registration + tap handling. Runs once per signed-in
   // session. Fires only on physical devices (lib guards with Device.isDevice).
@@ -292,6 +305,9 @@ export default function AppTabLayout() {
           tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} />,
         }}
       />
+      {/* Upgrade (IAP paywall) — reachable by navigation only, never a tab.
+          href: null hides it from the tab bar while keeping it in this group. */}
+      <Tabs.Screen name="upgrade" options={{ href: null }} />
     </Tabs>
   )
 }

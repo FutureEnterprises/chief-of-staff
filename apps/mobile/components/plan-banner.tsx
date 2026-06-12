@@ -1,23 +1,37 @@
 import { useEffect, useState } from 'react'
-import { View, Text, TouchableOpacity, Linking, ActivityIndicator } from 'react-native'
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Linking,
+  ActivityIndicator,
+  Platform,
+} from 'react-native'
+import { useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { BRAND } from '@repo/shared'
 import { useMobileApi, type MobileMe } from '../lib/api'
+import { isConfigured as purchasesConfigured } from '../lib/purchases'
 
 /**
  * PlanBanner — shows the signed-in user's plan state on app surfaces.
  *
- * FREE users see a compact "Free plan — 3 interrupts/week" notice with an
- * Upgrade button. Paid users (CORE / PLUS / PREMIUM / legacy PRO / TEAM) see
- * nothing — the banner self-hides so it never nags people who already pay.
+ * FREE users see a compact "Free plan — 3 interrupts/week" notice; paid users
+ * (CORE / PLUS / PREMIUM / legacy PRO / TEAM) see nothing — the banner
+ * self-hides so it never nags people who already pay.
  *
- * APPLE IAP POLICY (v1 tradeoff — revisit before App Store submission):
- *   Upgrade opens https://www.coyl.ai/pricing in the system browser rather than
- *   presenting an in-app purchase. App Store Review Guideline 3.1.1 restricts
- *   linking out to external purchase flows for digital goods; this external-link
- *   approach is acceptable for TestFlight / internal builds but MUST be revisited
- *   (StoreKit IAP, or an approved External Purchase Link entitlement) before a
- *   public App Store submission. No in-app purchase is built here by design.
+ * APPLE IAP POLICY (current — Apple-compliant):
+ *   The upgrade affordance is platform-specific, per App Store Review
+ *   Guideline 3.1.1 (no linking out to an external purchase flow for digital
+ *   goods):
+ *     • iOS + RevenueCat configured  → routes to the in-app /upgrade paywall
+ *       (real StoreKit IAP). No web link.
+ *     • iOS + RevenueCat NOT configured → renders the plan notice with NO
+ *       upgrade affordance at all (no button, no purchase mention, no external
+ *       link). Safest App Review posture: a reviewer on a build without the
+ *       RevenueCat key sees zero purchase surface to object to.
+ *     • Android → keeps the existing web-pricing link (Play policy permits it,
+ *       and Android isn't gated on the iOS guideline).
  *
  * NEDA-safe: copy is behavioural ("interrupts"), never body / diet framing.
  */
@@ -28,6 +42,7 @@ const PAID_PLANS = new Set(['CORE', 'PLUS', 'PREMIUM', 'PRO', 'TEAM'])
 
 export function PlanBanner() {
   const api = useMobileApi()
+  const router = useRouter()
   const [me, setMe] = useState<MobileMe | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -62,6 +77,21 @@ export function PlanBanner() {
   // Hide for paid plans (or when we couldn't determine the plan).
   if (!me || PAID_PLANS.has(me.planType)) return null
 
+  // Decide the upgrade affordance for this platform (see header policy):
+  //   iOS + RevenueCat configured → in-app paywall
+  //   iOS + RevenueCat unconfigured → NO affordance (no button at all)
+  //   Android → web pricing link
+  const iosIapReady = Platform.OS === 'ios' && purchasesConfigured()
+  const showUpgradeButton = iosIapReady || Platform.OS !== 'ios'
+  const onUpgrade = () => {
+    if (iosIapReady) {
+      router.push('/(app)/upgrade')
+    } else if (Platform.OS !== 'ios') {
+      // Android (and any non-iOS) — keep the existing web-pricing flow.
+      Linking.openURL(PRICING_URL).catch(() => {})
+    }
+  }
+
   return (
     <View
       style={{
@@ -95,26 +125,27 @@ export function PlanBanner() {
           Free plan — 3 interrupts/week
         </Text>
         <Text style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>
-          Upgrade for unlimited interrupts.
+          {showUpgradeButton
+            ? 'Upgrade for unlimited interrupts.'
+            : // iOS without RevenueCat configured: no purchase mention at all.
+              'You get 3 interrupts each week.'}
         </Text>
       </View>
-      <TouchableOpacity
-        accessibilityRole="button"
-        accessibilityLabel="Upgrade your plan"
-        onPress={() => {
-          // RN built-in Linking — no new native module. Opens the web pricing
-          // page in the system browser (see Apple IAP note above).
-          Linking.openURL(PRICING_URL).catch(() => {})
-        }}
-        style={{
-          backgroundColor: BRAND.orange,
-          borderRadius: 12,
-          paddingVertical: 10,
-          paddingHorizontal: 16,
-        }}
-      >
-        <Text style={{ color: '#fff', fontWeight: '700', fontSize: 13 }}>Upgrade</Text>
-      </TouchableOpacity>
+      {showUpgradeButton ? (
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel="Upgrade your plan"
+          onPress={onUpgrade}
+          style={{
+            backgroundColor: BRAND.orange,
+            borderRadius: 12,
+            paddingVertical: 10,
+            paddingHorizontal: 16,
+          }}
+        >
+          <Text style={{ color: '#fff', fontWeight: '700', fontSize: 13 }}>Upgrade</Text>
+        </TouchableOpacity>
+      ) : null}
     </View>
   )
 }

@@ -95,6 +95,9 @@ importers:
       react-native-health-connect:
         specifier: ^3.5.0
         version: 3.5.0(@expo/config-plugins@55.0.8)(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1)
+      react-native-purchases:
+        specifier: ^8.12.0
+        version: 8.12.0(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1)
       react-native-reanimated:
         specifier: ~3.16.0
         version: 3.16.7(@babel/core@7.29.0)(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1)
@@ -3290,6 +3293,9 @@ packages:
 
   '@react-navigation/routers@7.5.3':
     resolution: {integrity: sha512-1tJHg4KKRJuQ1/EvJxatrMef3NZXEPzwUIUZ3n1yJ2t7Q97siwRtbynRpQG9/69ebbtiZ8W3ScOZF/OmhvM4Rg==}
+
+  '@revenuecat/purchases-typescript-internal@14.3.0':
+    resolution: {integrity: sha512-P3IhlWvH4wJAM9ypv8HamdIBMQfnLdU9PbjURw+s7NxHOL8LmPGhKuyv+gBINpka27mt1CAsDoOhNHjkexJhkg==}
 
   '@rolldown/binding-android-arm64@1.0.0-rc.13':
     resolution: {integrity: sha512-5ZiiecKH2DXAVJTNN13gNMUcCDg4Jy8ZjbXEsPnqa248wgOVeYRX0iqXXD5Jz4bI9BFHgKsI2qmyJynstbmr+g==}
@@ -8321,6 +8327,12 @@ packages:
       react: '*'
       react-native: '*'
 
+  react-native-purchases@8.12.0:
+    resolution: {integrity: sha512-0T6WtSDN96swsS6iLeTh7GEGLSedBr4FWP5JsGLnP6Ri7Rp754pf3UJ+S0+ZnT1cqUZ4W2z2oB6zTLyyfNfuKw==}
+    peerDependencies:
+      react: '>= 16.6.3'
+      react-native: '*'
+
   react-native-reanimated@3.16.7:
     resolution: {integrity: sha512-qoUUQOwE1pHlmQ9cXTJ2MX9FQ9eHllopCLiWOkDkp6CER95ZWeXhJCP4cSm6AD4jigL5jHcZf/SkWrg8ttZUsw==}
     peerDependencies:
@@ -13296,6 +13308,8 @@ snapshots:
   '@react-navigation/routers@7.5.3':
     dependencies:
       nanoid: 3.3.11
+
+  '@revenuecat/purchases-typescript-internal@14.3.0': {}
 
   '@rolldown/binding-android-arm64@1.0.0-rc.13':
     optional: true
@@ -18836,6 +18850,12 @@ snapshots:
 
   react-native-nitro-modules@0.35.4(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1):
     dependencies:
+      react: 18.3.1
+      react-native: 0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1)
+
+  react-native-purchases@8.12.0(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@revenuecat/purchases-typescript-internal': 14.3.0
       react: 18.3.1
       react-native: 0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1)
 
