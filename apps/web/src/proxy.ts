@@ -53,6 +53,8 @@ const isPublicRoute = createRouteMatcher([
   '/clinical-study',
   '/procrastination',
   '/teams',
+  // /teams/pilot — printable pilot one-pager for employer champions.
+  '/teams/pilot',
   '/catch-me',
   '/changelog',
   '/manifesto',
@@ -146,6 +148,9 @@ const isPublicRoute = createRouteMatcher([
   '/api/v1/integrations/withings/webhook',
   '/api/v1/teams/bot/messages',
   '/api/v1/teams/install',
+  // Anonymous employer pilot-lead form on /teams — Zod-validated +
+  // rate-limited in the route; signed-out HR buyers must be able to POST.
+  '/api/v1/teams/pilot-inquiry',
   // Microsoft Graph delegated-OAuth callback — Microsoft can't send a
   // Clerk JWT on the redirect-back. User attribution comes from the
   // HMAC-signed `state` payload, verified inside the route handler.
@@ -217,6 +222,8 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/clinical-study',
   '/procrastination',
   '/teams',
+  // /teams/pilot — printable pilot one-pager for employer champions.
+  '/teams/pilot',
   '/catch-me',
   '/changelog',
   '/manifesto',
@@ -281,6 +288,9 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/api/v1/integrations/withings/webhook',
   '/api/v1/teams/bot/messages',
   '/api/v1/teams/install',
+  // Anonymous employer pilot-lead form on /teams — Zod-validated +
+  // rate-limited in the route; signed-out HR buyers must be able to POST.
+  '/api/v1/teams/pilot-inquiry',
   // Graph OAuth callback bypasses the dev-instance Clerk handshake for
   // the same reason as the Dexcom/Libre/Withings callbacks — Microsoft
   // redirects here without a session cookie.

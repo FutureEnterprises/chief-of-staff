@@ -5,7 +5,7 @@ import { UserButton, useClerk } from '@clerk/nextjs'
 import { motion } from 'motion/react'
 import type { User } from '@repo/database'
 import {
-  Brain, CheckSquare, Clock, Eye, Flame, FolderOpen, Home,
+  Brain, CheckSquare, Clock, Eye, FileText, Flame, FolderOpen, Home,
   Inbox, LogOut, MessageSquare, Settings, Shield, Sparkles, TrendingUp, Zap,
   Activity,
 } from 'lucide-react'
@@ -26,6 +26,7 @@ const navItems = [
   { label: 'Follow-ups', href: '/follow-ups', icon: Clock },
   { label: 'Projects', href: '/projects', icon: FolderOpen },
   { label: 'Insights', href: '/insights', icon: TrendingUp },
+  { label: 'Clinician summary', href: '/clinician-summary', icon: FileText },
   { label: 'Assessment', href: '/assessment', icon: Sparkles },
   { label: 'Chat', href: '/chat', icon: MessageSquare },
 ]

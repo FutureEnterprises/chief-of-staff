@@ -6,6 +6,7 @@ import { ClerkProvider } from '@clerk/clerk-expo'
 import { tokenCache } from '../lib/token-cache'
 import { StatusBar } from 'expo-status-bar'
 import * as SplashScreen from 'expo-splash-screen'
+import { ensureAndroidChannels } from '../lib/notifications'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -14,6 +15,12 @@ const CLERK_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
 export default function RootLayout() {
   useEffect(() => {
     SplashScreen.hideAsync()
+    // Create the Android notification channels at cold start so an interrupt
+    // push can surface at MAX importance even before the first sign-in. The
+    // iOS foreground handler is installed at module load in lib/notifications.
+    // No-op on iOS / web. Importing notifications here also ensures
+    // setNotificationHandler runs early.
+    ensureAndroidChannels().catch(() => {})
   }, [])
 
   if (!CLERK_KEY) {

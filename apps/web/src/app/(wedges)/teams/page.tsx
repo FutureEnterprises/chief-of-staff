@@ -15,6 +15,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BreadcrumbSchema } from '@/app/structured-data'
 import { PMPMCalculator } from '@/components/teams/pmpm-calculator'
+import { PilotRequestForm } from '@/components/teams/pilot-request-form'
 
 export const metadata: Metadata = {
   title: 'COYL for teams — the 23-minute interrupt cost, caught at the source',
@@ -117,7 +118,7 @@ const FAQ = [
   },
   {
     q: 'How does it fit our existing benefits stack?',
-    a: 'PMPM (per member per month) billed monthly or annually. Provisioning via SSO (Okta, Azure AD, Google Workspace). Outcome reporting via aggregated dashboards your benefits team controls. White-label available at scale.',
+    a: 'PMPM (per member per month), billed monthly or annually after the pilot. COYL runs inside Microsoft Teams — the bot is installed at the tenant level, so members get interrupts in a tool they already have open, with no separate app to roll out. During a pilot we share an aggregated, member-anonymous summary of weekly active rate and self-reported follow-through; deeper SSO and reporting integrations are scoped per engagement as the program scales.',
   },
   {
     q: 'What does success look like?',
@@ -129,7 +130,7 @@ const FAQ = [
   },
   {
     q: 'Pilot terms?',
-    a: '30 days, 50–500 employees, no cost. We instrument, you keep the data, decision at end of pilot. We co-author a case study if outcomes justify.',
+    a: '30 days, up to 50 seats, no cost. We instrument, you keep the data, decision at end of pilot. We co-author a case study if outcomes justify.',
   },
 ]
 
@@ -171,16 +172,16 @@ export default function TeamsWedgePage() {
 
           <div className="flex flex-wrap gap-3 pt-2">
             <Link
-              href="mailto:teams@coyl.ai?subject=Pilot%20inquiry%20for%20%5Bcompany%5D"
+              href="#pilot"
               className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              Start a 30-day pilot
+              Request a 30-day pilot
             </Link>
             <Link
               href="/teams/pilot"
               className="rounded-full border border-orange-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 transition-all hover:border-orange-500"
             >
-              Book a 20-min call &rarr;
+              Read the pilot brief &rarr;
             </Link>
             <Link
               href="/research"
@@ -260,15 +261,16 @@ export default function TeamsWedgePage() {
               <strong className="font-serif font-normal italic text-gray-900">
                 Aggregate-only reporting.
               </strong>{' '}
-              Aggregated outcome reporting is delivered to your benefits team. Individual
-              user data stays with the individual user.
+              Pilot reporting is member-anonymous: weekly active rate and self-reported
+              follow-through, in aggregate. Individual user data stays with the individual user.
             </li>
             <li className="border-t border-gray-200 pt-5 text-base leading-[1.65] text-gray-700">
               <strong className="font-serif font-normal italic text-gray-900">
-                Enterprise-grade.
+                Runs where your people already are.
               </strong>{' '}
-              SOC 2, BAA-eligible deployments available. SSO via Okta / Azure AD /
-              Google Workspace.
+              COYL ships as a Microsoft Teams bot installed at the tenant level &mdash; no new
+              app for members to adopt. Security reviews (SOC 2, BAA) are handled per engagement
+              as a deployment scales beyond pilot.
             </li>
           </ul>
         </section>
@@ -284,20 +286,57 @@ export default function TeamsWedgePage() {
             Pilot terms
           </p>
           <p className="mt-6 font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
-            30 days. 50&ndash;500 employees. No cost.<br />
+            30 days. Up to 50 seats. No cost.<br />
             <span className="italic text-orange-600">Decision at end of pilot.</span>
           </p>
           <p className="mt-8 max-w-2xl text-base leading-[1.7] text-gray-700">
-            We instrument the cohort, your benefits team owns the outcome report, and we
-            co-author a case study if the data justifies it. Pricing is PMPM after the pilot
-            &mdash; let&rsquo;s talk numbers when the evidence is in front of us.
+            We instrument the cohort, you keep the data, and we co-author a case study if
+            the data justifies it. Pricing is PMPM after the pilot &mdash; the calculator
+            above shows the live bands; the pilot itself is free.
           </p>
           <Link
-            href="mailto:teams@coyl.ai?subject=Pilot%20inquiry%20for%20%5Bcompany%5D"
+            href="#pilot"
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
           >
-            teams@coyl.ai
+            Request a pilot &rarr;
           </Link>
+        </section>
+
+        {/* Microsoft Teams differentiator — the bot is real and shipped. */}
+        <section className="space-y-6 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              Where it lives
+            </span>
+          </div>
+          <h2 className="font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Works inside <span className="italic text-orange-600">Microsoft Teams.</span>
+          </h2>
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+            COYL ships as a Microsoft Teams bot, installed at the tenant level. The
+            interrupt arrives where your people already work &mdash; a short, voice-matched
+            call-out at the predicted moment, delivered as a Teams message. No separate app
+            to roll out, no new login. Four interrupt classes ship today: protect a focus
+            block, nudge an overdue follow-up, surface meetings worth declining, and a
+            60-second recovery beat after a heavy stretch.
+          </p>
+        </section>
+
+        {/* Pilot request form — the primary conversion surface. */}
+        <section id="pilot" className="scroll-mt-28 border-t border-orange-500 pt-16">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            Request a pilot
+          </p>
+          <h2 className="mt-6 font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            Tell us about your team.<br />
+            <span className="italic text-orange-600">We&rsquo;ll reply within 1 business day.</span>
+          </h2>
+          <p className="mt-6 mb-8 max-w-2xl text-base leading-[1.7] text-gray-700">
+            30 days, up to 50 seats, no cost. We co-design the success metric with you
+            &mdash; typically weekly active rate and a self-reported lift in follow-through.
+          </p>
+          <PilotRequestForm />
         </section>
 
         {/* FAQ */}
@@ -335,10 +374,10 @@ export default function TeamsWedgePage() {
         <section className="border-t border-gray-200 pt-16">
           <div className="flex flex-wrap gap-3">
             <Link
-              href="mailto:teams@coyl.ai?subject=Pilot%20inquiry%20for%20%5Bcompany%5D"
+              href="#pilot"
               className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              Start a 30-day pilot
+              Request a 30-day pilot
             </Link>
             <Link
               href="/procrastination"

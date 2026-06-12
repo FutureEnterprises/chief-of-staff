@@ -103,21 +103,18 @@ export async function registerForPushNotifications(
   }
 
   if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'COYL',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#ff6600',
-    })
+    await ensureAndroidChannels()
   }
 
   const projectId = Constants.expoConfig?.extra?.eas?.projectId
   const pushToken = (await Notifications.getExpoPushTokenAsync({ projectId })).data
 
-  // Register with backend
+  // Register with backend. POSTs to the mobile-owned route
+  // (/api/v1/mobile/push-token) which writes User.expoPushToken — the field the
+  // web crons read to fan out Expo push.
   try {
     const authToken = await getToken()
-    await fetch(`${apiUrl}/api/v1/user/push-token`, {
+    await fetch(`${apiUrl}/api/v1/mobile/push-token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -130,6 +127,43 @@ export async function registerForPushNotifications(
   }
 
   return pushToken
+}
+
+/**
+ * Creates the Android notification channels at startup.
+ *
+ * Android requires a channel for a notification to surface, and the channel's
+ * importance — not the per-notification priority — governs heads-up / sound /
+ * lock-screen behaviour. Interrupt-tier pushes (danger-window, post-slip) target
+ * the dedicated 'interrupts' channel at MAX importance so they break through;
+ * the web cron sets `channelId: 'interrupts'` on those payloads. A 'default'
+ * channel is kept for everything else.
+ *
+ * Idempotent — setNotificationChannelAsync replaces a same-id channel — so it's
+ * safe to call on every cold start. No-op on iOS / web.
+ */
+export async function ensureAndroidChannels(): Promise<void> {
+  if (Platform.OS !== 'android') return
+  try {
+    await Notifications.setNotificationChannelAsync('interrupts', {
+      name: 'Interrupts',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#ff6600',
+      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+      bypassDnd: false,
+    })
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'COYL',
+      importance: Notifications.AndroidImportance.DEFAULT,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#ff6600',
+    })
+  } catch (err) {
+    // Channel setup is best-effort — failure just means notifications fall back
+    // to the system default channel, still tappable.
+    console.warn('[COYL] failed to set Android notification channels:', err)
+  }
 }
 
 export function addNotificationResponseListener(

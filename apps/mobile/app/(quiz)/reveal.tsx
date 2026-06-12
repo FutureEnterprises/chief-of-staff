@@ -14,11 +14,10 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import * as Haptics from 'expo-haptics'
 import * as Notifications from 'expo-notifications'
 import {
-  FAMILIES,
-  isFamilySlug,
-  windowFromQ2,
-  type FamilySlug,
-  type QuizAnswers,
+  buildArchetype,
+  buildShareUrl,
+  parseShareSlug,
+  windowLabel,
 } from '../../lib/archetypes'
 
 /**
@@ -56,17 +55,19 @@ const DAILY_MINUTE = 30
 export default function RevealScreen() {
   const router = useRouter()
   const { height } = useWindowDimensions()
-  const params = useLocalSearchParams<{ family?: string; q2?: string }>()
+  const params = useLocalSearchParams<{ slug?: string }>()
 
-  // Resolve + validate the slug param; fall back to the negotiator if a bad
-  // value is deep-linked so the card always renders something coherent.
-  const slug: FamilySlug = isFamilySlug(params.family)
-    ? params.family
-    : 'the-9pm-negotiator'
-  const family = FAMILIES[slug]
-
-  const answers: QuizAnswers = { q2: typeof params.q2 === 'string' ? params.q2 : undefined }
-  const dangerWindow = windowFromQ2(answers, slug)
+  // Resolve + validate the share slug (wedge-window-script). A bad/missing slug
+  // falls back to a coherent default so the card always renders. The parsed
+  // triple drives the SAME wedge×window×script model the web audit uses, so the
+  // family, specific, and share link all match coyl.ai exactly.
+  const parsed =
+    parseShareSlug(params.slug ?? '') ?? { wedge: 'weight' as const, window: 'latenight' as const, script: 'minimize' as const }
+  const archetype = buildArchetype(parsed.wedge, parsed.window, parsed.script)
+  const family = archetype.family
+  const specific = archetype.specific
+  const dangerWindow = windowLabel(parsed.window)
+  const shareUrl = buildShareUrl(parsed)
 
   const [reminderState, setReminderState] = useState<'idle' | 'scheduling' | 'set' | 'denied'>(
     'idle',
@@ -89,17 +90,19 @@ export default function RevealScreen() {
 
   const handleShare = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {})
-    const message = `I'm ${family.name} on COYL. What's your pattern? coyl.ai/audit`
+    // Point at the canonical specific permalink (/a/{wedge}-{window}-{script}) so
+    // the recipient lands on the exact same result the web app renders.
+    const message = `I'm ${family.name} on COYL. What's your pattern? ${shareUrl}`
     try {
       await Share.share(
-        Platform.OS === 'ios' ? { message, url: 'https://coyl.ai/audit' } : { message },
+        Platform.OS === 'ios' ? { message, url: shareUrl } : { message },
         { subject: "What's your pattern?" },
       )
     } catch {
       // User dismissed the sheet or share failed — nothing to recover, the
       // card is still on screen for them to screenshot manually.
     }
-  }, [family.name])
+  }, [family.name, shareUrl])
 
   const handleDailyCheck = useCallback(async () => {
     if (reminderState === 'scheduling' || reminderState === 'set') return
@@ -250,7 +253,9 @@ export default function RevealScreen() {
             </Text>
           </View>
 
-          {/* Danger window */}
+          {/* Specific texture — "specifically, Night Fridge Saboteur." This is
+              the wedge×window detail that proves the family fits this exact
+              user; mirrors the web /a/[slug] family + specific composition. */}
           <View style={{ marginBottom: 18 }}>
             <Text
               style={{
@@ -262,7 +267,7 @@ export default function RevealScreen() {
                 marginBottom: 6,
               }}
             >
-              Your danger window
+              Specifically
             </Text>
             <Text
               style={{
@@ -273,13 +278,25 @@ export default function RevealScreen() {
                 letterSpacing: -0.1,
               }}
             >
+              {specific.name}
+            </Text>
+            <Text
+              style={{
+                color: COLORS.muted,
+                fontSize: 13,
+                lineHeight: 19,
+                fontWeight: '500',
+                marginTop: 4,
+              }}
+            >
               {dangerWindow}
             </Text>
           </View>
 
           <View style={{ height: 1, backgroundColor: COLORS.hair, marginBottom: 18 }} />
 
-          {/* Prevalence stat */}
+          {/* Family description — the longer-form essence the web family page
+              shows beneath the headline. */}
           <Text
             style={{
               color: COLORS.muted,
@@ -288,7 +305,7 @@ export default function RevealScreen() {
               fontWeight: '500',
             }}
           >
-            {family.prevalence}
+            {family.description}
           </Text>
         </View>
 

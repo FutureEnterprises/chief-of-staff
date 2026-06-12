@@ -4,6 +4,7 @@ import { useAuth, useUser } from '@clerk/clerk-expo'
 import { Ionicons } from '@expo/vector-icons'
 import { BRAND } from '@repo/shared'
 import { syncYesterdayHealth } from '../../lib/health'
+import { PlanBanner } from '../../components/plan-banner'
 
 export default function SettingsScreen() {
   const { signOut, getToken } = useAuth()
@@ -39,6 +40,10 @@ export default function SettingsScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: BRAND.cream }}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
         <Text style={{ fontSize: 28, fontWeight: '800', color: BRAND.charcoal, marginBottom: 20 }}>Settings</Text>
+
+        {/* Plan state — FREE users see the interrupts notice + Upgrade button;
+            paid plans self-hide. Opens web pricing (Apple IAP note in component). */}
+        <PlanBanner />
 
         {/* Account */}
         <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 16, marginBottom: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8 }}>

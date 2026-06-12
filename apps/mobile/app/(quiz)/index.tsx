@@ -12,10 +12,19 @@ import { useRouter } from 'expo-router'
 import * as Haptics from 'expo-haptics'
 import {
   QUESTIONS,
-  resolveFamily,
+  resolveAnswers,
+  buildShareSlug,
   type QuizAnswers,
-  type QuizOption,
+  type QuizQuestion,
 } from '../../lib/archetypes'
+
+/**
+ * One tap option across any of the three questions. Each question's options
+ * carry a different model-id value type (wedge/window/script), so we narrow per
+ * question when handling the tap; this loose shape just lets the renderer treat
+ * every option uniformly.
+ */
+type AnyOption = { id: string; label: string; value: string }
 
 /**
  * COYL archetype quiz — hook + 3-question, tap-only flow. No typing, no signup.
@@ -24,9 +33,10 @@ import {
  *   1. Hook line (no logo, no "welcome") — the promise that earns the next tap.
  *   2. One question on screen at a time. Every option is a tap target; a light
  *      haptic fires on each tap and the progress bar advances 1/3 → 3/3.
- *   3. On the final tap we resolve the family deterministically (see
- *      lib/archetypes.resolveFamily) and push to /(quiz)/reveal with the slug
- *      and the raw Q2 answer (so the reveal can derive a personalised window).
+ *   3. On the final tap we resolve the archetype deterministically (see
+ *      lib/archetypes.resolveAnswers — same wedge×window×script model the web
+ *      audit uses) and push to /(quiz)/reveal with the share slug, so the reveal
+ *      and any share link round-trip to the canonical /a/{wedge}-{window}-{script}.
  *
  * Editorial dark palette, generous spacing, hairline rules — premium, not
  * healthtech. NEDA-safe: behavioural framing only, no body/diet language.
@@ -57,7 +67,13 @@ export default function QuizScreen() {
   const questionFade = useRef(new Animated.Value(1)).current
 
   const total = QUESTIONS.length
-  const question = QUESTIONS[step]
+  // step is always in-range (advanced one tap at a time, reveal handoff fires
+  // before it can exceed total), but fall back to the first question to satisfy
+  // noUncheckedIndexedAccess and keep the screen renderable in any race.
+  const question: QuizQuestion = QUESTIONS[step] ?? QUESTIONS[0]!
+  // The three questions carry different option value-types (wedge/window/script);
+  // for rendering we treat them uniformly via the loose AnyOption shape.
+  const options = question.options as AnyOption[]
 
   const animateProgress = useCallback(
     (toStep: number) => {
@@ -72,21 +88,30 @@ export default function QuizScreen() {
   )
 
   const handleSelect = useCallback(
-    (option: QuizOption) => {
+    (option: AnyOption) => {
       // Light impact on every tap — the core tactile beat of the quiz.
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
 
-      answers.current = { ...answers.current, [question.id]: option.id }
+      // question.id is 'wedge' | 'window' | 'script'; option.value is the
+      // matching model id. The QUESTIONS array keeps them aligned, so storing
+      // by question.id yields a well-formed QuizAnswers.
+      answers.current = {
+        ...answers.current,
+        [question.id]: option.value,
+      } as QuizAnswers
       const nextStep = step + 1
       animateProgress(nextStep)
 
       if (nextStep >= total) {
         // Final answer — a slightly firmer haptic to mark the reveal handoff.
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})
-        const family = resolveFamily(answers.current)
+        const archetype = resolveAnswers(answers.current)
+        const slug = buildShareSlug(archetype)
         router.replace({
           pathname: '/(quiz)/reveal',
-          params: { family, q2: answers.current.q2 ?? '' },
+          // `slug` (wedge-window-script) fully encodes the result, so the
+          // reveal screen + share link both round-trip to /a/{slug}.
+          params: { slug },
         })
         return
       }
@@ -193,7 +218,7 @@ export default function QuizScreen() {
           </Text>
 
           <View style={{ gap: 12 }}>
-            {question.options.map((option) => (
+            {options.map((option) => (
               <Pressable
                 key={option.id}
                 onPress={() => handleSelect(option)}
