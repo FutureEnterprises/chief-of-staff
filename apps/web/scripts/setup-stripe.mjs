@@ -25,13 +25,15 @@
 import { execSync } from 'node:child_process'
 
 const KEY = process.env.STRIPE_SECRET_KEY
-if (!KEY || !KEY.startsWith('sk_')) {
-  console.error('Set STRIPE_SECRET_KEY=sk_live_... (Stripe Dashboard → Developers → API keys).')
-  console.error('A restricted key works too — needs write on Products, Prices, Webhook Endpoints.')
+// Accept both secret keys (sk_) and restricted keys (rk_).
+if (!KEY || !(KEY.startsWith('sk_') || KEY.startsWith('rk_'))) {
+  console.error('STRIPE_SECRET_KEY is not set (or not an sk_/rk_ key).')
+  console.error('Pass it inline, e.g.:  STRIPE_SECRET_KEY=sk_live_xxx node scripts/setup-stripe.mjs --push')
+  console.error('A restricted key (rk_live_...) works too — needs write on Products, Prices, Webhook Endpoints.')
   process.exit(1)
 }
-if (KEY.startsWith('sk_test')) {
-  console.warn('⚠️  TEST-mode key — prices will be created in test mode. Re-run with sk_live_ for real revenue.\n')
+if (KEY.includes('_test')) {
+  console.warn('⚠️  TEST-mode key — prices will be created in test mode. Re-run with a live key for real revenue.\n')
 }
 
 const PUSH = process.argv.includes('--push')
