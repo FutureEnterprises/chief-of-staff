@@ -54,10 +54,19 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            { "scheme": "https", "host": "coyl.ai" },
-            { "scheme": "https", "host": "www.coyl.ai" }
+            {
+              "scheme": "https",
+              "host": "coyl.ai"
+            },
+            {
+              "scheme": "https",
+              "host": "www.coyl.ai"
+            }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -99,14 +108,18 @@
     },
     "extra": {
       "eas": {
-        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+        "projectId": "d132e0f4-de67-4781-bffa-2ac2d32ab5b4"
+      },
+      "router": {
+        "origin": false
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/REPLACE_WITH_EAS_PROJECT_ID"
-    }
+      "url": "https://u.expo.dev/d132e0f4-de67-4781-bffa-2ac2d32ab5b4"
+    },
+    "owner": "coyl-ai"
   }
 }
