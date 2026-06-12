@@ -57,15 +57,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // been right about it"). Now the prevalence line IS the eyebrow — the
   // first thing a viewer reads on the Twitter/iMessage preview.
   //
-  // The renderer truncates stat at 56 chars but our prevalence lines run
-  // longer; we trim to the first phrase so the eyebrow stays on one line.
-  // The full prevalence copy still renders inside the /a/[slug] page body
-  // (see PrevalenceLine below), so nothing is hidden — just compressed
-  // for the share card. Pattern: take everything before the em-dash if
-  // present, else first 56 chars.
-  const fullStat = a.family.prevalenceCopy
-  const dashIndex = fullStat.indexOf('—')
-  const shareStat = (dashIndex > 0 ? fullStat.slice(0, dashIndex) : fullStat).trim().slice(0, 56)
+  // Keep the FULL prevalence sentence (up to 90 chars) — the back half
+  // after the em-dash ("…most often within 90 minutes of finishing
+  // something hard") is the part that actually hooks the share. The OG
+  // eyebrow wraps to two lines, so the whole line fits. Only fall back to
+  // the em-dash cut if the full string still exceeds 90 chars.
+  const fullStat = a.family.prevalenceCopy.trim()
+  let shareStat: string
+  if (fullStat.length <= 90) {
+    shareStat = fullStat
+  } else {
+    const dashIndex = fullStat.indexOf('—')
+    shareStat = (dashIndex > 0 ? fullStat.slice(0, dashIndex) : fullStat).trim().slice(0, 90)
+  }
   const ogUrl =
     `/api/og?variant=archetype` +
     `&family=${encodeURIComponent(a.family.name)}` +

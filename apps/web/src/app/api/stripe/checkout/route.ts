@@ -12,7 +12,12 @@ export async function POST(req: Request) {
   }
 
   const stripe = new Stripe(stripeKey, { apiVersion: '2025-02-24.acacia' })
-  // Backwards compat: PRO_* fall back to CORE_* if set (legacy naming)
+  // Tier → display name + price (must match the public /pricing page):
+  //   core    → Rewire   $12/mo · $99/yr
+  //   plus    → Rebound  $29/mo · $199/yr   (GLP-1 maintenance tier)
+  //   premium → legacy back-compat only (not shown on the paywall)
+  // Backwards compat: legacy PRO_* fall back for CORE_* if the new vars
+  // are unset.
   const PRICE_IDS = {
     core_monthly: process.env.STRIPE_CORE_MONTHLY_PRICE_ID ?? process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
     core_annual: process.env.STRIPE_CORE_ANNUAL_PRICE_ID ?? process.env.STRIPE_PRO_ANNUAL_PRICE_ID,
@@ -20,6 +25,17 @@ export async function POST(req: Request) {
     plus_annual: process.env.STRIPE_PLUS_ANNUAL_PRICE_ID,
     premium_monthly: process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID,
     premium_annual: process.env.STRIPE_PREMIUM_ANNUAL_PRICE_ID,
+  } as const
+
+  // The exact env var backing each (tier × interval) — used to name the
+  // precise missing var in the 503 log so misconfiguration is visible.
+  const PRICE_ENV_VARS = {
+    core_monthly: 'STRIPE_CORE_MONTHLY_PRICE_ID',
+    core_annual: 'STRIPE_CORE_ANNUAL_PRICE_ID',
+    plus_monthly: 'STRIPE_PLUS_MONTHLY_PRICE_ID',
+    plus_annual: 'STRIPE_PLUS_ANNUAL_PRICE_ID',
+    premium_monthly: 'STRIPE_PREMIUM_MONTHLY_PRICE_ID',
+    premium_annual: 'STRIPE_PREMIUM_ANNUAL_PRICE_ID',
   } as const
 
   const { userId: clerkId } = await auth()
@@ -67,6 +83,12 @@ export async function POST(req: Request) {
   const priceId = PRICE_IDS[priceKey]
 
   if (!priceId) {
+    // Name the exact env var the founder must set so the misconfiguration
+    // isn't invisible until this 503 fires at the first checkout.
+    const missingVar = PRICE_ENV_VARS[priceKey]
+    console.error(
+      `[stripe/checkout] Missing price ID for tier="${tier}" interval="${interval}". Set ${missingVar} in Vercel (Production + Preview).`
+    )
     return NextResponse.json({ error: 'Stripe price IDs not configured' }, { status: 503 })
   }
 

@@ -86,10 +86,12 @@ export function WaitlistView() {
     }
   }
 
-  const inviteUrl =
-    result && typeof window !== 'undefined'
-      ? `${window.location.origin}/waitlist?ref=${result.inviteCode}`
-      : ''
+  // Canonical host first so invite links don't fragment across
+  // apex/preview/localhost origins (splits OG cache + referral analytics).
+  const shareOrigin =
+    process.env.NEXT_PUBLIC_APP_URL ??
+    (typeof window !== 'undefined' ? window.location.origin : 'https://www.coyl.ai')
+  const inviteUrl = result ? `${shareOrigin}/waitlist?ref=${result.inviteCode}` : ''
   const shareText = `I'm #${result?.position} in line for COYL. Skip ahead with my code → ${inviteUrl}`
 
   async function onShare() {

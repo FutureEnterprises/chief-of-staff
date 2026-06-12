@@ -432,9 +432,11 @@ export function TodayView({
         </div>
       </motion.div>
 
-      {/* Recent interrupts — visible proof the JITAI claim is real. */}
+      {/* Recent interrupts — visible proof the JITAI claim is real.
+          planType drives the empty-state copy: FREE users see the
+          3-a-week cap + upgrade hook; paid users see the standard line. */}
       <div className="mb-12">
-        <InterruptHistory />
+        <InterruptHistory planType={user.planType} />
       </div>
 
       {/* Quiet text-link rail — ghosted ritual entry points. Editorial

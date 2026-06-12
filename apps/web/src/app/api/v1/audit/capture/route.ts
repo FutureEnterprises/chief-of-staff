@@ -27,6 +27,7 @@ import { Resend } from 'resend'
 import { prisma } from '@repo/database'
 import { renderAuditResultEmail } from '@/lib/audit-result-email'
 import type { WedgeId, WindowId, ScriptId } from '@/lib/audit-archetype'
+import { checkDistributedRateLimit } from '@/lib/rate-limit'
 
 const schema = z.object({
   email: z.string().email().max(254),
@@ -63,7 +64,15 @@ export async function POST(req: Request) {
     hdrs.get('x-real-ip') ??
     'anonymous'
 
-  if (!rateLimit(ip)) {
+  // Distributed limiter first (cross-instance under Fluid Compute);
+  // fall back to the per-process Map when Upstash is unset.
+  const dist = await checkDistributedRateLimit({
+    prefix: 'audit-capture',
+    identifier: ip,
+    limit: RATE_LIMIT,
+    windowMs: WINDOW_MS,
+  })
+  if (dist.limited || (!dist.configured && !rateLimit(ip))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
   }
 

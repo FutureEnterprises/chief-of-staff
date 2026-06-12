@@ -26,6 +26,7 @@ import { z } from 'zod'
 import { headers } from 'next/headers'
 import { createHash } from 'node:crypto'
 import { prisma } from '@repo/database'
+import { checkDistributedRateLimit } from '@/lib/rate-limit'
 
 const schema = z.object({
   sessionId: z.string().min(1).max(64),
@@ -63,7 +64,15 @@ export async function POST(req: Request) {
     hdrs.get('x-real-ip') ??
     'anonymous'
 
-  if (!rateLimit(ip)) {
+  // Distributed limiter first (cross-instance under Fluid Compute);
+  // fall back to the per-process Map when Upstash is unset.
+  const dist = await checkDistributedRateLimit({
+    prefix: 'audit-event',
+    identifier: ip,
+    limit: RATE_LIMIT,
+    windowMs: WINDOW_MS,
+  })
+  if (dist.limited || (!dist.configured && !rateLimit(ip))) {
     return NextResponse.json({ ok: true }, { status: 200 })
   }
 

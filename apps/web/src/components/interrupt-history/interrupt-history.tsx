@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { motion } from 'motion/react'
 import { Flame, ThumbsUp, ThumbsDown, MinusCircle } from 'lucide-react'
 
@@ -30,9 +31,10 @@ interface InterruptRow {
   feedback: 'helpful' | 'not_helpful' | null
 }
 
-export function InterruptHistory() {
+export function InterruptHistory({ planType }: { planType?: string }) {
   const [rows, setRows] = useState<InterruptRow[] | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const isFree = planType === 'FREE'
 
   useEffect(() => {
     let cancelled = false
@@ -73,10 +75,21 @@ export function InterruptHistory() {
         <p className="mt-2 text-sm font-semibold text-foreground">
           No interrupts fired yet.
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          The first one fires the next time you&rsquo;re inside one of your danger
-          windows. Map more windows on the patterns page to sharpen the model.
-        </p>
+        {isFree ? (
+          <p className="mt-1 text-xs text-muted-foreground">
+            Your first interrupt fires the next time you&rsquo;re inside a danger
+            window. Free plan includes 3 interrupts a week —{' '}
+            <Link href="/pricing" className="text-orange-400 underline-offset-2 hover:underline">
+              upgrade for unlimited
+            </Link>
+            .
+          </p>
+        ) : (
+          <p className="mt-1 text-xs text-muted-foreground">
+            The first one fires the next time you&rsquo;re inside one of your danger
+            windows. Map more windows on the patterns page to sharpen the model.
+          </p>
+        )}
       </motion.div>
     )
   }

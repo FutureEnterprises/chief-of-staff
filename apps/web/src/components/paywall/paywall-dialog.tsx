@@ -5,51 +5,50 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { Zap } from 'lucide-react'
 
+// Internal tier wiring stays 'core' | 'plus' | 'premium' so the
+// /api/stripe/checkout contract doesn't break. PREMIUM stays in the type
+// for legacy/back-compat but is NOT displayed in the paywall — only the
+// two paid consumer tiers (Rewire / Rebound) render.
 type Tier = 'core' | 'plus' | 'premium'
 type Interval = 'monthly' | 'annual'
 
-const TIERS: Record<Tier, { name: string; tagline: string; monthly: number; annual: number; features: string[]; highlight?: boolean }> = {
+// Display config keyed by the internal tier. Only 'core' (Rewire) and
+// 'plus' (Rebound) are surfaced; 'premium' is intentionally omitted from
+// DISPLAY_TIERS so it never shows in the picker.
+//   core → Rewire  $12/mo · $99/yr
+//   plus → Rebound $29/mo · $199/yr (the GLP-1 maintenance layer)
+const TIERS: Record<'core' | 'plus', { name: string; tagline: string; monthly: number; annual: number; features: string[]; highlight?: boolean }> = {
   core: {
-    name: 'Core',
+    name: 'Rewire',
     tagline: 'Catch yourself before the spiral.',
-    monthly: 19,
-    annual: 179,
+    monthly: 12,
+    annual: 99,
     features: [
-      'Unlimited rescue when you\'re about to slip',
+      'Unlimited interrupts at your danger windows',
       'AI decision support in the moment',
-      'Recovery plans that stop the spiral',
+      'Recovery engine — no Monday reset',
       'Pattern memory that calls out your real excuses',
       'Self-Trust tracking that shows real progress',
     ],
     highlight: true,
   },
   plus: {
-    name: 'Plus',
-    tagline: 'Smarter timing + accountability.',
+    name: 'Rebound',
+    tagline: 'For the post-GLP-1 window.',
     monthly: 29,
-    annual: 279,
+    annual: 199,
     features: [
-      'Everything in Core',
-      'Smarter interruption timing (JITAI)',
-      'Accountability partner',
-      'Challenge pods (2–5 people)',
-      'Advanced pattern insights',
-    ],
-  },
-  premium: {
-    name: 'Premium',
-    tagline: 'The full operator stack.',
-    monthly: 49,
-    annual: 469,
-    features: [
-      'Everything in Plus',
-      'Unlimited Charges',
-      'Scenario simulator — see where it leads',
-      'Financial stakes — real money on the line',
-      'Health + calendar integrations',
+      'Everything in Rewire',
+      'Window-specific interrupts (9 PM, weekend, stress, reward)',
+      'Regain Risk Quiz + your rebound archetype',
+      'Maintenance protocol for the post-taper window',
+      'Clinician summary export for your prescriber',
     ],
   },
 }
+
+// The order tiers render in the picker. Excludes 'premium' by design.
+const DISPLAY_TIERS: ('core' | 'plus')[] = ['core', 'plus']
 
 interface PaywallDialogProps {
   open: boolean
@@ -98,7 +97,11 @@ export function PaywallDialog({ open, onClose, trigger, defaultTier = 'core' }: 
   }
 
   const headline = getTriggerHeadline(trigger)
-  const tier = TIERS[selectedTier]
+  // PREMIUM is never displayed — if it somehow arrives as defaultTier,
+  // fall back to the Rewire (core) card so the dialog always renders a
+  // valid paid tier. The checkout call still uses selectedTier verbatim.
+  const displayTier: 'core' | 'plus' = selectedTier === 'plus' ? 'plus' : 'core'
+  const tier = TIERS[displayTier]
   const price = interval === 'annual' ? tier.annual : tier.monthly
 
   return (
@@ -116,14 +119,14 @@ export function PaywallDialog({ open, onClose, trigger, defaultTier = 'core' }: 
           COYL is for the moments that usually ruin the day — late-night eating, &ldquo;I already blew it&rdquo; thinking, weekend collapse, and the shame that comes after.
         </p>
 
-        {/* Tier picker */}
-        <div className="grid grid-cols-3 gap-2">
-          {(Object.keys(TIERS) as Tier[]).map((key) => (
+        {/* Tier picker — two paid options only (Rewire / Rebound). */}
+        <div className="grid grid-cols-2 gap-2">
+          {DISPLAY_TIERS.map((key) => (
             <button
               key={key}
               onClick={() => setSelectedTier(key)}
               className={`rounded-lg border p-2 text-left transition-all ${
-                selectedTier === key
+                displayTier === key
                   ? 'border-orange-500 bg-orange-500/10'
                   : 'border-zinc-200 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800'
               }`}
@@ -145,7 +148,7 @@ export function PaywallDialog({ open, onClose, trigger, defaultTier = 'core' }: 
               interval === 'annual' ? 'bg-orange-500 text-white' : 'text-zinc-500'
             }`}
           >
-            Annual <span className="ml-1 text-xs opacity-80">save ~20%</span>
+            Annual <span className="ml-1 text-xs opacity-80">2 months free</span>
           </button>
           <button
             onClick={() => setInterval('monthly')}

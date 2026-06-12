@@ -1,9 +1,11 @@
 'use server'
 import { revalidatePath } from 'next/cache'
+import { Resend } from 'resend'
 import { prisma } from '@repo/database'
 import type { ExcuseCategory, PrimaryWedge, ToneMode } from '@repo/database'
 import { requireDbUser } from '@/lib/auth'
 import { onboardingSchema } from '@/lib/validations'
+import { renderWelcomeEmail } from '@/lib/email/welcome-email'
 import { createTaskFromChat } from './tasks'
 
 // Predefined danger-window templates per picked label
@@ -112,6 +114,28 @@ export async function completeOnboarding(data: {
     await prisma.productivityEvent.create({
       data: { userId: user.id, eventType: 'ONBOARDING_COMPLETED' },
     })
+
+    // Day-1 welcome email — fire-and-forget. Confirms protection is live
+    // and sets the free-tier interrupt expectation. Send guard mirrors the
+    // waitlist route (api/v1/waitlist). Wrapped so a Resend failure can
+    // never break onboarding completion.
+    try {
+      const resendKey = process.env.RESEND_API_KEY
+      if (resendKey && !resendKey.startsWith('re_...')) {
+        const firstName = (parsed.data.name || user.name).split(' ')[0] ?? null
+        const { subject, html, text } = renderWelcomeEmail({ firstName })
+        const resend = new Resend(resendKey)
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL ?? 'COYL <hello@coyl.ai>',
+          to: user.email,
+          subject,
+          html,
+          text,
+        })
+      }
+    } catch (err) {
+      console.warn('[onboarding] welcome email failed: %s', (err as Error).message)
+    }
 
     revalidatePath('/today')
   } catch (err) {

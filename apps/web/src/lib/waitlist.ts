@@ -14,6 +14,28 @@ import { createHash, randomBytes } from 'node:crypto'
 /** Line-jump per referral. Tunable — not baked into the DB. */
 export const SPOTS_PER_REFERRAL = 5
 
+/* ── Anti-abuse caps (per-IP, 24h rolling). No schema changes — these
+ *    ride on the existing ipHash + referredByCode + createdAt columns. */
+
+/** Max NEW joins allowed from one IP hash per 24h (incognito-spam guard). */
+const MAX_JOINS_PER_IP_24H = 5
+
+/** Max referral CREDITS one referrer can earn per 24h (inflation guard). */
+const MAX_REFERRAL_CREDITS_PER_24H = 10
+
+const DAY_MS = 24 * 60 * 60 * 1000
+
+/**
+ * Thrown by joinWaitlist when an IP exceeds MAX_JOINS_PER_IP_24H. The
+ * route maps this to a 429 (rate_limited) rather than a generic 500.
+ */
+export class WaitlistRateLimitError extends Error {
+  constructor() {
+    super('waitlist_ip_join_cap')
+    this.name = 'WaitlistRateLimitError'
+  }
+}
+
 /** Unambiguous code alphabet (no 0/O/1/I/L). */
 const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
 
@@ -77,14 +99,51 @@ export async function joinWaitlist(input: {
     }
   }
 
-  // Validate the referrer code before crediting it.
+  // (a) Per-IP daily join cap. One IP minting many fresh emails (incognito
+  // spam) is the cheapest way to fake demand AND farm referral credits, so
+  // cap NEW joins per IP per 24h. Skip when ipHash is null (can't attribute).
+  if (input.ipHash) {
+    const since = new Date(Date.now() - DAY_MS)
+    const recentFromIp = await prisma.waitlistEntry.count({
+      where: { ipHash: input.ipHash, createdAt: { gte: since } },
+    })
+    if (recentFromIp >= MAX_JOINS_PER_IP_24H) throw new WaitlistRateLimitError()
+  }
+
+  // Validate the referrer code before crediting it. Also pull the referrer's
+  // ipHash so we can detect self-referral (same person via incognito).
   let referredByCode: string | null = null
+  let referrerIpHash: string | null = null
   if (input.referredByCode) {
     const referrer = await prisma.waitlistEntry.findUnique({
       where: { inviteCode: input.referredByCode },
-      select: { inviteCode: true },
+      select: { inviteCode: true, ipHash: true },
     })
-    if (referrer) referredByCode = referrer.inviteCode
+    if (referrer) {
+      referredByCode = referrer.inviteCode
+      referrerIpHash = referrer.ipHash
+    }
+  }
+
+  // (b) Decide whether to CREDIT the referrer. Attribution (referredByCode on
+  // the new row) is always preserved; only the referralCount increment — the
+  // line-jump payout — is gated:
+  //   • self-referral: joiner's IP == referrer's IP → no credit (incognito farm)
+  //   • velocity cap: referrer already earned 10 credits in 24h → no credit
+  // The entry is still created with referredByCode set in both cases.
+  let creditReferrer = referredByCode !== null
+  if (creditReferrer && referredByCode) {
+    const selfReferral =
+      input.ipHash !== null && input.ipHash !== undefined && input.ipHash === referrerIpHash
+    if (selfReferral) {
+      creditReferrer = false
+    } else {
+      const since = new Date(Date.now() - DAY_MS)
+      const creditsLast24h = await prisma.waitlistEntry.count({
+        where: { referredByCode, createdAt: { gte: since } },
+      })
+      if (creditsLast24h >= MAX_REFERRAL_CREDITS_PER_24H) creditReferrer = false
+    }
   }
 
   let created: { email: string; inviteCode: string; joinedPosition: number; referralCount: number; archetypeSlug: string | null } | null = null
@@ -105,8 +164,10 @@ export async function joinWaitlist(input: {
           },
           select: { email: true, inviteCode: true, joinedPosition: true, referralCount: true, archetypeSlug: true },
         })
-        // Credit the referrer (best-effort, same tx).
-        if (referredByCode) {
+        // Credit the referrer (best-effort, same tx) — only when the
+        // anti-fraud checks above passed. referredByCode is still written
+        // to the new row regardless, so attribution is never lost.
+        if (creditReferrer && referredByCode) {
           await tx.waitlistEntry.update({
             where: { inviteCode: referredByCode },
             data: { referralCount: { increment: 1 } },

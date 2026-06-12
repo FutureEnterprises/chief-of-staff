@@ -277,7 +277,7 @@ export function PricingView() {
             Rebound
           </p>
           <p className="mb-10 mt-4 max-w-md font-serif text-2xl font-normal italic leading-[1.2] text-gray-900">
-            Keep the weight off after the shot.
+            Hold your patterns steady after the shot.
           </p>
 
           <div className="mb-2 flex items-baseline gap-2">
@@ -319,7 +319,7 @@ export function PricingView() {
               'Highest-risk-window-specific interrupts (9 PM, weekend, stress, reward)',
               'GLP-1 maintenance protocol (post-taper relapse-prevention plan)',
               'Clinician summary export for your prescriber',
-              'Cambridge meta-analysis-grounded outcome tracking',
+              'Cambridge meta-analysis-grounded pattern tracking',
             ].map((f) => (
               <li key={f} className="flex items-start gap-2 text-sm text-gray-700">
                 <Check className="mt-0.5 h-4 w-4 shrink-0 text-orange-600" />

@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
       signature:
         (searchParams.get('signature') ?? '“One time won’t matter.”').slice(0, 80),
       specific: (searchParams.get('specific') ?? 'Night Fridge Saboteur').slice(0, 48),
-      stat: searchParams.get('stat')?.slice(0, 56) ?? null,
+      stat: searchParams.get('stat')?.slice(0, 90) ?? null,
       footerCta: (searchParams.get('cta') ?? 'Find your autopilot family').slice(0, 48),
       footerUrl: (searchParams.get('ctaUrl') ?? 'coyl.ai/audit').slice(0, 48),
     })

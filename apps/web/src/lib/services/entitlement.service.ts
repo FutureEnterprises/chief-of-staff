@@ -65,7 +65,10 @@ export const PLAN_LIMITS: Record<string, PlanFeatures> = {
     selfTrustScore: true,
     accountabilityPartner: false,
     challengePods: false,
-    precisionInterrupt: false,
+    // Rewire (CORE, $12/mo · $99/yr) is the paid behavioral-interrupt
+    // product: it must carry UNLIMITED precision interrupts at learned
+    // windows. Only the free tier (Recover) is throttled to 3/week.
+    precisionInterrupt: true,
     scenarioSimulator: false,
     financialStakes: false,
     healthIntegrations: false,
@@ -132,7 +135,8 @@ export const PLAN_LIMITS: Record<string, PlanFeatures> = {
     selfTrustScore: true,
     accountabilityPartner: false,
     challengePods: false,
-    precisionInterrupt: false,
+    // Mirrors CORE — unlimited precision interrupts on the paid tier.
+    precisionInterrupt: true,
     scenarioSimulator: false,
     financialStakes: false,
     healthIntegrations: false,
@@ -163,11 +167,14 @@ export const PLAN_LIMITS: Record<string, PlanFeatures> = {
   },
 }
 
+// Source of truth for displayed prices is the public /pricing page.
+// CORE = Rewire, PLUS = Rebound (the GLP-1 maintenance tier).
+// PREMIUM stays for legacy/back-compat but is NOT shown on the paywall.
 export const PLAN_PRICING = {
   FREE: { monthly: 0, annual: 0 },
-  CORE: { monthly: 19, annual: 179 },       // ~22% off annual
-  PLUS: { monthly: 29, annual: 279 },       // ~20% off annual
-  PREMIUM: { monthly: 49, annual: 469 },    // ~20% off annual
+  CORE: { monthly: 12, annual: 99 },        // Rewire — ~31% off annual (2 mo free)
+  PLUS: { monthly: 29, annual: 199 },       // Rebound — ~43% off annual
+  PREMIUM: { monthly: 49, annual: 469 },    // legacy only — not displayed
 } as const
 
 export type EntitlementFeature = keyof PlanFeatures

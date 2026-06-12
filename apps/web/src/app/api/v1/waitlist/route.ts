@@ -22,8 +22,10 @@ import {
   getWaitlistTotal,
   hashIp,
   SPOTS_PER_REFERRAL,
+  WaitlistRateLimitError,
 } from '@/lib/waitlist'
 import { renderWaitlistEmail } from '@/lib/email/waitlist-email'
+import { checkDistributedRateLimit } from '@/lib/rate-limit'
 
 const joinSchema = z.object({
   email: z.string().email().max(254),
@@ -49,7 +51,15 @@ function rateLimit(ip: string): boolean {
 export async function POST(req: Request) {
   const hdrs = await headers()
   const ip = hdrs.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
-  if (!rateLimit(ip)) {
+  // Distributed limiter first (authoritative across Fluid Compute
+  // instances); fall back to the per-process Map when Upstash is unset.
+  const dist = await checkDistributedRateLimit({
+    prefix: 'waitlist',
+    identifier: ip,
+    limit: RATE_LIMIT,
+    windowMs: WINDOW_MS,
+  })
+  if (dist.limited || (!dist.configured && !rateLimit(ip))) {
     return NextResponse.json({ error: 'rate_limited' }, { status: 429 })
   }
 
@@ -115,7 +125,11 @@ export async function POST(req: Request) {
       },
       { status: status.alreadyOnList ? 200 : 201 },
     )
-  } catch {
+  } catch (err) {
+    // Per-IP daily join cap tripped inside joinWaitlist → 429, not 500.
+    if (err instanceof WaitlistRateLimitError) {
+      return NextResponse.json({ error: 'rate_limited' }, { status: 429 })
+    }
     return NextResponse.json({ error: 'join_failed' }, { status: 500 })
   }
 }

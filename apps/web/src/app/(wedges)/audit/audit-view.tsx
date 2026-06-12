@@ -1476,7 +1476,21 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
   const shareText = `I'm ${archetype.family.name}. ${archetype.family.signature} — the script COYL catches.\n\nFind your autopilot family:`
   const shareTextWithUrl = `${shareText} ${shareUrl}`
 
+  // Viral-coefficient instrumentation — mirrors archetype-share-actions.tsx
+  // so every share surface emits the same 'audit.shared' event. Dynamic
+  // import + swallow so telemetry never breaks (or blocks) a share.
+  function trackShare(channel: string) {
+    try {
+      void import('@/lib/telemetry/posthog-client').then(({ captureMarketingEvent }) => {
+        captureMarketingEvent('audit.shared', { slug: archetype.family.slug, channel })
+      })
+    } catch {
+      /* swallow — telemetry must not break sharing */
+    }
+  }
+
   async function handleNativeShare() {
+    trackShare('web_share')
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
         await navigator.share({
@@ -1493,6 +1507,7 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
   }
 
   async function handleCopy() {
+    trackShare('copy_link')
     try {
       await navigator.clipboard.writeText(shareTextWithUrl)
       setCopied(true)
@@ -1528,6 +1543,7 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
       </button>
       <a
         href={twitterUrl}
+        onClick={() => trackShare('twitter')}
         target="_blank"
         rel="noreferrer"
         className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-[#e7dccb] transition-colors hover:border-orange-300 hover:text-orange-300"
@@ -1540,6 +1556,7 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
       </a>
       <a
         href={threadsUrl}
+        onClick={() => trackShare('threads')}
         target="_blank"
         rel="noreferrer"
         className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-[#e7dccb] transition-colors hover:border-orange-300 hover:text-orange-300"

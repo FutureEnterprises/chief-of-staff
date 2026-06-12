@@ -81,8 +81,12 @@ export default function InvitesPage() {
   }
 
   const inviteUrlBase = useMemo(() => {
-    if (typeof window === 'undefined') return ''
-    return `${window.location.origin}/i/provider/`
+    // Canonical host first so provider invite links don't fragment across
+    // apex/preview/localhost origins. NEXT_PUBLIC_APP_URL is inlined at build.
+    const origin =
+      process.env.NEXT_PUBLIC_APP_URL ??
+      (typeof window !== 'undefined' ? window.location.origin : 'https://www.coyl.ai')
+    return `${origin}/i/provider/`
   }, [])
 
   async function copy(code: string) {

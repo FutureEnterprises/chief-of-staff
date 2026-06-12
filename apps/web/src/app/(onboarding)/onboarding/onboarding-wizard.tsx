@@ -1082,6 +1082,17 @@ function SummaryStep({ data, userId }: { data: FormData; userId: string }) {
         })}
       </div>
 
+      {/* Quiet free-tier line under the Deal — no paywall, just the
+          honest plan. Free forever, with the unlimited path named once. */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.35 + beats.length * 0.55 + 0.1, duration: 0.5 }}
+        className="mt-6 font-mono text-[11px] uppercase tracking-[0.18em] text-[#5f5a52]"
+      >
+        You&rsquo;re on the free plan — 3 interrupts a week, free forever. Unlimited starts at $12/mo.
+      </motion.p>
+
       <motion.div
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}

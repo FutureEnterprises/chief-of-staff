@@ -18,6 +18,17 @@ export const maxDuration = 120
 const PAGE_SIZE = 300
 
 /**
+ * Freemium taste cap. The /free page promises "The behavioral interrupt
+ * is free. Forever." — so FREE users DO get real interrupts, not a
+ * teaser. We cap them at 3 fired interrupts per rolling 7 days: enough
+ * to feel the product catch them, scarce enough that unlimited is the
+ * reason to upgrade. Paid tiers (CORE/PLUS/PREMIUM/TEAM) are unlimited.
+ * Counted across BOTH interrupt crons via the shared AUTOPILOT_INTERRUPTED
+ * record (see recordInterrupt in lib/interrupt-guard.ts).
+ */
+const FREE_WEEKLY_INTERRUPT_CAP = 3
+
+/**
  * Precision Interrupt Engine — the JITAI firing loop.
  *
  * Runs every 15 min. For each user:
@@ -27,7 +38,10 @@ const PAGE_SIZE = 300
  * 4. Check if the user has a recent rescue/check-in — if so, skip.
  * 5. Fire Expo push (if token) + email fallback with interrupt prompt.
  *
- * Gated to PLUS+ users via precisionInterrupt entitlement.
+ * Runs for ALL plan types. FREE users are capped at
+ * FREE_WEEKLY_INTERRUPT_CAP fired interrupts per rolling 7 days (the
+ * /free "free forever" promise + the upgrade hook); paid tiers are
+ * unlimited.
  */
 export async function GET(req: Request) {
   const authError = verifyCronAuth(req)
@@ -36,6 +50,9 @@ export async function GET(req: Request) {
   const resendKey = process.env.RESEND_API_KEY
   const resend = resendKey ? new Resend(resendKey) : null
   const fromEmail = process.env.RESEND_FROM_EMAIL ?? 'COYL <noreply@coyl.ai>'
+  if (!resend) {
+    console.warn('[danger-window-interrupt] RESEND_API_KEY not set — email channel disabled')
+  }
 
   const now = new Date()
   let fired = 0
@@ -46,12 +63,16 @@ export async function GET(req: Request) {
     const users = await prisma.user.findMany({
       where: {
         onboardingCompleted: true,
-        planType: { in: ['PLUS', 'PREMIUM', 'TEAM'] },
+        // All plan types fire. FREE is capped per-user below; paid tiers
+        // (CORE/PLUS/PREMIUM/TEAM) are unlimited. Honors the /free
+        // "free forever" interrupt promise.
+        planType: { in: ['FREE', 'CORE', 'PLUS', 'PREMIUM', 'TEAM'] },
       },
       select: {
         id: true,
         email: true,
         name: true,
+        planType: true,
         timezone: true,
         expoPushToken: true,
         webPushSubscription: true,
@@ -135,6 +156,26 @@ export async function GET(req: Request) {
         return
       }
 
+      // FREE-tier weekly cap. Paid tiers are unlimited; FREE users get a
+      // real taste — FREE_WEEKLY_INTERRUPT_CAP fired interrupts per rolling
+      // 7 days. Counts the same AUTOPILOT_INTERRUPTED record recordInterrupt
+      // writes (shared across both interrupt crons), so the cap is global to
+      // the user, not per-cron. Past the cap we skip firing for this user.
+      if (user.planType === 'FREE') {
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+        const firedThisWeek = await prisma.productivityEvent.count({
+          where: {
+            userId: user.id,
+            eventType: 'AUTOPILOT_INTERRUPTED',
+            createdAt: { gte: weekAgo },
+          },
+        })
+        if (firedThisWeek >= FREE_WEEKLY_INTERRUPT_CAP) {
+          suppressed++
+          return
+        }
+      }
+
       const window = matching[0]!
       const firstName = user.name.split(' ')[0]
 
@@ -215,8 +256,8 @@ export async function GET(req: Request) {
               channelId: 'coyl-interrupts',
             }),
           })
-        } catch {
-          // silent
+        } catch (err) {
+          console.warn('[danger-window-interrupt] expo push failed for %s: %s', user.id, (err as Error).message)
         }
       }
 
@@ -298,8 +339,8 @@ export async function GET(req: Request) {
               `\u2014 COYL`,
             ].join('\n'),
           })
-        } catch {
-          // silent
+        } catch (err) {
+          console.warn('[danger-window-interrupt] email failed for %s: %s', user.id, (err as Error).message)
         }
       }
 

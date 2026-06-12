@@ -319,12 +319,21 @@ export function buildShareSlug(a: { wedge: WedgeId; window: WindowId; script: Sc
 
 export function buildShareUrl(a: { wedge: WedgeId; window: WindowId; script: ScriptId }, base?: string): string {
   const slug = buildShareSlug(a)
-  const root = base ?? (typeof window !== 'undefined' ? window.location.origin : 'https://coyl.ai')
+  // Prefer the canonical host so every shared link points at the same
+  // origin (no apex/preview/localhost fragmentation that splits OG cache
+  // + analytics). NEXT_PUBLIC_APP_URL is inlined client-side at build.
+  const root =
+    base ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    (typeof window !== 'undefined' ? window.location.origin : 'https://www.coyl.ai')
   return `${root}/a/${slug}`
 }
 
 export function buildFamilyUrl(slug: ArchetypeFamily, base?: string): string {
-  const root = base ?? (typeof window !== 'undefined' ? window.location.origin : 'https://coyl.ai')
+  const root =
+    base ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    (typeof window !== 'undefined' ? window.location.origin : 'https://www.coyl.ai')
   return `${root}/audit/${slug}`
 }
 

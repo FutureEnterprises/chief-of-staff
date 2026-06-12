@@ -11,6 +11,16 @@ import { shouldFire } from '@/lib/notification-prefs'
 export const maxDuration = 60
 
 /**
+ * Freemium taste cap, shared with the danger-window-interrupt cron. The
+ * /free page promises interrupts are "free. Forever." — so FREE users get
+ * real post-slip pings too, capped at 3 fired interrupts per rolling 7
+ * days. The count spans BOTH crons via the shared AUTOPILOT_INTERRUPTED
+ * record, so a FREE user's total interrupts (danger-window + post-slip)
+ * never exceed the cap in a week. Paid tiers are unlimited.
+ */
+const FREE_WEEKLY_INTERRUPT_CAP = 3
+
+/**
  * Post-slip interrupt cron — runs every 15 min.
  *
  * After a user logs a slip, the 2 hours and 24 hours that follow are
@@ -56,7 +66,7 @@ export async function GET(req: Request) {
     include: {
       user: {
         select: {
-          id: true, name: true, email: true, expoPushToken: true,
+          id: true, name: true, email: true, planType: true, expoPushToken: true,
           webPushSubscription: true, notificationPrefs: true,
           timezone: true, lastActiveAt: true, currentStreak: true,
           onboardingCompleted: true,
@@ -107,6 +117,26 @@ export async function GET(req: Request) {
     if (!decision.allow) {
       suppressed++
       continue
+    }
+
+    // FREE-tier weekly cap — shared across both interrupt crons. Paid
+    // tiers are unlimited; FREE users get FREE_WEEKLY_INTERRUPT_CAP fired
+    // interrupts per rolling 7 days, counted via the same
+    // AUTOPILOT_INTERRUPTED record recordInterrupt writes (so danger-window
+    // + post-slip share one global cap per user).
+    if (slip.user.planType === 'FREE') {
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+      const firedThisWeek = await prisma.productivityEvent.count({
+        where: {
+          userId: slip.user.id,
+          eventType: 'AUTOPILOT_INTERRUPTED',
+          createdAt: { gte: weekAgo },
+        },
+      })
+      if (firedThisWeek >= FREE_WEEKLY_INTERRUPT_CAP) {
+        suppressed++
+        continue
+      }
     }
 
     const firstName = slip.user.name.split(' ')[0] ?? 'you'
