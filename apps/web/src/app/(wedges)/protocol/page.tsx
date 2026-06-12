@@ -42,32 +42,31 @@ import {
 
 export const metadata: Metadata = {
   title:
-    'COYL Protocol — four open specs, one reference engine for proactive AI',
+    'COYL Protocol — the authority layer for LLMs acting in the world',
   description:
-    'BIP for behavioral context. PAP for LLM proactive interventions. EAP for cross-device LLM action. UAP for standing authority. Four layered open specs (Apache 2.0) and one proprietary reference engine — COYL Cloud — for any foundation lab, wearable, or consumer app that needs to act at the moment before behavior happens.',
+    'Permission, audit, control, and provenance for agents acting on a person’s behalf — scoped, revocable, rate-limited, auditable, provenance-signed, kill-switchable, portable across models and devices. Five orthogonal open specs (Apache 2.0); reference engine + @coyl/protocol SDK in alpha; design partners invited.',
   keywords: [
-    'behavioral interrupt protocol',
-    'proactive ai protocol',
-    'cross-device llm action',
-    'user authority protocol',
+    'authority layer for ai agents',
+    'agentic ai consent',
+    'ai agent kill switch',
+    'provenance for ai actions',
+    'agent permission and audit',
     'standing authority for ai',
     'coyl protocol stack',
-    'bip pap eap uap',
-    'open protocol for proactive ai',
-    'llm intervention protocol',
-    'agentic ai consent',
-    'coyl cloud reference engine',
+    'open protocol for ai agents',
+    'cross-device llm action',
+    'behavioral interrupt protocol',
   ],
   alternates: { canonical: '/protocol' },
   openGraph: {
     title:
-      'COYL Protocol — four open specs. One reference engine.',
+      'COYL Protocol — the authority layer for LLMs acting in the world',
     description:
-      'BIP, PAP, EAP, UAP — the trust infrastructure for proactive AI. Apache 2.0 open standards with a hosted reference engine.',
+      'Permission, audit, control, and provenance for agents acting on a person’s behalf. Apache 2.0 specs; alpha reference engine + SDK; design partners invited.',
     url: 'https://coyl.ai/protocol',
     images: [
       {
-        url: '/api/og?title=Four+open+specs.+One+reference+engine.&kicker=The+Protocols',
+        url: '/api/og?title=The+authority+layer+for+LLMs+acting+in+the+world&kicker=The+Protocols',
         width: 1200,
         height: 630,
       },
@@ -75,11 +74,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'COYL Protocol — BIP + PAP + EAP + UAP',
+    title: 'COYL Protocol — the authority layer for LLMs acting',
     description:
-      'Four open specs. One reference engine. The trust infrastructure for proactive AI.',
+      'Permission, audit, control, and provenance for agents acting on a person’s behalf. Apache 2.0 specs; alpha engine + SDK; design partners invited.',
     images: [
-      '/api/og?title=Four+open+specs.+One+reference+engine.&kicker=The+Protocols',
+      '/api/og?title=The+authority+layer+for+LLMs+acting+in+the+world&kicker=The+Protocols',
     ],
   },
 }
@@ -104,49 +103,67 @@ export default async function ProtocolPage() {
           editorial body below. */}
       <CinematicScrim bleedToCream className="-mx-6 -mt-24 px-6 pt-32 pb-20 md:-mx-12 md:px-12 md:pt-40 md:pb-28">
         <header className="mx-auto max-w-5xl space-y-10">
-          <CinematicEyebrow label="The protocols" />
+          <CinematicEyebrow label="The protocol stack" />
 
           <CinematicDisplay as="h1" variant="hero">
-            LLMs are intelligent.{' '}
+            COYL is the authority layer for{' '}
             <span className="italic text-orange-300">
-              They&rsquo;re still behavior-blind.
+              LLMs acting in the world.
             </span>
           </CinematicDisplay>
 
           <CinematicBody tone="muted">
-            Today&rsquo;s foundation models read the context window.
-            They don&rsquo;t read the user. They know what you say.
-            They don&rsquo;t know what loop you&rsquo;re inside, what
-            window your autopilot fires in, or whether this is the
-            moment before the same fold or just routine friction.
-            That gap is a category — not a feature.
+            MCP connects agents to tools. A2A lets agents talk to
+            agents. COYL is the layer underneath both:{' '}
+            <strong className="font-serif font-normal italic text-[#f8f1e4]">
+              permission, audit, control, and provenance
+            </strong>{' '}
+            for an agent acting on a person&rsquo;s behalf. Scoped,
+            revocable, rate-limited, auditable, provenance-signed,
+            kill-switchable — and portable across every model and
+            device.
           </CinematicBody>
 
           <CinematicBody tone="muted">
-            <strong className="font-serif font-normal italic text-[#f8f1e4]">
-              Stop being a chatbot. Become behavior-aware.
-            </strong>{' '}
-            COYL is the protocol layer that closes the gap. Five open
-            specs that turn any LLM into a behaviorally-grounded agent
-            — anchored on the consent the user grants, the loops the
-            user is in, and the safety floor that overrides every
-            other layer when it has to.
+            The moment an LLM stops answering and starts acting for
+            someone, it needs a contract for what it&rsquo;s allowed to
+            do, who it answers to, and how the person takes control
+            back. That contract is five orthogonal layers — read,
+            propose, act, hold standing authority, and stop — each
+            implementable on its own, each implemented in this
+            repository today.
           </CinematicBody>
 
           <CinematicBody tone="dim" className="text-base md:text-base">
-            UAP for what the user permits.{' '}
+            The specs are open (Apache&nbsp;2.0). The reference engine
+            and the typed{' '}
+            <code className="text-orange-300">@coyl/protocol</code> SDK
+            are in alpha. Below: the stack, a coordinator you can hit
+            right now, and the safety floor a Trust &amp; Safety
+            reviewer asks about first.{' '}
             <Link href="/uap" className="text-orange-300 underline-offset-4 hover:underline">
-              ↗
+              UAP
             </Link>{' '}
-            BIP for the loop the user is in. PAP for LLM proactive
-            interventions. EAP for cross-device LLM action.{' '}
+            ·{' '}
             <Link href="/rap" className="text-orange-300 underline-offset-4 hover:underline">
               RAP
-            </Link>{' '}
-            for the safety floor — when the AI stops coaching and
-            routes to a human. Apache 2.0. The reference engine is
-            ours.
+            </Link>
           </CinematicBody>
+
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <a
+              href="mailto:protocol@coyl.ai?subject=Design%20partner%20interest"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+            >
+              Become a design partner &rarr;
+            </a>
+            <Link
+              href="/developers"
+              className="rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-medium text-[#e7dccb] hover:border-orange-300 hover:text-orange-300"
+            >
+              Developer console
+            </Link>
+          </div>
         </header>
       </CinematicScrim>
 
@@ -160,30 +177,30 @@ export default async function ProtocolPage() {
         <section className="space-y-8 pt-4">
           <CinematicEyebrow label="00 · The foundation" tone="muted" />
           <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
-            <span className="italic text-orange-600">Consent</span> is the
-            only thing that lets the rest of the stack run safely.
+            <span className="italic text-orange-600">Permission</span> is the
+            only thing that lets an agent act safely on your behalf.
           </h2>
           <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
-            UAP — the User Authority Protocol — sits at the foundation
-            of the COYL stack. Without it, BIP / PAP / EAP can become
-            manipulative or creepy. The AI must first know:{' '}
+            Standing authority — the User-Authority Protocol — sits at
+            the foundation of the stack. It answers the question every
+            other layer depends on:{' '}
             <em>
-              what did the user authorize me to help with, and how
-              far can I go?
+              what did the person authorize this agent to do, and how
+              far can it go?
             </em>{' '}
-            Every other layer reads from UAP before it fires. Every
+            Every other layer reads that answer before it fires. Every
             grant is bounded, revocable, kill-switch-first, and
-            auditable. The other four layers are downstream of that
-            answer.
+            auditable.
           </p>
           <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
             <strong className="font-serif font-normal italic">
-              MCP connected LLMs to software systems. The COYL stack
-              connects them to the human behavioral system
+              MCP connects agents to tools. A2A lets agents talk to
+              agents. COYL is the permission, audit, and control layer
+              underneath
             </strong>{' '}
-            — and the only reason that&rsquo;s not surveillance is
-            because UAP sits underneath, defining what the user
-            permits, refuses, and can override.
+            — the part that says what an agent may do on a real
+            person&rsquo;s behalf, records what it did, and lets that
+            person take it all back in one move.
           </p>
         </section>
 
@@ -213,6 +230,87 @@ export default async function ProtocolPage() {
           </div>
 
           <StackDiagram />
+        </section>
+
+        {/* WHAT'S ACTUALLY SHIPPED — the credibility proof. SDK + demo +
+            live safety floor, in plain English, before the per-protocol
+            code cards. These assets exist in this repo today. */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="space-y-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              01b · What&rsquo;s actually shipped
+            </p>
+            <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+              A typed SDK, a runnable demo, and a live safety floor.{' '}
+              <span className="italic text-orange-600">
+                Not a slide deck.
+              </span>
+            </h2>
+            <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+              The five-layer stack is implemented in this repository —
+              read, propose, act, standing-authority, safety-floor. The
+              specs are Apache&nbsp;2.0; the reference engine and the SDK
+              are alpha. Three proofs make that concrete.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The SDK · alpha
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                <code className="font-mono text-base text-orange-600">
+                  @coyl/protocol
+                </code>
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                A typed, zero-dependency TypeScript client. <code className="font-mono text-[13px] text-orange-600">UAPClient</code>{' '}
+                does grant / precheck / execute / revoke / audit /
+                kill-switch / verify-provenance.{' '}
+                <code className="font-mono text-[13px] text-orange-600">EAPDeviceClient</code>{' '}
+                registers a device, polls for approved actions, reports
+                outcomes, and publishes sensor snapshots. Typed against
+                the live route handlers — wire shapes can change before
+                1.0.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The demo · runnable
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                Grant it, then try to break it.
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                One script walks the whole trust contract: grant →
+                reversible action allowed and audited → irreversible
+                send <strong className="font-serif font-normal italic">denied</strong>{' '}
+                (it fails closed) → provenance verified on an allowed
+                representation action → kill switch → the next action is
+                dead. The fail-closed denial is the point.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The safety floor · live
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                Gates both paths. First.
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                The closed-coaching-path check runs ahead of every other
+                gate on the agent path — a crisis-class assessment denies
+                a proposal or a standing-authority execution before scope
+                or rate limits are even read. The same check runs before
+                any consumer interrupt: a person in a closed path is never
+                nudged. Classifier, routing envelopes, and store are
+                implemented today.
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* THE FOUR PROTOCOL CARDS */}
@@ -507,11 +605,12 @@ Authorization: <user session, not partner token>
               <code className="font-mono text-[13px] text-orange-600">
                 isAboveConfidenceThreshold
               </code>{' '}
-              function the production endpoint at{' '}
+              function the proposal endpoint at{' '}
               <code className="font-mono text-[13px] text-orange-600">
                 /api/pap/v1/proposal
               </code>{' '}
-              uses. The decision you see is what the real coordinator returns.
+              uses. The decision you see is what the reference coordinator
+              returns — no auth, no database writes.
             </p>
           </div>
           <TryItLive />
@@ -525,44 +624,47 @@ Authorization: <user session, not partner token>
         <section className="space-y-10 border-t border-orange-500 pt-16">
           <div className="space-y-6">
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              02c · First production integration
+              02c · The first integration is COYL itself
             </p>
             <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
-              COYL is the first PAP partner.{' '}
-              <span className="italic text-orange-600">Itself.</span>
+              We run our own coordinator before we ask{' '}
+              <span className="italic text-orange-600">anyone else to.</span>
             </h2>
             <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
-              Every server-side render of{' '}
-              <code className="font-mono text-[13px] text-orange-600">/today</code>{' '}
-              emits a real PAPProposal row through the COYL Internal
+              COYL&rsquo;s own consumer app is the first partner to the
+              proposal coordinator. It emits proposals through an internal
               partner — partner id{' '}
               <code className="font-mono text-[13px] text-orange-600">
                 coyl_internal
               </code>
-              . The coordinator evaluates against the user&rsquo;s real state
-              (panic, quiet hours, rate limit, dedup, confidence). The row
-              persists. The proof is the row count.
+              {' '}— and the coordinator evaluates each one against real
+              user state: panic, quiet hours, rate limit, dedup,
+              confidence, and the RAP safety floor first. Every decision is
+              audited.
             </p>
             <p className="max-w-2xl text-sm leading-[1.6] text-gray-600">
-              Foundation-lab Trust &amp; Safety reviewers querying the audit
-              table see real coordinator traffic from day one. The protocol
-              is not aspirational. It is the production interrupt pipeline.
+              A reviewer querying the audit table sees the coordinator
+              making real decisions against real state — not a mock. The
+              stack isn&rsquo;t aspirational; it&rsquo;s the same path
+              COYL&rsquo;s own interrupts already run through. The engine
+              is alpha and design-partner-invited, not a public hosted
+              production service.
             </p>
           </div>
         </section>
 
-        {/* WHY FOUR PROTOCOLS, NOT ONE */}
+        {/* WHY SEPARATE LAYERS, NOT ONE */}
         <section className="space-y-10 border-t border-gray-200 pt-16">
           <div className="space-y-6">
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              03 · Why four, not one
+              03 · Why separate layers, not one
             </p>
             <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
-              Four concerns.{' '}
+              Separate concerns.{' '}
               <span className="italic text-orange-600">
-                Four layers.
+                Separate layers.
               </span>{' '}
-              One coordinator.
+              One coordinator, one safety floor.
             </h2>
           </div>
 
@@ -585,7 +687,7 @@ Authorization: <user session, not partner token>
             <LayerCard
               kicker="UAP — the standing-authority layer"
               title="User-level. Grant &amp; revoke."
-              body="UAP is for the moments the user is absent. The user issues a bounded grant — scope-limited, time-limited, rule-governed. The model acts under it. Every execute is audit-signed. Expiry is hard. The kill switch revokes everything in five seconds. Foundation labs ship agentic AI on this layer or they ship it unsafe."
+              body="UAP is for the moments the user is absent. The user issues a bounded grant — scope-limited, time-limited, rule-governed. The model acts under it. Every execute is audit-signed. Expiry is hard. The kill switch revokes everything fast. It&rsquo;s the layer that lets a team ship agents that act on a person&rsquo;s behalf without inventing a brittle consent model per product."
             />
           </div>
 
@@ -599,7 +701,7 @@ Authorization: <user session, not partner token>
                 EAP carries one action.
               </span>{' '}
               PAP narrows to behavior. BIP is the substrate all three
-              consume.
+              consume. RAP is the safety floor that overrides them all.
             </p>
             <p className="mt-6 max-w-2xl text-base leading-[1.7] text-gray-700">
               The separation is what lets a wearable implement only BIP
@@ -625,15 +727,17 @@ Authorization: <user session, not partner token>
             <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
               The specs are open.{' '}
               <span className="italic text-orange-600">
-                COYL Cloud is ours.
+                The reference engine is ours.
               </span>
             </h2>
             <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
-              Anyone can implement BIP, PAP, or EAP. COYL Cloud is the
-              proprietary reference engine — the same play Anthropic ran
-              with MCP, OAuth ran with authorization, Stripe ran with
-              checkout. Win on data quality and integration depth, not
-              on closed specs.
+              Anyone can implement the specs. COYL maintains the reference
+              engine — the coordinator, the audit log, the device bridges,
+              and the consent surface — the same way an open standard is
+              anchored by a canonical implementation. The category exists
+              because the contract is open; the company exists because the
+              engine and the integration depth are ours. The engine is in
+              alpha today.
             </p>
           </div>
 
@@ -662,42 +766,48 @@ Authorization: <user session, not partner token>
 
           <div className="rounded-3xl border border-gray-200 bg-white p-8 md:p-12">
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
-              Pricing
+              Where this stands
             </p>
             <h3 className="mt-4 font-serif text-2xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900 md:text-3xl">
-              Free up to 1K interventions / user / LLM / month.
+              Specs published. Engine and SDK in alpha.{' '}
+              <span className="italic text-orange-600">
+                Design partners invited.
+              </span>
             </h3>
             <ul className="mt-6 space-y-3 text-base leading-[1.65] text-gray-700">
               <li className="flex gap-3">
                 <span className="font-mono text-xs text-orange-600">·</span>
                 <span>
                   <strong className="font-serif font-normal italic">
-                    Free tier.
+                    The specs.
                   </strong>{' '}
-                  1,000 interventions per user, per LLM partner, per
-                  month. Zero cost.
+                  Apache&nbsp;2.0, published, free to implement. The open
+                  contract is what makes the category real.
                 </span>
               </li>
               <li className="flex gap-3">
                 <span className="font-mono text-xs text-orange-600">·</span>
                 <span>
                   <strong className="font-serif font-normal italic">
-                    Usage.
+                    The engine + SDK.
                   </strong>{' '}
-                  $0.001 per intervention above the free tier.
-                  Coordinator decisions, audit logs, and bridge dispatch
-                  included.
+                  The reference coordinators, the safety floor, the typed{' '}
+                  <code className="font-mono text-[13px] text-orange-600">
+                    @coyl/protocol
+                  </code>{' '}
+                  client, and the runnable demo are in this repo, in alpha.
+                  Wire shapes may still change before 1.0.
                 </span>
               </li>
               <li className="flex gap-3">
                 <span className="font-mono text-xs text-orange-600">·</span>
                 <span>
                   <strong className="font-serif font-normal italic">
-                    Strategic seats.
+                    Commercial terms.
                   </strong>{' '}
-                  Foundation labs, large platforms, and category-defining
-                  device fleets — reach out. We size the contract to the
-                  integration depth.
+                  A design-partner conversation, not a public price list.
+                  We&rsquo;d rather shape the integration with you than
+                  hand you a finished black box.
                 </span>
               </li>
             </ul>
@@ -732,12 +842,13 @@ Authorization: <user session, not partner token>
               </h3>
               <p className="mt-4 text-base leading-[1.65] text-gray-700">
                 Foundation lab, model provider, or assistant platform.
-                You want to make your model behaviorally aware and
-                authorized to act with consent. Implement PAP + EAP,
-                route through COYL Cloud, ship in weeks not quarters.
+                You want your model authorized to act on a person&rsquo;s
+                behalf — with permission, audit, control, and provenance
+                you don&rsquo;t have to reinvent. Implement the propose +
+                act layers and route through the reference coordinator.
               </p>
               <p className="mt-6 font-mono text-xs uppercase tracking-[0.28em] text-orange-600 group-hover:text-orange-700">
-                Get an API key →
+                Become a design partner →
               </p>
             </Link>
 
@@ -772,7 +883,7 @@ Authorization: <user session, not partner token>
               06 · The honest questions
             </p>
             <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
-              What a corp-dev team{' '}
+              What an AI platform team{' '}
               <span className="italic text-orange-600">
                 actually asks.
               </span>
@@ -799,50 +910,45 @@ Authorization: <user session, not partner token>
         {/* CLOSING BRAND ANCHOR */}
         <section className="space-y-12 border-t border-orange-500 pt-16">
           <blockquote className="max-w-4xl font-serif text-3xl font-normal italic leading-[1.15] tracking-[-0.02em] text-gray-900 md:text-6xl">
-            Stop being a chatbot.{' '}
+            The authority layer for{' '}
             <span className="not-italic text-orange-600">
-              Become behavior-aware.
+              LLMs acting in the world.
             </span>
           </blockquote>
 
           <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
-            Four open specs. One reference engine. The trust
-            infrastructure for proactive AI — read the substrate,
-            propose the intervention, act across the fleet, hold
-            bounded standing authority, with consent.
+            Permission, audit, control, and provenance for an agent
+            acting on a person&rsquo;s behalf — read the context, propose
+            the moment, act across the fleet, hold bounded standing
+            authority, and stop at the safety floor. Five open specs; an
+            alpha reference engine and SDK; design partners invited.
           </p>
 
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/pap"
+            <a
+              href="mailto:protocol@coyl.ai?subject=Design%20partner%20interest"
               className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              Read PAP →
-            </Link>
-            <Link
-              href="/eap"
-              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-            >
-              Read EAP →
-            </Link>
-            <Link
-              href="/uap"
-              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
-            >
-              Read UAP →
-            </Link>
+              Become a design partner →
+            </a>
             <Link
               href="/developers"
               className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
             >
               Developer console
             </Link>
-            <a
-              href="mailto:protocol@coyl.ai?subject=Partner%20interest"
+            <Link
+              href="/uap"
               className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
             >
-              Strategic partnership
-            </a>
+              Read UAP
+            </Link>
+            <Link
+              href="/rap"
+              className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              Read RAP
+            </Link>
           </div>
         </section>
       </article>
@@ -1116,15 +1222,19 @@ const FAQ: Array<{ q: string; a: string }> = [
     a: 'EAP requires every Action Request to declare a reversibility class — REVERSIBLE, REVERSIBLE_WITHIN_WINDOW, or IRREVERSIBLE. Irreversible actions never auto-fire. The Coordinator returns AWAITING_USER_CONFIRMATION and pushes a confirmation surface (lock-screen card, watch glance, app intent) with a short TTL. The LLM never directly executes irreversible action; the user does. Same envelope, hard guarantee.',
   },
   {
-    q: 'What&rsquo;s the latency for action firing?',
-    a: 'Signal-to-decision is sub-200ms on the Coordinator. Decision-to-bridge-delivery depends on the device — watch haptic is sub-second, push is one to three seconds, lock-screen card is bound by the device&rsquo;s next-render frame. We expose end-to-end latency in the audit log so partners can measure their own moments without instrumentation.',
+    q: 'When does the AI stop coaching and route to a human?',
+    a: 'That&rsquo;s the safety floor — the Risk Assessment Protocol — and it&rsquo;s implemented, not promised. A per-moment classifier assigns a risk class; a crisis or emergency class closes the coaching path and emits a jurisdiction-aware routing envelope. The closed-path check runs as the first gate on both the agent path (the proposal coordinator and standing-authority execution both deny ahead of scope and rate limits) and the consumer interrupt path (a person in a closed path is never nudged). Nothing reopens the path until a human-reviewed reopen is logged. This is the question a Trust &amp; Safety reviewer asks first; we answer it in code.',
+  },
+  {
+    q: 'How does an action carry proof of who acted, and under whose authority?',
+    a: 'Every allowed representation action is provenance-signed. The signed envelope names the acting agent and the subject, and is verifiable through a public, unauthenticated endpoint — so a recipient can confirm an action was taken by a specific agent under a specific standing grant. Irreversible representation actions hit the irreversibility floor first and are denied for per-action confirmation, so they are never signed-and-sent silently. The runnable demo verifies a real signature end to end.',
   },
   {
     q: 'What about Apple? They won&rsquo;t adopt this.',
     a: 'Apple doesn&rsquo;t need to adopt the spec for the spec to work — the device bridges run inside our reference engine. We use the surfaces Apple already exposes (push, App Intents, Watch complications, Live Activities, Lock-Screen widgets). If Apple ever builds a first-party version, the spec is what their developers cite to argue for parity. The protocol is the policy lever.',
   },
   {
-    q: 'What&rsquo;s COYL Cloud&rsquo;s pricing?',
-    a: 'Free up to 1,000 interventions per user, per LLM partner, per month. $0.001 per intervention above that, with Coordinator, audit log, and bridge dispatch all included. Strategic seats for foundation labs and category-defining device fleets are sized to integration depth — reach out and we&rsquo;ll size the contract together.',
+    q: 'What&rsquo;s the status — can we use this in production today?',
+    a: 'Honest answer: the five specs are published under Apache 2.0; the reference engine and the @coyl/protocol SDK are in alpha, in this repository, with the safety floor, the coordinators, and a runnable authority demo all implemented. There is no public hosted production API with an uptime promise — and we&rsquo;re not going to claim one. We&rsquo;re inviting design partners precisely so the engine hardens against real integrations before 1.0. Commercial terms are part of that conversation, not a published price list.',
   },
 ]
