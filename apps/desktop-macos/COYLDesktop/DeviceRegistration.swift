@@ -97,6 +97,12 @@ enum DeviceRegistration {
         let body = buildRegistration(userId: userId)
         do {
             let response = try await coordinator.postDeviceRegister(body: body)
+            // Persist the server-minted EAP device token. Once stored,
+            // AuthStore.preferredBearerToken prefers it over the Clerk JWT
+            // for every machine call (pending-actions, sensor publish).
+            if let token = response.device.token, !token.isEmpty {
+                AuthStore.shared.deviceToken = token
+            }
             let local = EAPLocalDeviceState(
                 deviceId: response.device.id,
                 deviceFingerprint: body.deviceFingerprint,

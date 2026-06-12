@@ -391,6 +391,12 @@ async function loadDevice(safeDeviceId: string) {
       deviceFingerprint: true,
       pairedAt: true,
       operationalState: true,
+      // New columns (device token + last sensor snapshot) — selected so
+      // the row still satisfies the full Device type executeAction wants.
+      deviceTokenHash: true,
+      deviceTokenLastFour: true,
+      lastSensorSnapshot: true,
+      lastSensorAt: true,
     },
   })
 }

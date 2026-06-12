@@ -1677,6 +1677,17 @@ model Device {
   paired            Boolean   @default(false)
   pairedAt          DateTime?
 
+  // Device-scoped machine credential (EAP §1). Minted at first
+  // /device/register and returned to the coordinator exactly once
+  // (plaintext is never persisted — only the bcrypt hash). The
+  // coordinator presents it as `Authorization: Bearer
+  // coyl_eap_<deviceId>_<secret>` on its own machine-auth calls
+  // (pending-actions poll + sensor publish). Stable across manifest
+  // re-registers so a stored token keeps working; null until the
+  // first register that mints it.
+  deviceTokenHash     String? // bcrypt of the device token secret, never store plaintext
+  deviceTokenLastFour String? // last 4 chars of the secret, for display/debug only
+
   // Capabilities (JSON because per-device-class shape varies)
   manifestJson     Json // { sensors: [], actuators: [], userGrantedScopes: [] }
   operationalState Json? // last-known battery / DND / foreground app
@@ -1685,6 +1696,15 @@ model Device {
   online     Boolean  @default(false)
   lastSeenAt DateTime @default(now())
   pushToken  String? // for waking the device when offline-tolerant action queued
+
+  // Latest sensor snapshot (EAP §5). The coordinator POSTs a full
+  // snapshot every 60s to /sensor/<deviceId>/publish; we keep only
+  // the most recent here (the SensorSubscription fan-out webhook is
+  // the durable history channel). lastSensorSnapshot is the raw
+  // { screen_state, battery, foreground_app, ... } object the device
+  // sent; lastSensorAt is when we received it.
+  lastSensorSnapshot Json? // most-recent published sensor snapshot
+  lastSensorAt       DateTime? // when the snapshot above was received
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

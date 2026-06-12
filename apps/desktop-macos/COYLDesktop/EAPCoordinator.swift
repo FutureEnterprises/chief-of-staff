@@ -24,6 +24,13 @@ struct DeviceRegisterResponse: Decodable {
         let id: String
         let deviceClass: String
         let paired: Bool
+        /// EAP device token (`coyl_eap_<deviceId>_<secret>`), minted by the
+        /// server at first register and returned on subsequent re-registers.
+        /// Optional so older servers that omit it still decode. Stored in
+        /// the Keychain (AuthStore.deviceToken); preferredBearerToken then
+        /// presents it on pending-actions polls + sensor publishes instead
+        /// of the Clerk JWT (which the server cannot validate as a Bearer).
+        let token: String?
     }
     let device: Device
 }

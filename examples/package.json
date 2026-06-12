@@ -1,0 +1,20 @@
+{
+  "name": "@coyl/examples",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Runnable examples for the @coyl/protocol SDK.",
+  "scripts": {
+    "authority-demo": "tsx authority-demo.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@coyl/protocol": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/config-typescript": "*",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}

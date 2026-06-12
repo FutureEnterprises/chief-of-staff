@@ -26,8 +26,10 @@
 
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
 import bcrypt from 'bcryptjs'
 import { prisma, Prisma } from '@repo/database'
+import { mintDeviceToken } from '@/lib/eap/device-token'
 
 export const maxDuration = 15
 
@@ -49,11 +51,21 @@ type RegisterBody = {
 }
 
 export async function POST(req: Request) {
-  const partner = await authenticateLLMPartner(req)
-  if (!partner.ok) {
-    return NextResponse.json({ error: partner.error }, { status: partner.status })
-  }
-
+  // Two documented registration callers, two auth modes:
+  //
+  //   1. LLM PARTNER  — Bearer coyl_pap_<id>_<secret>. The partner names
+  //      the target user via body.userId (it already knows whose behalf
+  //      it acts on). This is the original flow.
+  //
+  //   2. FIRST-PARTY DEVICE COORDINATOR (bootstrap) — the user's own
+  //      browser extension / macOS app announcing itself. It carries the
+  //      user's Clerk SESSION COOKIE, not a partner key, and (for the
+  //      browser) doesn't send body.userId at all — so we derive the user
+  //      from the session. This is what makes the documented browser-
+  //      extension and desktop bootstrap flows actually authenticate.
+  //
+  // We try the partner key first; if there's no partner bearer we fall
+  // back to the Clerk session. Whichever wins resolves a userId.
   let body: RegisterBody
   try {
     body = (await req.json()) as RegisterBody
@@ -61,10 +73,58 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'invalid_json' }, { status: 400 })
   }
 
-  // Required fields per spec § Device Registration.
-  if (!body.userId || typeof body.userId !== 'string') {
-    return NextResponse.json({ error: 'missing_user_id' }, { status: 400 })
+  const authHeader = req.headers.get('authorization') ?? ''
+  const hasPartnerBearer = /^Bearer\s+coyl_pap_/i.test(authHeader)
+
+  let userId: string
+  let partnerId: string | null = null
+
+  if (hasPartnerBearer) {
+    const partner = await authenticateLLMPartner(req)
+    if (!partner.ok) {
+      return NextResponse.json({ error: partner.error }, { status: partner.status })
+    }
+    partnerId = partner.partnerId
+    // Partner names the target user in the body.
+    if (!body.userId || typeof body.userId !== 'string') {
+      return NextResponse.json({ error: 'missing_user_id' }, { status: 400 })
+    }
+    const safeUserId = sanitizeCuid(body.userId)
+    if (!safeUserId) {
+      return NextResponse.json({ error: 'invalid_user_id' }, { status: 400 })
+    }
+    // Verify the user exists. We don't auto-create — the LLM is
+    // operating on behalf of an existing COYL user.
+    // safeUserId is allowlist-sanitized above. nosemgrep
+    const user = await prisma.user.findUnique({
+      where: { id: safeUserId },
+      select: { id: true },
+    })
+    if (!user) {
+      return NextResponse.json({ error: 'user_not_found' }, { status: 404 })
+    }
+    userId = user.id
+  } else {
+    // Bootstrap path: resolve the user from the Clerk session. body.userId
+    // is ignored here — the session is authoritative, so a coordinator
+    // can't register a device onto someone else's account.
+    const { userId: clerkId } = await auth()
+    if (!clerkId) {
+      return NextResponse.json({ error: 'missing_credentials' }, { status: 401 })
+    }
+    // clerkId is from the verified Clerk session, not raw request input.
+    // nosemgrep
+    const user = await prisma.user.findUnique({
+      where: { clerkId },
+      select: { id: true },
+    })
+    if (!user) {
+      return NextResponse.json({ error: 'user_not_found' }, { status: 404 })
+    }
+    userId = user.id
   }
+
+  // Required device fields (auth-mode independent).
   if (!body.deviceClass || typeof body.deviceClass !== 'string') {
     return NextResponse.json({ error: 'missing_device_class' }, { status: 400 })
   }
@@ -73,16 +133,6 @@ export async function POST(req: Request) {
   }
   if (!body.manifest || typeof body.manifest !== 'object') {
     return NextResponse.json({ error: 'missing_manifest' }, { status: 400 })
-  }
-
-  // Verify the user exists. We don't auto-create — the LLM is
-  // operating on behalf of an existing COYL user.
-  const user = await prisma.user.findUnique({
-    where: { id: body.userId },
-    select: { id: true },
-  })
-  if (!user) {
-    return NextResponse.json({ error: 'user_not_found' }, { status: 404 })
   }
 
   const manifestJson: Prisma.InputJsonValue = {
@@ -99,17 +149,22 @@ export async function POST(req: Request) {
       : undefined
 
   const now = new Date()
+  // deviceFingerprint is client-supplied but used only as the unique
+  // upsert key (parameterized SQL, not interpolated). nosemgrep
   const existing = await prisma.device.findUnique({
     where: { deviceFingerprint: body.deviceFingerprint },
-    select: { id: true, paired: true },
+    select: { id: true, paired: true, deviceTokenHash: true },
   })
 
   const eventKind = existing ? 'device_manifest_updated' : 'device_registered'
 
+  // Upsert the device row first (no token yet) so we have the real
+  // device.id to bind a token to.
+  // nosemgrep
   const device = await prisma.device.upsert({
     where: { deviceFingerprint: body.deviceFingerprint },
     create: {
-      userId: user.id,
+      userId,
       deviceClass: body.deviceClass,
       model: typeof body.model === 'string' ? body.model : null,
       os: typeof body.os === 'string' ? body.os : null,
@@ -142,17 +197,41 @@ export async function POST(req: Request) {
     },
   })
 
+  // Device-token issuance (EAP §1). Mint the FIRST time a device lacks a
+  // token — i.e. on create, or on an update of a legacy row registered
+  // before tokens existed. Re-registers of a device that already has a
+  // token do NOT rotate it, so a coordinator that stored the token on
+  // its first register keeps authenticating. The plaintext is returned
+  // ONCE (this response); only the bcrypt hash is persisted. The token's
+  // <deviceId> segment is the real device.id, matching the path the
+  // coordinator later polls.
+  let issuedToken: string | null = null
+  const needsToken = !existing || existing.deviceTokenHash === null
+  if (needsToken) {
+    const minted = await mintDeviceToken(device.id)
+    // nosemgrep
+    await prisma.device.update({
+      where: { id: device.id },
+      data: {
+        deviceTokenHash: minted.deviceTokenHash,
+        deviceTokenLastFour: minted.deviceTokenLastFour,
+      },
+    })
+    issuedToken = minted.token
+  }
+
   const ip = await getRequestIp()
   await prisma.eAPAuditEntry.create({
     data: {
-      userId: user.id,
-      llmPartnerId: partner.partnerId,
+      userId,
+      llmPartnerId: partnerId,
       eventKind,
       referenceId: device.id,
       payloadJson: {
         deviceClass: device.deviceClass,
         deviceFingerprint: body.deviceFingerprint,
         manifestJson,
+        deviceTokenIssued: issuedToken !== null,
       } as Prisma.InputJsonValue,
       ipAddress: ip,
     },
@@ -163,6 +242,12 @@ export async function POST(req: Request) {
       id: device.id,
       deviceClass: device.deviceClass,
       paired: device.paired,
+      // The device-scoped machine token, returned ONLY on the register
+      // that mints it (first register, or first since this field shipped).
+      // The coordinator stores it and presents it as
+      // `Authorization: Bearer <token>` on its pending-actions poll +
+      // sensor publish. Omitted (null) on plain manifest re-registers.
+      ...(issuedToken ? { token: issuedToken } : {}),
     },
   })
 }
@@ -219,6 +304,7 @@ async function authenticateLLMPartner(req: Request): Promise<PartnerAuthResult> 
   // Prisma is parameterized SQL (PostgreSQL), not Mongo. The id field
   // is additionally constrained to [a-z0-9] above. No NoSQL injection
   // vector exists here.
+  // nosemgrep
   const partner = await prisma.lLMPartner.findUnique({
     where: { id: safePartnerId },
     select: { id: true, apiKeyHash: true, active: true },

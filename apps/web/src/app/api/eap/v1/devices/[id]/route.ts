@@ -1,5 +1,11 @@
 /**
- * GET /api/eap/v1/devices/[userId] — EAP primitive #2 Capability Discovery.
+ * GET /api/eap/v1/devices/[id] — EAP primitive #2 Capability Discovery.
+ *
+ * Segment note: this dynamic segment was renamed [userId] → [id] so the
+ * nested machine-auth route devices/[id]/pending-actions can coexist
+ * (Next.js requires one dynamic param name per segment level). The `id`
+ * here is interpreted AS a userId — the fleet for that user. The
+ * pending-actions sibling interprets the same `id` as a deviceId.
  *
  * Returns the user's full device fleet + each device's manifest + the
  * aggregate user preferences a coordinator needs in order to decide
@@ -33,14 +39,15 @@ export const maxDuration = 15
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ userId: string }> },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const partner = await authenticateLLMPartner(req)
   if (!partner.ok) {
     return NextResponse.json({ error: partner.error }, { status: partner.status })
   }
 
-  const { userId } = await params
+  // `id` is the target userId for capability discovery (see segment note).
+  const { id: userId } = await params
   if (!userId) {
     return NextResponse.json({ error: 'missing_user_id' }, { status: 400 })
   }

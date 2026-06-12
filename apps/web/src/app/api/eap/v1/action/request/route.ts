@@ -29,6 +29,7 @@ import bcrypt from 'bcryptjs'
 import { randomBytes } from 'node:crypto'
 import { prisma, Prisma } from '@repo/database'
 import { executeAction } from '@/lib/eap/action-executor'
+import { checkDistributedRateLimit } from '@/lib/rate-limit'
 
 export const maxDuration = 20
 
@@ -135,6 +136,12 @@ export async function POST(req: Request) {
       deviceFingerprint: true,
       pairedAt: true,
       operationalState: true,
+      // New columns (device token + last sensor snapshot) — selected so
+      // the row still satisfies the full Device type executeAction wants.
+      deviceTokenHash: true,
+      deviceTokenLastFour: true,
+      lastSensorSnapshot: true,
+      lastSensorAt: true,
     },
   })
   if (!device || device.userId !== safeUserId) {
@@ -203,10 +210,11 @@ export async function POST(req: Request) {
     )
   }
 
-  // 4. Rate-limit gate. This is the sibling agent's responsibility —
-  // import the real check from lib/coordinator/rate-limit once it
-  // lands. Placeholder: always allow. We still record the decision
-  // path so the future integration is a one-line swap.
+  // 4. Rate-limit gate. Two sliding-window bands (the tighter one wins),
+  // enforced distributed-first via Upstash with a per-process fallback —
+  // the established pattern from api/v1/waitlist. A denial still records
+  // an ActionRequest row + audit entry (writeDeniedRequest) exactly as
+  // every other deny path here does.
   const rl = await checkActionRateLimit({
     partnerId: partner.partnerId,
     userId: safeUserId,
@@ -445,17 +453,108 @@ async function writeAudit(args: {
   }
 }
 
+/* ─────────────────────────────────────────────────────────────────────
+ * Action-request rate limiting.
+ *
+ * Two sliding-window bands, both enforced — the FIRST to trip denies, and
+ * we report the tighter (partner band first since it's the one a partner
+ * can actually tune their behavior against):
+ *
+ *   A. PER-PARTNER × USER  — caps how hard a single LLM partner can push
+ *      one user. Default 30 action-requests / 10 min.
+ *   B. PER-USER GLOBAL      — backstop across ALL partners combined, so no
+ *      amount of partner headroom can bury one human in nudges.
+ *      Default 120 action-requests / 10 min.
+ *
+ * All four numbers are tunable. The window is shared so the two bands are
+ * directly comparable. We go distributed-first (Upstash, authoritative
+ * across Fluid Compute instances) and fall back to a per-process limiter
+ * when Upstash isn't configured — never hard-fail the route on a missing
+ * or hiccuping Redis (mirrors api/v1/waitlist).
+ * ───────────────────────────────────────────────────────────────────── */
+
+// Band A — per (llmPartner, user).
+const PARTNER_USER_LIMIT = 30
+// Band B — per user across all partners.
+const USER_GLOBAL_LIMIT = 120
+// Shared sliding window for both bands.
+const ACTION_RL_WINDOW_MS = 10 * 60 * 1000 // 10 min
+
+// retryAfter we advertise on a deny — the full window is the safe upper
+// bound for a sliding window without tracking per-key reset times.
+const ACTION_RL_RETRY_AFTER_SEC = Math.ceil(ACTION_RL_WINDOW_MS / 1000)
+
+// Per-process fallback counters (only consulted when Upstash is unset).
+// Keyed by band identifier → recent hit timestamps. Per-instance under
+// Fluid Compute, which is why Upstash is preferred when present.
+const partnerUserHits = new Map<string, number[]>()
+const userGlobalHits = new Map<string, number[]>()
+
+function inProcessAllowed(
+  store: Map<string, number[]>,
+  key: string,
+  limit: number,
+): boolean {
+  const now = Date.now()
+  const cutoff = now - ACTION_RL_WINDOW_MS
+  const recent = (store.get(key) ?? []).filter((t) => t > cutoff)
+  if (recent.length >= limit) {
+    store.set(key, recent)
+    return false
+  }
+  recent.push(now)
+  store.set(key, recent)
+  return true
+}
+
 /**
- * Placeholder rate-limit hook. The sibling agent's
- * lib/coordinator/rate-limit module will replace this with a real
- * sliding-window check (partner × user × device × actuator).
+ * Real action-request rate-limit check. Returns allowed=false with a
+ * band-specific reason ('rate_limited_partner' | 'rate_limited_user')
+ * the caller folds into its existing denial audit row.
  */
-async function checkActionRateLimit(_args: {
+async function checkActionRateLimit(args: {
   partnerId: string
   userId: string
   deviceId: string
   actuator: string
 }): Promise<{ allowed: boolean; reason?: string; retryAfterSec?: number }> {
+  // Band A: per (partner, user).
+  const partnerKey = `${args.partnerId}:${args.userId}`
+  const partnerBand = await checkDistributedRateLimit({
+    prefix: 'eap-action-partner',
+    identifier: partnerKey,
+    limit: PARTNER_USER_LIMIT,
+    windowMs: ACTION_RL_WINDOW_MS,
+  })
+  const partnerLimited = partnerBand.configured
+    ? partnerBand.limited
+    : !inProcessAllowed(partnerUserHits, partnerKey, PARTNER_USER_LIMIT)
+  if (partnerLimited) {
+    return {
+      allowed: false,
+      reason: 'rate_limited_partner',
+      retryAfterSec: ACTION_RL_RETRY_AFTER_SEC,
+    }
+  }
+
+  // Band B: per user, across all partners.
+  const userBand = await checkDistributedRateLimit({
+    prefix: 'eap-action-user',
+    identifier: args.userId,
+    limit: USER_GLOBAL_LIMIT,
+    windowMs: ACTION_RL_WINDOW_MS,
+  })
+  const userLimited = userBand.configured
+    ? userBand.limited
+    : !inProcessAllowed(userGlobalHits, args.userId, USER_GLOBAL_LIMIT)
+  if (userLimited) {
+    return {
+      allowed: false,
+      reason: 'rate_limited_user',
+      retryAfterSec: ACTION_RL_RETRY_AFTER_SEC,
+    }
+  }
+
   return { allowed: true }
 }
 

@@ -1,0 +1,42 @@
+{
+  "name": "@coyl/protocol",
+  "version": "0.1.0-alpha.1",
+  "description": "Typed TypeScript SDK for the COYL protocol stack (UAP standing-authority + EAP device actions). Alpha.",
+  "private": false,
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": ["dist", "src", "README.md", "SPEC_NOTES.md"],
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "coyl",
+    "uap",
+    "eap",
+    "agent-authority",
+    "ai-consent",
+    "kill-switch",
+    "provenance"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@repo/config-typescript": "*",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
