@@ -6,6 +6,7 @@ import { isWithinUserTimeWindow } from '@/lib/services/reminder.service'
 import { verifyCronAuth } from '@/lib/cron-auth'
 import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { batchProcess } from '@/lib/batch'
+import { isUserCoachingPathClosed } from '@/lib/rap/store'
 import * as React from 'react'
 
 export const maxDuration = 300
@@ -21,7 +22,7 @@ export async function GET(req: Request) {
   }
   const resend = new Resend(process.env.RESEND_API_KEY)
 
-  const results = { sent: 0, skipped: 0, errors: 0 }
+  const results = { sent: 0, skipped: 0, errors: 0, rapSuppressed: 0 }
   let cursor: string | undefined
 
   while (true) {
@@ -48,6 +49,14 @@ export async function GET(req: Request) {
     results.skipped += users.length - eligibleUsers.length
 
     const outcomes = await batchProcess(eligibleUsers, async (user) => {
+      // Safety floor: if RAP closed this user's coaching path
+      // (crisis/emergency), do not send the review — a user in crisis
+      // must not be nudged about behavior, not even a cheerful evening
+      // review. Checked first, before any task query or email send.
+      if (await isUserCoachingPathClosed(user.id)) {
+        return { rapSuppressed: true as const }
+      }
+
       const localToday = new Date(new Date().toLocaleString('en-US', { timeZone: user.timezone }))
       localToday.setHours(0, 0, 0, 0)
 
@@ -80,10 +89,13 @@ export async function GET(req: Request) {
           reviewUrl: `${process.env.NEXT_PUBLIC_APP_URL}/chat?mode=night`,
         }),
       })
+
+      return { rapSuppressed: false as const }
     }, 20)
 
     for (const outcome of outcomes) {
       if (outcome.error) results.errors++
+      else if (outcome.result?.rapSuppressed) results.rapSuppressed++
       else results.sent++
     }
 

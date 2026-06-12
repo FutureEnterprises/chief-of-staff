@@ -26,6 +26,7 @@
 
 import { prisma } from '@repo/database'
 import type { CheckinSchedule, User } from '@repo/database'
+import { isUserCoachingPathClosed } from '@/lib/rap/store'
 
 // ───────────────────────────────────────────────────────────────────
 // Timezone helpers — copies of the zero-dep pattern used elsewhere
@@ -233,6 +234,8 @@ export type MaterializeOutcome = {
   processed: number
   sent: number
   failed: number
+  /** Users skipped because RAP closed their coaching path (crisis/emergency). */
+  rapSuppressed: number
   errors: Array<{ id: string; error: string }>
 }
 
@@ -246,7 +249,7 @@ export async function materializePending(now: Date): Promise<MaterializeOutcome>
     orderBy: { nextFiresAt: 'asc' },
   })
 
-  const outcome: MaterializeOutcome = { processed: 0, sent: 0, failed: 0, errors: [] }
+  const outcome: MaterializeOutcome = { processed: 0, sent: 0, failed: 0, rapSuppressed: 0, errors: [] }
   if (due.length === 0) return outcome
 
   // Lazy-load delivery deps so /api/cron/custom-checkins boots fast even
@@ -277,6 +280,13 @@ export async function materializePending(now: Date): Promise<MaterializeOutcome>
 
   for (const row of due) {
     outcome.processed++
+    // Safety floor: if RAP closed this user's coaching path (crisis/
+    // emergency), do not fire — a user in crisis must not be nudged
+    // about behavior. Same gate the UAP coordinator + interrupt crons use.
+    if (await isUserCoachingPathClosed(row.userId)) {
+      outcome.rapSuppressed++
+      continue
+    }
     const tz = row.user.timezone || 'America/New_York'
     const body = row.message?.trim() || defaultMessageFor(row.cadence)
 

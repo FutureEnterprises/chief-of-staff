@@ -4,6 +4,7 @@ import { verifyCronAuth } from '@/lib/cron-auth'
 import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { sendWebPushForUser } from '@/lib/web-push'
 import { shouldFire } from '@/lib/notification-prefs'
+import { isUserCoachingPathClosed } from '@/lib/rap/store'
 
 export const maxDuration = 120
 
@@ -73,6 +74,15 @@ export async function GET(req: Request) {
 
     for (const user of users) {
       candidates++
+
+      // Safety floor: if RAP closed this user's coaching path
+      // (crisis/emergency), do not fire — a user in crisis must not be
+      // nudged about behavior. Checked first, before timezone/cooldown
+      // gates, so a crisis user is skipped before any other work.
+      if (await isUserCoachingPathClosed(user.id)) {
+        suppressed++
+        continue
+      }
 
       // Compute "what day-of-week is today in the user's local tz, and
       // what hour is it?" without bringing in a TZ library.

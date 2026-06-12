@@ -7,6 +7,7 @@ import { classifyState } from '@/lib/user-state'
 import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
 import { sendWebPushForUser } from '@/lib/web-push'
 import { shouldFire } from '@/lib/notification-prefs'
+import { isUserCoachingPathClosed } from '@/lib/rap/store'
 
 export const maxDuration = 60
 
@@ -81,6 +82,15 @@ export async function GET(req: Request) {
   let errors = 0
 
   for (const slip of candidates) {
+    // Safety floor: if RAP closed this user's coaching path
+    // (crisis/emergency), do not fire — a user in crisis must not be
+    // nudged about behavior. Checked first, before the recovery-window
+    // and policy gates, so a crisis user is skipped before any other work.
+    if (await isUserCoachingPathClosed(slip.user.id)) {
+      suppressed++
+      continue
+    }
+
     const ageMs = now.getTime() - slip.createdAt.getTime()
     const wave: '2h_check' | '24h_resolve' =
       ageMs < 3 * 60 * 60 * 1000 ? '2h_check' : '24h_resolve'

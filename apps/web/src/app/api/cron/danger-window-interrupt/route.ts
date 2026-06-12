@@ -8,6 +8,7 @@ import { classifyState } from '@/lib/user-state'
 import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
 import { sendWebPushForUser } from '@/lib/web-push'
 import { shouldFire } from '@/lib/notification-prefs'
+import { isUserCoachingPathClosed } from '@/lib/rap/store'
 import {
   pushLiveActivityUpdate,
   isLiveActivityTokenDead,
@@ -96,6 +97,15 @@ export async function GET(req: Request) {
     if (users.length === 0) break
 
     await batchProcess(users, async (user) => {
+      // Safety floor: if RAP closed this user's coaching path
+      // (crisis/emergency), do not fire — a user in crisis must not be
+      // nudged about behavior. Checked first, before any windows or
+      // policy gates, so a crisis user is skipped before any other work.
+      if (await isUserCoachingPathClosed(user.id)) {
+        suppressed++
+        return
+      }
+
       if (user.dangerWindowRecords.length === 0) return
 
       // Get current day/hour in user's timezone
