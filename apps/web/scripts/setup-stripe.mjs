@@ -24,7 +24,14 @@
 
 import { execSync } from 'node:child_process'
 
-const KEY = process.env.STRIPE_SECRET_KEY
+// Sanitize: terminal paste (bracketed-paste mode, trailing newline) can
+// append stray bytes to the key, which Stripe rejects as "Invalid API Key".
+// Stripe keys are only [A-Za-z0-9_], so strip everything else.
+const RAW_KEY = process.env.STRIPE_SECRET_KEY || ''
+const KEY = RAW_KEY.replace(/[^A-Za-z0-9_]/g, '')
+if (KEY.length !== RAW_KEY.length) {
+  console.warn(`(stripped ${RAW_KEY.length - KEY.length} stray character(s) from the pasted key)\n`)
+}
 // Accept both secret keys (sk_) and restricted keys (rk_).
 if (!KEY || !(KEY.startsWith('sk_') || KEY.startsWith('rk_'))) {
   console.error('STRIPE_SECRET_KEY is not set (or not an sk_/rk_ key).')
