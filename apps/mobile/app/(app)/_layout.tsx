@@ -9,7 +9,14 @@ import {
   registerInterruptCategory,
   addNotificationResponseListener,
   handleInterruptNotificationResponse,
+  ensureCheckinCategory,
+  isCheckinResponse,
+  checkinKindFromResponse,
+  postCheckinResponse,
+  processColdStartCheckinResponse,
+  markCheckinResponseProcessed,
 } from '../../lib/notifications'
+import { syncLocalCheckins, type DangerWindowDto } from '../../lib/checkin-scheduler'
 import {
   startInterruptActivity,
   endInterruptActivity,
@@ -38,6 +45,8 @@ export default function AppTabLayout() {
   const { isSignedIn, userId, getToken } = useAuth()
   const router = useRouter()
   const registrationAttempted = useRef(false)
+  // Throttle the on-device check-in sync to once per app cold start.
+  const checkinSyncAttempted = useRef(false)
   // Mirror getToken into a ref so the notification response listener
   // (which can fire while React is unmounted or the app is in the
   // background) reaches a fresh callback every time without re-registering.
@@ -57,6 +66,47 @@ export default function AppTabLayout() {
       console.warn('[COYL] RevenueCat identify failed:', err)
     })
   }, [isSignedIn, userId])
+
+  // Edge layer 2 — on-device scheduled danger-window check-ins. Once per cold
+  // start (after auth) we: register the lock-screen action category, process any
+  // cold-start check-in tap that launched the app, and (re)build the weekly
+  // local notifications from the user's active danger windows. All best-effort.
+  useEffect(() => {
+    if (!isSignedIn || checkinSyncAttempted.current) return
+    checkinSyncAttempted.current = true
+
+    ensureCheckinCategory().catch((err) => {
+      console.warn('[COYL] checkin category registration failed:', err)
+    })
+
+    // If a tapped local check-in notification launched the app, POST it once.
+    processColdStartCheckinResponse(() => getTokenRef.current(), API_URL).catch(
+      (err) => {
+        console.warn('[COYL] cold-start checkin response failed:', err)
+      },
+    )
+
+    // Thin adapter over the existing Bearer pattern so the scheduler doesn't
+    // need React context. Mirrors useMobileApi().getDangerWindows().
+    const api = {
+      getDangerWindows: async (): Promise<{ windows: DangerWindowDto[] }> => {
+        const token = await getTokenRef.current()
+        const res = await fetch(`${API_URL}/api/v1/mobile/danger-windows`, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        })
+        if (!res.ok) {
+          throw new Error(`danger-windows ${res.status} ${res.statusText}`)
+        }
+        return res.json() as Promise<{ windows: DangerWindowDto[] }>
+      },
+    }
+    syncLocalCheckins(api).catch((err) => {
+      console.warn('[COYL] syncLocalCheckins failed:', err)
+    })
+  }, [isSignedIn])
 
   // Push-notification registration + tap handling. Runs once per signed-in
   // session. Fires only on physical devices (lib guards with Device.isDevice).
@@ -145,6 +195,31 @@ export default function AppTabLayout() {
 
     const sub = addNotificationResponseListener((response) => {
       const actionId = response.actionIdentifier
+
+      // Edge layer 2: on-device scheduled check-ins (data.coylCheckin === true).
+      // Action buttons (caught_me / im_good) and a body tap (DEFAULT → 'opened')
+      // all POST to /api/v1/mobile/checkin-response — fire-and-forget. Action
+      // taps stay backgrounded (opensAppToForeground:false); the DEFAULT body
+      // tap continues to the deep-link routing below so the app opens to /today.
+      if (isCheckinResponse(response)) {
+        const kind = checkinKindFromResponse(response)
+        if (kind) {
+          markCheckinResponseProcessed(response)
+          const data = (response.notification.request.content.data ?? {}) as Record<
+            string,
+            unknown
+          >
+          const windowId = typeof data.windowId === 'string' ? data.windowId : null
+          postCheckinResponse(kind, windowId, () => getTokenRef.current(), API_URL).catch(
+            (err) => {
+              console.warn('[COYL] checkin response handling failed:', err)
+            },
+          )
+          // Action-button taps end here (stay backgrounded). A body tap
+          // ('opened') falls through to deep-link the user into the app.
+          if (kind !== 'opened') return
+        }
+      }
 
       // When the user taps Caught me / I slipped / Not now we also tear
       // down the Live Activity for the matching interrupt — the danger

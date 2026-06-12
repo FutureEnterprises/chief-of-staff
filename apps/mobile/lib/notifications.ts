@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
 import Constants from 'expo-constants'
+import * as SecureStore from 'expo-secure-store'
 import { Platform } from 'react-native'
 
 Notifications.setNotificationHandler({
@@ -78,6 +79,209 @@ export async function registerInterruptCategory(): Promise<void> {
     // open the app), which is the pre-existing behavior.
     console.warn('[COYL] failed to register interrupt category:', err)
   }
+}
+
+/**
+ * iOS/Android notification category for ON-DEVICE scheduled danger-window
+ * check-ins (edge layer 2). Distinct from COYL_INTERRUPT (server push) — these
+ * are local notifications scheduled by lib/checkin-scheduler.ts that fire even
+ * when the device is offline. The local notification sets
+ * `categoryIdentifier: 'coyl-checkin'` so the two action buttons render on the
+ * lock screen for one-tap tagging.
+ */
+export const COYL_CHECKIN_CATEGORY = 'coyl-checkin'
+
+export type CheckinActionIdentifier = 'caught_me' | 'im_good'
+
+/**
+ * Registers the two lock-screen action buttons for local check-in
+ * notifications. `opensAppToForeground: false` is the one-tap mechanic — the
+ * tap is handled by the response listener WITHOUT unlocking or opening the app.
+ *
+ * Idempotent — setNotificationCategoryAsync replaces a same-id category.
+ */
+export async function ensureCheckinCategory(): Promise<void> {
+  if (Platform.OS === 'web') return
+  try {
+    await Notifications.setNotificationCategoryAsync(COYL_CHECKIN_CATEGORY, [
+      {
+        identifier: 'caught_me',
+        buttonTitle: 'Caught me 🟠',
+        options: { opensAppToForeground: false },
+      },
+      {
+        identifier: 'im_good',
+        buttonTitle: "I'm good",
+        options: { opensAppToForeground: false },
+      },
+    ])
+  } catch (err) {
+    // Best-effort — without the category the local notification still fires
+    // and is tappable (DEFAULT action), it just lacks the inline buttons.
+    console.warn('[COYL] failed to register checkin category:', err)
+  }
+}
+
+/**
+ * Posts a local-check-in response to the learning-loop endpoint.
+ *
+ * `kind` is the action identifier ('caught_me' | 'im_good') for an action-button
+ * tap, or 'opened' when the user taps the notification body itself. `windowId`
+ * is read from the notification's content.data.windowId (set by the scheduler).
+ *
+ * Fire-and-forget from the caller's perspective: returns true if a request was
+ * attempted, false if it bailed (unauthenticated). Swallows network errors —
+ * the action already vanished from the lock screen.
+ */
+export async function postCheckinResponse(
+  kind: 'caught_me' | 'im_good' | 'opened',
+  windowId: string | null,
+  getToken: () => Promise<string | null>,
+  apiUrl: string,
+): Promise<boolean> {
+  let authToken: string | null = null
+  try {
+    authToken = await getToken()
+  } catch {
+    authToken = null
+  }
+  if (!authToken) return false
+
+  try {
+    await fetch(`${apiUrl}/api/v1/mobile/checkin-response`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({
+        kind,
+        ...(windowId ? { windowId } : {}),
+        firedAt: new Date().toISOString(),
+      }),
+    })
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * True when a notification response belongs to a local COYL check-in — i.e. it
+ * carries our `coylCheckin: true` data tag set by the scheduler. Used to route
+ * the response to postCheckinResponse() rather than the server-interrupt path.
+ */
+export function isCheckinResponse(
+  response: Notifications.NotificationResponse,
+): boolean {
+  const data = (response.notification.request.content.data ?? {}) as Record<
+    string,
+    unknown
+  >
+  return data.coylCheckin === true
+}
+
+/**
+ * Maps a notification response's actionIdentifier to the check-in `kind` we POST.
+ * Action-button taps map straight through; the system DEFAULT action (body tap)
+ * becomes 'opened'. Returns null for anything else (e.g. dismiss).
+ */
+export function checkinKindFromResponse(
+  response: Notifications.NotificationResponse,
+): 'caught_me' | 'im_good' | 'opened' | null {
+  const actionId = response.actionIdentifier
+  if (actionId === 'caught_me' || actionId === 'im_good') return actionId
+  if (actionId === Notifications.DEFAULT_ACTION_IDENTIFIER) return 'opened'
+  return null
+}
+
+// In-memory guard so a single check-in response is never POSTed twice within a
+// process lifetime — e.g. the cold-start getLastNotificationResponseAsync() path
+// and the live listener both seeing the same response.
+const processedCheckinResponseIds = new Set<string>()
+
+// SecureStore key persisting the last cold-start-processed notification id, so
+// a relaunch doesn't re-POST the response that already woke the app last time.
+// expo-secure-store is a project dependency (used by token-cache / eap).
+const SECURE_KEY_LAST_CHECKIN_RESPONSE = 'coyl.lastCheckinResponseId'
+
+/**
+ * Stable per-notification id for de-duping. Uses the OS notification
+ * identifier, falling back to the request identifier.
+ */
+function checkinResponseId(
+  response: Notifications.NotificationResponse,
+): string {
+  return (
+    response.notification.request.identifier ??
+    String(response.notification.date ?? '')
+  )
+}
+
+/**
+ * Cold-start handler: if the app was launched by tapping a local check-in
+ * notification (action button or body), POST the response once.
+ *
+ * Guards against double-processing with both the in-memory set AND a persisted
+ * SecureStore last-id (so a relaunch carrying the same getLastNotificationResponse
+ * doesn't re-fire). Safe to call on every cold start; no-ops when the last
+ * response isn't a COYL check-in.
+ */
+export async function processColdStartCheckinResponse(
+  getToken: () => Promise<string | null>,
+  apiUrl: string,
+): Promise<void> {
+  if (Platform.OS === 'web') return
+  let response: Notifications.NotificationResponse | null = null
+  try {
+    response = await Notifications.getLastNotificationResponseAsync()
+  } catch {
+    response = null
+  }
+  if (!response || !isCheckinResponse(response)) return
+
+  const id = checkinResponseId(response)
+  if (processedCheckinResponseIds.has(id)) return
+
+  let lastPersisted: string | null = null
+  try {
+    lastPersisted = await SecureStore.getItemAsync(
+      SECURE_KEY_LAST_CHECKIN_RESPONSE,
+    )
+  } catch {
+    lastPersisted = null
+  }
+  if (lastPersisted && lastPersisted === id) {
+    processedCheckinResponseIds.add(id)
+    return
+  }
+
+  const kind = checkinKindFromResponse(response)
+  if (!kind) return
+
+  const data = (response.notification.request.content.data ?? {}) as Record<
+    string,
+    unknown
+  >
+  const windowId = typeof data.windowId === 'string' ? data.windowId : null
+
+  processedCheckinResponseIds.add(id)
+  await postCheckinResponse(kind, windowId, getToken, apiUrl).catch(() => null)
+  try {
+    await SecureStore.setItemAsync(SECURE_KEY_LAST_CHECKIN_RESPONSE, id)
+  } catch {
+    // Persisting is best-effort; the in-memory set still de-dupes this process.
+  }
+}
+
+/**
+ * Marks a check-in response id as processed (in-memory) so the cold-start path
+ * won't also re-POST a response the live listener already handled this process.
+ */
+export function markCheckinResponseProcessed(
+  response: Notifications.NotificationResponse,
+): void {
+  processedCheckinResponseIds.add(checkinResponseId(response))
 }
 
 export async function registerForPushNotifications(

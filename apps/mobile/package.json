@@ -22,7 +22,7 @@
     "@babel/runtime": "^7.29.2",
     "@clerk/clerk-expo": "^1.2.9",
     "@expo/vector-icons": "^14.0.0",
-    "@kingstinct/react-native-healthkit": "^14.0.0",
+    "@kingstinct/react-native-healthkit": "8.7.2",
     "@react-native-async-storage/async-storage": "^3.0.2",
     "@repo/shared": "*",
     "expo": "~52.0.0",

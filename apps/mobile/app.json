@@ -25,7 +25,7 @@
       },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSHealthShareUsageDescription": "COYL reads your steps, weight, sleep, and heart rate to detect stress patterns and danger windows — so it can interrupt your autopilot before a slip.",
+        "NSHealthShareUsageDescription": "COYL reads your steps, sleep, and heart rate to detect stress patterns and danger windows — so it can interrupt your autopilot before a slip.",
         "NSHealthUpdateUsageDescription": "COYL does not write to HealthKit.",
         "NSUserNotificationsUsageDescription": "COYL fires surgical interrupts at the exact moments you usually lose. Notifications are how it catches you before the fold.",
         "UIBackgroundModes": [
@@ -41,7 +41,6 @@
       },
       "permissions": [
         "android.permission.health.READ_STEPS",
-        "android.permission.health.READ_WEIGHT",
         "android.permission.health.READ_SLEEP",
         "android.permission.health.READ_HEART_RATE",
         "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
@@ -76,8 +75,15 @@
       [
         "@kingstinct/react-native-healthkit",
         {
-          "healthSharePermission": "Let COYL read steps, sleep, and weight to detect stress patterns.",
-          "healthUpdatePermission": "COYL does not write to HealthKit."
+          "NSHealthShareUsageDescription": "COYL reads your steps, sleep, and heart rate to detect stress patterns and danger windows — so it can interrupt your autopilot before a slip.",
+          "NSHealthUpdateUsageDescription": "COYL does not write to HealthKit.",
+          "background": {
+            "HKQuantityTypeIdentifierStepCount": 2,
+            "HKCategoryTypeIdentifierSleepAnalysis": 2,
+            "HKQuantityTypeIdentifierHeartRate": 2,
+            "HKQuantityTypeIdentifierRestingHeartRate": 2,
+            "HKQuantityTypeIdentifierHeartRateVariabilitySDNN": 2
+          }
         }
       ],
       [

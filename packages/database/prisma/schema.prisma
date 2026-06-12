@@ -145,6 +145,7 @@ model User {
   checkins                Checkin[]
   reminders               Reminder[]
   productivityEvents      ProductivityEvent[]
+  healthSignals           HealthSignal[]
   aiInteractions          AiInteraction[]
   billingSubscription     BillingSubscription?
   emailBriefings          EmailBriefing[]
@@ -2497,4 +2498,30 @@ model WaitlistEntry {
   @@index([createdAt(sort: Desc)])
   @@index([grantedAt])
   @@map("waitlist_entries")
+}
+
+/// Passive edge signal from the phone (HealthKit v1; other sensors later).
+/// One row per sample/aggregate the device syncs up. Consumed by the
+/// danger-window-learner to correlate physiology with slip timing.
+/// NEDA note: deliberately NO body-measurement kinds (no weight/BMI) —
+/// steps, sleep, heart-rate class signals only.
+model HealthSignal {
+  id        String    @id @default(cuid())
+  userId    String
+  /// e.g. 'steps' | 'sleep_minutes' | 'heart_rate' | 'resting_heart_rate' | 'hrv'
+  kind      String
+  value     Float
+  /// e.g. 'count' | 'min' | 'bpm' | 'ms'
+  unit      String?
+  startedAt DateTime
+  endedAt   DateTime?
+  /// e.g. 'healthkit'
+  source    String?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kind, startedAt], name: "userId_kind_startedAt")
+  @@index([userId, kind, startedAt(sort: Desc)])
+  @@map("health_signals")
 }

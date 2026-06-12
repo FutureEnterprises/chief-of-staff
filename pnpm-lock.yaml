@@ -39,8 +39,8 @@ importers:
         specifier: ^14.0.0
         version: 14.0.4
       '@kingstinct/react-native-healthkit':
-        specifier: ^14.0.0
-        version: 14.0.0(react-native-nitro-modules@0.35.4(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1))(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1)
+        specifier: 8.7.2
+        version: 8.7.2(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1)
       '@react-native-async-storage/async-storage':
         specifier: ^3.0.2
         version: 3.0.2(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1)
@@ -1942,12 +1942,11 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@kingstinct/react-native-healthkit@14.0.0':
-    resolution: {integrity: sha512-VJQb1+NUQIQJQbX3lqORVU6SJsCG0D0WQc2BgKSOcjfj8SvEKyuexgS/8JWnUeijDtkMtMhO3HzmkGfKD8XPNw==}
+  '@kingstinct/react-native-healthkit@8.7.2':
+    resolution: {integrity: sha512-RTFR6/Q5s+aq/Mk0H6rt6TcgDUL0pptXIzeFc/PNvxdFHYd9WX2N2i7AbZ9qi0JwimHgd7hgPmYdS+1TSUxBuA==}
     peerDependencies:
-      react: '>=19'
-      react-native: '>=0.79'
-      react-native-nitro-modules: '>=0.35'
+      react: '*'
+      react-native: '*'
 
   '@lukeed/csprng@1.1.0':
     resolution: {integrity: sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==}
@@ -8321,12 +8320,6 @@ packages:
       react: '*'
       react-native: '*'
 
-  react-native-nitro-modules@0.35.4:
-    resolution: {integrity: sha512-4qZa+1kgR/sPRNZv+UShxyArEPpovWxw76Dfd/DtCVtkQ92wOOxGIzdYvndprabd+t+r8zNYgYEPYE74gzkuVQ==}
-    peerDependencies:
-      react: '*'
-      react-native: '*'
-
   react-native-purchases@8.12.0:
     resolution: {integrity: sha512-0T6WtSDN96swsS6iLeTh7GEGLSedBr4FWP5JsGLnP6Ri7Rp754pf3UJ+S0+ZnT1cqUZ4W2z2oB6zTLyyfNfuKw==}
     peerDependencies:
@@ -11779,11 +11772,10 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@kingstinct/react-native-healthkit@14.0.0(react-native-nitro-modules@0.35.4(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1))(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1)':
+  '@kingstinct/react-native-healthkit@8.7.2(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1)':
     dependencies:
       react: 18.3.1
       react-native: 0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1)
-      react-native-nitro-modules: 0.35.4(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1)
 
   '@lukeed/csprng@1.1.0': {}
 
@@ -18844,11 +18836,6 @@ snapshots:
       shallowequal: 1.1.0
 
   react-native-is-edge-to-edge@1.3.1(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-      react-native: 0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1)
-
-  react-native-nitro-modules@0.35.4(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
       react-native: 0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@18.3.1)

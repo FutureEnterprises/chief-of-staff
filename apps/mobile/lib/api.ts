@@ -45,6 +45,25 @@ export type MobileMe = {
 }
 
 /**
+ * One active danger window in the device-schedulable shape returned by
+ * GET /api/v1/mobile/danger-windows. `daysOfWeek` are ints 0 (Sun)..6 (Sat);
+ * an "all days" window arrives pre-expanded to [0..6]. `startMinute` is always
+ * 0 today (the model is whole-hour). `timezone` is the IANA zone the wall-clock
+ * hour is stored in (the user's timezone).
+ */
+export type MobileDangerWindow = {
+  id: string
+  label?: string | null
+  daysOfWeek: number[]
+  startHour: number
+  startMinute: number
+  timezone: string
+}
+
+/** Response kind for a local check-in, mirrored from the notification action. */
+export type CheckinResponseKind = 'caught_me' | 'im_good' | 'opened'
+
+/**
  * Hook returning a small typed client for the mobile-owned API surface.
  * Memoised against getToken so callers can put it in effect deps safely.
  */
@@ -82,6 +101,30 @@ export function useMobileApi() {
         request<{ ok: boolean; expoPushToken: string | null }>(
           '/api/v1/mobile/push-token',
           { method: 'POST', body: JSON.stringify({ expoPushToken }) },
+        ),
+
+      /**
+       * Active danger windows in device-schedulable shape. The mobile
+       * check-in scheduler (lib/checkin-scheduler.ts) calls this once per cold
+       * start to (re)build the on-device weekly local notifications.
+       */
+      getDangerWindows: () =>
+        request<{ windows: MobileDangerWindow[] }>('/api/v1/mobile/danger-windows'),
+
+      /**
+       * Record a local check-in response so the learning loop sees it.
+       * `kind` mirrors the tapped notification action ('caught_me' | 'im_good')
+       * or 'opened' when the user taps the notification body. `windowId` is the
+       * DangerWindow this check-in was scheduled from.
+       */
+      postCheckinResponse: (input: {
+        kind: CheckinResponseKind
+        windowId?: string
+        firedAt?: string
+      }) =>
+        request<{ ok: boolean; kind: CheckinResponseKind; eventType: string }>(
+          '/api/v1/mobile/checkin-response',
+          { method: 'POST', body: JSON.stringify(input) },
         ),
     }),
     [request],
