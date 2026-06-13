@@ -39,7 +39,7 @@ import Foundation
 // if the bridge ever needs to be standalone we'll rename.
 
 @available(iOS 16.1, *)
-private struct COYLInterruptAttributesLocal: ActivityAttributes {
+private struct COYLInterruptAttributes: ActivityAttributes {
     struct ContentState: Codable, Hashable {
         var headline: String
         var subhead: String
@@ -69,11 +69,11 @@ public class CoylLiveActivityModule: Module {
                     return
                 }
 
-                let activityAttrs = COYLInterruptAttributesLocal(
+                let activityAttrs = COYLInterruptAttributes(
                     archetype: (attributes["archetype"] as? String) ?? "",
                     startedAtIso: (attributes["startedAtIso"] as? String) ?? ""
                 )
-                let state = COYLInterruptAttributesLocal.ContentState(
+                let state = COYLInterruptAttributes.ContentState(
                     headline: (attributes["headline"] as? String) ?? "",
                     subhead: (attributes["subhead"] as? String) ?? "",
                     timeRemainingSec: (attributes["timeRemainingSec"] as? Int) ?? 0,
@@ -122,7 +122,7 @@ public class CoylLiveActivityModule: Module {
         AsyncFunction("update") { (activityId: String, state: [String: Any], promise: Promise) in
             if #available(iOS 16.1, *) {
                 Task {
-                    guard let activity = Activity<COYLInterruptAttributesLocal>
+                    guard let activity = Activity<COYLInterruptAttributes>
                         .activities
                         .first(where: { $0.id == activityId }) else {
                         promise.reject(
@@ -132,14 +132,14 @@ public class CoylLiveActivityModule: Module {
                         return
                     }
 
-                    let current: COYLInterruptAttributesLocal.ContentState
+                    let current: COYLInterruptAttributes.ContentState
                     if #available(iOS 16.2, *) {
                         current = activity.content.state
                     } else {
                         current = activity.contentState
                     }
 
-                    let next = COYLInterruptAttributesLocal.ContentState(
+                    let next = COYLInterruptAttributes.ContentState(
                         headline: (state["headline"] as? String) ?? current.headline,
                         subhead: (state["subhead"] as? String) ?? current.subhead,
                         timeRemainingSec: (state["timeRemainingSec"] as? Int)
@@ -173,7 +173,7 @@ public class CoylLiveActivityModule: Module {
         AsyncFunction("end") { (activityId: String, options: [String: Any]?, promise: Promise) in
             if #available(iOS 16.1, *) {
                 Task {
-                    guard let activity = Activity<COYLInterruptAttributesLocal>
+                    guard let activity = Activity<COYLInterruptAttributes>
                         .activities
                         .first(where: { $0.id == activityId }) else {
                         // Already gone — treat as success so JS can call
@@ -192,7 +192,7 @@ public class CoylLiveActivityModule: Module {
                     }
 
                     if #available(iOS 16.2, *) {
-                        let finalState: COYLInterruptAttributesLocal.ContentState =
+                        let finalState: COYLInterruptAttributes.ContentState =
                             activity.content.state
                         await activity.end(
                             ActivityContent(state: finalState, staleDate: nil),

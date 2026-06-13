@@ -25,6 +25,16 @@
         <data android:scheme="https" android:host="coyl.ai"/>
         <data android:scheme="https" android:host="www.coyl.ai"/>
       </intent-filter>
+      <!-- Health Connect privacy-policy rationale. Android 14+ requires the
+           app that requests Health Connect read permissions to handle this
+           action so the OS can deep-link the user to the permission rationale.
+           react-native-health-connect's config plugin appends this same
+           intent-filter to MainActivity on `expo prebuild`; we mirror it in
+           the committed manifest so a build that ships these files as-is
+           (without a prebuild pass) is still Health-Connect-policy compliant. -->
+      <intent-filter>
+        <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE"/>
+      </intent-filter>
     </activity>
     <meta-data android:name="expo.modules.updates.ENABLED" android:value="true"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
