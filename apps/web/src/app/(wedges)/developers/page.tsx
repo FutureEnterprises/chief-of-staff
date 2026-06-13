@@ -600,12 +600,17 @@ curl -X POST https://coyl.ai/api/uap/v1/grant \\
             <code className="rounded bg-orange-50 px-1.5 py-0.5 font-mono text-[12px] text-orange-700">
               /api/uap/v1/*
             </code>{' '}
-            namespace is reserved and currently returns{' '}
+            namespace is reserved and live in alpha — calls without a
+            partner key return{' '}
             <code className="rounded bg-orange-50 px-1.5 py-0.5 font-mono text-[12px] text-orange-700">
-              HTTP 501 Not Implemented
+              HTTP 401 Unauthorized
             </code>
-            . The reference engine ships post-Series-A. Specification
-            is final; implementations are encouraged.
+            . The reference engine and the{' '}
+            <code className="rounded bg-orange-50 px-1.5 py-0.5 font-mono text-[12px] text-orange-700">
+              @coyl/protocol
+            </code>{' '}
+            SDK are available in alpha. Specification is final;
+            implementations are encouraged.
           </p>
 
           <div className="flex flex-wrap items-center gap-3">

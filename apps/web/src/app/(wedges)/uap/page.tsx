@@ -33,7 +33,7 @@ import {
 } from '@/components/cinematic'
 
 const DESCRIPTION =
-  "The fourth layer of the COYL protocol stack. Standing authority for LLMs to act on a user's behalf, bounded by scope, expiry, rules, and a global kill switch. Apache 2.0 spec — reference engine post-Series-A."
+  "The fourth layer of the COYL protocol stack. Standing authority for LLMs to act on a user's behalf, bounded by scope, expiry, rules, and a global kill switch. Apache 2.0 spec — reference engine + SDK in alpha."
 
 export const metadata: Metadata = {
   title:
@@ -492,7 +492,7 @@ export default async function UapPage() {
             BIP reads the substrate. PAP proposes the moment. EAP acts
             across the device fleet. UAP grants the standing authority
             that makes agentic AI safe. All four published Apache 2.0
-            in one repository. Reference engine ships post-Series-A.
+            in one repository. Reference engine + SDK available in alpha.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
