@@ -19,6 +19,7 @@
     "submit:all": "node scripts/preflight.js --platform all --for submit && eas submit --platform all --profile production"
   },
   "dependencies": {
+    "@babel/plugin-transform-react-jsx": "7.28.6",
     "@babel/runtime": "^7.29.2",
     "@clerk/clerk-expo": "^1.2.9",
     "@expo/vector-icons": "^14.0.0",
