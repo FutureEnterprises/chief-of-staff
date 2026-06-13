@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'COYL — AI Willpower. Control Over Your Life.'
+export const alt = 'COYL — Catch yourself before you do it again.'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -31,7 +31,7 @@ export default function OGImage() {
           }}
         />
 
-        {/* AI Willpower label */}
+        {/* Kicker */}
         <div
           style={{
             fontSize: '16px',
@@ -42,40 +42,40 @@ export default function OGImage() {
             marginBottom: '32px',
           }}
         >
-          AI WILLPOWER
+          COYL
         </div>
 
-        {/* COYL big text */}
+        {/* Headline — current autopilot-interruption framing */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             gap: '0px',
-            lineHeight: 0.9,
+            lineHeight: 1.0,
           }}
         >
-          <div style={{ fontSize: '120px', fontWeight: 900, color: '#fff', letterSpacing: '-4px' }}>
-            <span style={{ color: '#ff6600' }}>CO</span>ntrol
+          <div style={{ fontSize: '88px', fontWeight: 800, color: '#fff', letterSpacing: '-3px' }}>
+            Catch yourself
           </div>
-          <div style={{ fontSize: '120px', fontWeight: 900, color: '#fff', letterSpacing: '-4px', marginLeft: '48px' }}>
-            <span style={{ color: '#ff6600' }}>Y</span>our
+          <div style={{ fontSize: '88px', fontWeight: 800, color: '#fff', letterSpacing: '-3px' }}>
+            before you do it
           </div>
-          <div style={{ fontSize: '120px', fontWeight: 900, color: '#fff', letterSpacing: '-4px', marginLeft: '96px' }}>
-            <span style={{ color: '#ff6600' }}>L</span>ife
+          <div style={{ fontSize: '88px', fontWeight: 800, color: '#ff6600', letterSpacing: '-3px' }}>
+            again.
           </div>
         </div>
 
         {/* Tagline */}
         <div
           style={{
-            fontSize: '22px',
-            color: '#888',
-            marginTop: '40px',
+            fontSize: '24px',
+            color: '#aaa',
+            marginTop: '36px',
             fontWeight: 400,
-            maxWidth: '500px',
+            maxWidth: '720px',
           }}
         >
-          The AI that hounds your a$$ until it&apos;s done.
+          Real-time autopilot interruption — fires in the moment of drift, not the morning after.
         </div>
 
         {/* Domain */}
@@ -89,7 +89,7 @@ export default function OGImage() {
             color: '#ff6600',
           }}
         >
-          coyl.ai
+          www.coyl.ai
         </div>
       </div>
     ),

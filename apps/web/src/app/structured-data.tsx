@@ -20,8 +20,11 @@ export function OrganizationSchema() {
     '@type': 'Organization',
     name: 'COYL',
     legalName: 'COYL, Inc.',
-    url: 'https://coyl.ai',
-    logo: 'https://coyl.ai/favicon.svg',
+    url: 'https://www.coyl.ai',
+    // /favicon.svg was deleted in the May 24 logo swap (see the
+    // /favicon.ico → /icon.png redirect in next.config.ts); point Google's
+    // knowledge-panel logo at a real shipped PNG instead of a 404.
+    logo: 'https://www.coyl.ai/coyl-mark-square.png',
     description:
       "COYL is a decision-interrupt layer for human behavior — a real-time substrate that fires in the 3-second window between trigger and action. Late-night eating, the 9 PM kitchen, doom-scrolling, post-GLP-1 regain, workplace procrastination — caught before the script runs, not journaled after.",
     foundingDate: '2026',
@@ -66,8 +69,8 @@ export function SoftwareApplicationSchema() {
     operatingSystem: 'Web, iOS, Android',
     description:
       "AI-powered real-time pattern interrupt. Detects autopilot loops (late-night eating, doom-scrolling, post-GLP-1 regain, workplace procrastination) and fires at the exact moment of drift — not the next morning. Includes recovery engine for shame-resistant re-entry after slips.",
-    url: 'https://coyl.ai',
-    image: 'https://coyl.ai/api/og?title=Stop+the+script+before+it+runs+your+life&kicker=COYL',
+    url: 'https://www.coyl.ai',
+    image: 'https://www.coyl.ai/api/og?title=Stop+the+script+before+it+runs+your+life&kicker=COYL',
     offers: [
       {
         '@type': 'Offer',
@@ -222,13 +225,13 @@ export function WebSiteSchema() {
     '@type': 'WebSite',
     name: 'COYL',
     alternateName: 'Catch Yourself Before You Do It Again',
-    url: 'https://coyl.ai',
+    url: 'https://www.coyl.ai',
     description:
       "Real-time autopilot interruption for behavior change. Catch yourself before you do it again.",
     publisher: {
       '@type': 'Organization',
       name: 'COYL',
-      url: 'https://coyl.ai',
+      url: 'https://www.coyl.ai',
     },
   }
 
@@ -258,7 +261,7 @@ export function MedicalStudySchema() {
     name: 'COYL-GLP1-MAINT-01 — Behavioral interrupt during GLP-1 maintenance for prevention of post-discontinuation weight regain',
     description:
       "A 12-week randomized, minimal-risk behavioral study testing whether real-time pattern-interrupt training delivered alongside an active GLP-1 receptor agonist prescription reduces weight regain in the 90 days after the medication is discontinued. N=80, randomized 1:1 to intervention (Rx + COYL Premium) versus standard care (Rx alone). Powered for effect-size estimation, not confirmatory inference.",
-    url: 'https://coyl.ai/clinical-study',
+    url: 'https://www.coyl.ai/clinical-study',
     studyDesign: 'RandomizedControlledTrial',
     studyLocation: {
       '@type': 'Country',
@@ -267,7 +270,7 @@ export function MedicalStudySchema() {
     sponsor: {
       '@type': 'Organization',
       name: 'COYL, Inc.',
-      url: 'https://coyl.ai',
+      url: 'https://www.coyl.ai',
     },
     status: 'Recruiting',
     healthCondition: 'Obesity, post-pharmacologic weight regain',

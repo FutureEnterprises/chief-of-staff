@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { PricingView } from './pricing-view'
+import { SoftwareApplicationSchema } from '@/app/structured-data'
 
 export const metadata: Metadata = {
   title: 'Pricing — COYL',
@@ -47,5 +48,14 @@ export const metadata: Metadata = {
  * three files together define the pricing contract.
  */
 export default function PricingPage() {
-  return <PricingView />
+  return (
+    <>
+      {/* JSON-LD: SoftwareApplication with the full Offer/price ladder.
+          The pricing page is the canonical home for Product/Offer
+          structured data — makes the four tiers eligible for price-rich
+          results. Renders a <script>, not visible copy. */}
+      <SoftwareApplicationSchema />
+      <PricingView />
+    </>
+  )
 }

@@ -13,6 +13,16 @@ const isPublicRoute = createRouteMatcher([
   '/',
   '/sign-in(.*)',
   '/sign-up(.*)',
+  // SEO infra routes (Next file conventions). The config matcher below
+  // excludes static asset *extensions* but NOT .txt / .xml / the
+  // extensionless /opengraph-image route, so these would otherwise fall
+  // through to auth.protect() and 307 Googlebot/social crawlers to
+  // /sign-in — silently killing indexing + link previews. Must be public.
+  '/robots.txt',
+  '/sitemap.xml',
+  '/manifest.webmanifest',
+  '/opengraph-image',
+  '/twitter-image',
   // /redeem/[code] — wave-grant claim link (marks the invite redeemed,
   // sets the access cookie, redirects into sign-up). Public: the user
   // isn't signed in when they click it from the grant email.
@@ -185,6 +195,14 @@ const isPublicRoute = createRouteMatcher([
  */
 const SHOULD_BYPASS_CLERK = createRouteMatcher([
   '/',
+  // SEO infra routes — must bypass the dev-instance Clerk handshake so
+  // crawlers (Googlebot, Bingbot, social preview bots) reach them without
+  // a 302 to accounts.dev. See the matching entries in isPublicRoute.
+  '/robots.txt',
+  '/sitemap.xml',
+  '/manifest.webmanifest',
+  '/opengraph-image',
+  '/twitter-image',
   // /redeem/[code] — wave-grant claim link; no Clerk context needed.
   '/redeem/(.*)',
   '/terms',

@@ -24,7 +24,9 @@ import type { MetadataRoute } from 'next'
  * referral crawlers that send real traffic, worth more than the load.
  */
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://coyl.ai'
+  const baseUrl = (
+    process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.coyl.ai'
+  ).replace(/\/$/, '')
 
   return {
     rules: [
@@ -32,6 +34,8 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: '/',
         disallow: [
+          // Internal admin dashboards (ADMIN_EMAILS-gated)
+          '/admin',
           // Authenticated app surfaces
           '/today',
           '/inbox',

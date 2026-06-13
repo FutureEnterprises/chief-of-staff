@@ -69,11 +69,14 @@ export const metadata: Metadata = {
     'recovery engine app',
     'coyl',
   ],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://coyl.ai'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.coyl.ai'),
   alternates: {
     canonical: '/',
   },
-  manifest: '/site.webmanifest',
+  // Manifest comes from the Next file convention at src/app/manifest.ts
+  // (served as /manifest.webmanifest). The old hand-written
+  // /site.webmanifest carried retired copy + a dead /favicon.svg icon, so
+  // we no longer point at it here.
   // No explicit icons: ... — Next.js 16 auto-discovers
   // src/app/icon.png (favicon) and src/app/apple-icon.png (Apple
   // touch icon). Both are the founder's chrome-half-C mark cropped
@@ -83,7 +86,7 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: 'COYL',
     locale: 'en_US',
-    url: 'https://coyl.ai',
+    url: 'https://www.coyl.ai',
     title: "COYL \u2014 Catch yourself before you do it again",
     description:
       "AI that wraps around the behavioral layer of the human psyche. Real-time interrupts before the script runs. The missing interface between who you intend to be and what you actually do.",
