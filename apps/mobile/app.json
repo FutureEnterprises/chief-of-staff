@@ -101,7 +101,8 @@
           "package": "ai.coyl.app"
         }
       ],
-      "./plugins/with-coyl-live-activity"
+      "./plugins/with-coyl-live-activity",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true
