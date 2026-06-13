@@ -206,22 +206,23 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               </Link>
             </motion.p>
 
-            {/* Invite-only positioning — the audit is the open front door;
-                app access opens in waves through the waitlist. Quiet line
-                so the audit CTA stays primary, but the invite framing is
-                present from the hero. */}
+            {/* iOS launch positioning — the audit is the open front door;
+                the app ships first to iPhone via invite waves. No public
+                App Store link yet (launching on TestFlight), so "Get the
+                app" routes to the waitlist with honest "coming to the App
+                Store" framing. Quiet line so the audit CTA stays primary. */}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.35, duration: 0.6 }}
               className="mt-3 max-w-xl text-sm text-[#a59a87]"
             >
-              COYL is opening in waves.{' '}
+              The iPhone app is opening in waves — coming to the App Store.{' '}
               <Link
                 href="/waitlist"
                 className="font-medium text-orange-300 underline-offset-4 hover:underline"
               >
-                Request an invite →
+                Get the app — join the waitlist →
               </Link>
             </motion.p>
           </div>

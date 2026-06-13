@@ -26,6 +26,7 @@ export function LandingFooter() {
     { label: 'How it works', href: '/how-it-works' },
     { label: 'How COYL knows you', href: '/how-coyl-knows-you' },
     { label: 'Autopilot audit', href: '/audit' },
+    { label: 'Get the iPhone app', href: '/waitlist' },
     { label: 'Join the waitlist', href: '/waitlist' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Procrastination + focus', href: '/procrastination' },
