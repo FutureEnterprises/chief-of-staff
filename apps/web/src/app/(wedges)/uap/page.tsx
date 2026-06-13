@@ -478,6 +478,100 @@ export default async function UapPage() {
         </section>
 
         {/* ─────────────────────────────────────────────────────────
+            06b · WHAT'S ACTUALLY SHIPPED — parity proof block mirroring
+            /protocol's "The SDK · alpha / The demo · runnable / The
+            safety floor · live" trio, framed in UAP's standing-authority
+            terms. The assets referenced (@coyl/protocol UAPClient,
+            examples/authority-demo.ts, the live coordinator behind
+            partner auth, lib/rap/*) exist in this repo today.
+            ───────────────────────────────────────────────────────── */}
+        <section className="space-y-8 border-t border-gray-200 pt-16">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            06b · What&rsquo;s actually shipped
+          </p>
+          <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            A typed SDK, a runnable demo, and a live safety floor.{' '}
+            <span className="italic text-orange-600">Not a slide deck.</span>
+          </h2>
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+            The UAP coordinator is implemented in this repository, in alpha
+            &mdash; grant, execute, precheck, audit, provenance, kill
+            switch. It is live behind partner auth: calls without a partner
+            key return{' '}
+            <code className="rounded bg-orange-50 px-1.5 py-0.5 font-mono text-[12px] text-orange-700">
+              401
+            </code>
+            . Three proofs make that concrete.
+          </p>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The SDK · alpha
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                <code className="font-mono text-base text-orange-600">
+                  @coyl/protocol
+                </code>
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                A typed, zero-dependency TypeScript client. Its{' '}
+                <code className="font-mono text-[13px] text-orange-600">
+                  UAPClient
+                </code>{' '}
+                does grant / precheck / execute / revoke / audit /
+                kill-switch / verify-provenance &mdash; the full
+                standing-authority surface, typed against the live route
+                handlers. The companion{' '}
+                <code className="font-mono text-[13px] text-orange-600">
+                  EAPDeviceClient
+                </code>{' '}
+                carries the cross-device edge loop. Wire shapes can change
+                before 1.0.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The demo · runnable
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                Grant it, then try to break it.
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                One script exercises the full authority flow: grant &rarr;
+                reversible action allowed and audited &rarr; irreversible
+                send{' '}
+                <strong className="font-serif font-normal italic">
+                  denied
+                </strong>{' '}
+                (it fails closed) &rarr; provenance verified on an allowed
+                representation action &rarr; kill switch &rarr; the next
+                action is dead. The kill switch supersedes every grant, as
+                the invariants require.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The safety floor · live
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                Overrides every grant. First.
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                RAP&rsquo;s classifier, routing envelopes, and store are
+                implemented and gating live &mdash; the closed-coaching-path
+                check runs ahead of scope, rules, and rate limits inside the
+                coordinator, so a standing-authority execution is denied
+                before any side effect when risk crosses the floor. The same
+                check gates every consumer interrupt path.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────
             CTA
             ───────────────────────────────────────────────────────── */}
         <section className="space-y-8 rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-white p-8 md:p-12">

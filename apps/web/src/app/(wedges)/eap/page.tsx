@@ -107,6 +107,25 @@ export default async function EapPage() {
             </strong>{' '}
             Hardware, not just software. Action, not just answer.
           </CinematicBody>
+          {/* ALPHA-STATUS LINE — same honest framing /protocol leads with,
+              scoped to EAP's edge loop. The spec is open; the reference
+              engine + SDK are alpha; design partners invited. */}
+          <CinematicBody tone="dim" className="text-base md:text-base">
+            Status, honestly: the spec is published under Apache&nbsp;2.0;
+            the reference engine and the typed{' '}
+            <code className="text-orange-300">@coyl/protocol</code> SDK —
+            which ships an{' '}
+            <code className="text-orange-300">EAPDeviceClient</code> for
+            the edge loop — are in alpha. The{' '}
+            <Link
+              href="/rap"
+              className="underline decoration-orange-300/60 underline-offset-4 hover:decoration-orange-300"
+            >
+              RAP
+            </Link>{' '}
+            safety floor gates every action. Built for foundation labs
+            and device makers; design partners invited.
+          </CinematicBody>
         </header>
       </CinematicScrim>
 
@@ -549,6 +568,99 @@ export default async function EapPage() {
                 </tr>
               </tbody>
             </table>
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────
+            8b. WHAT'S ACTUALLY SHIPPED — parity proof block mirroring
+            /protocol's "The SDK · alpha / The demo · runnable / The
+            safety floor · live" trio, framed in EAP's edge-loop terms.
+            The assets referenced (@coyl/protocol EAPDeviceClient,
+            examples/authority-demo.ts, lib/rap/*, and the live edge-loop
+            route handlers) exist in this repo today.
+            ───────────────────────────────────────────────────────── */}
+        <section className="space-y-8 border-t border-gray-200 pt-16">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            07b · What&rsquo;s actually shipped
+          </p>
+          <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+            A typed SDK, a runnable demo, and a live safety floor.{' '}
+            <span className="italic text-orange-600">Not a slide deck.</span>
+          </h2>
+          <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+            The EAP edge loop is implemented in this repository, in alpha
+            &mdash; device register, pending-actions polling, sensor
+            publish, action outcome. Three proofs make that concrete.
+          </p>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The SDK · alpha
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                <code className="font-mono text-base text-orange-600">
+                  @coyl/protocol
+                </code>
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                A typed, zero-dependency TypeScript client. Its{' '}
+                <code className="font-mono text-[13px] text-orange-600">
+                  EAPDeviceClient
+                </code>{' '}
+                registers a device, polls for approved actions, reports
+                outcomes, and publishes sensor snapshots &mdash; the whole
+                edge loop, typed against the live route handlers. The
+                companion{' '}
+                <code className="font-mono text-[13px] text-orange-600">
+                  UAPClient
+                </code>{' '}
+                carries the standing-authority side. Wire shapes can
+                change before 1.0.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The demo · runnable
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                Grant it, then try to break it.
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                One script walks the whole trust contract: grant &rarr;
+                reversible action allowed and audited &rarr; irreversible
+                send{' '}
+                <strong className="font-serif font-normal italic">
+                  denied
+                </strong>{' '}
+                (it fails closed) &rarr; provenance verified on an allowed
+                representation action &rarr; kill switch &rarr; the next
+                action is dead. The fail-closed denial is the same gate the
+                edge loop enforces on every{' '}
+                <code className="font-mono text-[13px] text-orange-600">
+                  :irreversible
+                </code>{' '}
+                actuator.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The safety floor · live
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                Gates every action. First.
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                RAP&rsquo;s classifier, routing envelopes, and store are
+                implemented and gating live in the app &mdash; the
+                closed-coaching-path check runs ahead of every other gate
+                before an action fires across the fleet, and before any
+                consumer interrupt. A person in a closed path is never
+                acted on, no matter what a device sensor reports.
+              </p>
+            </div>
           </div>
         </section>
 
