@@ -52,9 +52,13 @@ export const checkoutSchema = z.object({
 })
 
 export const chatSchema = z.object({
+  // AI SDK v6 UIMessages carry their content in `parts` ({ role, id, parts }) and
+  // have NO `content` field. Accept both the v6 shape and the legacy `content`
+  // shape so DefaultChatTransport requests validate. The chat route feeds these
+  // straight into `convertToModelMessages`, which reads `parts`.
   messages: z.array(z.object({
-    role: z.enum(['user', 'assistant']),
-    content: z.union([z.string().max(50000), z.array(z.unknown())]),
+    role: z.enum(['user', 'assistant', 'system']),
+    content: z.union([z.string().max(50000), z.array(z.unknown())]).optional(),
     id: z.string().optional(),
     createdAt: z.unknown().optional(),
     parts: z.array(z.unknown()).optional(),
