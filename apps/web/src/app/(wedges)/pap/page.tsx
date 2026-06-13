@@ -97,8 +97,16 @@ export default async function PapPage() {
               Apache 2.0 from publication.
             </strong>{' '}
             Spec is open. Anyone can implement a Coordinator. COYL
-            Cloud is the reference engine that powers consumer + LLM
-            partners today.
+            maintains the reference coordinator that arbitrates proposals.
+          </CinematicBody>
+          <CinematicBody tone="dim" className="text-base md:text-base">
+            Status, honestly: the spec is published Apache&nbsp;2.0; the
+            reference coordinator and the typed{' '}
+            <code className="text-orange-300">@coyl/protocol</code> SDK are
+            in alpha. Proposals run through the live coordinator
+            &mdash; rate-limit, dedup, quiet-hours &mdash; and the RAP
+            safety floor gates every one of them first. Built for
+            foundation labs; design partners invited.
           </CinematicBody>
         </header>
       </CinematicScrim>
@@ -345,6 +353,112 @@ export default async function PapPage() {
                 )}
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* 7b. WHAT'S ACTUALLY SHIPPED — parity proof block mirroring
+            /protocol's "The SDK · alpha / The demo · runnable / The
+            safety floor · live" trio, framed in PAP's propose-the-moment
+            terms. @coyl/protocol, examples/authority-demo.ts, and lib/rap/*
+            exist in this repo today. */}
+        <section className="space-y-10 border-t border-gray-200 pt-16">
+          <div className="space-y-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              06b · What&rsquo;s actually shipped
+            </p>
+            <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+              A typed SDK, a runnable demo, and a live safety floor.{' '}
+              <span className="italic text-orange-600">
+                Not a slide deck.
+              </span>
+            </h2>
+            <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+              PAP proposes the moment. Proposals run through an alpha
+              reference coordinator and the SDK that fronts it &mdash;
+              rate-limit, dedup, quiet-hours &mdash; and the RAP safety
+              floor gates every one of them first. The spec is Apache&nbsp;2.0;
+              the engine and SDK are alpha. Three proofs make that
+              concrete.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The SDK · alpha
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                <code className="font-mono text-base text-orange-600">
+                  @coyl/protocol
+                </code>
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                A typed, zero-dependency TypeScript client.{' '}
+                <code className="font-mono text-[13px] text-orange-600">
+                  UAPClient
+                </code>{' '}
+                does grant / precheck / execute / revoke / audit /
+                kill-switch / verify-provenance;{' '}
+                <code className="font-mono text-[13px] text-orange-600">
+                  EAPDeviceClient
+                </code>{' '}
+                registers a device, polls for approved actions, and
+                reports outcomes. Typed against the live route handlers;
+                wire shapes can change before 1.0.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The demo · runnable
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                Grant it, then try to break it.
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                One script walks the whole trust contract: grant &rarr;
+                reversible action allowed and audited &rarr; irreversible
+                send{' '}
+                <strong className="font-serif font-normal italic">
+                  denied
+                </strong>{' '}
+                (it fails closed) &rarr; provenance verified on an allowed
+                representation action &rarr; kill switch &rarr; the next
+                action is dead. The fail-closed denial is the point.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The safety floor · live
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                Gates every proposal. First.
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                RAP&apos;s classifier, routing envelopes, and store are
+                implemented and gating live in the app &mdash; the
+                closed-coaching-path check runs ahead of panic, quiet
+                hours, rate limits, and dedup. A person in a closed
+                coaching path is never proposed to, no matter how
+                confident the firing.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <a
+              href="mailto:protocol@coyl.ai?subject=Design%20partner%20interest"
+              className="inline-flex items-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+            >
+              Become a design partner &rarr;
+            </a>
+            <Link
+              href="/protocol"
+              className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              The full protocol stack
+            </Link>
           </div>
         </section>
 

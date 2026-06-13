@@ -496,11 +496,17 @@ export default async function UapPage() {
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
-            <Link
-              href="/protocol"
+            <a
+              href="mailto:protocol@coyl.ai?subject=Design%20partner%20interest"
               className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
             >
-              Read BIP &rarr;
+              Become a design partner &rarr;
+            </a>
+            <Link
+              href="/protocol"
+              className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              Read the stack &rarr;
             </Link>
             <Link
               href="/pap"

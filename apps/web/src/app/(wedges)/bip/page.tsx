@@ -103,12 +103,27 @@ export default async function BipPage() {
         downstream protocol (PAP, EAP, UAP, RAP) can read.
       </p>
 
-      <p className="mb-10 max-w-2xl text-base leading-[1.7] text-gray-600">
+      <p className="mb-6 max-w-2xl text-base leading-[1.7] text-gray-600">
         Apache 2.0. Reference-implemented by COYL Cloud. The substrate
         underneath the four sibling specs &mdash; behavior context flows
         into PAP&apos;s proactive interrupt, EAP&apos;s cross-device
         action, UAP&apos;s standing-authority gate, and RAP&apos;s
         irreversibility scoring.
+      </p>
+
+      {/* ALPHA-STATUS LINE — same honest framing /protocol leads with.
+          BIP is the read substrate, so the status note points at the
+          live stack it feeds. */}
+      <p className="mb-10 max-w-2xl text-base leading-[1.7] text-gray-600">
+        Status, honestly: the spec is published under Apache&nbsp;2.0; the
+        reference engine and the typed{' '}
+        <code className="font-mono text-[13px] text-orange-700">
+          @coyl/protocol
+        </code>{' '}
+        SDK are in alpha. BIP context feeds the live stack &mdash; PAP
+        proposes, EAP acts, UAP authorizes, and the RAP safety floor gates
+        every one of them. Built for foundation labs; design partners
+        invited.
       </p>
 
       <div className="mb-20 flex flex-wrap gap-3">
@@ -186,6 +201,107 @@ export default async function BipPage() {
             </span>
           </li>
         </ul>
+      </section>
+
+      {/* WHAT'S ACTUALLY SHIPPED — parity proof block mirroring
+          /protocol's "The SDK · alpha / The demo · runnable / The safety
+          floor · live" trio, framed in BIP's read-substrate terms. The
+          assets referenced (@coyl/protocol, examples/authority-demo.ts,
+          lib/rap/*) exist in this repo today. */}
+      <section className="mb-20 border-t border-gray-200 pt-12">
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+          What&rsquo;s actually shipped
+        </p>
+        <h2 className="mb-4 max-w-3xl font-serif text-3xl font-normal leading-[1.15] tracking-[-0.01em] text-gray-900 md:text-4xl">
+          A typed SDK, a runnable demo, and a live safety floor.{' '}
+          <span className="italic text-orange-600">Not a slide deck.</span>
+        </h2>
+        <p className="mb-8 max-w-2xl text-base leading-[1.7] text-gray-700">
+          BIP is the read substrate. The context it carries feeds a stack
+          that is implemented in this repository, in alpha &mdash; PAP
+          proposes, EAP acts, UAP authorizes, RAP gates. Three proofs make
+          that concrete.
+        </p>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="rounded-2xl border border-gray-200 bg-white p-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              The SDK · alpha
+            </p>
+            <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+              <code className="font-mono text-base text-orange-600">
+                @coyl/protocol
+              </code>
+            </h3>
+            <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+              A typed, zero-dependency TypeScript client.{' '}
+              <code className="font-mono text-[13px] text-orange-600">
+                UAPClient
+              </code>{' '}
+              does grant / precheck / execute / revoke / audit /
+              kill-switch / verify-provenance;{' '}
+              <code className="font-mono text-[13px] text-orange-600">
+                EAPDeviceClient
+              </code>{' '}
+              registers a device, polls approved actions, and publishes
+              sensor snapshots &mdash; the same snapshots that become BIP
+              context. Typed against the live route handlers; wire shapes
+              can change before 1.0.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-white p-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              The demo · runnable
+            </p>
+            <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+              Grant it, then try to break it.
+            </h3>
+            <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+              One script walks the whole trust contract: grant &rarr;
+              reversible action allowed and audited &rarr; irreversible
+              send{' '}
+              <strong className="font-serif font-normal italic">
+                denied
+              </strong>{' '}
+              (it fails closed) &rarr; provenance verified on an allowed
+              representation action &rarr; kill switch &rarr; the next
+              action is dead. The fail-closed denial is the point.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-white p-6">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              The safety floor · live
+            </p>
+            <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+              Gates everything BIP feeds.
+            </h3>
+            <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+              RAP&apos;s classifier, routing envelopes, and store are
+              implemented and gating live in the app &mdash; the
+              closed-coaching-path check runs ahead of every other gate on
+              the agent path and before any consumer interrupt. A person in
+              a closed path is never nudged, no matter what BIP context
+              says.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          <a
+            href="mailto:protocol@coyl.ai?subject=Design%20partner%20interest"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+          >
+            Become a design partner &rarr;
+          </a>
+          <Link
+            href="/protocol"
+            className="rounded-full border border-gray-200 px-6 py-3 text-sm text-gray-800 hover:border-orange-500/40 hover:text-orange-700"
+          >
+            See the full protocol stack
+          </Link>
+        </div>
       </section>
 
       {/* SIBLING SPECS — closing chain, same pattern /pap and /eap use

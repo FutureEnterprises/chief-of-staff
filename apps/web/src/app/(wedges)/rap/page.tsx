@@ -89,6 +89,18 @@ export default async function RapPage() {
             hashed for audit replay so a reviewer six months later can
             confirm the same moment would classify the same way.
           </CinematicBody>
+          <CinematicBody tone="dim" className="text-base md:text-base">
+            <strong className="font-serif font-normal italic text-[#f8f1e4]">
+              And it&rsquo;s the live part.
+            </strong>{' '}
+            The classifier, the routing envelopes, and the store are
+            implemented and gating live in the app today &mdash; the
+            closed-coaching-path check runs ahead of every other gate on
+            the agent-authority path and before every consumer interrupt.
+            The broader reference engine and the typed{' '}
+            <code className="text-orange-300">@coyl/protocol</code> SDK are
+            in alpha; built for foundation labs, design partners invited.
+          </CinematicBody>
           <div className="flex flex-wrap gap-3 pt-2">
             <a
               href={SPEC_URL}
@@ -207,6 +219,110 @@ export default async function RapPage() {
             signal chain six months later and confirm the classifier would
             have produced the same risk class.
           </p>
+        </section>
+
+        {/* WHAT'S ACTUALLY SHIPPED — parity proof block. Unlike the
+            sibling specs, RAP leads with the live safety floor: the
+            classifier + routing envelopes + endpoints are implemented and
+            gating both the agent-authority path and every consumer
+            interrupt in the app today. lib/rap/* + /api/rap/v1/* +
+            coordinator step 0 are the truth behind this. */}
+        <section className="space-y-10 border-t border-orange-500 pt-12">
+          <div className="space-y-4">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              02b · What&rsquo;s actually shipped
+            </p>
+            <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
+              The safety floor is live.{' '}
+              <span className="italic text-orange-600">
+                The question a reviewer asks first, answered in code.
+              </span>
+            </h2>
+            <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
+              This is the one layer that is not a slide deck or a draft on
+              paper. RAP&apos;s classifier, routing envelopes, and store
+              are implemented, and the closed-coaching-path check gates
+              both the agent-authority path and every consumer interrupt
+              in the app today. The broader engine and SDK are alpha; the
+              floor itself is running.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The safety floor · live
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                Gates both paths. First.
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                The closed-coaching-path check runs ahead of every other
+                gate on the agent path &mdash; a crisis-class assessment
+                denies a proposal or a standing-authority execution before
+                scope or rate limits are even read. The same check runs
+                before any consumer interrupt: a person in a closed path is
+                never nudged. Classifier, routing envelopes, and store are
+                implemented today.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The SDK · alpha
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                <code className="font-mono text-base text-orange-600">
+                  @coyl/protocol
+                </code>
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                A typed, zero-dependency TypeScript client.{' '}
+                <code className="font-mono text-[13px] text-orange-600">
+                  UAPClient
+                </code>{' '}
+                does grant / precheck / execute / revoke / audit /
+                kill-switch / verify-provenance &mdash; the same
+                authority path RAP gates ahead of. Typed against the live
+                route handlers; wire shapes can change before 1.0.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+                The demo · runnable
+              </p>
+              <h3 className="mt-3 font-serif text-xl font-normal leading-[1.2] tracking-[-0.01em] text-gray-900 md:text-2xl">
+                Grant it, then try to break it.
+              </h3>
+              <p className="mt-3 text-sm leading-[1.65] text-gray-700">
+                One script walks the whole trust contract: grant &rarr;
+                reversible action allowed and audited &rarr; irreversible
+                send{' '}
+                <strong className="font-serif font-normal italic">
+                  denied
+                </strong>{' '}
+                (it fails closed) &rarr; provenance verified &rarr; kill
+                switch &rarr; the next action is dead. The fail-closed
+                denial is the point.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <a
+              href="mailto:protocol@coyl.ai?subject=Design%20partner%20interest"
+              className="inline-flex items-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
+            >
+              Become a design partner &rarr;
+            </a>
+            <Link
+              href="/protocol"
+              className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              The full protocol stack
+            </Link>
+          </div>
         </section>
 
         {/* OPEN QUESTIONS */}
