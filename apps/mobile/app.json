@@ -76,6 +76,14 @@
       "expo-secure-store",
       "expo-font",
       [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
+          }
+        }
+      ],
+      [
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
@@ -103,7 +111,8 @@
         }
       ],
       "./plugins/with-coyl-live-activity",
-      "expo-asset"
+      "expo-asset",
+      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true
