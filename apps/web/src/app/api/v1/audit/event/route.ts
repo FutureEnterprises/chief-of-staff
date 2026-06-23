@@ -9,6 +9,9 @@
  *   email_captured  — also written via /capture; we still log here
  *                     for symmetric drop-off math
  *   signup_started  — visitor clicked a sign-up CTA from the result
+ *   shared          — visitor shared an audit result or waitlist invite
+ *   waitlist_joined — visitor joined the invite-only waitlist
+ *   waitlist_referral_joined — visitor joined through a friend's code
  *
  * sessionId is a client-generated cookie that lives 24h, scoped to
  * the audit funnel only. It's the funnel-join key so the admin
@@ -30,7 +33,15 @@ import { checkDistributedRateLimit } from '@/lib/rate-limit'
 
 const schema = z.object({
   sessionId: z.string().min(1).max(64),
-  kind: z.enum(['started', 'completed', 'email_captured', 'signup_started']),
+  kind: z.enum([
+    'started',
+    'completed',
+    'email_captured',
+    'signup_started',
+    'shared',
+    'waitlist_joined',
+    'waitlist_referral_joined',
+  ]),
   archetypeFamily: z.string().min(1).max(64).optional(),
   archetypeSlug: z.string().min(1).max(64).optional(),
   wedge: z.string().min(1).max(32).optional(),

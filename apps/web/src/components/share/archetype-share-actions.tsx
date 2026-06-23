@@ -12,7 +12,8 @@ import { useState } from 'react'
  *      the user can post it to their Story directly.
  *   3. Copy link — fallback for desktop.
  *
- * Fires a PostHog event on share so we can measure the viral coefficient.
+ * Fires owned + PostHog events on share so we can measure the viral
+ * coefficient without relying on a third-party analytics UI.
  */
 export function ArchetypeShareActions({
   slug,
@@ -27,6 +28,30 @@ export function ArchetypeShareActions({
   const caption = `I'm ${name} on COYL. What's your pattern? Take the 90-second audit → coyl.ai/audit`
 
   function track(channel: string) {
+    const body = JSON.stringify({
+      sessionId: `card:${slug}`.slice(0, 64),
+      kind: 'shared',
+      archetypeFamily: slug,
+      archetypeSlug: slug,
+      source: `card_${channel}`.slice(0, 64),
+    })
+
+    try {
+      if ('sendBeacon' in navigator) {
+        const blob = new Blob([body], { type: 'application/json' })
+        navigator.sendBeacon('/api/v1/audit/event', blob)
+      } else {
+        void fetch('/api/v1/audit/event', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body,
+          keepalive: true,
+        }).catch(() => {})
+      }
+    } catch {
+      /* swallow — telemetry must not break sharing */
+    }
+
     try {
       void import('@/lib/telemetry/posthog-client').then(({ captureMarketingEvent }) => {
         captureMarketingEvent('audit.shared', { slug, channel })
@@ -37,10 +62,10 @@ export function ArchetypeShareActions({
   }
 
   async function onShare() {
-    track('web_share')
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
         await navigator.share({ title: `I'm ${name}`, text: caption, url: pageUrl })
+        track('web_share')
         return
       } catch {
         /* user cancelled or unsupported — fall through to copy */

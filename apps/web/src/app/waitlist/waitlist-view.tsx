@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { getFamily, parseFamilySlug } from '@/lib/audit-archetype'
 
 type JoinResult = {
   position: number
@@ -8,7 +9,43 @@ type JoinResult = {
   inviteCode: string
   referralCount: number
   spotsPerReferral: number
+  archetypeSlug?: string | null
   alreadyOnList?: boolean
+}
+
+function getArchetypeName(slug: string | null | undefined) {
+  const family = slug ? parseFamilySlug(slug) : null
+  return family ? getFamily(family).name : null
+}
+
+function fireOwnedShareEvent(args: {
+  inviteCode: string
+  archetypeSlug: string | null
+}) {
+  if (typeof window === 'undefined') return
+  const body = JSON.stringify({
+    sessionId: `waitlist:${args.inviteCode}`.slice(0, 64),
+    kind: 'shared',
+    archetypeFamily: args.archetypeSlug ?? undefined,
+    archetypeSlug: args.archetypeSlug ?? undefined,
+    source: 'waitlist_invite',
+  })
+
+  try {
+    if ('sendBeacon' in navigator) {
+      const blob = new Blob([body], { type: 'application/json' })
+      navigator.sendBeacon('/api/v1/audit/event', blob)
+    } else {
+      void fetch('/api/v1/audit/event', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body,
+        keepalive: true,
+      }).catch(() => {})
+    }
+  } catch {
+    /* swallow */
+  }
 }
 
 /**
@@ -23,6 +60,7 @@ export function WaitlistView() {
   const [email, setEmail] = useState('')
   const [ref, setRef] = useState<string | null>(null)
   const [archetype, setArchetype] = useState<string | null>(null)
+  const [source, setSource] = useState<string | null>(null)
   const [result, setResult] = useState<JoinResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -32,6 +70,7 @@ export function WaitlistView() {
     const sp = new URLSearchParams(window.location.search)
     setRef(sp.get('ref'))
     setArchetype(sp.get('archetype'))
+    setSource(sp.get('source')?.slice(0, 64) ?? null)
   }, [])
 
   // Poll for live position updates once joined (friends joining bump us up).
@@ -63,7 +102,7 @@ export function WaitlistView() {
           email,
           ref: ref ?? undefined,
           archetypeSlug: archetype ?? undefined,
-          source: ref ? 'referral' : archetype ? 'card' : 'direct',
+          source: ref ? 'referral' : source ?? (archetype ? 'card' : 'direct'),
         }),
       })
       const d = await r.json()
@@ -92,9 +131,19 @@ export function WaitlistView() {
     process.env.NEXT_PUBLIC_APP_URL ??
     (typeof window !== 'undefined' ? window.location.origin : 'https://www.coyl.ai')
   const inviteUrl = result ? `${shareOrigin}/waitlist?ref=${result.inviteCode}` : ''
-  const shareText = `I'm #${result?.position} in line for COYL. Skip ahead with my code → ${inviteUrl}`
+  const activeArchetypeSlug = result?.archetypeSlug ?? archetype
+  const activeArchetypeName = getArchetypeName(activeArchetypeSlug)
+  const shareText = activeArchetypeName
+    ? `I got ${activeArchetypeName} on COYL and I'm #${result?.position} for the app. Use my invite to skip ahead → ${inviteUrl}`
+    : `I'm #${result?.position} in line for COYL. Skip ahead with my code → ${inviteUrl}`
 
   async function onShare() {
+    if (result) {
+      fireOwnedShareEvent({
+        inviteCode: result.inviteCode,
+        archetypeSlug: activeArchetypeSlug ?? null,
+      })
+    }
     try {
       void import('@/lib/telemetry/posthog-client').then(({ captureMarketingEvent }) =>
         captureMarketingEvent('audit.shared', { channel: 'waitlist_invite' }),
@@ -129,9 +178,9 @@ export function WaitlistView() {
             </span>
             <span className="text-base text-[#8a7f6d]">of {result.total.toLocaleString()}</span>
           </div>
-          {archetype && (
+          {activeArchetypeName && (
             <p className="mt-3 text-sm text-[#a59a87]">
-              Saved your pattern. We&rsquo;ll open your archetype first.
+              Saved {activeArchetypeName}. We&rsquo;ll open your archetype first.
             </p>
           )}
         </div>
@@ -171,6 +220,11 @@ export function WaitlistView() {
     <form onSubmit={onJoin} className="flex flex-col gap-4">
       {ref && (
         <p className="text-sm text-orange-300">A friend sent you — you&rsquo;ll skip ahead.</p>
+      )}
+      {!ref && activeArchetypeName && (
+        <p className="text-sm text-orange-300">
+          You came in through {activeArchetypeName} — we&rsquo;ll save it with your spot.
+        </p>
       )}
       <input
         type="email"

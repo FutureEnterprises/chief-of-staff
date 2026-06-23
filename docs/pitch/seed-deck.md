@@ -1,6 +1,6 @@
 # COYL — Seed Deck
 
-> _The behavioral interrupt protocol for AI._
+> _The permission layer that lets AI act first._
 > _Live in the three seconds between the impulse and the action._
 
 **Stage:** Pre-seed → Seed · founder-led · infrastructure live · pre-revenue
@@ -33,7 +33,7 @@ Each slide caps at ~60 words on the surface. The notes carry the rest.
 
 # COYL
 
-### _The behavioral interrupt protocol for AI._
+### _Chatbots wait. COYL wakes._
 
 Your patterns are louder than your plans.
 COYL lives in the three seconds between.
@@ -69,7 +69,7 @@ later slide compounds off it._
 
 ## Slide 3 — Why Now
 
-# AI has never met human behavior before.
+# Chatbots wait. COYL wakes.
 
 For thirty years software watched what you did and reported it back.
 For two years language models answered what you typed.
@@ -83,11 +83,11 @@ Three things finally arrived at the same time:
 - **Edge inference** cheap enough to fire per-event (<$0.001/call)
 - **Always-on devices** on the wrist, in the pocket, in the browser
 
-_Speaker notes: This is the "why now" — investors who skipped the
-behavior-change category in 2018–2023 hear this and unblock their
-priors. The category is genuinely new because the substrate is
-genuinely new. Three years ago a $12/mo product could not have
-absorbed the inference cost. Today it can._
+_Speaker notes: This is the shift. The first wave of LLM products
+waited in a text box. COYL is the permission layer that lets AI act
+first: cron wakes the system, context tells it what moment this is,
+the LLM writes the intervention, and the authority layer decides
+whether it is allowed to reach the user._
 
 ---
 
@@ -119,7 +119,7 @@ that could live in the window. The technology just arrived._
 
 ## Slide 5 — Product
 
-# Four open protocols. One reference engine. Three channels.
+# Four open protocols. One reference engine. One waking agent.
 
 **The protocol stack** (Apache 2.0, public)
 
@@ -130,6 +130,10 @@ that could live in the window. The technology just arrived._
 - **RAP** — Risk Assessment Protocol (when AI must defer to humans)
 
 **The reference engine** — COYL Cloud, live at coyl.ai
+
+**The Proactive Agent** — shipped internally. A scheduled worker wakes
+the LLM, chooses eligible moments, runs guardrails, and dispatches
+through push, web push, email, and device actions.
 
 **The channels** (built or in flight)
 - Consumer app + web (live)

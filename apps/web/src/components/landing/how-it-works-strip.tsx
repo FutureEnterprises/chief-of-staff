@@ -102,10 +102,10 @@ export function HowItWorksStrip() {
           See the full loop
         </Link>
         <Link
-          href="/sign-up?ref=how-it-works"
+          href="/audit?ref=how-it-works"
           className="rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(255,102,0,0.45)] transition-all hover:bg-orange-600"
         >
-          Start free
+          Take the audit
         </Link>
       </div>
     </section>

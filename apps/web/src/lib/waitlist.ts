@@ -57,6 +57,7 @@ export function hashIp(ip: string): string {
 export type WaitlistStatus = {
   email: string
   inviteCode: string
+  referredByCode: string | null
   joinedPosition: number
   referralCount: number
   /** joinedPosition - referrals*SPOTS, floored at 1. The number to flaunt. */
@@ -88,10 +89,11 @@ export async function joinWaitlist(input: {
 
   const existing = await prisma.waitlistEntry.findUnique({ where: { email } })
   if (existing) {
-    return {
-      email: existing.email,
-      inviteCode: existing.inviteCode,
-      joinedPosition: existing.joinedPosition,
+      return {
+        email: existing.email,
+        inviteCode: existing.inviteCode,
+        referredByCode: existing.referredByCode,
+        joinedPosition: existing.joinedPosition,
       referralCount: existing.referralCount,
       effectivePosition: effectivePosition(existing.joinedPosition, existing.referralCount),
       archetypeSlug: existing.archetypeSlug,
@@ -146,7 +148,14 @@ export async function joinWaitlist(input: {
     }
   }
 
-  let created: { email: string; inviteCode: string; joinedPosition: number; referralCount: number; archetypeSlug: string | null } | null = null
+  let created: {
+    email: string
+    inviteCode: string
+    referredByCode: string | null
+    joinedPosition: number
+    referralCount: number
+    archetypeSlug: string | null
+  } | null = null
   for (let attempt = 0; attempt < 4 && !created; attempt++) {
     const inviteCode = genCode()
     try {
@@ -162,7 +171,14 @@ export async function joinWaitlist(input: {
             source: input.source ?? null,
             ipHash: input.ipHash ?? null,
           },
-          select: { email: true, inviteCode: true, joinedPosition: true, referralCount: true, archetypeSlug: true },
+          select: {
+            email: true,
+            inviteCode: true,
+            referredByCode: true,
+            joinedPosition: true,
+            referralCount: true,
+            archetypeSlug: true,
+          },
         })
         // Credit the referrer (best-effort, same tx) — only when the
         // anti-fraud checks above passed. referredByCode is still written
@@ -183,9 +199,10 @@ export async function joinWaitlist(input: {
         const row = await prisma.waitlistEntry.findUnique({ where: { email } })
         if (row) {
           return {
-            email: row.email,
-            inviteCode: row.inviteCode,
-            joinedPosition: row.joinedPosition,
+              email: row.email,
+              inviteCode: row.inviteCode,
+              referredByCode: row.referredByCode,
+              joinedPosition: row.joinedPosition,
             referralCount: row.referralCount,
             effectivePosition: effectivePosition(row.joinedPosition, row.referralCount),
             archetypeSlug: row.archetypeSlug,
@@ -202,6 +219,7 @@ export async function joinWaitlist(input: {
   return {
     email: created.email,
     inviteCode: created.inviteCode,
+    referredByCode: created.referredByCode,
     joinedPosition: created.joinedPosition,
     referralCount: created.referralCount,
     effectivePosition: effectivePosition(created.joinedPosition, created.referralCount),
@@ -217,6 +235,7 @@ export async function getWaitlistStatus(inviteCode: string): Promise<WaitlistSta
   return {
     email: row.email,
     inviteCode: row.inviteCode,
+    referredByCode: row.referredByCode,
     joinedPosition: row.joinedPosition,
     referralCount: row.referralCount,
     effectivePosition: effectivePosition(row.joinedPosition, row.referralCount),

@@ -193,7 +193,7 @@ function readAuditSession(): string {
  * break the audit UX.
  */
 function fireFunnelEvent(
-  kind: 'started' | 'completed' | 'email_captured' | 'signup_started',
+  kind: 'started' | 'completed' | 'email_captured' | 'signup_started' | 'shared',
   payload: {
     sessionId: string
     archetypeFamily?: string
@@ -235,7 +235,9 @@ function fireFunnelEvent(
             ? 'audit.completed'
             : kind === 'email_captured'
               ? 'free_tier.signup'
-              : 'signup.started'
+              : kind === 'shared'
+                ? 'audit.shared'
+                : 'signup.started'
       captureMarketingEvent(eventName, payload)
     })
   } catch {
@@ -631,7 +633,7 @@ export function AuditView() {
               </div>
             )}
 
-            <ArchetypeShareButton archetype={archetype} />
+            <ArchetypeShareButton archetype={archetype} sessionId={sessionIdRef.current} />
           </div>
 
           {/* Invite-only bridge — the viral-loop wire. Routes the reveal
@@ -672,7 +674,7 @@ export function AuditView() {
                 </svg>
               </Link>
               <Link
-                href={`/waitlist?archetype=${archetype.family.slug}`}
+                href={`/waitlist?archetype=${archetype.family.slug}&source=audit-result`}
                 className="text-sm font-semibold text-orange-600 underline-offset-4 hover:text-orange-700 hover:underline"
               >
                 Skip to the waitlist →
@@ -1469,28 +1471,35 @@ function formatHour12(h: number): string {
  * \"One time won't matter.\" — that's the script COYL catches." vs.
  * the previous bland "I'm Family. Signature. Find yours:".
  */
-function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
+function ArchetypeShareButton({
+  archetype,
+  sessionId,
+}: {
+  archetype: Archetype
+  sessionId: string
+}) {
   const [copied, setCopied] = useState(false)
 
   const shareUrl = buildShareUrl(archetype)
   const shareText = `I'm ${archetype.family.name}. ${archetype.family.signature} — the script COYL catches.\n\nFind your autopilot family:`
   const shareTextWithUrl = `${shareText} ${shareUrl}`
 
-  // Viral-coefficient instrumentation — mirrors archetype-share-actions.tsx
-  // so every share surface emits the same 'audit.shared' event. Dynamic
-  // import + swallow so telemetry never breaks (or blocks) a share.
+  // Viral-coefficient instrumentation. Uses the owned funnel beacon first;
+  // that helper also mirrors to PostHog for visualization.
   function trackShare(channel: string) {
-    try {
-      void import('@/lib/telemetry/posthog-client').then(({ captureMarketingEvent }) => {
-        captureMarketingEvent('audit.shared', { slug: archetype.family.slug, channel })
-      })
-    } catch {
-      /* swallow — telemetry must not break sharing */
-    }
+    const ownedSessionId = sessionId || getOrCreateAuditSession()
+    fireFunnelEvent('shared', {
+      sessionId: ownedSessionId,
+      archetypeFamily: archetype.family.slug,
+      archetypeSlug: archetype.family.slug,
+      wedge: archetype.wedge,
+      window: archetype.window,
+      script: archetype.script,
+      source: channel,
+    })
   }
 
   async function handleNativeShare() {
-    trackShare('web_share')
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
         await navigator.share({
@@ -1498,6 +1507,7 @@ function ArchetypeShareButton({ archetype }: { archetype: Archetype }) {
           text: shareText,
           url: shareUrl,
         })
+        trackShare('web_share')
         return
       } catch {
         // user cancelled — fall through to clipboard

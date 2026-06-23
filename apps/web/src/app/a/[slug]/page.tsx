@@ -286,6 +286,44 @@ async function ArchetypeContent({ params }: PageProps) {
           </div>
         </section>
 
+        {/* INVITE LOOP — shared result traffic should not dead-end at
+            "cool card". Give recipients an immediate way to attach this
+            archetype to their launch spot before they drift. */}
+        <section className="mt-12 overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-[#fff7ed] p-8 md:p-10">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-12 bg-orange-500" />
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.32em] text-orange-600">
+              Invite-only app
+            </span>
+          </div>
+
+          <h2 className="mt-6 max-w-2xl font-serif text-4xl font-normal leading-[1.05] text-gray-900 md:text-5xl">
+            Want COYL to catch {a.family.name}{' '}
+            <span className="italic text-orange-600">before it runs?</span>
+          </h2>
+
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-gray-700 md:text-lg">
+            The audit is free. The app is opening in waves. Join with this
+            archetype attached; every friend who joins through you moves you
+            up the line.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href={`/waitlist?archetype=${a.family.slug}&source=a-share`}
+              className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.28)]"
+            >
+              Request access for {a.family.name} →
+            </Link>
+            <Link
+              href={`/card/${a.family.slug}`}
+              className="rounded-full border border-orange-200 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+            >
+              See the share card
+            </Link>
+          </div>
+        </section>
+
         {/* CATEGORY EXPLAINER — "what is this" for visitors who arrived
             from a friend's share with no context. */}
         <section className="mt-16 rounded-3xl border border-gray-200 bg-white p-8">

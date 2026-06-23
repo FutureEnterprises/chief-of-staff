@@ -50,6 +50,11 @@ export async function initPostHog(): Promise<PostHog | null> {
         autocapture: false,
         capture_pageview: true,
         capture_pageleave: true,
+        // Keep PostHog helper scripts out of the hydrated app root and avoid
+        // loading the web-vitals helper unless we explicitly need it.
+        external_scripts_inject_target: 'head',
+        capture_performance: false,
+        capture_dead_clicks: false,
         // No localStorage in incognito-Safari etc. — fall back to cookie.
         persistence: 'localStorage+cookie',
         // Surface key for diagnostics without exposing API key.

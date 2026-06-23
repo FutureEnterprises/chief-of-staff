@@ -62,6 +62,10 @@
       "schedule": "* * * * *"
     },
     {
+      "path": "/api/cron/proactive-agent",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/inbound-process",
       "schedule": "*/5 * * * *"
     },

@@ -16,6 +16,7 @@ import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { Resend } from 'resend'
 import { z } from 'zod'
+import { prisma } from '@repo/database'
 import {
   joinWaitlist,
   getWaitlistStatus,
@@ -48,6 +49,33 @@ function rateLimit(ip: string): boolean {
   return true
 }
 
+async function trackWaitlistFunnelEvent(args: {
+  kind: 'waitlist_joined' | 'waitlist_referral_joined'
+  inviteCode: string
+  archetypeSlug: string | null
+  source: string | null
+  userAgent: string | null
+  ipHash: string
+}) {
+  try {
+    await prisma.auditFunnelEvent.create({
+      data: {
+        sessionId: `waitlist:${args.inviteCode}`.slice(0, 64),
+        kind: args.kind,
+        archetypeFamily: args.archetypeSlug,
+        archetypeSlug: args.archetypeSlug,
+        source: args.source,
+        userAgent: args.userAgent,
+        ipHash: args.ipHash,
+      },
+    })
+  } catch (err) {
+    console.warn('[waitlist] funnel event persist failed', {
+      err: err instanceof Error ? err.message : 'unknown',
+    })
+  }
+}
+
 export async function POST(req: Request) {
   const hdrs = await headers()
   const ip = hdrs.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
@@ -74,14 +102,27 @@ export async function POST(req: Request) {
   }
 
   try {
+    const ipHash = hashIp(ip)
     const status = await joinWaitlist({
       email: parsed.data.email,
       referredByCode: parsed.data.ref ?? null,
       archetypeSlug: parsed.data.archetypeSlug ?? null,
       source: parsed.data.source ?? null,
-      ipHash: hashIp(ip),
+      ipHash,
     })
     const total = await getWaitlistTotal()
+    const userAgent = hdrs.get('user-agent')?.slice(0, 512) ?? null
+
+    if (!status.alreadyOnList) {
+      await trackWaitlistFunnelEvent({
+        kind: status.referredByCode ? 'waitlist_referral_joined' : 'waitlist_joined',
+        inviteCode: status.inviteCode,
+        archetypeSlug: status.archetypeSlug,
+        source: status.referredByCode ? 'referral' : parsed.data.source ?? 'direct',
+        userAgent,
+        ipHash,
+      })
+    }
 
     // Fire-and-forget confirmation email — ONLY on a genuinely new join
     // (never on re-join, so refreshes/double-submits don't re-send). The

@@ -137,7 +137,7 @@ export default async function CardPage({
             <p className="text-sm leading-[1.6] text-[#cdc2ad]">
               The app is invite-only.{' '}
               <Link
-                href={`/waitlist?archetype=${slug}`}
+                href={`/waitlist?archetype=${slug}&source=card`}
                 className="font-semibold text-orange-400 underline-offset-4 hover:underline"
               >
                 Request access →

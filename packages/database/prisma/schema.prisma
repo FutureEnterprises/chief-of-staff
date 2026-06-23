@@ -2025,8 +2025,11 @@ model AuditLead {
 }
 
 /**
- * AuditFunnelEvent — anonymous /audit funnel telemetry. The four-stage
- * funnel: started → completed → email_captured → signup_started.
+ * AuditFunnelEvent — anonymous /audit + viral-loop telemetry. The core
+ * audit funnel is: started → completed → email_captured → signup_started.
+ * Viral loop events include shared, waitlist_joined, and
+ * waitlist_referral_joined so launch K-factor can be measured with owned
+ * data instead of only PostHog.
  * Separate from ProductivityEvent (which needs a userId; audit
  * visitors are mostly anonymous) and separate from AuditLead (which
  * only fires at the email-captured stage and misses the drop-offs
@@ -2035,7 +2038,7 @@ model AuditLead {
 model AuditFunnelEvent {
   id              String   @id @default(cuid())
   sessionId       String
-  /// One of: 'started' | 'completed' | 'email_captured' | 'signup_started'
+  /// Core funnel + viral loop kind. See /api/v1/audit/event.
   kind            String
   archetypeFamily String?
   archetypeSlug   String?

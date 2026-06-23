@@ -123,7 +123,7 @@ export function GlassNav() {
 
         {/* CTA — auth-aware. Signed-in users see a pair:
               [Dashboard →]   [Sign out]
-            Signed-out users see the standard signup CTA.
+            Signed-out users enter the invite-only launch funnel.
             Mobile gets the same pair inside the drawer; desktop hides
             here and shows in the drawer per the `hidden md:flex` rule. */}
         <NavAuthCta onCloseDropdowns={() => {}} />
@@ -196,12 +196,12 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
 
 /**
  * NavAuthCta — the auth-aware CTA cluster shared by desktop nav + mobile
- * drawer. Signed-out users see a single "Start free" button. Signed-in
+ * drawer. Signed-out users see a single "Request access" button. Signed-in
  * users see two: a primary "Dashboard" link going to /today plus a
  * secondary "Sign out" pill. While Clerk loads (useUser.isLoaded is
  * false) we render a soft skeleton placeholder to avoid CLS — if we
  * defaulted to the signed-out CTA and then flipped after hydration,
- * users would see "Start free" flash before "Dashboard" lands. The
+ * users would see "Request access" flash before "Dashboard" lands. The
  * placeholder is sized to match either state.
  */
 function NavAuthCta({
@@ -270,10 +270,10 @@ function NavAuthCta({
     )
   }
 
-  // Signed-out — original single CTA.
+  // Signed-out — keep cold traffic inside the launch waitlist/referral loop.
   return (
     <Link
-      href={fullWidth ? '/sign-up?ref=nav-mobile' : '/sign-up?ref=nav'}
+      href={fullWidth ? '/waitlist?source=nav-mobile' : '/waitlist?source=nav'}
       onClick={onCloseDropdowns}
       className={
         fullWidth
@@ -281,7 +281,7 @@ function NavAuthCta({
           : 'hidden items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)] transition-all hover:shadow-[0_0_24px_rgba(255,102,0,0.5)] md:flex'
       }
     >
-      Start free
+      Request access
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
         <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>

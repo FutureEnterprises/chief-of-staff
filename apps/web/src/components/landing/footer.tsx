@@ -112,10 +112,10 @@ export function LandingFooter() {
               Developers &amp; foundation-lab partners &rarr;
             </Link>
             <Link
-              href="/sign-up?ref=footer"
+              href="/waitlist?source=footer"
               className="text-xs font-bold text-orange-600 transition-colors hover:text-orange-700"
             >
-              Start free &rarr;
+              Request access &rarr;
             </Link>
           </div>
         </div>
@@ -138,7 +138,7 @@ function FooterColumn({
       </p>
       <ul className="space-y-2">
         {links.map((l) => (
-          <li key={l.href}>
+          <li key={`${l.href}:${l.label}`}>
             <Link
               href={l.href}
               className="text-sm text-gray-600 transition-colors hover:text-gray-900"

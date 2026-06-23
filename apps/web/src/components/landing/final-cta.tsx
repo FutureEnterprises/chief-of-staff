@@ -40,10 +40,10 @@ export function FinalCta() {
         className="mt-14 flex flex-wrap items-center justify-center gap-4"
       >
         <Link
-          href="/sign-up"
+          href="/audit?ref=final-cta"
           className="group relative flex items-center gap-2.5 rounded-full bg-orange-500 px-10 py-4 text-base font-semibold text-white shadow-[0_10px_30px_-10px_rgba(255,102,0,0.5)] transition-all hover:bg-orange-600 hover:shadow-[0_16px_42px_-10px_rgba(255,102,0,0.6)]"
         >
-          Start free
+          Take the audit
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition-transform group-hover:translate-x-1">
             <path d="M1 8h14m0 0l-5-5m5 5l-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -72,7 +72,7 @@ export function FinalCta() {
         transition={{ delay: 0.4, duration: 0.5 }}
         className="mt-8 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500"
       >
-        No credit card. Cancel anytime.
+        No signup for the audit. Invite waves for the app.
       </motion.p>
     </section>
   )

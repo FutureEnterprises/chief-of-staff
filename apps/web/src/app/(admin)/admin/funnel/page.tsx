@@ -22,6 +22,7 @@ export const metadata = { title: 'Funnel — COYL Admin' }
  *   - Step counts: COUNT(*) per `kind` for 7d + 30d windows
  *   - Conversion: count / count of previous step in the canonical
  *     order (started → completed → email_captured → signup_started)
+ *   - Viral loop: shared → waitlist_joined / waitlist_referral_joined
  *   - Sparkline: 30 daily buckets per step, rendered as inline SVG
  *     path so we add no chart library to the bundle
  *   - Raw tail: last 50 rows, newest first
@@ -72,6 +73,10 @@ export default async function FunnelPage({ searchParams }: { searchParams: Searc
 
       <Suspense fallback={<div className="text-sm text-gray-500">Loading step table…</div>}>
         <StepTable family={familyFilter} />
+      </Suspense>
+
+      <Suspense fallback={<div className="text-sm text-gray-500">Loading viral loop…</div>}>
+        <ViralLoopMetrics family={familyFilter} />
       </Suspense>
 
       <Suspense fallback={<div className="text-sm text-gray-500">Loading sparklines…</div>}>
@@ -177,6 +182,80 @@ async function StepTable({ family }: { family: ArchetypeFamily | null }) {
         </table>
       </div>
     </section>
+  )
+}
+
+async function ViralLoopMetrics({ family }: { family: ArchetypeFamily | null }) {
+  await connection()
+  const cutoff30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+  const whereBase = family
+    ? { createdAt: { gte: cutoff30 }, archetypeFamily: family }
+    : { createdAt: { gte: cutoff30 } }
+
+  const [shares, directJoins, referralJoins] = await Promise.all([
+    prisma.auditFunnelEvent.count({
+      where: { ...whereBase, kind: 'shared' },
+    }),
+    prisma.auditFunnelEvent.count({
+      where: { ...whereBase, kind: 'waitlist_joined' },
+    }),
+    prisma.auditFunnelEvent.count({
+      where: { ...whereBase, kind: 'waitlist_referral_joined' },
+    }),
+  ])
+
+  const totalJoins = directJoins + referralJoins
+  const referralRate = pct(referralJoins, totalJoins)
+  const referralPerShare = pct(referralJoins, shares)
+
+  return (
+    <section>
+      <h2 className="mb-4 font-mono text-[11px] uppercase tracking-[0.16em] text-gray-500">
+        Viral loop · last 30 days
+      </h2>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <MetricCard label="Share actions" value={shares} caption="audit result + waitlist invite" />
+        <MetricCard label="Waitlist joins" value={totalJoins} caption={`${directJoins} direct · ${referralJoins} referred`} />
+        <MetricCard label="Referral joins" value={referralJoins} caption="joined through a friend code" tone="orange" />
+        <MetricCard
+          label="Referral rate"
+          value={referralRate === null ? '—' : `${referralRate}%`}
+          caption={referralPerShare === null ? 'shares not measured yet' : `${referralPerShare}% referrals per share action`}
+          tone="emerald"
+        />
+      </div>
+    </section>
+  )
+}
+
+function MetricCard({
+  label,
+  value,
+  caption,
+  tone = 'primary',
+}: {
+  label: string
+  value: number | string
+  caption: string
+  tone?: 'primary' | 'orange' | 'emerald'
+}) {
+  const color =
+    tone === 'orange'
+      ? 'text-orange-400'
+      : tone === 'emerald'
+        ? 'text-emerald-400'
+        : 'text-gray-100'
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-gray-400">
+        {label}
+      </p>
+      <p className={`mt-3 text-3xl font-black tabular-nums ${color}`}>
+        {typeof value === 'number' ? value.toLocaleString() : value}
+      </p>
+      <p className="mt-2 text-xs leading-relaxed text-gray-500">{caption}</p>
+    </div>
   )
 }
 
