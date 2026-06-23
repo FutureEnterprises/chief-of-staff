@@ -159,3 +159,7 @@ DerivedData/
 *.xcworkspace/xcuserdata/
 .swiftpm/
 Package.resolved
+
+# Agent worktrees + Serena cache (never commit)
+.claude/worktrees/
+.serena/
