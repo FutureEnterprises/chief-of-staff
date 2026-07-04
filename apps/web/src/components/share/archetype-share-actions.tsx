@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { readAuditSession, fireAuditBeacon } from '@/lib/audit-session'
 
 /**
  * Client share island for the /card/[slug] page.
@@ -25,32 +26,19 @@ export function ArchetypeShareActions({
   const [copied, setCopied] = useState(false)
   const pageUrl = `https://coyl.ai/card/${slug}`
   const imageUrl = `https://coyl.ai/api/og/archetype?slug=${slug}`
-  const caption = `I'm ${name} on COYL. What's your pattern? Take the 90-second audit → coyl.ai/audit`
+  const caption = `I'm ${name} on COYL. What's your pattern? Take the 60-second audit → coyl.ai/audit`
 
   function track(channel: string) {
-    const body = JSON.stringify({
-      sessionId: `card:${slug}`.slice(0, 64),
+    // Join the visitor's real audit session when one exists — the old
+    // constant `card:${slug}` id collapsed distinct-session math.
+    const sessionId = (readAuditSession() || `card:${slug}`).slice(0, 64)
+    fireAuditBeacon({
+      sessionId,
       kind: 'shared',
       archetypeFamily: slug,
       archetypeSlug: slug,
       source: `card_${channel}`.slice(0, 64),
     })
-
-    try {
-      if ('sendBeacon' in navigator) {
-        const blob = new Blob([body], { type: 'application/json' })
-        navigator.sendBeacon('/api/v1/audit/event', blob)
-      } else {
-        void fetch('/api/v1/audit/event', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body,
-          keepalive: true,
-        }).catch(() => {})
-      }
-    } catch {
-      /* swallow — telemetry must not break sharing */
-    }
 
     try {
       void import('@/lib/telemetry/posthog-client').then(({ captureMarketingEvent }) => {
@@ -66,10 +54,11 @@ export function ArchetypeShareActions({
       try {
         await navigator.share({ title: `I'm ${name}`, text: caption, url: pageUrl })
         track('web_share')
-        return
       } catch {
-        /* user cancelled or unsupported — fall through to copy */
+        /* user cancelled (AbortError) or share failed — a cancel is NOT
+           a share: no event, and don't clobber their clipboard. */
       }
+      return
     }
     await onCopy()
   }

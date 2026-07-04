@@ -282,7 +282,7 @@ export default function PatternsPage() {
             Start
           </p>
           <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.1] tracking-[-0.015em] text-gray-900 md:text-5xl">
-            Take the 90-second audit.
+            Take the 60-second audit.
           </h2>
           <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
             Three questions. No signup. Your autopilot family on the other

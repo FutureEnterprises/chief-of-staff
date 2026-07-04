@@ -189,7 +189,7 @@ export async function GET(req: NextRequest) {
           }}
         >
           <div style={{ display: 'flex', fontSize: '30px', color: MUTED }}>
-            What’s yours? · 90-second audit
+            What’s yours? · 60-second audit
           </div>
           <div style={{ display: 'flex', fontSize: '34px', color: ACCENT, fontWeight: 700 }}>
             coyl.ai/audit

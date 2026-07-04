@@ -317,7 +317,14 @@ export function buildShareSlug(a: { wedge: WedgeId; window: WindowId; script: Sc
   return `${a.wedge}-${a.window}-${a.script}`
 }
 
-export function buildShareUrl(a: { wedge: WedgeId; window: WindowId; script: ScriptId }, base?: string): string {
+export function buildShareUrl(
+  a: { wedge: WedgeId; window: WindowId; script: ScriptId },
+  base?: string,
+  /** Sharer's audit-session fragment. Rides as `?r=` so the landing
+   *  page can forward it into the recipient's funnel events — the
+   *  sharer→recipient edge that makes per-archetype K computable. */
+  ref?: string,
+): string {
   const slug = buildShareSlug(a)
   // Prefer the canonical host so every shared link points at the same
   // origin (no apex/preview/localhost fragmentation that splits OG cache
@@ -326,7 +333,8 @@ export function buildShareUrl(a: { wedge: WedgeId; window: WindowId; script: Scr
     base ??
     process.env.NEXT_PUBLIC_APP_URL ??
     (typeof window !== 'undefined' ? window.location.origin : 'https://www.coyl.ai')
-  return `${root}/a/${slug}`
+  const clean = ref ? ref.replace(/[^a-zA-Z0-9]/g, '').slice(0, 16) : ''
+  return `${root}/a/${slug}${clean ? `?r=${clean}` : ''}`
 }
 
 export function buildFamilyUrl(slug: ArchetypeFamily, base?: string): string {

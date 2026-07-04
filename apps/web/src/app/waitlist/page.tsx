@@ -17,7 +17,7 @@ import { WaitlistView } from './waitlist-view'
 export const metadata: Metadata = {
   title: 'COYL is invite-only — request access',
   description:
-    'COYL opens to the people who want it first. Request access, or skip the line with a code from a friend. The 90-second pattern audit is free right now.',
+    'COYL opens to the people who want it first. Request access, or skip the line with a code from a friend. The 60-second pattern audit is free right now.',
   alternates: { canonical: '/waitlist' },
   openGraph: {
     title: 'COYL is invite-only — request access',
@@ -50,7 +50,7 @@ export default function WaitlistPage() {
           <p className="text-sm text-[#a59a87]">
             Already know your pattern?{' '}
             <Link href="/audit" className="font-semibold text-orange-400 underline-offset-4 hover:underline">
-              Take the 90-second audit →
+              Take the 60-second audit →
             </Link>{' '}
             It&rsquo;s free, no account needed.
           </p>

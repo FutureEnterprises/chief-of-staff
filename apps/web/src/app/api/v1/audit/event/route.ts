@@ -34,6 +34,7 @@ import { checkDistributedRateLimit } from '@/lib/rate-limit'
 const schema = z.object({
   sessionId: z.string().min(1).max(64),
   kind: z.enum([
+    'landed', // recipient hit a share landing page (/a, /card, /i)
     'started',
     'completed',
     'email_captured',

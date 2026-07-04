@@ -243,7 +243,7 @@ export function WaitlistView() {
       </button>
       {error && <p className="text-sm text-red-400">{error}</p>}
       <p className="text-xs text-[#7a7264]">
-        No spam. One email when your spot opens. The 90-second audit is free now — this is for the app.
+        No spam. One email when your spot opens. The 60-second audit is free now — this is for the app.
       </p>
     </form>
   )

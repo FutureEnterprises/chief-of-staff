@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { GlassNav } from '@/components/landing/glass-nav'
 import { CoylLogo } from '@/components/brand/logo'
+import { AuditCta } from '@/components/share/audit-cta'
 import {
   buildArchetype,
   parseShareSlug,
@@ -178,6 +179,22 @@ async function ArchetypeContent({ params }: PageProps) {
             </p>
           </div>
         </div>
+
+        {/* RECIPIENT FAST PATH — the loop dies in the screens between
+            landing and "Start the audit". One above-the-fold tap, right
+            under the sharer's card, before any sharer-oriented content. */}
+        <AuditCta
+          surface="a"
+          archetypeSlug={a.family.slug}
+          className="mt-4 flex items-center justify-between gap-4 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 px-6 py-4 shadow-[0_12px_32px_-8px_rgba(255,102,0,0.45)] transition-transform hover:scale-[1.01]"
+        >
+          <span className="text-base font-black text-white md:text-lg">
+            What would <em className="not-italic underline decoration-white/50 underline-offset-4">yours</em> be?
+          </span>
+          <span className="whitespace-nowrap font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-white/90">
+            60 sec · no signup &rarr;
+          </span>
+        </AuditCta>
 
         {/* SPECIFIC CARD — the texture. Smaller, secondary visual
             priority, but anchors the family to a real moment in the

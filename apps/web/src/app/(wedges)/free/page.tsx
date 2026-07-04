@@ -298,7 +298,7 @@ export default function FreePage() {
             Start
           </p>
           <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.1] tracking-[-0.015em] text-gray-900 md:text-5xl">
-            Take the <Capsule>90-second audit</Capsule>. Name your pattern.
+            Take the <Capsule>60-second audit</Capsule>. Name your pattern.
           </h2>
           <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
             Three questions. No signup. Your autopilot family on the other

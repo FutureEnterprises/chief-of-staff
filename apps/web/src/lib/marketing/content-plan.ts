@@ -57,7 +57,7 @@ export const CONTENT_ROTATION: ContentCombo[] = [
 
   // ── Threads: identity-recognition, screenshot-y ──────────────────
   { platform: 'THREADS', archetype: 'the-deserver', topic: '"I deserve this" — said within 90 minutes of finishing something hard. Which pattern is yours?' },
-  { platform: 'THREADS', archetype: 'category-launch', topic: 'Take the 90-second audit and meet your autopilot archetype. Six patterns. One is yours.' },
+  { platform: 'THREADS', archetype: 'category-launch', topic: 'Take the 60-second audit and meet your autopilot archetype. Six patterns. One is yours.' },
   { platform: 'THREADS', archetype: 'the-spiral-extender', topic: 'The slip is not the cost. The spiral after it is. Same-night re-entry, no Monday reset.' },
 
   // ── LinkedIn: behavioral-science credibility ─────────────────────

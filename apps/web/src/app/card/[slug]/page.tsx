@@ -6,12 +6,13 @@
  *   - Renders the card visually (HTML twin of the /api/og/archetype PNG)
  *     so it's screenshot-ready on its own
  *   - Share / download / copy actions (the OG 9:16 PNG is the asset)
- *   - "Not you? Take the 90-second audit" — the acquisition CTA
+ *   - "Not you? Take the 60-second audit" — the acquisition CTA
  *   - A browse row of the other archetypes ("which one is your friend?")
  *
  * 10 slugs → 10 statically-generated, individually-shareable, SEO-indexed
- * pages. Each one is a viral asset. OG meta points at the 9:16 PNG so the
- * link preview IS the card.
+ * pages. Each one is a viral asset. OG meta points at the 1200×630
+ * landscape atom (link scrapers crop portrait); the 9:16 PNG remains the
+ * Download/story asset.
  *
  * NEDA-safe: behavioral/pattern language only. No body/weight/calorie copy.
  *
@@ -28,6 +29,7 @@ import {
 } from '@/lib/archetype-cards'
 import { ArchetypeShareActions } from '@/components/share/archetype-share-actions'
 import { ArchetypeRarityPill } from '@/components/share/archetype-rarity-pill'
+import { AuditCta } from '@/components/share/audit-cta'
 
 // No `export const revalidate` — Next.js 16 cacheComponents rejects the
 // segment config. generateStaticParams still statically generates all 10
@@ -45,9 +47,18 @@ export async function generateMetadata({
   const { slug } = await params
   const card = getArchetypeCard(slug)
   if (!card) return { title: 'Pattern not found · COYL' }
-  const img = `/api/og/archetype?slug=${slug}`
+  // Link previews need LANDSCAPE (X/Slack/LinkedIn crop to ~1.91:1 — the
+  // 9:16 story PNG center-crops to empty dark space with the name cut off).
+  // The 9:16 route stays as the Download/story asset only.
+  const img =
+    `/api/og?variant=archetype` +
+    `&family=${encodeURIComponent(card.name)}` +
+    `&signature=${encodeURIComponent(card.signature)}` +
+    `&specific=${encodeURIComponent(card.window)}` +
+    `&stat=${encodeURIComponent(card.rarity)}` +
+    `&cta=${encodeURIComponent("What's your pattern?")}`
   const title = `${card.name} — what's your pattern? · COYL`
-  const description = `${card.essence} ${card.rarity} Take the 90-second audit.`
+  const description = `${card.essence} ${card.rarity} Take the 60-second audit.`
   return {
     title,
     description,
@@ -56,7 +67,7 @@ export async function generateMetadata({
       title,
       description,
       url: `https://coyl.ai/card/${slug}`,
-      images: [{ url: img, width: 1080, height: 1920 }],
+      images: [{ url: img, width: 1200, height: 630 }],
     },
     twitter: { card: 'summary_large_image', title, description, images: [img] },
   }
@@ -111,7 +122,7 @@ export default async function CardPage({
               <ArchetypeRarityPill slug={slug} name={card.name} fallback={card.rarity} />
             </div>
             <div className="mt-5 flex items-center justify-between border-t border-white/[0.10] pt-3">
-              <span className="text-[10px] text-[#8a7f6d]">90-second audit</span>
+              <span className="text-[10px] text-[#8a7f6d]">60-second audit</span>
               <span className="text-[11px] font-bold text-orange-500">coyl.ai/audit</span>
             </div>
           </div>
@@ -129,6 +140,22 @@ export default async function CardPage({
             <p className="mt-5 max-w-md text-lg leading-[1.6] text-[#cdc2ad]">{card.essence}</p>
           </div>
 
+          {/* RECIPIENT FAST PATH — outranks the sharer-oriented actions.
+              Most visitors here were sent a friend's card; their next
+              tap must be the quiz, not the waitlist. */}
+          <AuditCta
+            surface="card"
+            archetypeSlug={slug}
+            className="flex items-center justify-between gap-4 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 px-6 py-4 shadow-[0_0_28px_rgba(255,102,0,0.35)] transition-transform hover:scale-[1.01]"
+          >
+            <span className="text-base font-black text-white">
+              Not you? Find <em className="not-italic underline decoration-white/50 underline-offset-4">yours</em>.
+            </span>
+            <span className="whitespace-nowrap font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-white/90">
+              60 sec · no signup &rarr;
+            </span>
+          </AuditCta>
+
           <ArchetypeShareActions slug={slug} name={card.name} />
 
           {/* FOMO bridge — card → waitlist, archetype carried for a warm
@@ -143,15 +170,6 @@ export default async function CardPage({
                 Request access →
               </Link>{' '}
               and we&rsquo;ll open {card.name} first.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5">
-            <p className="text-sm leading-[1.6] text-[#a59a87]">
-              Not you? The pattern only shows up if it&rsquo;s yours.{' '}
-              <Link href="/audit" className="font-semibold text-orange-400 underline-offset-4 hover:underline">
-                Take the 90-second audit →
-              </Link>
             </p>
           </div>
 

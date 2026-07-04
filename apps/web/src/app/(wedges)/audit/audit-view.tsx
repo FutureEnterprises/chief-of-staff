@@ -25,6 +25,7 @@ import {
   type ScriptId,
   type Archetype,
 } from '@/lib/audit-archetype'
+import { getOrCreateAuditSession, readAuditSession } from '@/lib/audit-session'
 import { reboundEquivalent } from '@/lib/family-taxonomy-map'
 import {
   CinematicScrim,
@@ -150,37 +151,9 @@ function resultHeadline(wedge: WedgeId, window: WindowId): string {
  * signup_started) tie together server-side without auth. Survives page
  * reloads inside the audit. Reset on each fresh visit (>24h gap).
  */
-const AUDIT_SESSION_COOKIE = 'coyl_audit_sid'
-const AUDIT_SESSION_TTL_HOURS = 24
-
-function getOrCreateAuditSession(): string {
-  if (typeof document === 'undefined') return ''
-  const existing = document.cookie
-    .split('; ')
-    .find((row) => row.startsWith(`${AUDIT_SESSION_COOKIE}=`))
-    ?.split('=')[1]
-  if (existing) return existing
-  const fresh =
-    (typeof crypto !== 'undefined' && 'randomUUID' in crypto
-      ? crypto.randomUUID()
-      : Math.random().toString(36).slice(2)) + Date.now().toString(36)
-  const maxAge = AUDIT_SESSION_TTL_HOURS * 60 * 60
-  document.cookie = `${AUDIT_SESSION_COOKIE}=${fresh}; max-age=${maxAge}; path=/; SameSite=Lax`
-  return fresh
-}
-
-/** Read-only sibling — used by child components (EmailResultBlock,
- *  ScheduleInterruptBlock, sign-up CTAs) that need the session id
- *  without retriggering the create flow. */
-function readAuditSession(): string {
-  if (typeof document === 'undefined') return ''
-  return (
-    document.cookie
-      .split('; ')
-      .find((row) => row.startsWith(`${AUDIT_SESSION_COOKIE}=`))
-      ?.split('=')[1] ?? ''
-  )
-}
+// Session helpers extracted to '@/lib/audit-session' so the share
+// landing surfaces (/a, /card, /i) join the SAME 24h session instead
+// of inventing constant per-slug ids. Imported below.
 
 /**
  * Fire-and-forget funnel beacon. Dual-fires:
@@ -253,9 +226,28 @@ export function AuditView() {
   const sessionIdRef = useRef<string>('')
   const startedFiredRef = useRef(false)
   const completedFiredRef = useRef(false)
+  // Incoming attribution: shared links land on /a|/card|/i with ?r={sharer
+  // sid fragment}; those pages forward it here as /audit?src=…&r=…. Stamped
+  // into started/completed as `source` so sharer→recipient edges (and
+  // per-archetype K) are computable from owned data.
+  const attributionRef = useRef<string | undefined>(undefined)
 
   useEffect(() => {
     sessionIdRef.current = getOrCreateAuditSession()
+    try {
+      const qs = new URLSearchParams(window.location.search)
+      const r = (qs.get('r') ?? '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 16)
+      const src = (qs.get('src') ?? qs.get('ref') ?? '')
+        .replace(/[^a-zA-Z0-9_-]/g, '')
+        .slice(0, 24)
+      attributionRef.current = r
+        ? `r:${r}${src ? `:${src}` : ''}`
+        : src
+          ? `src:${src}`
+          : undefined
+    } catch {
+      /* ignore — attribution is best-effort */
+    }
   }, [])
 
   // Fire the 'started' beacon the first time the user selects an
@@ -264,7 +256,10 @@ export function AuditView() {
   useEffect(() => {
     if (step >= 1 && !startedFiredRef.current && sessionIdRef.current) {
       startedFiredRef.current = true
-      fireFunnelEvent('started', { sessionId: sessionIdRef.current })
+      fireFunnelEvent('started', {
+        sessionId: sessionIdRef.current,
+        source: attributionRef.current,
+      })
     }
   }, [step])
 
@@ -287,6 +282,7 @@ export function AuditView() {
         wedge,
         window: windowChoice,
         script,
+        source: attributionRef.current,
       })
     }
   }, [wedge, windowChoice, script])
@@ -1480,7 +1476,10 @@ function ArchetypeShareButton({
 }) {
   const [copied, setCopied] = useState(false)
 
-  const shareUrl = buildShareUrl(archetype)
+  // Ride the sharer's session fragment on the URL (?r=) so the landing
+  // page can attribute the recipient's funnel back to this share — the
+  // edge that makes per-archetype K measurable.
+  const shareUrl = buildShareUrl(archetype, undefined, sessionId || readAuditSession() || undefined)
   const shareText = `I'm ${archetype.family.name}. ${archetype.family.signature} — the script COYL catches.\n\nFind your autopilot family:`
   const shareTextWithUrl = `${shareText} ${shareUrl}`
 
@@ -1508,10 +1507,11 @@ function ArchetypeShareButton({
           url: shareUrl,
         })
         trackShare('web_share')
-        return
       } catch {
-        // user cancelled — fall through to clipboard
+        // User cancelled (AbortError) or share failed. A cancel is NOT
+        // a share — no event, and don't clobber their clipboard.
       }
+      return
     }
     await handleCopy()
   }

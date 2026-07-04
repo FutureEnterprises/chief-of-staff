@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { getSharedCardByCode } from '@/lib/rescue-share'
 import { AutopilotCard } from '@/components/share/autopilot-card'
 import { ShareActions } from '@/components/share/share-actions'
+import { AuditCta } from '@/components/share/audit-cta'
 import { CoylLogo } from '@/components/brand/logo'
 
 /**
@@ -104,18 +105,27 @@ async function ShareContent({ params }: PageProps) {
     <>
       <div className="mx-auto max-w-xl px-6 py-10 md:py-16">
         <AutopilotCard data={card} variant="square" />
-        <ShareActions shareUrl={shareUrl} shareText={shareText} />
 
-        {/* Soft "audit yourself" CTA — for the friend who lands here cold */}
-        <Link
-          href="/sign-up?ref=share"
-          className="mt-8 flex items-center justify-between rounded-2xl border border-orange-500/20 bg-[#100e0a] px-5 py-4 text-sm font-medium text-[#f5efe6] transition-colors hover:border-orange-500/50 hover:bg-[#13110c]"
+        {/* The recipient's next tap — the actual quiz, no account wall.
+            Placed ABOVE the share actions: the sharer already shared;
+            the person landing here cold is who this page must convert. */}
+        <AuditCta
+          surface="i"
+          className="mt-6 flex items-center justify-between rounded-2xl border border-orange-500/40 bg-gradient-to-r from-orange-500/[0.14] to-orange-500/[0.06] px-5 py-4 transition-colors hover:border-orange-500/70"
         >
-          <span>Take the audit yourself</span>
-          <span className="font-mono text-xs uppercase tracking-[0.18em] text-[#ff6600]">
-            &rarr;
+          <span className="text-base font-bold text-[#f5efe6]">
+            What&rsquo;s <em className="not-italic text-[#ff6600]">your</em> pattern?
           </span>
-        </Link>
+          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#ff6600]">
+            60-sec audit · no signup &rarr;
+          </span>
+        </AuditCta>
+
+        <ShareActions
+          shareUrl={shareUrl}
+          shareText={shareText}
+          trackId={`i:${card.shareCode}`}
+        />
 
         {/* "What is this?" explainer */}
         <section className="mt-12 rounded-3xl border border-white/10 bg-white/[0.02] p-6 md:p-8">
