@@ -4,6 +4,8 @@ import { Resend } from 'resend'
 import { verifyCronAuth } from '@/lib/cron-auth'
 import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { getFamily, parseFamilySlug } from '@/lib/audit-archetype'
+import { sendWebPushForUser } from '@/lib/web-push'
+import { recordInterrupt } from '@/lib/interrupt-guard'
 
 export const maxDuration = 60
 
@@ -17,8 +19,19 @@ export const maxDuration = 60
  *
  *   - SMS via Twilio (same provider /catch-me uses) — if a phone is on
  *     the row AND TWILIO_* env is configured.
+ *   - Web Push — if the row's email resolves to a signed-up user who
+ *     has subscribed (the /today enable banner). Preferred over email
+ *     for those users: a lock-screen push at the danger-window moment
+ *     IS the product; an email is a description of it. The onboarding
+ *     first-catch path (completeOnboarding → scheduleFirstInterrupt)
+ *     feeds these rows.
  *   - Email via Resend — if an email is on the row AND RESEND_API_KEY
- *     is configured.
+ *     is configured AND web push didn't already carry it.
+ *
+ * Rows that resolve to a signed-up account also get an
+ * AUTOPILOT_INTERRUPTED event via recordInterrupt() so the catch shows
+ * up in /today's InterruptHistory — same visibility a cron-fired
+ * danger-window interrupt gets.
  *
  * On success, status flips to SENT with sentAt. On failure (provider
  * error, missing config for the contact method that was captured), the
@@ -86,10 +99,23 @@ export async function GET(req: Request) {
 
   for (const row of pending) {
     const family = resolveFamily(row.archetypeFamily)
-    const body = composeBody(family)
-    const subject = composeSubject(family)
     const errors: string[] = []
     let dispatched = false
+    const channels: string[] = []
+
+    // Resolve the row to a signed-up account when possible. Anonymous
+    // audit-funnel emails usually won't match; onboarding first-catch
+    // rows always will. The account unlocks web push + interrupt-history
+    // visibility.
+    const account = row.email
+      ? await prisma.user.findUnique({
+          where: { email: row.email },
+          select: { id: true, webPushSubscription: true },
+        })
+      : null
+
+    const body = composeBody(family, Boolean(account))
+    const subject = composeSubject(family)
 
     if (row.phoneNumber && twilio) {
       try {
@@ -101,6 +127,7 @@ export async function GET(req: Request) {
             : { from: fromNumber! }),
         })
         dispatched = true
+        channels.push('sms')
       } catch (err) {
         errors.push(`sms: ${err instanceof Error ? err.message : 'unknown'}`)
       }
@@ -110,7 +137,30 @@ export async function GET(req: Request) {
       errors.push('sms: provider not configured')
     }
 
-    if (row.email && resend) {
+    // Channel preference for signed-up users: web push when subscribed,
+    // else email. Push failures (expired sub, VAPID misconfig) fall
+    // through to the email branch below so the row still lands.
+    let webPushSent = false
+    if (account?.webPushSubscription) {
+      const result = await sendWebPushForUser({
+        userId: account.id,
+        subscription: account.webPushSubscription,
+        payload: {
+          title: subject,
+          body,
+          data: { type: 'scheduled_interrupt', screen: 'rescue' },
+        },
+      })
+      if (result === 'sent') {
+        dispatched = true
+        webPushSent = true
+        channels.push('web')
+      } else {
+        errors.push(`web: ${result}`)
+      }
+    }
+
+    if (!webPushSent && row.email && resend) {
       try {
         await resend.emails.send({
           from: fromEmail,
@@ -119,11 +169,34 @@ export async function GET(req: Request) {
           text: body,
         })
         dispatched = true
+        channels.push('email')
       } catch (err) {
         errors.push(`email: ${err instanceof Error ? err.message : 'unknown'}`)
       }
-    } else if (row.email && !resend) {
+    } else if (!webPushSent && row.email && !resend) {
       errors.push('email: provider not configured')
+    }
+
+    // Make the catch visible in /today's InterruptHistory for account
+    // holders. Fire-and-forget shaped: a logging failure must not stop
+    // the row from flipping to SENT (the send already happened).
+    if (dispatched && account) {
+      try {
+        await recordInterrupt({
+          userId: account.id,
+          kind: 'DANGER_WINDOW',
+          channel: channels.join('+') || 'none',
+          metadata: {
+            source: 'scheduled_interrupt',
+            scheduledInterruptId: row.id,
+            label: family.name,
+          },
+        })
+      } catch (err) {
+        console.warn('[scheduled-interrupts] recordInterrupt failed', {
+          err: err instanceof Error ? err.message : 'unknown',
+        })
+      }
     }
 
     if (dispatched) {
@@ -164,12 +237,18 @@ function resolveFamily(slug: string): { name: string; signature: string } {
   return { name: 'COYL', signature: 'Your danger window is opening.' }
 }
 
-function composeBody(family: { name: string; signature: string }): string {
+function composeBody(family: { name: string; signature: string }, isAccount: boolean): string {
+  // Anonymous audit-takers get the sign-up CTA; signed-up users get
+  // routed straight into the rescue ritual instead of a funnel they
+  // already completed.
+  const cta = isAccount
+    ? 'Open your rescue: https://coyl.ai/rescue?from=first_catch'
+    : 'Lock the full system: https://coyl.ai/sign-up?ref=interrupt'
   return [
     `${family.name}: your danger window is opening now.`,
     `${family.signature} ← this is your script tonight.`,
     'Pause. Walk five minutes. Decide after.',
-    'Lock the full system: https://coyl.ai/sign-up?ref=interrupt',
+    cta,
   ].join(' ')
 }
 

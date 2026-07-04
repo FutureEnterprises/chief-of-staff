@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { headers } from 'next/headers'
 import { prisma } from '@repo/database'
+import {
+  formatTime12h,
+  isValidTimezone,
+  partsInTimezone,
+  zonedToUtc,
+} from '@/lib/interrupt-schedule'
 
 /**
  * POST /api/v1/audit/schedule
@@ -72,83 +78,9 @@ const WINDOW_HOURS: Record<'morning' | 'afternoon' | 'afterwork' | 'latenight', 
   latenight: { hour: 21, minute: 30 },
 }
 
-/**
- * Read the "now" calendar fields (Y/M/D/H/M) as they appear in the
- * user's timezone. We use Intl.DateTimeFormat — the same approach the
- * danger-window-interrupt cron uses for matching local hours.
- */
-function partsInTimezone(d: Date, timezone: string): {
-  year: number; month: number; day: number; hour: number; minute: number
-} {
-  const fmt = new Intl.DateTimeFormat('en-US', {
-    timeZone: timezone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
-  const parts = fmt.formatToParts(d)
-  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? '0')
-  // "24" hour cycle in en-US returns "24" at midnight in some ICU builds; normalize.
-  let hour = get('hour')
-  if (hour === 24) hour = 0
-  return {
-    year: get('year'),
-    month: get('month'),
-    day: get('day'),
-    hour,
-    minute: get('minute'),
-  }
-}
-
-/**
- * Compute the UTC instant that corresponds to the given wall-clock
- * (year, month, day, hour, minute) in the named timezone.
- *
- * Approach: pretend the wall-clock IS UTC (Date.UTC), then measure the
- * offset between that and how it actually renders in the timezone, and
- * subtract. Repeat once to handle DST cusps. Pure stdlib — no deps.
- */
-function zonedToUtc(
-  year: number,
-  month: number,
-  day: number,
-  hour: number,
-  minute: number,
-  timezone: string,
-): Date {
-  const guess = new Date(Date.UTC(year, month - 1, day, hour, minute, 0, 0))
-  const rendered = partsInTimezone(guess, timezone)
-  const wallAsUtc = Date.UTC(year, month - 1, day, hour, minute, 0, 0)
-  const renderedAsUtc = Date.UTC(
-    rendered.year,
-    rendered.month - 1,
-    rendered.day,
-    rendered.hour,
-    rendered.minute,
-    0,
-    0,
-  )
-  const offsetMs = renderedAsUtc - wallAsUtc
-  let adjusted = new Date(guess.getTime() - offsetMs)
-  // One more refinement pass for DST transitions.
-  const rendered2 = partsInTimezone(adjusted, timezone)
-  if (rendered2.hour !== hour || rendered2.minute !== minute) {
-    const r2Utc = Date.UTC(
-      rendered2.year,
-      rendered2.month - 1,
-      rendered2.day,
-      rendered2.hour,
-      rendered2.minute,
-      0,
-      0,
-    )
-    adjusted = new Date(adjusted.getTime() - (r2Utc - wallAsUtc))
-  }
-  return adjusted
-}
+// partsInTimezone / zonedToUtc / formatTime12h / isValidTimezone were
+// extracted to @/lib/interrupt-schedule so the onboarding first-catch
+// scheduler computes send times with the exact same math as this route.
 
 /**
  * Compute the next instance of the user's danger window:
@@ -194,22 +126,6 @@ function computeNextWindow(
   const timeLabel = formatTime12h(target.hour, target.minute)
 
   return { scheduledFor, scheduledForLocal: `${dayLabel} at ${timeLabel}` }
-}
-
-function formatTime12h(hour: number, minute: number): string {
-  const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
-  const meridiem = hour < 12 ? 'AM' : 'PM'
-  const mm = String(minute).padStart(2, '0')
-  return `${h12}:${mm} ${meridiem}`
-}
-
-function isValidTimezone(tz: string): boolean {
-  try {
-    new Intl.DateTimeFormat('en-US', { timeZone: tz })
-    return true
-  } catch {
-    return false
-  }
 }
 
 export async function POST(req: Request) {

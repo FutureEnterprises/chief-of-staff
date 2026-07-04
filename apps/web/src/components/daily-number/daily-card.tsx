@@ -22,9 +22,8 @@ import { Copy, Check, Send } from 'lucide-react'
  * action='share' to /api/v1/daily-number/today so the row's shareCount
  * increments — the cron + read-side endpoint both see the bump.
  *
- * NOT wired into today-view.tsx by this commit — the main thread will
- * integrate to avoid a merge collision with parallel agents touching
- * that file.
+ * Rendered in today-view.tsx under the "Today's number" eyebrow,
+ * between the metrics rail and InterruptHistory.
  */
 
 type DailyPayload = {

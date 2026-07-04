@@ -36,6 +36,7 @@ import { formatDate } from '@/lib/utils'
 import { CalloutPanel } from '@/components/callout/callout-panel'
 import { WebPushEnableBanner } from '@/components/web-push/enable-banner'
 import { InterruptHistory } from '@/components/interrupt-history/interrupt-history'
+import { DailyCard } from '@/components/daily-number/daily-card'
 import { QuickSlipButton } from '@/components/slip/quick-slip-button'
 import { identitySentence } from '@/lib/identity-sentence'
 
@@ -63,6 +64,10 @@ interface TodayViewProps {
   topExcuseCategory?: string | null
   topExcuseCount?: number
   selfTrustDelta?: number | null
+  /** "Tonight at 9:30 PM"-style label for the user's queued first catch
+   *  (a PENDING ScheduledInterrupt). Lets the interrupt-history empty
+   *  state promise a concrete moment instead of a vague "next time." */
+  pendingCatch?: string | null
   hasWebPushSubscription?: boolean
   hasMobilePush?: boolean
   hasDangerWindows?: boolean
@@ -94,6 +99,7 @@ export function TodayView({
   topExcuseCategory,
   topExcuseCount,
   selfTrustDelta,
+  pendingCatch,
   hasWebPushSubscription = false,
   hasMobilePush = false,
   hasDangerWindows = false,
@@ -432,11 +438,35 @@ export function TodayView({
         </div>
       </motion.div>
 
+      {/* DAILY NUMBER — the Wordle-style ritual card. ONE number, ONE
+          identity sentence, one-tap share; same atom the public /d/[code]
+          page and the 1080×1080 PNG render. The cream card is a
+          deliberate tonal break on the dark canvas — the shareable
+          artifact should read as an object, not another panel. Width
+          capped so it stays a card, not a takeover. */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.26, duration: 0.5 }}
+        className="mb-12"
+      >
+        <div className="mb-5 flex items-baseline justify-between border-b border-white/[0.05] pb-3">
+          <h2 className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#8a847a]">
+            Today&rsquo;s number
+          </h2>
+        </div>
+        <div className="max-w-md">
+          <DailyCard />
+        </div>
+      </motion.div>
+
       {/* Recent interrupts — visible proof the JITAI claim is real.
           planType drives the empty-state copy: FREE users see the
-          3-a-week cap + upgrade hook; paid users see the standard line. */}
+          3-a-week cap + upgrade hook; paid users see the standard line.
+          pendingCatch swaps the empty state for the concrete first-catch
+          promise ("Tonight at 9:30 PM. We'll catch you there."). */}
       <div className="mb-12">
-        <InterruptHistory planType={user.planType} />
+        <InterruptHistory planType={user.planType} pendingCatch={pendingCatch} />
       </div>
 
       {/* Quiet text-link rail — ghosted ritual entry points. Editorial

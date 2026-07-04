@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'motion/react'
-import { Flame, ThumbsUp, ThumbsDown, MinusCircle } from 'lucide-react'
+import { Flame, ThumbsUp, ThumbsDown, MinusCircle, Check } from 'lucide-react'
 
 /**
  * <InterruptHistory /> — visible proof the JITAI claim is real.
@@ -18,8 +18,15 @@ import { Flame, ThumbsUp, ThumbsDown, MinusCircle } from 'lucide-react'
  * available. Rendered in /today below the danger-window stats.
  *
  * Honest about empty state: if no interrupts have fired yet, the card
- * doesn't pretend. It tells the user when the system will start firing
- * and links to the relevant settings.
+ * doesn't pretend. When a first catch is already queued (pendingCatch,
+ * server-fetched from the PENDING ScheduledInterrupt row) it announces
+ * the concrete moment — "Tonight at 9:30 PM. We'll catch you there." —
+ * otherwise it tells the user when the system will start firing and
+ * links to the relevant settings.
+ *
+ * Each fired row carries a "Share this catch →" affordance that mints
+ * (or reuses) an /i/[code] Autopilot-Interrupted card through the same
+ * POST /api/v1/rescue/share path rescue-view uses after a pull-through.
  */
 
 interface InterruptRow {
@@ -31,7 +38,14 @@ interface InterruptRow {
   feedback: 'helpful' | 'not_helpful' | null
 }
 
-export function InterruptHistory({ planType }: { planType?: string }) {
+export function InterruptHistory({
+  planType,
+  pendingCatch,
+}: {
+  planType?: string
+  /** "Tonight at 9:30 PM"-style label for a queued first catch, or null. */
+  pendingCatch?: string | null
+}) {
   const [rows, setRows] = useState<InterruptRow[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const isFree = planType === 'FREE'
@@ -72,23 +86,41 @@ export function InterruptHistory({ planType }: { planType?: string }) {
         className="rounded-2xl border border-white/5 bg-white/[0.02] p-5"
       >
         <p className="label-xs text-orange-500">RECENT INTERRUPTS</p>
-        <p className="mt-2 text-sm font-semibold text-foreground">
-          No interrupts fired yet.
-        </p>
-        {isFree ? (
-          <p className="mt-1 text-xs text-muted-foreground">
-            Your first interrupt fires the next time you&rsquo;re inside a danger
-            window. Free plan includes 3 interrupts a week —{' '}
-            <Link href="/pricing" className="text-orange-400 underline-offset-2 hover:underline">
-              upgrade for unlimited
-            </Link>
-            .
-          </p>
+        {pendingCatch ? (
+          <>
+            {/* First catch already on the clock — promise the concrete
+                moment instead of the vague "next time you're inside a
+                window." This is the day-one activation read. */}
+            <p className="mt-2 text-sm font-semibold text-foreground">
+              {pendingCatch}. We&rsquo;ll catch you there.
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Your first interrupt is scheduled. It lands as a push if
+              notifications are on, otherwise by email — then it shows up
+              here.
+            </p>
+          </>
         ) : (
-          <p className="mt-1 text-xs text-muted-foreground">
-            The first one fires the next time you&rsquo;re inside one of your danger
-            windows. Map more windows on the patterns page to sharpen the model.
-          </p>
+          <>
+            <p className="mt-2 text-sm font-semibold text-foreground">
+              No interrupts fired yet.
+            </p>
+            {isFree ? (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Your first interrupt fires the next time you&rsquo;re inside a danger
+                window. Free plan includes 3 interrupts a week —{' '}
+                <Link href="/pricing" className="text-orange-400 underline-offset-2 hover:underline">
+                  upgrade for unlimited
+                </Link>
+                .
+              </p>
+            ) : (
+              <p className="mt-1 text-xs text-muted-foreground">
+                The first one fires the next time you&rsquo;re inside one of your danger
+                windows. Map more windows on the patterns page to sharpen the model.
+              </p>
+            )}
+          </>
         )}
       </motion.div>
     )
@@ -117,6 +149,7 @@ export function InterruptHistory({ planType }: { planType?: string }) {
               <p className="mt-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">
                 {formatRelative(r.firedAt)} &middot; {r.channel}
               </p>
+              <ShareCatchButton row={r} />
             </div>
             <FeedbackBadge feedback={r.feedback} />
           </li>
@@ -124,6 +157,98 @@ export function InterruptHistory({ planType }: { planType?: string }) {
       </ul>
     </motion.div>
   )
+}
+
+/**
+ * "Share this catch →" — mints an Autopilot-Interrupted share card for
+ * this interrupt via the existing rescue-share path (POST
+ * /api/v1/rescue/share → RescueSession + /i/[code] URL) and hands the
+ * link to the native share sheet, falling back to clipboard copy.
+ * Idempotent at the client: the minted URL is cached per row so a
+ * second tap reuses the same /i/[code] link.
+ */
+function ShareCatchButton({ row }: { row: InterruptRow }) {
+  const [shareUrl, setShareUrl] = useState<string | null>(null)
+  const [state, setState] = useState<'idle' | 'creating' | 'shared' | 'copied'>('idle')
+
+  async function onShare() {
+    if (state === 'creating') return
+    let url = shareUrl
+    if (!url) {
+      setState('creating')
+      try {
+        const res = await fetch('/api/v1/rescue/share', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trigger: triggerForKind(row.kind) }),
+        })
+        if (!res.ok) {
+          setState('idle')
+          return
+        }
+        const data = (await res.json()) as { shareUrl: string }
+        url = data.shareUrl
+        setShareUrl(url)
+      } catch {
+        setState('idle')
+        return
+      }
+    }
+
+    const shareText = `${humanKind(row.kind)}. COYL caught me.`
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: 'COYL caught me', text: shareText, url })
+        setState('shared')
+        window.setTimeout(() => setState('idle'), 1800)
+        return
+      } catch {
+        // user cancelled or share rejected — fall through to copy
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url)
+      setState('copied')
+      window.setTimeout(() => setState('idle'), 1800)
+    } catch {
+      setState('idle')
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onShare}
+      disabled={state === 'creating'}
+      className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-widest text-orange-400/80 transition-colors hover:text-orange-300 disabled:opacity-60"
+    >
+      {state === 'creating' ? (
+        'Making the card…'
+      ) : state === 'shared' || state === 'copied' ? (
+        <>
+          <Check className="h-3 w-3" /> {state === 'shared' ? 'Shared' : 'Link copied'}
+        </>
+      ) : (
+        <>Share this catch &rarr;</>
+      )}
+    </button>
+  )
+}
+
+/**
+ * Interrupt kind → RescueTrigger for the share card. Post-slip
+ * interrupts read as "After the slip" on the card; everything else
+ * (danger windows, GLP-1) uses OTHER, which the card renders as the
+ * generic "The moment."
+ */
+function triggerForKind(kind: string): string {
+  switch (kind) {
+    case 'POST_SLIP_2H':
+    case 'POST_SLIP_24H':
+      return 'ALREADY_SLIPPED'
+    default:
+      return 'OTHER'
+  }
 }
 
 function FeedbackBadge({ feedback }: { feedback: InterruptRow['feedback'] }) {

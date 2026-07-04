@@ -3,11 +3,12 @@ import { randomBytes } from 'node:crypto'
 import { requireDbUser } from '@/lib/auth'
 import { prisma } from '@repo/database'
 import { proposeAsCoylInternal } from '@/lib/coyl-internal-pap'
+import { formatCatchLabel } from '@/lib/interrupt-schedule'
 import { TodayView } from './today-view'
 
 export const metadata = { title: 'Today' }
 
-async function getTodayData(userId: string, userTimezone: string) {
+async function getTodayData(userId: string, userTimezone: string, userEmail: string) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const tomorrow = new Date(today)
@@ -25,6 +26,7 @@ async function getTodayData(userId: string, userTimezone: string) {
     dangerWindows,
     topExcuseLast7,
     selfTrustWeekAgo,
+    pendingScheduledInterrupt,
   ] = await Promise.all([
     prisma.task.findMany({
       where: {
@@ -87,6 +89,15 @@ async function getTodayData(userId: string, userTimezone: string) {
       },
       select: { metadataJson: true },
     }),
+    // The user's queued first catch (onboarding schedules one via
+    // scheduleFirstInterrupt; the audit funnel can too). ScheduledInterrupt
+    // has no userId — the account email IS the join key, same way the
+    // scheduled-interrupts dispatcher resolves the account at send time.
+    prisma.scheduledInterrupt.findFirst({
+      where: { email: userEmail, status: 'PENDING' },
+      orderBy: { scheduledFor: 'asc' },
+      select: { scheduledFor: true, timezone: true },
+    }),
   ])
 
   // Find next danger window crossing in user's TZ
@@ -107,6 +118,16 @@ async function getTodayData(userId: string, userTimezone: string) {
     ? user.selfTrustScore - prevScore
     : null
 
+  // "Tonight at 9:30 PM" label for the queued first catch. Formatted in
+  // the timezone the row was scheduled against (falls back to the
+  // user's current tz) so the promise reads in the user's own clock.
+  const pendingCatch = pendingScheduledInterrupt
+    ? formatCatchLabel(
+        pendingScheduledInterrupt.scheduledFor,
+        pendingScheduledInterrupt.timezone || userTimezone,
+      )
+    : null
+
   return {
     dueTodayTasks,
     followUpsDueToday,
@@ -119,6 +140,7 @@ async function getTodayData(userId: string, userTimezone: string) {
     topExcuseCategory: topExcuseLast7[0]?.category ?? null,
     topExcuseCount: topExcuseLast7[0]?._count ?? 0,
     selfTrustDelta,
+    pendingCatch,
     // Web push enablement signals — passed to the banner so it knows
     // whether to render. Cheap booleans, computed from data already
     // fetched above.
@@ -219,7 +241,7 @@ function formatHour(h: number): string {
 
 export default async function TodayPage() {
   const user = await requireDbUser()
-  const data = await getTodayData(user.id, user.timezone ?? 'UTC')
+  const data = await getTodayData(user.id, user.timezone ?? 'UTC', user.email)
 
   // First production PAP self-integration. Every /today render emits a
   // real PAPProposal row through the COYL Internal partner. The

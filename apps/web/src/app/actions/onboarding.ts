@@ -6,6 +6,7 @@ import type { ExcuseCategory, PrimaryWedge, ToneMode } from '@repo/database'
 import { requireDbUser } from '@/lib/auth'
 import { onboardingSchema } from '@/lib/validations'
 import { renderWelcomeEmail } from '@/lib/email/welcome-email'
+import { scheduleFirstInterrupt } from '@/lib/interrupt-schedule'
 import { createTaskFromChat } from './tasks'
 
 // Predefined danger-window templates per picked label
@@ -71,10 +72,12 @@ export async function completeOnboarding(data: {
     })
 
     // Seed danger windows from the user's picks
-    if (parsed.data.dangerWindowsPicked && parsed.data.dangerWindowsPicked.length > 0) {
-      const windowsToCreate = parsed.data.dangerWindowsPicked
-        .flatMap((pick) => WINDOW_TEMPLATES[pick] ?? [])
-        .map((w) => ({
+    const seededWindows = (parsed.data.dangerWindowsPicked ?? []).flatMap(
+      (pick) => WINDOW_TEMPLATES[pick] ?? [],
+    )
+    if (seededWindows.length > 0) {
+      await prisma.dangerWindow.createMany({
+        data: seededWindows.map((w) => ({
           userId: user.id,
           label: w.label,
           dayOfWeek: w.dayOfWeek,
@@ -82,10 +85,30 @@ export async function completeOnboarding(data: {
           endHour: w.endHour,
           triggerType: w.triggerType,
           source: 'user',
-        }))
-      if (windowsToCreate.length > 0) {
-        await prisma.dangerWindow.createMany({ data: windowsToCreate })
-      }
+        })),
+      })
+    }
+
+    // First felt interrupt — day-one activation. The 15-min
+    // danger-window-interrupt cron only fires while the user's local
+    // clock is INSIDE a seeded window, so without this the first
+    // interrupt lands hours (sometimes days) after onboarding. Schedule
+    // a one-shot ScheduledInterrupt for the next instance of the
+    // soonest seeded window — or a ~1h "first catch" when nothing lands
+    // within 20h — through the same pipeline the anonymous /audit
+    // funnel uses (cron/scheduled-interrupts dispatches it: web push
+    // if the user has subscribed by then, else email). Wrapped so a
+    // scheduling failure can never break onboarding completion.
+    try {
+      await scheduleFirstInterrupt({
+        email: user.email,
+        timezone: parsed.data.timezone,
+        windows: seededWindows,
+        primaryWedge: parsed.data.primaryWedge,
+        failurePattern: parsed.data.failurePattern,
+      })
+    } catch (err) {
+      console.warn('[onboarding] first-interrupt schedule failed: %s', (err as Error).message)
     }
 
     // Create first commitment from biggestGoal if provided
