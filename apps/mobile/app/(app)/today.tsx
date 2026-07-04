@@ -7,11 +7,17 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Animated,
+  Linking,
 } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useAuth } from '@clerk/clerk-expo'
 import { Ionicons } from '@expo/vector-icons'
 import * as Haptics from 'expo-haptics'
 import { useApiClient } from '../../lib/api'
+import {
+  markOnboardingCompleteSeen,
+  registerForPushIfEarned,
+} from '../../lib/activation'
 import type { CoylUser, ToneMode } from '@repo/shared'
 
 /**
@@ -37,6 +43,13 @@ import type { CoylUser, ToneMode } from '@repo/shared'
  * /api/v1/today still returns the legacy task surfaces which we relegate
  * to the quiet footer — they're orthogonal to the autopilot narrative.
  */
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://www.coyl.ai'
+// The web onboarding wizard — the ONLY surface that sets
+// onboardingCompleted=true and captures user-picked danger windows (it's a
+// server action, not callable from mobile), i.e. what makes this account
+// visible to the interrupt crons. Mobile deep-links out to it.
+const ONBOARDING_URL = `${API_URL}/onboarding`
 
 const COLORS = {
   bg: '#0a0a0a',
@@ -64,14 +77,35 @@ const TONE_LABELS: Record<ToneMode, { label: string; dot: string }> = {
 export default function TodayScreen() {
   const api = useApiClient()
   const router = useRouter()
+  const { getToken } = useAuth()
   const [user, setUser] = useState<CoylUser | null>(null)
   const [refreshing, setRefreshing] = useState(false)
   const pulseAnim = useRef(new Animated.Value(0.5)).current
+  // Keep getToken fresh for the fire-and-forget push trigger below without
+  // re-running load() on token identity changes.
+  const getTokenRef = useRef(getToken)
+  useEffect(() => {
+    getTokenRef.current = getToken
+  }, [getToken])
 
   const load = useCallback(async () => {
     try {
       const u = await api.getUser()
       setUser(u)
+      // Value moment: the FIRST time we observe onboardingCompleted=true
+      // (e.g. right after the user finished coyl.ai/onboarding), unlock the
+      // deferred push-permission ask. markOnboardingCompleteSeen() returns
+      // true only on the flag transition, so this asks at most once from
+      // here; later sessions go through the (app)/_layout gate.
+      if (u.onboardingCompleted) {
+        markOnboardingCompleteSeen()
+          .then((firstSeen) =>
+            firstSeen ? registerForPushIfEarned(() => getTokenRef.current(), API_URL) : null,
+          )
+          .catch((err) => {
+            console.warn('[today] deferred push registration failed:', err)
+          })
+      }
     } catch (err) {
       console.warn('[today] load failed:', err)
     }
@@ -115,6 +149,13 @@ export default function TodayScreen() {
   function goToPatterns() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     router.push('/patterns')
+  }
+
+  function openOnboarding() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    Linking.openURL(ONBOARDING_URL).catch((err) => {
+      console.warn('[today] could not open onboarding URL:', err)
+    })
   }
 
   if (!user) {
@@ -178,6 +219,34 @@ export default function TodayScreen() {
             day: 'numeric',
           })}
         </Text>
+
+        {/* ───── finish-setup card (pinned; only until onboarding is done) ─────
+            Mobile-only signups have onboardingCompleted=false and no
+            user-picked danger windows, so the interrupt crons skip them
+            entirely. The web wizard is the only path that flips that state —
+            send them there. */}
+        {!user.onboardingCompleted && (
+          <TouchableOpacity
+            activeOpacity={0.9}
+            style={styles.setupCard}
+            onPress={openOnboarding}
+            accessibilityLabel="Finish setup at coyl.ai — takes 90 seconds"
+          >
+            <View style={styles.setupHeaderRow}>
+              <View style={styles.setupDot} />
+              <Text style={styles.setupLabel}>ONE STEP LEFT</Text>
+            </View>
+            <Text style={styles.setupTitle}>Turn on your interrupts</Text>
+            <Text style={styles.setupBody}>
+              Pick your danger windows so COYL can catch you in the moment.
+              90 seconds at coyl.ai — then this phone does the rest.
+            </Text>
+            <View style={styles.setupCtaRow}>
+              <Text style={styles.setupCta}>Finish setup at coyl.ai</Text>
+              <Ionicons name="arrow-forward" size={14} color={COLORS.orange} />
+            </View>
+          </TouchableOpacity>
+        )}
 
         {/* ───── danger window banner (only if inside) ───── */}
         {user.insideDangerWindow && (
@@ -353,6 +422,47 @@ const styles = {
     textTransform: 'uppercase' as const,
     letterSpacing: 2,
   },
+
+  // ── finish-setup card (onboardingCompleted=false) ──
+  setupCard: {
+    marginBottom: 20,
+    padding: 20,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,102,0,0.35)',
+    backgroundColor: COLORS.orangeDim,
+  },
+  setupHeaderRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 8,
+    marginBottom: 10,
+  },
+  setupDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.orange,
+  },
+  setupLabel: {
+    fontSize: 11,
+    fontWeight: '800' as const,
+    color: COLORS.orange,
+    letterSpacing: 2.5,
+  },
+  setupTitle: {
+    fontSize: 24,
+    fontWeight: '900' as const,
+    color: COLORS.text,
+    marginBottom: 4,
+  },
+  setupBody: { fontSize: 14, color: COLORS.textDim, marginBottom: 14 },
+  setupCtaRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 6,
+  },
+  setupCta: { fontSize: 13, fontWeight: '800' as const, color: COLORS.orange },
 
   // ── danger banner ──
   dangerBanner: {

@@ -11,14 +11,17 @@ import {
   useWindowDimensions,
 } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useAuth } from '@clerk/clerk-expo'
 import * as Haptics from 'expo-haptics'
 import * as Notifications from 'expo-notifications'
 import {
   buildArchetype,
+  buildShareSlug,
   buildShareUrl,
   parseShareSlug,
   windowLabel,
 } from '../../lib/archetypes'
+import { markQuizSeen } from '../../lib/activation'
 
 /**
  * COYL archetype reveal — the screenshot-worthy moment.
@@ -29,10 +32,18 @@ import {
  * as a single shareable image — eyebrow, large serif-ish name, essence,
  * signature quote, danger window, and the prevalence stat.
  *
- * Two actions, NO paywall:
- *   • Share — native Share.share() with pre-filled text + coyl.ai/audit.
+ * Actions, NO paywall:
+ *   • Start catching yours — the activation CTA: routes to /(auth)/sign-up
+ *     (or /(app)/today when already signed in on a retake). The result slug is
+ *     stashed in AsyncStorage (lib/activation) so the post-signup step can
+ *     replay it into the account via /api/v1/audit/finalize.
+ *   • Share — co-primary. Native Share.share() with pre-filled text +
+ *     the canonical coyl.ai permalink.
  *   • Daily pattern check — requests notification permission and schedules a
  *     daily LOCAL notification at 9:30 PM ("Your {name} window is opening.").
+ *
+ * Rendering the reveal also sets the coyl.quizSeen device flag, so cold-start
+ * routing (app/index) never loops this user back into the quiz.
  *
  * NEDA-safe: behavioural / pattern framing only, no body / diet language.
  */
@@ -54,6 +65,7 @@ const DAILY_MINUTE = 30
 
 export default function RevealScreen() {
   const router = useRouter()
+  const { isSignedIn } = useAuth()
   const { height } = useWindowDimensions()
   const params = useLocalSearchParams<{ slug?: string }>()
 
@@ -67,7 +79,15 @@ export default function RevealScreen() {
   const family = archetype.family
   const specific = archetype.specific
   const dangerWindow = windowLabel(parsed.window)
+  const shareSlug = buildShareSlug(parsed)
   const shareUrl = buildShareUrl(parsed)
+
+  // The reveal has rendered → this device has "seen" the quiz (cold-start
+  // routing goes to sign-in from now on) and this slug is the pending result
+  // the post-signup finalize step replays into the account. Best-effort.
+  useEffect(() => {
+    markQuizSeen(shareSlug).catch(() => {})
+  }, [shareSlug])
 
   const [reminderState, setReminderState] = useState<'idle' | 'scheduling' | 'set' | 'denied'>(
     'idle',
@@ -87,6 +107,14 @@ export default function RevealScreen() {
   }, [enter])
 
   const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [18, 0] })
+
+  const handleStart = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {})
+    // New users start the account; a signed-in retake goes straight home. The
+    // archetype itself travels via AsyncStorage (markQuizSeen above), so
+    // sign-up needs no route params.
+    router.push(isSignedIn ? '/(app)/today' : '/(auth)/sign-up')
+  }, [isSignedIn, router])
 
   const handleShare = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {})
@@ -311,10 +339,11 @@ export default function RevealScreen() {
 
         {/* ── Actions (excluded from the "screenshot" mental frame) ── */}
         <View style={{ marginTop: 24 }}>
+          {/* Primary: the activation CTA — the wow moment must not dead-end. */}
           <Pressable
-            onPress={handleShare}
+            onPress={handleStart}
             accessibilityRole="button"
-            accessibilityLabel="Send this to the friend who's your opposite type"
+            accessibilityLabel="Start catching yours"
             style={({ pressed }) => ({
               backgroundColor: COLORS.orange,
               borderRadius: 16,
@@ -328,6 +357,37 @@ export default function RevealScreen() {
             <Text
               style={{
                 color: '#0e0c0a',
+                fontSize: 16.5,
+                fontWeight: '700',
+                letterSpacing: -0.2,
+                textAlign: 'center',
+              }}
+            >
+              Start catching yours →
+            </Text>
+          </Pressable>
+
+          {/* Co-primary: the viral share — same weight class, orange-on-dim. */}
+          <Pressable
+            onPress={handleShare}
+            accessibilityRole="button"
+            accessibilityLabel="Send this to the friend who's your opposite type"
+            style={({ pressed }) => ({
+              marginTop: 12,
+              backgroundColor: COLORS.orangeDim,
+              borderWidth: 1,
+              borderColor: COLORS.orangeBorder,
+              borderRadius: 16,
+              paddingVertical: 18,
+              paddingHorizontal: 20,
+              alignItems: 'center',
+              opacity: pressed ? 0.88 : 1,
+              transform: [{ scale: pressed ? 0.99 : 1 }],
+            })}
+          >
+            <Text
+              style={{
+                color: COLORS.orange,
                 fontSize: 16.5,
                 fontWeight: '700',
                 letterSpacing: -0.2,

@@ -5,7 +5,6 @@ import { BRAND } from '@repo/shared'
 import { useEffect, useRef } from 'react'
 import * as Notifications from 'expo-notifications'
 import {
-  registerForPushNotifications,
   registerInterruptCategory,
   addNotificationResponseListener,
   handleInterruptNotificationResponse,
@@ -16,6 +15,11 @@ import {
   processColdStartCheckinResponse,
   markCheckinResponseProcessed,
 } from '../../lib/notifications'
+import {
+  finalizePendingQuizResult,
+  noteAppSession,
+  registerForPushIfEarned,
+} from '../../lib/activation'
 import { syncLocalCheckins, type DangerWindowDto } from '../../lib/checkin-scheduler'
 import {
   startInterruptActivity,
@@ -103,9 +107,19 @@ export default function AppTabLayout() {
         return res.json() as Promise<{ windows: DangerWindowDto[] }>
       },
     }
-    syncLocalCheckins(api).catch((err) => {
-      console.warn('[COYL] syncLocalCheckins failed:', err)
-    })
+    // If the user reached the archetype reveal before signing up, replay that
+    // result into POST /api/v1/audit/finalize once (server-side de-duped) so
+    // the account gets real DangerWindow rows — THEN rebuild the on-device
+    // check-ins so the freshly seeded windows are scheduled in the same pass.
+    finalizePendingQuizResult(() => getTokenRef.current(), API_URL)
+      .catch((err) => {
+        console.warn('[COYL] quiz-result finalize failed:', err)
+        return false
+      })
+      .then(() => syncLocalCheckins(api))
+      .catch((err) => {
+        console.warn('[COYL] syncLocalCheckins failed:', err)
+      })
   }, [isSignedIn])
 
   // Push-notification registration + tap handling. Runs once per signed-in
@@ -134,11 +148,17 @@ export default function AppTabLayout() {
       console.warn('[COYL] category registration failed:', err)
     })
 
-    registerForPushNotifications(getToken, API_URL).catch((err) => {
-      // Silent — permission denial is expected and fine, notifications are
-      // an enhancement not a requirement for the app to function.
-      console.warn('[COYL] push registration failed:', err)
-    })
+    // Deferred push ask (lib/activation): never cold-prompt on a first
+    // session. Already-granted users still get the silent token refresh +
+    // POST every session; everyone else is asked only after a value moment —
+    // onboarding completed (see /today) or their second signed-in session.
+    noteAppSession()
+      .then(() => registerForPushIfEarned(getToken, API_URL))
+      .catch((err) => {
+        // Silent — permission denial is expected and fine, notifications are
+        // an enhancement not a requirement for the app to function.
+        console.warn('[COYL] push registration failed:', err)
+      })
 
     // Track in-flight Live Activity ids by interruptId so a follow-up
     // push for the same interrupt (countdown tick, dismissal) can find
