@@ -27,11 +27,11 @@ import { NextRequest } from 'next/server'
  * bulletproof at edge.
  */
 
-const BG = '#0e0d0b'
+const BG = '#0e0c0a'
 const ACCENT = '#ff6600'
 const FG = '#fff7eb'
 const MUTED = '#7a7264'
-const WARM_OFF = '#e7dccb'
+const WARM_OFF = '#cdc2ad'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl

@@ -6,6 +6,7 @@ import { getSharedCardByCode } from '@/lib/rescue-share'
 import { AutopilotCard } from '@/components/share/autopilot-card'
 import { ShareActions } from '@/components/share/share-actions'
 import { AuditCta } from '@/components/share/audit-cta'
+import { DarkCanvas } from '@/components/share/dark-canvas'
 import { CoylLogo } from '@/components/brand/logo'
 
 /**
@@ -71,15 +72,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default function SharePage({ params }: PageProps) {
   return (
-    <main className="min-h-screen bg-[#0e0d0b] text-[#e7dccb]">
-      <header className="border-b border-white/5 bg-[#0e0d0b]/80 backdrop-blur-xl">
+    <main className="min-h-screen bg-[#0e0c0a] text-[#cdc2ad]">
+      <DarkCanvas />
+      <header className="border-b border-white/[0.06] bg-[#0e0c0a]">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link href="/">
             <CoylLogo size="sm" theme="dark" />
           </Link>
           <Link
             href="/sign-up?ref=share"
-            className="rounded-full bg-[#ff6600] px-4 py-1.5 text-xs font-bold text-[#0e0d0b] shadow-[0_0_14px_-2px_rgba(255,102,0,0.5)]"
+            className="rounded-full bg-[#ff6600] px-4 py-1.5 text-xs font-bold text-[#0e0c0a] shadow-[0_0_14px_-2px_rgba(255,102,0,0.5)]"
           >
             Start free
           </Link>
@@ -132,10 +134,10 @@ async function ShareContent({ params }: PageProps) {
           <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-[#ff6600]">
             What is this
           </p>
-          <h2 className="mt-2 text-2xl font-bold text-white md:text-3xl">
+          <h2 className="mt-2 text-2xl font-bold text-[#f5efe6] md:text-3xl">
             COYL fires the second before you fold.
           </h2>
-          <p className="mt-4 text-sm leading-relaxed text-gray-400">
+          <p className="mt-4 text-sm leading-relaxed text-[#cdc2ad]">
             Every other behavior-change app intervenes <em>before</em> the moment
             (reminders) or <em>after</em> the moment (journaling). COYL fires{' '}
             <em>in</em> the 3-second window between trigger and action &mdash;
@@ -145,20 +147,20 @@ async function ShareContent({ params }: PageProps) {
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href="/sign-up?ref=share"
-              className="rounded-full bg-[#ff6600] px-5 py-2.5 text-sm font-bold text-[#0e0d0b] shadow-[0_0_18px_rgba(255,102,0,0.35)]"
+              className="rounded-full bg-[#ff6600] px-5 py-2.5 text-sm font-bold text-[#0e0c0a] shadow-[0_0_18px_rgba(255,102,0,0.35)]"
             >
               Catch me next time &rarr;
             </Link>
             <Link
               href="/how-it-works"
-              className="rounded-full border border-white/10 bg-white/[0.02] px-5 py-2.5 text-sm font-semibold text-gray-200 hover:border-orange-500/40 hover:text-orange-300"
+              className="rounded-full border border-white/10 bg-white/[0.02] px-5 py-2.5 text-sm font-semibold text-[#cdc2ad] hover:border-orange-500/40 hover:text-orange-300"
             >
               How it works
             </Link>
           </div>
         </section>
 
-        <p className="mt-10 text-center text-[11px] text-gray-600">
+        <p className="mt-10 text-center text-[11px] text-[#8a7f6d]">
           Shared anonymously. No identity. The moment, not the person.
         </p>
       </div>

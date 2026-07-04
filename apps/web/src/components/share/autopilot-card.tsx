@@ -59,7 +59,7 @@ export function AutopilotCard({
     <div
       role="img"
       aria-label={`Autopilot Interrupted at ${data.localTimeLabel}. ${data.triggerLabel}. ${resultLine} ${streakLine}. COYL caught me.`}
-      className={`relative w-full overflow-hidden rounded-3xl border border-orange-500/20 bg-[#0e0d0b] shadow-[0_0_80px_-12px_rgba(255,102,0,0.32)] ${aspect}`}
+      className={`relative w-full overflow-hidden rounded-3xl border border-orange-500/20 bg-[#0e0c0a] shadow-[0_0_80px_-12px_rgba(255,102,0,0.32)] ${aspect}`}
     >
       {/* Focal radial wash — anchored behind the time line. Single orange,
           no multi-color gradient (per visual discipline). */}
@@ -114,7 +114,7 @@ export function AutopilotCard({
             }`}
           >
             <Flame
-              className={`text-[#0e0d0b] ${
+              className={`text-[#0e0c0a] ${
                 variant === 'square' || variant === 'story'
                   ? 'h-[55%] w-[55%]'
                   : 'h-5 w-5'
@@ -156,7 +156,7 @@ export function AutopilotCard({
         {/* Streak — mono, uppercase, tight tracking */}
         <div className="flex flex-col gap-[3%]">
           <p
-            className={`font-mono font-medium uppercase leading-tight tracking-[0.16em] text-[#e7dccb] ${
+            className={`font-mono font-medium uppercase leading-tight tracking-[0.16em] text-[#cdc2ad] ${
               variant === 'square'
                 ? 'text-[clamp(11px,2.2cqw,24px)]'
                 : variant === 'story'

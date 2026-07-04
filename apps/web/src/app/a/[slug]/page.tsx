@@ -2,9 +2,9 @@ import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { GlassNav } from '@/components/landing/glass-nav'
 import { CoylLogo } from '@/components/brand/logo'
 import { AuditCta } from '@/components/share/audit-cta'
+import { DarkCanvas } from '@/components/share/dark-canvas'
 import {
   buildArchetype,
   parseShareSlug,
@@ -35,6 +35,11 @@ import {
  * Per the family-tier model, there's also /audit/[family-slug] which
  * shows the family explainer without specific context. /a/[slug] is
  * "MY result"; /audit/[family-slug] is "what this family means."
+ *
+ * Visual language: warm-dark editorial, matched to /card/[slug] — the
+ * recipient taps a dark card in iMessage and should land on the same
+ * canvas, not a bright-white seam. See /card/[slug]/page.tsx for the
+ * canonical palette (#0e0c0a canvas, #f5efe6 text, #ff6600 accent).
  */
 
 type PageProps = { params: Promise<{ slug: string }> }
@@ -118,9 +123,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default function ArchetypeSharePage({ params }: PageProps) {
   return (
-    <div className="min-h-screen bg-[#fafaf7] text-gray-900 selection:bg-orange-500 selection:text-white">
-      <GlassNav />
-      <Suspense fallback={<main className="mx-auto max-w-3xl px-6 pt-28 pb-16 md:pt-36 md:pb-24" />}>
+    <div className="min-h-screen bg-[#0e0c0a] text-[#f5efe6] selection:bg-orange-500 selection:text-white">
+      <DarkCanvas />
+      <header className="border-b border-white/[0.06] bg-[#0e0c0a]">
+        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
+          <Link href="/">
+            <CoylLogo size="sm" theme="dark" />
+          </Link>
+          <Link
+            href="/audit"
+            className="rounded-full bg-[#ff6600] px-4 py-1.5 text-xs font-bold text-[#0e0c0a] shadow-[0_0_14px_-2px_rgba(255,102,0,0.5)]"
+          >
+            Take the audit
+          </Link>
+        </div>
+      </header>
+      <Suspense fallback={<main className="mx-auto max-w-3xl px-6 py-16 md:py-24" />}>
         <ArchetypeContent params={params} />
       </Suspense>
     </div>
@@ -136,45 +154,45 @@ async function ArchetypeContent({ params }: PageProps) {
 
   return (
     <>
-      <main className="mx-auto max-w-3xl px-6 pt-28 pb-16 md:pt-36 md:pb-24">
+      <main className="mx-auto max-w-3xl px-6 py-16 md:py-24">
         {/* FAMILY CARD — the screenshot atom. Big, screenshot-able,
             same shape across all 6 families so the visual identity is
             consistent through the share network. */}
-        <div className="rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-white p-8 shadow-[0_24px_60px_-12px_rgba(255,102,0,0.18)] md:p-12">
+        <div className="rounded-3xl border border-white/[0.10] bg-white/[0.02] p-8 md:p-12">
           <div className="mb-4 flex items-center gap-3">
-            <span className="h-px w-12 bg-orange-500" />
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-orange-600">
+            <span className="h-px w-6 bg-orange-500" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-orange-500">
               My COYL autopilot
             </span>
           </div>
 
-          <p className="font-mono text-sm uppercase tracking-widest text-gray-500">I&rsquo;m</p>
-          <h1 className="mt-3 flex flex-wrap items-center gap-5 text-5xl font-black leading-[1.02] text-gray-900 md:text-7xl">
+          <p className="font-mono text-sm uppercase tracking-widest text-[#8a7f6d]">I&rsquo;m</p>
+          <h1 className="mt-3 flex flex-wrap items-center gap-5 font-serif text-5xl leading-[1.02] tracking-[-0.02em] text-[#f5efe6] md:text-7xl">
             <span
               aria-hidden
-              className="inline-flex h-20 w-20 flex-none items-center justify-center rounded-3xl bg-orange-100 text-orange-600 ring-1 ring-orange-200 md:h-24 md:w-24"
+              className="inline-flex h-20 w-20 flex-none items-center justify-center rounded-3xl bg-orange-500/[0.12] text-orange-400 ring-1 ring-orange-500/25 md:h-24 md:w-24"
             >
               <a.family.Icon className="h-12 w-12 md:h-14 md:w-14" strokeWidth={2} />
             </span>
             <span>{a.family.name}</span>
           </h1>
 
-          <p className="mt-6 max-w-xl text-xl leading-relaxed text-gray-700 md:text-2xl">
+          <p className="mt-6 max-w-xl text-xl leading-relaxed text-[#cdc2ad] md:text-2xl">
             {a.family.essence}
           </p>
 
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-gray-600">
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-[#cdc2ad]">
             {a.family.description}
           </p>
 
-          <div className="mt-6 rounded-2xl border border-orange-200 bg-orange-50 p-5">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-orange-700">
+          <div className="mt-6 rounded-2xl border border-orange-500/25 bg-orange-500/[0.06] p-5">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-orange-400">
               Signature script
             </p>
-            <p className="mt-1 text-xl font-black italic text-gray-900 md:text-2xl">
+            <p className="mt-1 font-serif text-xl italic text-orange-300 md:text-2xl">
               {a.family.signature}
             </p>
-            <p className="mt-2 text-sm text-gray-700">
+            <p className="mt-2 text-sm text-[#cdc2ad]">
               {a.family.prevalenceCopy}
             </p>
           </div>
@@ -199,14 +217,14 @@ async function ArchetypeContent({ params }: PageProps) {
         {/* SPECIFIC CARD — the texture. Smaller, secondary visual
             priority, but anchors the family to a real moment in the
             user's life so the family claim feels proven, not abstract. */}
-        <div className="mt-8 rounded-3xl border border-gray-200 bg-white p-6 md:p-8">
-          <p className="font-mono text-xs uppercase tracking-widest text-gray-500">
+        <div className="mt-8 rounded-3xl border border-white/[0.10] bg-white/[0.02] p-6 md:p-8">
+          <p className="font-mono text-xs uppercase tracking-widest text-[#8a7f6d]">
             Specifically, your moment looks like
           </p>
-          <p className="mt-2 flex items-center gap-3 text-2xl font-black text-gray-900 md:text-3xl">
+          <p className="mt-2 flex items-center gap-3 font-serif text-2xl text-[#f5efe6] md:text-3xl">
             <span
               aria-hidden
-              className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-orange-50 text-orange-600 ring-1 ring-orange-100"
+              className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-orange-500/[0.12] text-orange-400 ring-1 ring-orange-500/25"
             >
               <a.specific.Icon className="h-6 w-6" strokeWidth={2} />
             </span>
@@ -227,16 +245,16 @@ async function ArchetypeContent({ params }: PageProps) {
             the share atom from "your archetype" to "your full report":
             peak hour, weekly frequency, signature script, recovery
             starting score. Stateless — derived directly from slug. */}
-        <section className="mt-12 space-y-10 border-t border-orange-500 pt-12">
+        <section className="mt-12 space-y-10 border-t border-white/[0.08] pt-12">
           <div className="flex items-center gap-3">
-            <span className="h-px w-12 bg-orange-500" />
-            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+            <span className="h-px w-6 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-500">
               Autopilot report · public card
             </span>
           </div>
 
-          <h2 className="font-serif text-4xl font-normal leading-[1.02] tracking-[-0.02em] text-gray-900 md:text-6xl">
-            The shape of <span className="italic text-orange-600">your script.</span>
+          <h2 className="font-serif text-4xl font-normal leading-[1.02] tracking-[-0.02em] text-[#f5efe6] md:text-6xl">
+            The shape of <span className="italic text-orange-400">your script.</span>
           </h2>
 
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
@@ -262,7 +280,7 @@ async function ArchetypeContent({ params }: PageProps) {
             />
           </div>
 
-          <p className="max-w-2xl text-sm leading-[1.7] text-gray-600">
+          <p className="max-w-2xl text-sm leading-[1.7] text-[#cdc2ad]">
             This report card is yours. No login. No email. Screenshot it,
             send the link, post it on{' '}
             <span className="font-serif italic">@coyl</span> — every share
@@ -272,10 +290,10 @@ async function ArchetypeContent({ params }: PageProps) {
 
         {/* CONVERSION — Find your own archetype */}
         <section className="mt-12">
-          <h2 className="text-3xl font-black leading-tight text-gray-900 md:text-5xl">
-            Find <span className="text-orange-600">yours.</span>
+          <h2 className="font-serif text-3xl font-normal leading-tight text-[#f5efe6] md:text-5xl">
+            Find <span className="italic text-orange-400">yours.</span>
           </h2>
-          <p className="mt-4 max-w-xl text-lg text-gray-600">
+          <p className="mt-4 max-w-xl text-lg text-[#cdc2ad]">
             60 seconds. No signup, no email. Three questions reveal the
             family you belong to — and the exact moment your autopilot
             runs.
@@ -290,13 +308,13 @@ async function ArchetypeContent({ params }: PageProps) {
             </Link>
             <Link
               href={`/audit/${a.family.slug}`}
-              className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+              className="rounded-full border border-white/12 bg-white/[0.03] px-6 py-3 text-sm font-semibold text-[#f5efe6] transition-colors hover:border-orange-400/50 hover:text-orange-200"
             >
               What is {a.family.name}?
             </Link>
             <Link
               href="/manifesto"
-              className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+              className="rounded-full border border-white/12 bg-white/[0.03] px-6 py-3 text-sm font-semibold text-[#f5efe6] transition-colors hover:border-orange-400/50 hover:text-orange-200"
             >
               Read the manifesto
             </Link>
@@ -306,20 +324,20 @@ async function ArchetypeContent({ params }: PageProps) {
         {/* INVITE LOOP — shared result traffic should not dead-end at
             "cool card". Give recipients an immediate way to attach this
             archetype to their launch spot before they drift. */}
-        <section className="mt-12 overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-[#fff7ed] p-8 md:p-10">
+        <section className="mt-12 overflow-hidden rounded-3xl border border-orange-500/25 bg-orange-500/[0.06] p-8 md:p-10">
           <div className="flex items-center gap-3">
-            <span className="h-px w-12 bg-orange-500" />
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.32em] text-orange-600">
+            <span className="h-px w-6 bg-orange-500" />
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.32em] text-orange-500">
               Invite-only app
             </span>
           </div>
 
-          <h2 className="mt-6 max-w-2xl font-serif text-4xl font-normal leading-[1.05] text-gray-900 md:text-5xl">
+          <h2 className="mt-6 max-w-2xl font-serif text-4xl font-normal leading-[1.05] text-[#f5efe6] md:text-5xl">
             Want COYL to catch {a.family.name}{' '}
-            <span className="italic text-orange-600">before it runs?</span>
+            <span className="italic text-orange-400">before it runs?</span>
           </h2>
 
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-gray-700 md:text-lg">
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#cdc2ad] md:text-lg">
             The audit is free. The app is opening in waves. Join with this
             archetype attached; every friend who joins through you moves you
             up the line.
@@ -334,7 +352,7 @@ async function ArchetypeContent({ params }: PageProps) {
             </Link>
             <Link
               href={`/card/${a.family.slug}`}
-              className="rounded-full border border-orange-200 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
+              className="rounded-full border border-orange-500/25 bg-white/[0.03] px-6 py-3 text-sm font-semibold text-[#f5efe6] transition-colors hover:border-orange-400/50 hover:text-orange-200"
             >
               See the share card
             </Link>
@@ -343,32 +361,32 @@ async function ArchetypeContent({ params }: PageProps) {
 
         {/* CATEGORY EXPLAINER — "what is this" for visitors who arrived
             from a friend's share with no context. */}
-        <section className="mt-16 rounded-3xl border border-gray-200 bg-white p-8">
-          <p className="font-mono text-xs uppercase tracking-widest text-orange-600">
+        <section className="mt-16 rounded-3xl border border-white/[0.10] bg-white/[0.02] p-8">
+          <p className="font-mono text-xs uppercase tracking-widest text-orange-500">
             What is COYL?
           </p>
-          <p className="mt-3 text-2xl font-black leading-tight text-gray-900 md:text-3xl">
+          <p className="mt-3 text-2xl font-bold leading-tight text-[#f5efe6] md:text-3xl">
             The first AI built for the moment{' '}
-            <span className="text-orange-600">before</span> behavior happens.
+            <span className="italic text-orange-400">before</span> behavior happens.
           </p>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-gray-700">
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#cdc2ad]">
             COYL is the missing behavioral interface between AI and real
             life. It detects your autopilot patterns and interrupts them
             in real time — before the fridge opens, before the tab wins,
             before one slip becomes the night.
           </p>
-          <p className="mt-4 text-xs italic text-gray-500">
+          <p className="mt-4 text-xs italic text-[#8a7f6d]">
             Behavioral support — not medical treatment.
           </p>
         </section>
 
-        <footer className="mt-12 flex items-center justify-between border-t border-gray-200 pt-6">
+        <footer className="mt-12 flex items-center justify-between border-t border-white/[0.08] pt-6">
           <Link href="/" className="flex items-center gap-2">
-            <CoylLogo size="sm" theme="light" />
+            <CoylLogo size="sm" />
           </Link>
           <Link
             href="/audit"
-            className="text-xs font-bold text-orange-600 hover:text-orange-700"
+            className="text-xs font-bold text-orange-400 hover:text-orange-300"
           >
             Take your audit →
           </Link>
@@ -380,11 +398,11 @@ async function ArchetypeContent({ params }: PageProps) {
 
 function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-4">
-      <p className="font-mono text-[10px] uppercase tracking-widest text-gray-500">
+    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
+      <p className="font-mono text-[10px] uppercase tracking-widest text-[#8a7f6d]">
         {label}
       </p>
-      <p className="mt-1 text-base font-bold text-gray-900">{value}</p>
+      <p className="mt-1 text-base font-bold text-[#f5efe6]">{value}</p>
     </div>
   )
 }
@@ -435,14 +453,14 @@ function ReportTile({
   caption: string
 }) {
   return (
-    <div className="border-t border-gray-200 pt-5">
-      <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+    <div className="border-t border-white/[0.08] pt-5">
+      <p className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-500">
         {label}
       </p>
-      <p className="mt-3 font-serif text-2xl font-normal leading-[1.1] tracking-[-0.01em] text-gray-900 md:text-3xl">
+      <p className="mt-3 font-serif text-2xl font-normal leading-[1.1] tracking-[-0.01em] text-[#f5efe6] md:text-3xl">
         {value}
       </p>
-      <p className="mt-2 text-[11px] uppercase tracking-widest text-gray-500">
+      <p className="mt-2 text-[11px] uppercase tracking-widest text-[#8a7f6d]">
         {caption}
       </p>
     </div>

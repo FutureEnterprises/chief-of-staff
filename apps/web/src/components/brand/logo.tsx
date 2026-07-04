@@ -5,9 +5,11 @@ interface CoylLogoProps {
   className?: string
   showWordmark?: boolean
   size?: 'sm' | 'md' | 'lg' | 'xl'
-  /** @deprecated theme prop is no longer used — the PNG ships with its
-   * own chrome shading and the wordmark color is baked in. Kept on the
-   * prop type for backward compatibility with existing call sites. */
+  /** Wordmark color context. The PNG mark ships its own chrome shading,
+   * but the "CO_L" wordmark span uses `text-foreground`, which resolves
+   * DARK on pages that hardcode a dark canvas (e.g. /a, /i, /card — they
+   * never toggle the `.dark` class). Pass 'dark' on those pages so the
+   * wordmark renders cream instead of vanishing dark-on-dark. */
   theme?: 'light' | 'dark' | 'auto'
 }
 
@@ -79,6 +81,7 @@ export function CoylLogo({
   className,
   showWordmark = true,
   size = 'md',
+  theme,
 }: CoylLogoProps) {
   const { iconH, text, gap } = sizes[size]
 
@@ -88,7 +91,8 @@ export function CoylLogo({
       {showWordmark && (
         <span
           className={cn(
-            'font-bold tracking-[-0.04em] leading-none select-none text-foreground',
+            'font-bold tracking-[-0.04em] leading-none select-none',
+            theme === 'dark' ? 'text-[#f5efe6]' : 'text-foreground',
             text,
           )}
         >

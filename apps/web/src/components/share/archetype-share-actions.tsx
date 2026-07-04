@@ -103,7 +103,7 @@ export function ArchetypeShareActions({
       </button>
       <button
         onClick={onDownload}
-        className="rounded-full border border-orange-400/40 bg-orange-500/[0.08] px-6 py-3 text-sm font-semibold text-orange-200 hover:bg-orange-500/[0.14]"
+        className="rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-[#cdc2ad] hover:border-white/30"
       >
         Download card
       </button>

@@ -30,6 +30,7 @@ import {
 import { ArchetypeShareActions } from '@/components/share/archetype-share-actions'
 import { ArchetypeRarityPill } from '@/components/share/archetype-rarity-pill'
 import { AuditCta } from '@/components/share/audit-cta'
+import { DarkCanvas } from '@/components/share/dark-canvas'
 
 // No `export const revalidate` — Next.js 16 cacheComponents rejects the
 // segment config. generateStaticParams still statically generates all 10
@@ -88,6 +89,7 @@ export default async function CardPage({
 
   return (
     <main className="min-h-screen bg-[#0e0c0a] px-6 py-16 text-[#f5efe6]">
+      <DarkCanvas />
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-14 md:flex-row md:items-start md:gap-20">
         {/* The visual card — HTML twin of the OG PNG, screenshot-ready */}
         <div className="w-full max-w-[360px] shrink-0">
