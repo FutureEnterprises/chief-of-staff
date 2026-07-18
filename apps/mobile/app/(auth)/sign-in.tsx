@@ -82,6 +82,19 @@ export default function SignInScreen() {
             Sign Up
           </Link>
         </View>
+
+        {/* Quiet path back into the quiz funnel. Once the reveal renders,
+            coyl.quizSeen routes every signed-out cold start here — without
+            this link a user who bailed at the reveal (or a device where
+            hasSeenQuiz failed open) has no way back to the audit. */}
+        <View style={{ alignItems: 'center', marginTop: 14 }}>
+          <Link
+            href="/(quiz)"
+            style={{ color: '#999', fontSize: 13, fontWeight: '500' }}
+          >
+            Take the 90-second audit first
+          </Link>
+        </View>
       </View>
     </SafeAreaView>
   )

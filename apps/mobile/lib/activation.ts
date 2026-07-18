@@ -62,6 +62,12 @@ export async function hasSeenQuiz(): Promise<boolean> {
  * the post-signup finalize replay. Called from the reveal screen on mount.
  */
 export async function markQuizSeen(slug?: string): Promise<void> {
+  // A fresh result supersedes any previous replay: clear the finalized flag
+  // so a retake (pre-signup or signed-in) is replayed into the account once.
+  // Safe because /api/v1/audit/finalize is idempotent server-side (windows
+  // de-duped by label, primaryWedge update skipped when unchanged), so even a
+  // re-render of the SAME reveal only costs one benign re-POST.
+  if (slug) await AsyncStorage.removeItem(QUIZ_FINALIZED_KEY)
   const pairs: [string, string][] = [[QUIZ_SEEN_KEY, '1']]
   if (slug) pairs.push([QUIZ_RESULT_KEY, slug])
   await AsyncStorage.multiSet(pairs)
@@ -91,7 +97,12 @@ export async function finalizePendingQuizResult(
   if ((await AsyncStorage.getItem(QUIZ_FINALIZED_KEY)) === '1') return false
 
   const parsed = parseShareSlug(slug)
-  if (!parsed) return false
+  if (!parsed) {
+    // Junk stash — it can never finalize, so drop it rather than re-parse it
+    // on every cold start forever.
+    await AsyncStorage.removeItem(QUIZ_RESULT_KEY).catch(() => {})
+    return false
+  }
 
   const token = await getToken()
   if (!token) return false
@@ -119,6 +130,17 @@ export async function finalizePendingQuizResult(
     }),
   })
   if (!res.ok) {
+    // 400 = the server rejected the payload as invalid (unknown slug/wedge).
+    // That's permanent for this stash — retrying it every cold start can never
+    // succeed — so mark it finalized and stop. Everything else is transient
+    // (401 token hiccup, 404 user row not provisioned yet post-signup, 5xx,
+    // network throw above): the stash + flag are left untouched so the next
+    // cold start retries. The stash is only ever cleared AFTER a success, so
+    // no result is lost to a failed attempt.
+    if (res.status === 400) {
+      await AsyncStorage.setItem(QUIZ_FINALIZED_KEY, '1')
+      return false
+    }
     throw new Error(`audit/finalize ${res.status} ${res.statusText}`)
   }
 
@@ -165,23 +187,41 @@ export async function markOnboardingCompleteSeen(): Promise<boolean> {
  *
  * registerForPushNotifications itself is unchanged (lib/notifications).
  */
+// Single-flight guard: two call sites can race in the same session — the
+// (app)/_layout session-count gate at mount and /today's onboarding value
+// moment right after its first fetch. Sharing the in-flight promise prevents
+// two concurrent OS permission requests (Android 13 will happily show the
+// dialog again for a dismissed-not-denied request) and duplicate token POSTs.
+// Cleared on settle so a LATER value moment in the same session (user finishes
+// web onboarding mid-session, pulls to refresh) can still trigger the ask —
+// sequential re-asks are governed by the OS permission state itself.
+let pushRegistrationInFlight: Promise<string | null> | null = null
+
 export async function registerForPushIfEarned(
   getToken: () => Promise<string | null>,
   apiUrl: string,
 ): Promise<string | null> {
-  const perms = await Notifications.getPermissionsAsync()
-  if (perms.granted) {
-    return registerForPushNotifications(getToken, apiUrl)
-  }
-  if (!perms.canAskAgain) return null
+  if (pushRegistrationInFlight) return pushRegistrationInFlight
+  pushRegistrationInFlight = (async () => {
+    try {
+      const perms = await Notifications.getPermissionsAsync()
+      if (perms.granted) {
+        return await registerForPushNotifications(getToken, apiUrl)
+      }
+      if (!perms.canAskAgain) return null
 
-  const [onboardedSeen, countRaw] = [
-    await AsyncStorage.getItem(ONBOARDED_SEEN_KEY),
-    await AsyncStorage.getItem(SESSION_COUNT_KEY),
-  ]
-  const sessionCount = parseInt(countRaw ?? '0', 10) || 0
-  if (onboardedSeen === '1' || sessionCount >= 2) {
-    return registerForPushNotifications(getToken, apiUrl)
-  }
-  return null
+      const [onboardedSeen, countRaw] = [
+        await AsyncStorage.getItem(ONBOARDED_SEEN_KEY),
+        await AsyncStorage.getItem(SESSION_COUNT_KEY),
+      ]
+      const sessionCount = parseInt(countRaw ?? '0', 10) || 0
+      if (onboardedSeen === '1' || sessionCount >= 2) {
+        return await registerForPushNotifications(getToken, apiUrl)
+      }
+      return null
+    } finally {
+      pushRegistrationInFlight = null
+    }
+  })()
+  return pushRegistrationInFlight
 }

@@ -137,22 +137,33 @@ export default function TodayScreen() {
   }
 
   function goToRescue() {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {})
     router.push('/rescue')
   }
 
   function goToDecide() {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
     router.push('/decide')
   }
 
   function goToPatterns() {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
     router.push('/patterns')
   }
 
   function openOnboarding() {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+    // Universal-link status (checked against apps/web + native config):
+    // BOTH .well-known files currently ship placeholder IDs
+    // (REPLACE_WITH_APPLE_TEAM_ID / REPLACE_WITH_SHA256_FINGERPRINT), so
+    // app-link claiming is inert and this reliably opens the BROWSER on both
+    // platforms today. When those go live: iOS stays fine (an app openURL-ing
+    // a universal link it itself claims goes to Safari, not back into the
+    // app), but Android's verified handle_all_urls filter WILL route this
+    // intent back into this app — app/+not-found.tsx catches that bounce, but
+    // the funnel is then broken. The real fix at that point is an Android
+    // intent-filter path exclusion (native config, frozen for this release) —
+    // whoever fills in assetlinks.json must pair it with that change.
     Linking.openURL(ONBOARDING_URL).catch((err) => {
       console.warn('[today] could not open onboarding URL:', err)
     })
