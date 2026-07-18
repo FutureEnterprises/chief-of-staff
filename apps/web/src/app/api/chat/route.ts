@@ -4,6 +4,7 @@ import { prisma } from '@repo/database'
 import { SYSTEM_PROMPTS, AI_MODEL } from '@repo/ai'
 import { consumeAiAssistAtomic, hasFeature } from '@/lib/services/entitlement.service'
 import { classifyAndStoreExcuse } from '@/lib/services/excuse-detection.service'
+import { loadCheckinContext } from '@/lib/services/intervention-composer.service'
 import { checkRateLimit } from '@/lib/rate-limit'
 import type { UIMessage } from 'ai'
 
@@ -166,10 +167,22 @@ ${completedTasks.slice(0, 15).map((t) => `- [${t.priority}] ${t.title}${t.dueAt 
 
     const promptKey = mode === 'assessment-considerate' ? 'assessmentConsiderate' : 'assessmentNoBs'
     systemPrompt = SYSTEM_PROMPTS[promptKey].replace('{DATE}', now.toLocaleDateString()) + analyticsContext
-  } else if (mode === 'morning') {
-    systemPrompt = SYSTEM_PROMPTS.morningInterview.replace('{DATE}', now.toLocaleDateString())
-  } else if (mode === 'night') {
-    systemPrompt = SYSTEM_PROMPTS.nightReview.replace('{DATE}', now.toLocaleDateString())
+  } else if (mode === 'morning' || mode === 'night') {
+    systemPrompt =
+      mode === 'morning'
+        ? SYSTEM_PROMPTS.morningInterview.replace('{DATE}', now.toLocaleDateString())
+        : SYSTEM_PROMPTS.nightReview.replace('{DATE}', now.toLocaleDateString())
+    // Per-user context block (archetype + signature script, today's/
+    // tonight's danger windows, streak, most recent outcome) injected
+    // server-side so the interview opens already knowing the terrain.
+    // One bounded query batch, <300 tokens; any error degrades to the
+    // static prompt — the check-in must never fail on context loading.
+    try {
+      const contextBlock = await loadCheckinContext(user.id, mode, now)
+      if (contextBlock) systemPrompt += contextBlock
+    } catch {
+      // static prompt stands alone
+    }
   } else {
     systemPrompt = SYSTEM_PROMPTS.coyl
   }

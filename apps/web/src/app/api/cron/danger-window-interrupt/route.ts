@@ -13,10 +13,25 @@ import {
   pushLiveActivityUpdate,
   isLiveActivityTokenDead,
 } from '@/lib/live-activity-push'
+import {
+  composeInterrupt,
+  createComposerBudget,
+} from '@/lib/services/intervention-composer.service'
 
 export const maxDuration = 120
 
 const PAGE_SIZE = 300
+
+/**
+ * EXISTING hardcoded copy, kept VERBATIM as the guaranteed fallback.
+ * The LLM composer (intervention-composer.service) personalizes the
+ * push when it can; on ANY composition failure (no key, >4s timeout,
+ * parse fail, unsafe output, budget spent) these fire unchanged, so
+ * composition never blocks or degrades a send.
+ */
+const FALLBACK_PUSH_TITLE = (firstName: string) => `${firstName}. This is the moment.`
+const FALLBACK_PUSH_BODY = (label: string) =>
+  `${label}. You already know how this ends. Open before it does.`
 
 /**
  * Freemium taste cap. The /free page promises "The behavioral interrupt
@@ -60,6 +75,11 @@ export async function GET(req: Request) {
   let suppressed = 0
   let cursor: string | undefined
 
+  // One budget per cron run: ≤5 concurrent LLM calls, ≤50 total.
+  // Past the cap composeInterrupt returns null instantly and the
+  // template fallback fires — run duration stays bounded.
+  const composerBudget = createComposerBudget()
+
   while (true) {
     const users = await prisma.user.findMany({
       where: {
@@ -80,6 +100,11 @@ export async function GET(req: Request) {
         notificationPrefs: true,
         lastActiveAt: true,
         currentStreak: true,
+        // Composer context: archetype family + signature script are
+        // derived from primaryWedge + excuseStyle; toneMode steers voice.
+        primaryWedge: true,
+        excuseStyle: true,
+        toneMode: true,
         dangerWindowRecords: {
           where: { active: true },
         },
@@ -187,7 +212,7 @@ export async function GET(req: Request) {
       }
 
       const window = matching[0]!
-      const firstName = user.name.split(' ')[0]
+      const firstName = user.name.split(' ')[0] ?? user.name
 
       // Log the sector-specific crossing event (used by analytics + patterns),
       // separate from the unified AUTOPILOT_INTERRUPTED record written by
@@ -237,8 +262,23 @@ export async function GET(req: Request) {
       // Expo push notification — pattern-calling tone.
       // The push IS the interruption. Copy has to land in the 3 seconds
       // it takes a person to read a lock-screen notification.
-      const pushTitle = `${firstName}. This is the moment.`
-      const pushBody = `${window.label}. You already know how this ends. Open before it does.`
+      // LLM-composed from the user's context (signature script, window,
+      // recent caught/ignored outcomes, latest excuse); null → the
+      // verbatim hardcoded fallback. Never blocks the send.
+      const composed = await composeInterrupt({
+        userId: user.id,
+        firstName,
+        windowLabel: window.label,
+        timezone: user.timezone,
+        primaryWedge: user.primaryWedge,
+        excuseStyle: user.excuseStyle,
+        toneMode: user.toneMode,
+        currentStreak: user.currentStreak,
+        budget: composerBudget,
+        now,
+      })
+      const pushTitle = composed?.title ?? FALLBACK_PUSH_TITLE(firstName)
+      const pushBody = composed?.body ?? FALLBACK_PUSH_BODY(window.label)
       const pushData = {
         type: 'danger_window',
         windowId: window.id,

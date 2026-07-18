@@ -6,8 +6,19 @@ import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { getFamily, parseFamilySlug } from '@/lib/audit-archetype'
 import { sendWebPushForUser } from '@/lib/web-push'
 import { recordInterrupt } from '@/lib/interrupt-guard'
+import {
+  composeInterrupt,
+  createComposerBudget,
+} from '@/lib/services/intervention-composer.service'
 
 export const maxDuration = 60
+
+/**
+ * Above this many matured rows in one tick, skip LLM composition
+ * entirely (template copy for the whole batch) so the every-minute
+ * dispatcher can never back up behind model latency.
+ */
+const MAX_BATCH_FOR_COMPOSITION = 50
 
 /**
  * GET /api/cron/scheduled-interrupts
@@ -97,7 +108,25 @@ export async function GET(req: Request) {
   let sent = 0
   let failed = 0
 
+  // Per-run LLM budget; composition is skipped wholesale for oversized
+  // batches so template copy keeps the dispatcher inside its minute.
+  const composerBudget = createComposerBudget()
+  const composeAllowed = pending.length <= MAX_BATCH_FOR_COMPOSITION
+
   for (const row of pending) {
+    // Atomic claim — an overlapping run (a prior invocation still doing
+    // network I/O past its minute, or a maxDuration truncation mid-batch)
+    // re-SELECTs still-PENDING rows; without this conditional flip both
+    // runs dispatch the same row (duplicate SMS/email). Claim-first makes
+    // delivery at-most-once: a crash between claim and dispatch loses that
+    // send, which for an interrupt is strictly better than double-texting.
+    // Genuine dispatch failures below still flip the row to FAILED.
+    const claim = await prisma.scheduledInterrupt.updateMany({
+      where: { id: row.id, status: 'PENDING' },
+      data: { status: 'SENT', sentAt: new Date() },
+    })
+    if (claim.count === 0) continue // another run owns this row
+
     const family = resolveFamily(row.archetypeFamily)
     const errors: string[] = []
     let dispatched = false
@@ -110,12 +139,33 @@ export async function GET(req: Request) {
     const account = row.email
       ? await prisma.user.findUnique({
           where: { email: row.email },
-          select: { id: true, webPushSubscription: true },
+          select: { id: true, name: true, timezone: true, webPushSubscription: true },
         })
       : null
 
-    const body = composeBody(family, Boolean(account))
-    const subject = composeSubject(family)
+    // LLM-composed copy when the batch is small enough; null → the
+    // verbatim template below. Anonymous rows compose from the family
+    // archetype alone (no account history); the family name doubles as
+    // the addressee, matching the existing template's register.
+    const composed = composeAllowed
+      ? await composeInterrupt({
+          userId: account?.id ?? null,
+          firstName: account?.name?.trim().split(/\s+/)[0] || family.name,
+          windowLabel: row.window || 'your danger window',
+          timezone: account?.timezone ?? row.timezone,
+          archetype: { name: family.name, signature: family.signature },
+          budget: composerBudget,
+        })
+      : null
+
+    // CTA mirrors composeBody's routing: signed-up users go straight to
+    // rescue, anonymous audit-takers get the sign-up funnel.
+    const cta = account
+      ? 'Open your rescue: https://coyl.ai/rescue?from=first_catch'
+      : 'Lock the full system: https://coyl.ai/sign-up?ref=interrupt'
+
+    const body = composed ? `${composed.body} ${cta}` : composeBody(family, Boolean(account))
+    const subject = composed ? composed.title : composeSubject(family)
 
     if (row.phoneNumber && twilio) {
       try {

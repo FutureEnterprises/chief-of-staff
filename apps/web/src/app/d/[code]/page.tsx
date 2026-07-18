@@ -183,7 +183,7 @@ async function DailyContent({ params }: PageProps) {
         </section>
 
         {/* Share actions — for the recipient to forward */}
-        <ShareActions shareUrl={shareUrl} shareText={shareText} />
+        <ShareActions shareUrl={shareUrl} shareText={shareText} tone="light" />
 
         {/* Audit CTA for cold visitors — same affordance the interrupt
             share page uses, retuned for the cream surface. */}

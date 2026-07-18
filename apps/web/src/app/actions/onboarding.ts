@@ -6,7 +6,7 @@ import type { ExcuseCategory, PrimaryWedge, ToneMode } from '@repo/database'
 import { requireDbUser } from '@/lib/auth'
 import { onboardingSchema } from '@/lib/validations'
 import { renderWelcomeEmail } from '@/lib/email/welcome-email'
-import { scheduleFirstInterrupt } from '@/lib/interrupt-schedule'
+import { scheduleFirstInterrupt, isValidTimezone } from '@/lib/interrupt-schedule'
 import { createTaskFromChat } from './tasks'
 
 // Predefined danger-window templates per picked label
@@ -47,12 +47,19 @@ export async function completeOnboarding(data: {
     throw new Error('Invalid onboarding data')
   }
 
+  // The schema only checks string shape. An IANA-invalid zone stored on
+  // the user row makes every later Intl.DateTimeFormat({ timeZone })
+  // call throw — permanently 500ing /today for this user.
+  const timezone = isValidTimezone(parsed.data.timezone)
+    ? parsed.data.timezone
+    : (user.timezone && isValidTimezone(user.timezone) ? user.timezone : 'UTC')
+
   try {
     await prisma.user.update({
       where: { id: user.id },
       data: {
         name: parsed.data.name || user.name,
-        timezone: parsed.data.timezone,
+        timezone,
         morningCheckinTime: parsed.data.morningCheckinTime,
         nightCheckinTime: parsed.data.nightCheckinTime,
         emailBriefingEnabled: parsed.data.emailBriefingEnabled,
@@ -102,7 +109,7 @@ export async function completeOnboarding(data: {
     try {
       await scheduleFirstInterrupt({
         email: user.email,
-        timezone: parsed.data.timezone,
+        timezone,
         windows: seededWindows,
         primaryWedge: parsed.data.primaryWedge,
         failurePattern: parsed.data.failurePattern,

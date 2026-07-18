@@ -169,7 +169,10 @@ export async function POST(req: Request) {
   const row = await prisma.scheduledInterrupt.create({
     data: {
       phoneNumber: phone ?? null,
-      email: data.email ?? null,
+      // Lowercase so the row joins to a signed-up account: both the
+      // dispatcher's user lookup and /today's pendingCatch query match
+      // on exact (case-sensitive) email equality.
+      email: data.email?.toLowerCase() ?? null,
       archetypeFamily: data.archetypeFamily,
       wedge: data.wedge,
       window: data.window,

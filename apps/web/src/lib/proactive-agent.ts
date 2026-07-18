@@ -7,6 +7,7 @@ import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
 import { sendWebPushForUser } from '@/lib/web-push'
 import { shouldFire } from '@/lib/notification-prefs'
 import { isUserCoachingPathClosed } from '@/lib/rap/store'
+import { violatesCopySafety } from '@/lib/services/intervention-composer.core'
 
 const DEFAULT_LIMIT = 50
 const MAX_LIMIT = 250
@@ -358,6 +359,9 @@ async function generateInterventionCopy(
     const { text } = await generateText({
       model: AI_MODEL_FAST,
       system: SYSTEM_PROMPTS.proactiveCheckin,
+      // Same latency contract as the intervention composer: a slow
+      // model call must never stall the cron — abort and fall back.
+      abortSignal: AbortSignal.timeout(4_000),
       prompt: JSON.stringify({
         now: now.toISOString(),
         user: {
@@ -382,7 +386,19 @@ async function generateInterventionCopy(
       }),
     })
 
-    return sanitizeCopy(parseJsonObject(text), fallbackCopy(user, candidate), 'llm')
+    const copy = sanitizeCopy(parseJsonObject(text), fallbackCopy(user, candidate), 'llm')
+    // NEDA-safety post-check shared with the intervention composer:
+    // prompt bans the language, the regex enforces it. Any hit on any
+    // outbound field → the template fallback ships instead.
+    if (
+      violatesCopySafety(copy.title) ||
+      violatesCopySafety(copy.body) ||
+      violatesCopySafety(copy.emailSubject) ||
+      violatesCopySafety(copy.emailText)
+    ) {
+      return fallbackCopy(user, candidate)
+    }
+    return copy
   } catch (err) {
     console.warn('[proactive-agent] llm copy failed', {
       userId: user.id,

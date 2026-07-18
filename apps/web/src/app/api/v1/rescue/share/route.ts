@@ -16,8 +16,23 @@ import { createShareableRescue } from '@/lib/rescue-share'
  * accepts; we validate against the same Zod shape.
  */
 
+// Must be a real RescueTrigger — the value goes straight into the
+// Prisma enum column. A free-string cast would throw (500) on any
+// unknown value instead of returning a 400.
 const schema = z.object({
-  trigger: z.string().min(1).max(64),
+  trigger: z.enum([
+    'BINGE_URGE',
+    'DELIVERY_URGE',
+    'NICOTINE_URGE',
+    'ALCOHOL_URGE',
+    'SKIP_WORKOUT',
+    'SKIP_WEIGHIN',
+    'ALREADY_SLIPPED',
+    'SPIRALING',
+    'DOOMSCROLL',
+    'IMPULSE_SPEND',
+    'OTHER',
+  ]),
 })
 
 export async function POST(req: Request) {

@@ -363,7 +363,7 @@ async function SharePageBody({ params }: PageProps) {
             >
               Share on Twitter
             </a>
-            <ShareActions shareUrl={shareUrl} shareText={shareText} />
+            <ShareActions shareUrl={shareUrl} shareText={shareText} tone="light" />
             {/* 9:16 Story card — open the portrait recap PNG to save it
                 straight to an Instagram/TikTok Story. */}
             <a

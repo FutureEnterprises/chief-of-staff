@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { prisma } from '@repo/database'
 import { requireDbUser } from '@/lib/auth'
 import { updateUserSchema } from '@/lib/validations'
+import { isValidTimezone } from '@/lib/interrupt-schedule'
 
 export async function updateUserSettings(data: {
   timezone?: string
@@ -16,6 +17,12 @@ export async function updateUserSettings(data: {
   const parsed = updateUserSchema.safeParse(data)
   if (!parsed.success) {
     throw new Error('Invalid settings data')
+  }
+  // Schema only checks string shape; an IANA-invalid zone on the user
+  // row makes every Intl.DateTimeFormat({ timeZone }) call downstream
+  // throw (500s /today). Reject rather than silently rewrite.
+  if (parsed.data.timezone !== undefined && !isValidTimezone(parsed.data.timezone)) {
+    throw new Error('Invalid timezone')
   }
 
   try {

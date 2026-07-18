@@ -54,9 +54,13 @@ export function ArchetypeShareActions({
       try {
         await navigator.share({ title: `I'm ${name}`, text: caption, url: pageUrl })
         track('web_share')
-      } catch {
-        /* user cancelled (AbortError) or share failed — a cancel is NOT
-           a share: no event, and don't clobber their clipboard. */
+      } catch (err) {
+        /* user cancelled (AbortError) — a cancel is NOT a share: no
+           event, and don't clobber their clipboard. A genuine share
+           failure falls back to copy so the tap still does something. */
+        if (!(err instanceof DOMException && err.name === 'AbortError')) {
+          await onCopy()
+        }
       }
       return
     }

@@ -382,7 +382,7 @@ async function ArchetypeContent({ params }: PageProps) {
 
         <footer className="mt-12 flex items-center justify-between border-t border-white/[0.08] pt-6">
           <Link href="/" className="flex items-center gap-2">
-            <CoylLogo size="sm" />
+            <CoylLogo size="sm" theme="dark" />
           </Link>
           <Link
             href="/audit"

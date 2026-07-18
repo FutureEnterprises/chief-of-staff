@@ -7,11 +7,25 @@ import { batchProcess } from '@/lib/batch'
 import { verifyCronAuth } from '@/lib/cron-auth'
 import { recordHeartbeat } from '@/lib/cron-heartbeat'
 import { isUserCoachingPathClosed } from '@/lib/rap/store'
+import {
+  composeCheckin,
+  createComposerBudget,
+} from '@/lib/services/intervention-composer.service'
 import * as React from 'react'
 
 export const maxDuration = 300
 
 const PAGE_SIZE = 500
+
+/**
+ * EXISTING subject, kept VERBATIM as the guaranteed fallback when the
+ * LLM check-in composer returns null (no key, timeout, parse/safety
+ * fail, budget spent, or an oversized eligible batch).
+ */
+const FALLBACK_SUBJECT = 'Your morning planning session is ready'
+
+/** Above this many eligible users in a page, skip composition wholesale. */
+const MAX_BATCH_FOR_COMPOSITION = 50
 
 export async function GET(req: Request) {
   const authError = verifyCronAuth(req)
@@ -24,6 +38,7 @@ export async function GET(req: Request) {
   const resend = new Resend(process.env.RESEND_API_KEY)
   const results = { sent: 0, skipped: 0, errors: 0, rapSuppressed: 0 }
   let cursor: string | undefined
+  const composerBudget = createComposerBudget()
 
   while (true) {
     const users = await prisma.user.findMany({
@@ -47,6 +62,7 @@ export async function GET(req: Request) {
       isWithinUserTimeWindow(u.timezone, u.morningCheckinTime, 30)
     )
     results.skipped += users.length - eligibleUsers.length
+    const composeAllowed = eligibleUsers.length <= MAX_BATCH_FOR_COMPOSITION
 
     const outcomes = await batchProcess(eligibleUsers, async (user) => {
       // Safety floor: if RAP closed this user's coaching path
@@ -67,10 +83,16 @@ export async function GET(req: Request) {
         select: { title: true },
       })
 
+      // LLM-composed subject from the user's context (archetype,
+      // today's danger windows, streak); null → verbatim fallback.
+      const composed = composeAllowed
+        ? await composeCheckin(user.id, 'morning', composerBudget)
+        : null
+
       await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL ?? 'briefing@coyl.app',
         to: user.email,
-        subject: 'Your morning planning session is ready',
+        subject: composed?.title ?? FALLBACK_SUBJECT,
         react: React.createElement(MorningCheckinEmail, {
           userName: user.name.split(' ')[0] ?? user.name,
           checkinUrl: `${process.env.NEXT_PUBLIC_APP_URL}/chat?mode=morning`,

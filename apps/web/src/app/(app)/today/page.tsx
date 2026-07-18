@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto'
 import { requireDbUser } from '@/lib/auth'
 import { prisma } from '@repo/database'
 import { proposeAsCoylInternal } from '@/lib/coyl-internal-pap'
-import { formatCatchLabel } from '@/lib/interrupt-schedule'
+import { formatCatchLabel, isValidTimezone } from '@/lib/interrupt-schedule'
 import { TodayView } from './today-view'
 
 export const metadata = { title: 'Today' }
@@ -94,7 +94,14 @@ async function getTodayData(userId: string, userTimezone: string, userEmail: str
     // has no userId — the account email IS the join key, same way the
     // scheduled-interrupts dispatcher resolves the account at send time.
     prisma.scheduledInterrupt.findFirst({
-      where: { email: userEmail, status: 'PENDING' },
+      where: {
+        email: userEmail,
+        status: 'PENDING',
+        // Only surface catches that are still ahead (10-min grace for
+        // dispatch lag). A stuck-PENDING row from the past would make
+        // the empty state promise a moment that never came.
+        scheduledFor: { gt: new Date(Date.now() - 10 * 60 * 1000) },
+      },
       orderBy: { scheduledFor: 'asc' },
       select: { scheduledFor: true, timezone: true },
     }),
@@ -124,7 +131,13 @@ async function getTodayData(userId: string, userTimezone: string, userEmail: str
   const pendingCatch = pendingScheduledInterrupt
     ? formatCatchLabel(
         pendingScheduledInterrupt.scheduledFor,
-        pendingScheduledInterrupt.timezone || userTimezone,
+        // Guard against a bad stored tz string — Intl throws RangeError
+        // on invalid zones, which would 500 the whole /today render.
+        isValidTimezone(pendingScheduledInterrupt.timezone)
+          ? pendingScheduledInterrupt.timezone
+          : isValidTimezone(userTimezone)
+            ? userTimezone
+            : 'UTC',
       )
     : null
 
@@ -209,7 +222,10 @@ function computeNextDangerWindow(
   const currentMinute = parseInt(minuteStr, 10)
   const currentMinutesOfDay = currentHour * 60 + currentMinute
 
-  // Find the soonest matching window (same day or future day)
+  // Find the soonest matching window (same day or future day).
+  // Track the exact minutes of the current best — comparing against the
+  // floored hoursUntil (* 60) could keep a later window over a sooner one.
+  let bestMinutes = Infinity
   let best: { label: string; whenText: string; hoursUntil: number } | null = null
   for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
     const checkDay = (currentDay + dayOffset) % 7
@@ -219,7 +235,8 @@ function computeNextDangerWindow(
       if (dayOffset === 0 && startMinutes <= currentMinutesOfDay) continue // already past today
       const minutesUntil = dayOffset * 24 * 60 + startMinutes - currentMinutesOfDay
       const hoursUntil = Math.floor(minutesUntil / 60)
-      if (!best || minutesUntil < best.hoursUntil * 60) {
+      if (!best || minutesUntil < bestMinutes) {
+        bestMinutes = minutesUntil
         const whenText = dayOffset === 0
           ? `in ${hoursUntil}h`
           : dayOffset === 1
@@ -241,7 +258,10 @@ function formatHour(h: number): string {
 
 export default async function TodayPage() {
   const user = await requireDbUser()
-  const data = await getTodayData(user.id, user.timezone ?? 'UTC', user.email)
+  // Read-side guard: a bad stored zone would make every Intl call in
+  // getTodayData throw RangeError and 500 the page permanently.
+  const tz = user.timezone && isValidTimezone(user.timezone) ? user.timezone : 'UTC'
+  const data = await getTodayData(user.id, tz, user.email)
 
   // First production PAP self-integration. Every /today render emits a
   // real PAPProposal row through the COYL Internal partner. The

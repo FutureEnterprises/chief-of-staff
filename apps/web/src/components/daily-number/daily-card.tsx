@@ -96,8 +96,13 @@ export function DailyCard() {
         recordShare()
         window.setTimeout(() => setShareState('idle'), 1800)
         return
-      } catch {
-        // user cancelled or share rejected — fall through to copy
+      } catch (err) {
+        // A cancelled sheet (AbortError) is NOT a share — no share
+        // count bump, and don't clobber the clipboard. Only genuine
+        // share failures fall through to the copy fallback.
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          return
+        }
       }
     }
     // Fallback — clipboard copy of the URL. The share-text is implied

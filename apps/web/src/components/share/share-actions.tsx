@@ -24,14 +24,23 @@ export function ShareActions({
   shareUrl,
   shareText,
   trackId,
+  tone = 'dark',
 }: {
   shareUrl: string
   shareText: string
   trackId?: string
+  /** Canvas the row sits on. The warm-dark unification hardcoded
+   *  dark-surface colors; cream pages (/d, /m) pass 'light' so the
+   *  secondary buttons stay readable. */
+  tone?: 'dark' | 'light'
 }) {
   const [copied, setCopied] = useState(false)
   const supportsNativeShare =
     typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+  const secondary =
+    tone === 'light'
+      ? 'border border-black/15 bg-black/[0.04] text-[#6b6557] hover:border-black/30'
+      : 'border border-white/15 bg-white/[0.04] text-[#cdc2ad] hover:border-white/30'
 
   function track(channel: string) {
     const sessionId = (readAuditSession() || trackId || '').slice(0, 64)
@@ -59,8 +68,13 @@ export function ShareActions({
     try {
       await navigator.share({ title: 'COYL caught me.', text: shareText, url: shareUrl })
       track('web_share')
-    } catch {
-      // user cancelled — ignore (and do NOT count it as a share)
+    } catch (err) {
+      // User cancelled (AbortError) — ignore, and do NOT count it as a
+      // share. A genuine share failure falls back to copying the link
+      // so the tap still produces something shareable.
+      if (!(err instanceof DOMException && err.name === 'AbortError')) {
+        void copy()
+      }
     }
   }
 
@@ -77,7 +91,7 @@ export function ShareActions({
       {supportsNativeShare && (
         <button
           onClick={nativeShare}
-          className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-[#cdc2ad] hover:border-white/30"
+          className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${secondary}`}
         >
           <Send className="h-3.5 w-3.5" /> Share
         </button>
@@ -85,7 +99,7 @@ export function ShareActions({
 
       <a
         href={`mailto:?subject=${encodeURIComponent('COYL caught me.')}&body=${encodeURIComponent(`${shareText}\n\n${shareUrl}`)}`}
-        className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-[#cdc2ad] hover:border-white/30"
+        className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold ${secondary}`}
       >
         Email
       </a>

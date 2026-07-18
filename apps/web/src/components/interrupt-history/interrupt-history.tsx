@@ -169,7 +169,14 @@ export function InterruptHistory({
  */
 function ShareCatchButton({ row }: { row: InterruptRow }) {
   const [shareUrl, setShareUrl] = useState<string | null>(null)
-  const [state, setState] = useState<'idle' | 'creating' | 'shared' | 'copied'>('idle')
+  const [state, setState] = useState<'idle' | 'creating' | 'shared' | 'copied' | 'failed'>('idle')
+
+  function fail() {
+    // Visible failure — a tap that silently reverts reads as a dead
+    // button. Transient "couldn't make the card" then back to idle.
+    setState('failed')
+    window.setTimeout(() => setState('idle'), 2200)
+  }
 
   async function onShare() {
     if (state === 'creating') return
@@ -183,14 +190,14 @@ function ShareCatchButton({ row }: { row: InterruptRow }) {
           body: JSON.stringify({ trigger: triggerForKind(row.kind) }),
         })
         if (!res.ok) {
-          setState('idle')
+          fail()
           return
         }
         const data = (await res.json()) as { shareUrl: string }
         url = data.shareUrl
         setShareUrl(url)
       } catch {
-        setState('idle')
+        fail()
         return
       }
     }
@@ -202,8 +209,14 @@ function ShareCatchButton({ row }: { row: InterruptRow }) {
         setState('shared')
         window.setTimeout(() => setState('idle'), 1800)
         return
-      } catch {
-        // user cancelled or share rejected — fall through to copy
+      } catch (err) {
+        // A cancelled sheet (AbortError) is NOT a share — don't clobber
+        // the user's clipboard for it. Only genuine share failures fall
+        // through to the copy fallback.
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          setState('idle')
+          return
+        }
       }
     }
     try {
@@ -224,6 +237,8 @@ function ShareCatchButton({ row }: { row: InterruptRow }) {
     >
       {state === 'creating' ? (
         'Making the card…'
+      ) : state === 'failed' ? (
+        <span className="text-red-400/80">Couldn&rsquo;t make the card — try again</span>
       ) : state === 'shared' || state === 'copied' ? (
         <>
           <Check className="h-3 w-3" /> {state === 'shared' ? 'Shared' : 'Link copied'}
