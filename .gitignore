@@ -163,3 +163,6 @@ Package.resolved
 # Agent worktrees + Serena cache (never commit)
 .claude/worktrees/
 .serena/
+
+# Business strategy / GTM / investor content — NEVER commit (repo is PUBLIC)
+docs/strategy-private/
