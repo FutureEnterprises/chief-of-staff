@@ -7,7 +7,7 @@ import { batchProcess } from '@/lib/batch'
 import { classifyState } from '@/lib/user-state'
 import { guardInterrupt, recordInterrupt } from '@/lib/interrupt-guard'
 import { sendWebPushForUser } from '@/lib/web-push'
-import { shouldFire } from '@/lib/notification-prefs'
+import { shouldFire, voiceCallAllowed } from '@/lib/notification-prefs'
 import { isUserCoachingPathClosed } from '@/lib/rap/store'
 import {
   pushLiveActivityUpdate,
@@ -17,6 +17,8 @@ import {
   composeInterrupt,
   createComposerBudget,
 } from '@/lib/services/intervention-composer.service'
+import { PLAN_LIMITS } from '@/lib/services/entitlement.service'
+import { initiateVoiceCall } from '@/lib/twilio-voice'
 
 export const maxDuration = 120
 
@@ -43,6 +45,18 @@ const FALLBACK_PUSH_BODY = (label: string) =>
  * record (see recordInterrupt in lib/interrupt-guard.ts).
  */
 const FREE_WEEKLY_INTERRUPT_CAP = 3
+
+/**
+ * Precision Interrupt Hotline — proactive outbound voice channel.
+ * "The app calls you first" is real per-minute Twilio spend, not a free
+ * push notification, so this run-wide cap bounds cost the same way
+ * ComposerBudget bounds LLM calls: past it, the cron just doesn't place
+ * more calls this tick (push/web/email still fire normally). Opt-in only
+ * (notificationPrefs.voiceCall === true) and gated to paid tiers via
+ * PLAN_LIMITS[...].precisionInterrupt — see voiceCallAllowed() and the
+ * per-user check below.
+ */
+const MAX_VOICE_CALLS_PER_RUN = 20
 
 /**
  * Precision Interrupt Engine — the JITAI firing loop.
@@ -73,6 +87,7 @@ export async function GET(req: Request) {
   const now = new Date()
   let fired = 0
   let suppressed = 0
+  let voiceCallsThisRun = 0
   let cursor: string | undefined
 
   // One budget per cron run: ≤5 concurrent LLM calls, ≤50 total.
@@ -97,6 +112,7 @@ export async function GET(req: Request) {
         timezone: true,
         expoPushToken: true,
         webPushSubscription: true,
+        phoneNumber: true,
         notificationPrefs: true,
         lastActiveAt: true,
         currentStreak: true,
@@ -240,11 +256,23 @@ export async function GET(req: Request) {
       // Used by the autopilot-autopsy analytics + interrupt-feedback
       // weighting; an interrupt that fired on push+web+email gets the
       // same dedupe key but the cost-accounting recognizes the fanout.
+      // Proactive voice call eligibility: paid tier (precisionInterrupt),
+      // explicit opt-in (voiceCallAllowed checks notificationPrefs.voiceCall
+      // === true + quiet hours), a phone on file, and the per-run cost cap
+      // not yet exhausted. Unlike the other channels, this one is opt-IN —
+      // an unsolicited phone call is a materially bigger ask than a push.
+      const wantsVoiceCall =
+        Boolean(user.phoneNumber) &&
+        PLAN_LIMITS[user.planType]?.precisionInterrupt === true &&
+        voiceCallAllowed({ prefs: user.notificationPrefs, timezone: user.timezone, now }) &&
+        voiceCallsThisRun < MAX_VOICE_CALLS_PER_RUN
+
       const channels: string[] = []
       if (user.expoPushToken) channels.push('expo')
       if (user.webPushSubscription) channels.push('web')
       if (liveActivity?.pushToken) channels.push('live_activity')
       if (resend) channels.push('email')
+      if (wantsVoiceCall) channels.push('voice')
 
       // Record the interrupt FIRST so we can include its id in the
       // outgoing push payload. iOS lock-screen action buttons
@@ -394,6 +422,38 @@ export async function GET(req: Request) {
         }
       }
 
+      // Precision Interrupt Hotline — proactive outbound call. Placed
+      // last (after the free channels) so a Twilio outage or cost-cap
+      // hit never blocks the push/web/email fan-out above.
+      if (wantsVoiceCall) {
+        voiceCallsThisRun++
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://coyl.ai'
+        const voiceCall = await prisma.voiceCallSession.create({
+          data: {
+            userId: user.id,
+            kind: 'DANGER_WINDOW',
+            contextLabel: window.label,
+          },
+        })
+        const callResult = await initiateVoiceCall({
+          to: user.phoneNumber!,
+          twimlUrl: `${appUrl}/api/v1/voice/twiml?session=${voiceCall.id}`,
+          statusCallbackUrl: `${appUrl}/api/v1/voice/status?session=${voiceCall.id}`,
+        })
+        if (callResult.ok) {
+          await prisma.voiceCallSession.update({
+            where: { id: voiceCall.id },
+            data: { callSid: callResult.callSid, status: 'RINGING' },
+          })
+        } else {
+          await prisma.voiceCallSession.update({
+            where: { id: voiceCall.id },
+            data: { status: 'FAILED', endedAt: new Date() },
+          })
+          console.warn('[danger-window-interrupt] voice call failed for %s: %s', user.id, callResult.error)
+        }
+      }
+
       fired++
     })
 
@@ -401,6 +461,6 @@ export async function GET(req: Request) {
     if (users.length < PAGE_SIZE) break
   }
 
-  await recordHeartbeat('danger-window-interrupt', { fired, suppressed })
-  return NextResponse.json({ fired, suppressed, timestamp: now.toISOString() })
+  await recordHeartbeat('danger-window-interrupt', { fired, suppressed, voiceCallsThisRun })
+  return NextResponse.json({ fired, suppressed, voiceCallsThisRun, timestamp: now.toISOString() })
 }

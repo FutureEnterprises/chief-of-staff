@@ -64,6 +64,19 @@ model User {
   // Crons read this before firing. Quiet hours are interpreted in the
   // user's timezone — same logic the danger-window match already uses.
   notificationPrefs    Json?
+  // E.164 phone number for outbound voice calls (Precision Interrupt
+  // Hotline: on-demand "call me now" rescue + proactive danger-window
+  // calls for Plus-tier users). Separate from SmsSignup.phoneNumber,
+  // which is the anonymous pre-conversion capture table — this is the
+  // authenticated user's own number, set from /settings or the mobile
+  // rescue screen the first time they tap "Call me now".
+  phoneNumber          String?           @unique
+  // True once the user has completed a call/SMS OTP loop. Unverified
+  // numbers can still be used for outbound rescue calls (the user is
+  // calling themselves, so a wrong number just means a stranger's phone
+  // rings once) — this flag exists for a future verification gate on
+  // higher-cost proactive calling, not enforced anywhere yet.
+  phoneVerified        Boolean           @default(false)
   // GLP-1 companion profile — set during onboarding for users on
   // Ozempic / Wegovy / Mounjaro / Zepbound / etc. Drives the day-3
   // post-injection intervention timing in the precision-interrupt
@@ -155,6 +168,7 @@ model User {
   excuses                 Excuse[]
   dangerWindowRecords     DangerWindow[]
   rescueSessions          RescueSession[]
+  voiceCallSessions       VoiceCallSession[]
   decisionLogs            DecisionLog[]
   commitments             Commitment[]
   slipRecords             SlipRecord[]
@@ -217,8 +231,8 @@ model User {
   /// time. Private key is base64-encoded; encrypted-at-rest by the
   /// Supabase Postgres pgcrypto extension via the column policy.
   /// Rotated on KILL_SWITCH per UAP-0.1.md §6 T9.
-  uapSigningKeyPublic   String?
-  uapSigningKeyPrivate  String?
+  uapSigningKeyPublic  String?
+  uapSigningKeyPrivate String?
 
   @@map("users")
 }
@@ -375,6 +389,59 @@ enum RescueOutcome {
   INTERRUPTED // user pulled back
   SLIPPED // user did the thing anyway
   UNRESOLVED // no follow-up
+}
+
+// The Precision Interrupt Hotline — real-time voice AI delivered over
+// Twilio Programmable Voice. Two entry points share this model:
+//   RESCUE_ON_DEMAND — user taps "Call me now" in the rescue screen.
+//   DANGER_WINDOW     — the precision-interrupt cron calls a Plus-tier
+//                        user proactively when they enter a learned
+//                        danger window and have opted into voiceCall.
+// Twilio's webhook is stateless per-request, so the TwiML turn machine
+// (/api/v1/voice/twiml) reloads this row on every POST to know which
+// step it's on and appends each side of the exchange to `transcript`.
+model VoiceCallSession {
+  id              String          @id @default(cuid())
+  userId          String
+  // Linked RescueSession so a phone rescue shows up in the same
+  // analytics/patterns pipeline as a text rescue. Null for DANGER_WINDOW
+  // calls, which aren't a user-initiated rescue trigger.
+  rescueSessionId String?
+  kind            VoiceCallKind
+  trigger         RescueTrigger?
+  // Snapshot of the danger-window label at call time (DANGER_WINDOW
+  // calls only) — the TwiML turn machine reloads this row on every
+  // stateless Twilio webhook POST and needs the window name on every
+  // beat, but DangerWindow rows are user-editable/mutable over time.
+  contextLabel    String?
+  callSid         String?         @unique // set once Twilio answers calls.create()
+  status          VoiceCallStatus @default(INITIATED)
+  // [{ role: "coyl" | "user", text: string, at: ISO string }]
+  transcript      Json            @default("[]")
+  outcome         RescueOutcome   @default(PENDING)
+  startedAt       DateTime        @default(now())
+  endedAt         DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startedAt])
+  @@index([callSid])
+  @@map("voice_call_sessions")
+}
+
+enum VoiceCallKind {
+  RESCUE_ON_DEMAND
+  DANGER_WINDOW
+}
+
+enum VoiceCallStatus {
+  INITIATED
+  RINGING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  NO_ANSWER
+  BUSY
 }
 
 model DecisionLog {
@@ -2394,63 +2461,59 @@ model AutopilotMapSnapshot {
  * separate model for the higher-sensitivity clinical event set:
  * DANGER_WINDOW_DETECTED, INTERRUPT_FIRED, INTERRUPT_CHANGED_BEHAVIOR,
  * SLIP_REPORTED, RECOVERY_COMPLETED, KILL_SWITCH_FIRED.
- *
  * Separated because:
- *   1. BAA scope — the clinical events need to be inside the BAA-
- *      covered data boundary; the marketing funnel does not. Keeping
- *      them in distinct tables makes the audit story obvious.
- *   2. Retention policy — clinical events follow the user-owned audit
- *      log retention rules (UAP §AUDIT_QUERY); marketing funnel
- *      events follow standard product-analytics retention.
- *   3. Provider routing — marketing events also dual-write to
- *      PostHog Cloud; clinical events DO NOT leave our infra.
- *
+ * 1. BAA scope — the clinical events need to be inside the BAA-
+ * covered data boundary; the marketing funnel does not. Keeping
+ * them in distinct tables makes the audit story obvious.
+ * 2. Retention policy — clinical events follow the user-owned audit
+ * log retention rules (UAP §AUDIT_QUERY); marketing funnel
+ * events follow standard product-analytics retention.
+ * 3. Provider routing — marketing events also dual-write to
+ * PostHog Cloud; clinical events DO NOT leave our infra.
  * `anonymousUserId` is the hash of (user.id + per-deploy salt) for
  * authenticated users, or a stable browser/device cookie hash for
  * unauthenticated users. Never the raw user id.
- *
  * `props` is a typed JSON column — the canonical type lives at
  * apps/web/src/lib/telemetry/free-tier-events.ts (FreeTierEventPayload).
  * The shape is the discriminated union there minus the base props
  * (which are columnar).
- *
  * Append-only at the application layer. There is no UPDATE or DELETE
  * call site for ClinicalEvent — modifications are forbidden by code
  * convention and (when the BAA is in place) by Postgres RLS.
  */
 model ClinicalEvent {
-  id                String   @id @default(cuid())
+  id String @id @default(cuid())
 
   /// Canonical event name from FreeTierEventName (clinical subset only).
   /// One of: 'interrupt.danger_window_detected' | 'interrupt.fired' |
   ///         'interrupt.changed_behavior' | 'slip.reported' |
   ///         'recovery.completed' | 'kill_switch.fired' | 'app.opened'
-  name              String
+  name String
 
   /// SHA-256 hash of (user id + per-deploy salt). Never raw.
-  anonymousUserId   String
+  anonymousUserId String
 
   /// Surface that emitted the event. 'ios' | 'apple-watch' |
   /// 'android' | 'wear-android' | 'web' (the last only for parity).
-  surface           String
+  surface String
 
   /// App/web build version — for diffing funnels across releases.
-  buildVersion      String
+  buildVersion String
 
   /// Client-side timestamp from the device's clock. Trust with
   /// suspicion — devices can be wrong. Always compare against
   /// `serverTimestamp` when investigating ordering anomalies.
-  clientTimestamp   DateTime
+  clientTimestamp DateTime
 
   /// Server-stamped timestamp — the authoritative ordering field.
-  serverTimestamp   DateTime @default(now())
+  serverTimestamp DateTime @default(now())
 
   /// Typed event-specific properties. See FreeTierEventPayload in
   /// apps/web/src/lib/telemetry/free-tier-events.ts for the schema.
-  props             Json
+  props Json
 
   /// IP hash for rate-limiting and abuse detection. NEVER raw IP.
-  ipHash            String?
+  ipHash String?
 
   @@index([serverTimestamp(sort: Desc)])
   @@index([name])
@@ -2461,52 +2524,49 @@ model ClinicalEvent {
 
 /**
  * WaitlistEntry — the invite-only FOMO engine for the consumer launch.
- *
  * Robinhood/Lapse mechanic: join the waitlist, get a shareable invite
  * code, and jump the line (+5 effective positions) for every friend who
  * joins through your code. The "effective position" is computed at read
  * time as joinedPosition - (referralCount * SPOTS_PER_REFERRAL), floored
  * at 1 — never stored, so the boost math can be tuned without a backfill.
- *
  * Anonymous-friendly: email is the only required PII. archetypeSlug is
  * captured when the visitor came from the audit (segmentation + a warmer
  * "you're a 9 PM Negotiator — you're #4,210 in line" confirmation).
- *
  * NEDA-safe: no health/body/weight fields.
  */
 model WaitlistEntry {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   /// Lowercased, trimmed. The dedupe key.
-  email           String   @unique
+  email String @unique
 
   /// Short shareable code (e.g. "COYL-7Q2F"). Unique. Drives referrals.
-  inviteCode      String   @unique
+  inviteCode String @unique
 
   /// The inviteCode this person joined through, if any.
-  referredByCode  String?
+  referredByCode String?
 
   /// Raw join order (1, 2, 3, …). Assigned at insert as count()+1.
-  joinedPosition  Int
+  joinedPosition Int
 
   /// How many people have joined through THIS person's inviteCode.
-  referralCount   Int      @default(0)
+  referralCount Int @default(0)
 
   /// Archetype slug if they arrived from the audit. Optional.
-  archetypeSlug   String?
+  archetypeSlug String?
 
   /// Acquisition source tag (e.g. 'audit', 'card', 'tiktok', 'direct').
-  source          String?
+  source String?
 
   /// IP hash for abuse/dedupe heuristics. Never raw IP.
-  ipHash          String?
+  ipHash String?
 
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 
   /// Wave grant — set when this entry is granted app access in a wave
   /// (admin "open the next N"). Null = still waiting. Grants are ordered
   /// by effective position so line-jumpers get in first.
-  grantedAt        DateTime?
+  grantedAt DateTime?
 
   /// When the "you're in" grant email was sent. Idempotency guard so a
   /// re-grant or retry never double-emails the same person.
@@ -2514,7 +2574,7 @@ model WaitlistEntry {
 
   /// When they claimed their invite link (hit /redeem/[code]). Proxy for
   /// "sign-up started". Null = granted but hasn't come back yet.
-  redeemedAt       DateTime?
+  redeemedAt DateTime?
 
   @@index([inviteCode])
   @@index([referredByCode])

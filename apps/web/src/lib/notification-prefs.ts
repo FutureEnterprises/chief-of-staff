@@ -17,6 +17,14 @@ export interface NotificationPrefs {
   dangerWindow?: boolean
   glp1Day3?: boolean
   postSlip?: boolean
+  /**
+   * Proactive outbound voice call at a danger window ("the app calls you
+   * first"). Unlike the push/email classes above, this is opt-IN, not
+   * opt-out — an unsolicited phone call is a materially more intrusive
+   * interruption than a lock-screen notification, so the default with no
+   * explicit choice is OFF. Checked via voiceCallAllowed(), not shouldFire().
+   */
+  voiceCall?: boolean
   /** Inclusive start hour (0-23) in user's local timezone. */
   quietHoursStart?: number | null
   /** Exclusive end hour (0-23) in user's local timezone. May wrap
@@ -58,18 +66,40 @@ export function shouldFire(args: {
   const prefs = parsePrefs(args.prefs)
   if (prefs[args.type] === false) return false
 
+  return !isInQuietHours(prefs, args.timezone, args.now)
+}
+
+/**
+ * Proactive voice call gate — the opt-IN counterpart to shouldFire().
+ * Returns true only when the user has explicitly turned voiceCall on AND
+ * the current local time isn't inside their quiet hours. No env/phone
+ * check here — callers (the danger-window cron) verify the user has a
+ * phone number and a plan that includes precisionInterrupt separately,
+ * since those aren't preference concerns.
+ */
+export function voiceCallAllowed(args: {
+  prefs: unknown
+  timezone: string | null
+  now?: Date
+}): boolean {
+  const prefs = parsePrefs(args.prefs)
+  if (prefs.voiceCall !== true) return false
+  return !isInQuietHours(prefs, args.timezone, args.now)
+}
+
+function isInQuietHours(prefs: NotificationPrefs, timezone: string | null, now?: Date): boolean {
   const { quietHoursStart: qs, quietHoursEnd: qe } = prefs
-  if (qs == null || qe == null) return true
-  if (qs === qe) return true // degenerate — treat as no quiet hours
+  if (qs == null || qe == null) return false
+  if (qs === qe) return false // degenerate — treat as no quiet hours
 
   // Compute the user's current local hour. Same Intl trick the danger-
   // window-interrupt cron uses, kept consistent so behavior matches.
-  const now = args.now ?? new Date()
+  const at = now ?? new Date()
   const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: args.timezone ?? 'UTC',
+    timeZone: timezone ?? 'UTC',
     hour: 'numeric',
     hour12: false,
-  }).formatToParts(now)
+  }).formatToParts(at)
   const hourStr = parts.find((p) => p.type === 'hour')?.value ?? '0'
   const hour = parseInt(hourStr, 10)
 
@@ -77,7 +107,7 @@ export function shouldFire(args: {
   // means quiet 10pm-11pm). If qe < qs it wraps midnight (22 -> 7 means
   // quiet 10pm-7am).
   if (qe > qs) {
-    return !(hour >= qs && hour < qe)
+    return hour >= qs && hour < qe
   }
-  return !(hour >= qs || hour < qe)
+  return hour >= qs || hour < qe
 }

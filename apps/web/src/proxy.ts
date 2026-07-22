@@ -173,6 +173,10 @@ const isPublicRoute = createRouteMatcher([
   // provider signature header, verified inside each route handler.
   '/api/v1/inbound/twilio',
   '/api/v1/inbound/email',
+  // Precision Interrupt Hotline — Twilio Voice webhooks, signature-authenticated
+  // the same way as inbound/twilio above (Twilio can't send a Clerk JWT).
+  '/api/v1/voice/twiml',
+  '/api/v1/voice/status',
   // Microsoft Teams app manifest + icons — fetched anonymously by Microsoft
   // AppSource crawlers, the Teams client during sideload, and Vercel's
   // CDN for static asset distribution. Must be public.
@@ -319,6 +323,8 @@ const SHOULD_BYPASS_CLERK = createRouteMatcher([
   // dev-instance Clerk handshake so Twilio and Resend can POST back.
   '/api/v1/inbound/twilio',
   '/api/v1/inbound/email',
+  '/api/v1/voice/twiml',
+  '/api/v1/voice/status',
   // Microsoft Teams app manifest + icons — public static assets.
   '/microsoft-teams/(.*)',
 ])

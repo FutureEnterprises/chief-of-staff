@@ -7,15 +7,10 @@ import { consumeAiAssistAtomic, hasFeature } from '@/lib/services/entitlement.se
 import { checkRateLimit } from '@/lib/rate-limit'
 import { effectiveTone, classifyState, type ToneMode } from '@/lib/user-state'
 import { consecutiveIgnoredInterrupts } from '@/lib/interrupt-guard'
+import { VALID_TRIGGERS } from '@/lib/rescue-triggers'
 import type { UIMessage } from 'ai'
 
 export const maxDuration = 45
-
-const VALID_TRIGGERS = [
-  'BINGE_URGE', 'DELIVERY_URGE', 'NICOTINE_URGE', 'ALCOHOL_URGE',
-  'SKIP_WORKOUT', 'SKIP_WEIGHIN', 'ALREADY_SLIPPED', 'SPIRALING',
-  'DOOMSCROLL', 'IMPULSE_SPEND', 'OTHER',
-] as const
 
 export async function POST(req: Request) {
   const { userId: clerkId } = await auth()

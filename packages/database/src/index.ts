@@ -170,4 +170,6 @@ export {
   TaskStatus,
   ToneMode,
   UAPGrantStatus,
+  VoiceCallKind,
+  VoiceCallStatus,
 } from './generated/client'

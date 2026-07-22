@@ -38,6 +38,13 @@ export const updateUserSchema = z.object({
   glp1InjectionWeekday: z.number().int().min(0).max(6).nullable().optional(),
   glp1StartedAt: z.string().datetime().nullable().optional(),
   glp1EndedAt: z.string().datetime().nullable().optional(),
+  // E.164 phone for the Precision Interrupt Hotline (voice rescue calls).
+  // Null explicitly clears it (removes voice-call eligibility).
+  phoneNumber: z
+    .string()
+    .regex(/^\+[1-9]\d{6,14}$/, 'Phone must be E.164 format, e.g. +15551234567')
+    .nullable()
+    .optional(),
 })
 
 export type UpdateUserInput = z.infer<typeof updateUserSchema>
