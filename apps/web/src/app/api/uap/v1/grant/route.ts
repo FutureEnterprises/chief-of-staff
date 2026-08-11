@@ -17,6 +17,8 @@
  */
 
 import { NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { prisma } from '@repo/database'
 import { authenticateUAPPartner } from '@/lib/uap/uap-partner-auth'
 import { createGrant } from '@/lib/uap/grant-store'
 import { writeAuditEntry } from '@/lib/uap/audit'
@@ -26,6 +28,7 @@ const MAX_GRANT_LIFETIME_MS = 90 * 24 * 60 * 60 * 1000 // 90 days
 
 type Body = {
   user_id?: string
+  partner_id?: string
   scopes?: string[]
   expires_at?: string
   rules?: Array<{ kind?: string; params?: Record<string, unknown> }>
@@ -39,21 +42,95 @@ type Body = {
 }
 
 export async function POST(req: Request) {
-  const authResult = await authenticateUAPPartner(req)
-  if (authResult.error) return authResult.error
-  const partner = authResult.partner
-
+  // Two documented issuance paths, two auth modes:
+  //
+  //   1. PARTNER (Bearer coyl_uap_*) — the §5 partner-side call. The
+  //      partner names the target user and supplies the consent
+  //      artifact it collected. NOTE: the artifact here is partner-
+  //      attested; see the T8 caveat in the route report.
+  //
+  //   2. USER SESSION (Clerk cookie) — the COYL-hosted consent
+  //      ceremony at /consent/uap. This is the T8 mitigation path:
+  //      the consent artifact is produced by a COYL-hosted page under
+  //      the USER'S OWN authenticated session, and the grant's userId
+  //      is derived from that session — a caller cannot mint a grant
+  //      binding someone else's identity. The form names the receiving
+  //      partner via `partner_id`.
   let body: Body
-  try {
-    body = (await req.json()) as Body
-  } catch {
-    return errorResponse(400, 'invalid_json', 'Request body is not valid JSON.')
-  }
+  const hasBearer = !!(
+    req.headers.get('authorization') ?? req.headers.get('Authorization')
+  )
 
-  // ── Required fields ──────────────────────────────────────────────
-  if (!body.user_id || typeof body.user_id !== 'string') {
-    return errorResponse(400, 'missing_user_id', 'Field `user_id` is required.')
+  let issuerKind: 'partner' | 'user'
+  let llmPartnerId: string
+  let grantUserId: string
+
+  if (hasBearer) {
+    const authResult = await authenticateUAPPartner(req)
+    if (authResult.error) return authResult.error
+    const partner = authResult.partner
+
+    try {
+      body = (await req.json()) as Body
+    } catch {
+      return errorResponse(400, 'invalid_json', 'Request body is not valid JSON.')
+    }
+    if (!body.user_id || typeof body.user_id !== 'string') {
+      return errorResponse(400, 'missing_user_id', 'Field `user_id` is required.')
+    }
+    issuerKind = 'partner'
+    llmPartnerId = partner.id
+    grantUserId = body.user_id
+  } else {
+    const { userId: clerkId } = await auth()
+    if (!clerkId) {
+      return errorResponse(401, 'unauthenticated', 'Sign in required.')
+    }
+    const user = await prisma.user.findUnique({
+      where: { clerkId },
+      select: { id: true },
+    })
+    if (!user) {
+      return errorResponse(404, 'user_not_found', 'No matching user.')
+    }
+
+    try {
+      body = (await req.json()) as Body
+    } catch {
+      return errorResponse(400, 'invalid_json', 'Request body is not valid JSON.')
+    }
+    if (
+      !body.partner_id ||
+      typeof body.partner_id !== 'string' ||
+      !/^[a-z0-9]{1,64}$/.test(body.partner_id)
+    ) {
+      return errorResponse(
+        400,
+        'missing_partner_id',
+        'Field `partner_id` is required on user-session grant issuance.',
+      )
+    }
+    // A stale/foreign user_id in the body must not silently bind the
+    // grant to the session user under another id's name.
+    if (body.user_id && body.user_id !== user.id) {
+      return errorResponse(
+        403,
+        'user_mismatch',
+        'You can only issue grants for your own account.',
+      )
+    }
+    const partnerRow = await prisma.lLMPartner.findUnique({
+      where: { id: body.partner_id },
+      select: { id: true, active: true },
+    })
+    if (!partnerRow || !partnerRow.active) {
+      return errorResponse(404, 'partner_not_found', 'No active partner with that id.')
+    }
+    issuerKind = 'user'
+    llmPartnerId = partnerRow.id
+    grantUserId = user.id
   }
+  void issuerKind
   if (!Array.isArray(body.scopes) || body.scopes.length === 0) {
     return errorResponse(
       400,
@@ -145,8 +222,8 @@ export async function POST(req: Request) {
   let grant
   try {
     grant = await createGrant({
-      userId: body.user_id,
-      llmPartnerId: partner.id,
+      userId: grantUserId,
+      llmPartnerId,
       scopes: body.scopes as UAPScope[],
       expiresAt,
       consentArtifact: {
@@ -166,8 +243,8 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error('[uap/grant] createGrant failed', {
       err: err instanceof Error ? err.message : 'unknown',
-      partnerId: partner.id,
-      userId: body.user_id,
+      partnerId: llmPartnerId,
+      userId: grantUserId,
     })
     return errorResponse(
       500,
@@ -180,8 +257,8 @@ export async function POST(req: Request) {
   try {
     await writeAuditEntry({
       grantId: grant.id,
-      userId: body.user_id,
-      llmPartnerId: partner.id,
+      userId: grantUserId,
+      llmPartnerId,
       operation: 'grant',
       decision: 'allowed',
       postTermination: false,

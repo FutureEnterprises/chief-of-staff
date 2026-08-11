@@ -393,53 +393,76 @@ function computePrevHash(previousSignature: string): string {
  *   5. Sign canonical payload with the coordinator's ed25519 key.
  *   6. Persist the row with computed signature + prevHash.
  *
- * No transactional locking around the previous-row lookup: the audit
- * chain is per-user, and the coordinator is the single writer, so the
- * "concurrent write breaks the chain" race is structurally
- * unreachable in v0.1.1. If/when we shard the coordinator, the writer
- * will need a per-user advisory lock; tracked as v0.2 hardening.
+ * Concurrency: the previous-row lookup + insert run inside ONE
+ * transaction holding a per-user Postgres advisory lock
+ * (pg_advisory_xact_lock over hashtext(userId)). Without it, two
+ * concurrent EXECUTEs for the same user both read the same chain head
+ * and write two rows with identical prevHash — verifyAuditChain then
+ * reports a legitimate chain as TAMPERED, which is both a false alarm
+ * and an attacker-inducible way to discredit the audit trail (fire two
+ * parallel executes, then point at "chain invalid"). The advisory lock
+ * is transaction-scoped, so it is safe under transaction-pooling
+ * (pgbouncer / Supabase pooler) and auto-releases on commit/rollback.
  */
 export async function writeAuditEntry(
   input: UAPAuditInput,
 ): Promise<UAPAuditEntry> {
-  const previous = await prisma.uAPAuditEntry.findFirst({
-    where: { userId: input.userId },
-    orderBy: { createdAt: 'desc' },
-  })
+  return prisma.$transaction(async (tx) => {
+    // Serialize appends per user. hashtext() maps the userId onto the
+    // advisory-lock keyspace; the lock releases at transaction end.
+    await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${input.userId}))`
 
-  const prevHash = previous ? computePrevHash(previous.signature) : null
-  const createdAt = new Date()
+    const previous = await tx.uAPAuditEntry.findFirst({
+      where: { userId: input.userId },
+      orderBy: { createdAt: 'desc' },
+    })
 
-  const canonical = canonicalize(
-    buildCanonicalPayloadForWrite(input, prevHash, createdAt),
-  )
-  const signature = signCanonical(canonical)
+    const prevHash = previous ? computePrevHash(previous.signature) : null
+    // Strictly-increasing createdAt per user: verifyAuditChain orders by
+    // createdAt, so two rows sharing a millisecond would make the walk
+    // order ambiguous. Under the lock we can cheaply guarantee
+    // monotonicity by nudging forward 1ms when the clock hasn't moved.
+    let createdAt = new Date()
+    if (previous && createdAt.getTime() <= previous.createdAt.getTime()) {
+      createdAt = new Date(previous.createdAt.getTime() + 1)
+    }
 
-  return prisma.uAPAuditEntry.create({
-    data: {
-      grantId: input.grantId,
-      userId: input.userId,
-      llmPartnerId: input.llmPartnerId,
-      operation: input.operation,
-      actionKind: input.actionKind ?? null,
-      decision: input.decision,
-      decisionReason: input.decisionReason ?? null,
-      postTermination: input.postTermination,
-      signature,
-      prevHash,
-      provenanceSignature: input.provenanceSignature ?? null,
-      provenancePublicKey: input.provenancePublicKey ?? null,
-      provenanceAlgorithm: input.provenanceAlgorithm ?? null,
-      // Prisma's nullable Json column requires the JsonNull sentinel for
-      // SQL NULL (a literal TS `null` is interpreted as the JSON-`null`
-      // value, which would be a distinct in-band marker). Cast via
-      // `unknown` because UAPProvenancePayload's nested literal types
-      // are stricter than Prisma's structural InputJsonValue.
-      provenancePayload: input.provenancePayload
-        ? (input.provenancePayload as unknown as Prisma.InputJsonValue)
-        : Prisma.JsonNull,
-      createdAt,
-    },
+    const canonical = canonicalize(
+      buildCanonicalPayloadForWrite(input, prevHash, createdAt),
+    )
+    const signature = signCanonical(canonical)
+
+    return tx.uAPAuditEntry.create({
+      data: {
+        // Persist the caller-minted id when present. The execute route
+        // pre-mints `aud_<24 hex>` and embeds it in the signed provenance
+        // payload — the row MUST be retrievable by that exact id or the
+        // public verifier (provenance/[auditId]) 404s on every envelope.
+        ...(input.auditId ? { id: input.auditId } : {}),
+        grantId: input.grantId,
+        userId: input.userId,
+        llmPartnerId: input.llmPartnerId,
+        operation: input.operation,
+        actionKind: input.actionKind ?? null,
+        decision: input.decision,
+        decisionReason: input.decisionReason ?? null,
+        postTermination: input.postTermination,
+        signature,
+        prevHash,
+        provenanceSignature: input.provenanceSignature ?? null,
+        provenancePublicKey: input.provenancePublicKey ?? null,
+        provenanceAlgorithm: input.provenanceAlgorithm ?? null,
+        // Prisma's nullable Json column requires the JsonNull sentinel for
+        // SQL NULL (a literal TS `null` is interpreted as the JSON-`null`
+        // value, which would be a distinct in-band marker). Cast via
+        // `unknown` because UAPProvenancePayload's nested literal types
+        // are stricter than Prisma's structural InputJsonValue.
+        provenancePayload: input.provenancePayload
+          ? (input.provenancePayload as unknown as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
+        createdAt,
+      },
+    })
   })
 }
 

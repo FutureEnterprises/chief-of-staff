@@ -28,6 +28,16 @@ const ALLOWED_RULE_KINDS: UAPRuleKind[] = [
   'time_of_day_block',
 ]
 
+/**
+ * Rule kinds the coordinator does NOT enforce yet. Per UAP-0.1 §3 a
+ * declared rule "supersedes every overlapping grant" — accepting a
+ * pre-decline the engine silently ignores would be the worst possible
+ * daylight between promise and enforcement (the user believes a cap is
+ * live; nothing checks it). Refuse with an explicit reason instead;
+ * remove from this set the moment the coordinator gains the check.
+ */
+const UNENFORCED_RULE_KINDS = new Set<UAPRuleKind>(['frequency_cap'])
+
 type Body = {
   grant_id?: string | null
   kind?: string
@@ -60,6 +70,14 @@ export async function POST(req: Request) {
       'unknown_rule_kind',
       'Rule kind is not part of UAP-0.1.',
       { allowed_kinds: ALLOWED_RULE_KINDS, received: body.kind },
+    )
+  }
+  if (UNENFORCED_RULE_KINDS.has(body.kind as UAPRuleKind)) {
+    return errorResponse(
+      400,
+      'rule_kind_not_enforced',
+      'This rule kind is not enforced by the v0.1.1 engine yet. Refusing to record a pre-decline that would not actually be checked.',
+      { unenforced_kinds: [...UNENFORCED_RULE_KINDS] },
     )
   }
 

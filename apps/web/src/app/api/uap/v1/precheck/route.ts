@@ -15,11 +15,11 @@ import { NextResponse } from 'next/server'
 import { authenticateUAPPartner } from '@/lib/uap/uap-partner-auth'
 import { decideExecute } from '@/lib/uap/coordinator'
 import { isUserCoachingPathClosed } from '@/lib/rap/store'
-import { loadGrant } from '@/lib/uap/grant-store'
+import { loadGrant, loadGrantWithAllRules } from '@/lib/uap/grant-store'
 import { isUserKilledGlobally } from '@/lib/uap/kill-switch'
 import { isPanicActive } from '@/lib/coordinator/panic-check'
 import { isInQuietHours } from '@/lib/coordinator/quiet-hours'
-import { checkLLMPartnerRateLimit } from '@/lib/coordinator/rate-limit'
+import { checkUAPPartnerRateLimit } from '@/lib/uap/rate-limit'
 import type { UAPExecuteInput } from '@/lib/uap/types'
 
 type Body = {
@@ -139,11 +139,16 @@ export async function POST(req: Request) {
   let decision
   try {
     decision = await decideExecute(input, {
-      loadGrantWithRules: loadGrant,
+      // Merged loader (grant-scoped + user-level rules) and the
+      // UAP-aware rate limiter — PRECHECK must evaluate the EXACT gate
+      // stack EXECUTE enforces, or a precheck 'allowed' is a lie.
+      // Rate budget is still not consumed here (no audit row is
+      // written; the limiter counts persisted rows only).
+      loadGrantWithRules: loadGrantWithAllRules,
       isUserKilledGlobally,
       isPanicActive,
       isInQuietHours,
-      checkPartnerRateLimit: checkLLMPartnerRateLimit,
+      checkPartnerRateLimit: checkUAPPartnerRateLimit,
       isUserCoachingPathClosed,
       now: () => new Date(),
     })

@@ -93,12 +93,17 @@ const { PRISMA_JSON_NULL } = vi.hoisted(() => ({
 }))
 
 vi.mock('@repo/database', () => {
-  return {
-    Prisma: {
-      JsonNull: PRISMA_JSON_NULL,
-    },
-    prisma: {
-      uAPAuditEntry: {
+  // ── Advisory-lock model ─────────────────────────────────────────
+  // Mirrors Postgres pg_advisory_xact_lock semantics: acquired inside
+  // a transaction via tx.$queryRaw`SELECT pg_advisory_xact_lock(...)`,
+  // held until the transaction callback settles, one holder per key at
+  // a time. The lock lives in the MOCK (like it lives in Postgres) —
+  // the module under test must actually route its read-then-append
+  // through $transaction + $queryRaw to be serialized. Code that
+  // bypasses the transaction (the pre-fix implementation) races.
+  const lockTails = new Map<string, Promise<void>>()
+
+  const auditModel = {
         findFirst: async ({
           where,
           orderBy,
@@ -152,7 +157,7 @@ vi.mock('@repo/database', () => {
         findUnique: async ({ where }: { where: { id: string } }) => {
           return auditStore.get(where.id) ?? null
         },
-        create: async ({ data }: { data: Omit<StoredRow, 'id'> }) => {
+        create: async ({ data }: { data: Omit<StoredRow, 'id'> & { id?: string } }) => {
           // Translate Prisma.JsonNull (a Symbol) to JS null on
           // round-trip so the persisted shape matches what real Prisma
           // returns on a subsequent SELECT — see PRISMA_JSON_NULL note.
@@ -163,13 +168,59 @@ vi.mock('@repo/database', () => {
                 ? null
                 : data.provenancePayload,
           }
+          // Real Prisma: an explicit data.id wins over the default; a
+          // duplicate primary key rejects the insert (P2002).
+          const id = data.id ?? mintId()
+          if (auditStore.has(id)) {
+            throw Object.assign(
+              new Error('Unique constraint failed on the fields: (`id`)'),
+              { code: 'P2002' },
+            )
+          }
           const row: StoredRow = {
-            id: mintId(),
             ...normalized,
+            id,
           }
           auditStore.set(row.id, row)
           return row
         },
+  }
+
+  const makeTx = () => {
+    const held: Array<() => void> = []
+    const tx = {
+      // Template-tag signature: tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${key}))`
+      $queryRaw: async (_strings: TemplateStringsArray, ...values: unknown[]) => {
+        const key = String(values[0] ?? '')
+        const prevTail = lockTails.get(key) ?? Promise.resolve()
+        let release!: () => void
+        const myHold = new Promise<void>((r) => {
+          release = r
+        })
+        lockTails.set(key, prevTail.then(() => myHold))
+        await prevTail
+        held.push(release)
+        return [] as unknown[]
+      },
+      uAPAuditEntry: auditModel,
+    }
+    const releaseAll = () => held.forEach((r) => r())
+    return { tx, releaseAll }
+  }
+
+  return {
+    Prisma: {
+      JsonNull: PRISMA_JSON_NULL,
+    },
+    prisma: {
+      uAPAuditEntry: auditModel,
+      $transaction: async <T,>(fn: (tx: unknown) => Promise<T>): Promise<T> => {
+        const { tx, releaseAll } = makeTx()
+        try {
+          return await fn(tx)
+        } finally {
+          releaseAll()
+        }
       },
     },
   }
@@ -418,5 +469,70 @@ describe('loadAuditEntry', () => {
   it('returns null for an unknown id', async () => {
     const loaded = await loadAuditEntry('does_not_exist')
     expect(loaded).toBeNull()
+  })
+})
+
+/* ──────────────────── Caller-minted audit id (provenance binding) ──────────────────── */
+
+describe('writeAuditEntry — caller-minted auditId', () => {
+  it('persists the supplied auditId verbatim as the row id (the provenance verifier resolves this exact id)', async () => {
+    // FAILS on pre-fix code: writeAuditEntry ignored input.auditId, so
+    // the row got a store-minted id and the aud_… id embedded in every
+    // signed provenance payload pointed at a row that did not exist —
+    // GET /api/uap/v1/provenance/{audit_id} 404'd on every envelope.
+    const auditId = 'aud_0123456789abcdef01234567'
+    const row = await writeAuditEntry(makeAuditInput({ auditId }))
+    expect(row.id).toBe(auditId)
+    const loaded = await loadAuditEntry(auditId)
+    expect(loaded?.id).toBe(auditId)
+  })
+
+  it('still verifies as a valid chain with an explicit id (id is not signature-bearing)', async () => {
+    await writeWithGap(makeAuditInput({ auditId: 'aud_aaaaaaaaaaaaaaaaaaaaaaaa' }))
+    await writeWithGap(makeAuditInput({ auditId: 'aud_bbbbbbbbbbbbbbbbbbbbbbbb' }))
+    const result = await verifyAuditChain(USER_A)
+    expect(result.valid).toBe(true)
+    expect(result.totalChecked).toBe(2)
+  })
+
+  it('rejects a duplicate auditId (primary-key dedupe is what makes idempotency-key replays single-row)', async () => {
+    const auditId = 'aud_cccccccccccccccccccccccc'
+    await writeAuditEntry(makeAuditInput({ auditId }))
+    await expect(
+      writeAuditEntry(makeAuditInput({ auditId })),
+    ).rejects.toThrow(/Unique constraint/)
+  })
+})
+
+/* ──────────────────── Concurrent append serialization ──────────────────── */
+
+describe('writeAuditEntry — concurrent appends for the same user', () => {
+  it('serializes via the per-user advisory lock so parallel writes still form a valid chain', async () => {
+    // FAILS on pre-fix code: without the transaction + advisory lock,
+    // both concurrent writers read the same chain head (prevHash) and
+    // produce two rows committing to the same predecessor — after
+    // which verifyAuditChain reports the user's LEGITIMATE chain as
+    // tampered. That is both a false alarm and attacker-inducible
+    // (fire two parallel executes, then point at "chain invalid" to
+    // discredit the audit trail).
+    await Promise.all([
+      writeAuditEntry(makeAuditInput({ actionKind: 'parallel_a' })),
+      writeAuditEntry(makeAuditInput({ actionKind: 'parallel_b' })),
+      writeAuditEntry(makeAuditInput({ actionKind: 'parallel_c' })),
+    ])
+
+    const rows = await loadAuditChain({ userId: USER_A })
+    expect(rows.length).toBe(3)
+
+    // Exactly one chain head (prevHash null) and no two rows
+    // committing to the same predecessor.
+    const prevHashes = rows.map((r) => r.prevHash)
+    expect(prevHashes.filter((p) => p === null).length).toBe(1)
+    const nonNull = prevHashes.filter((p) => p !== null)
+    expect(new Set(nonNull).size).toBe(nonNull.length)
+
+    const result = await verifyAuditChain(USER_A)
+    expect(result.valid).toBe(true)
+    expect(result.totalChecked).toBe(3)
   })
 })

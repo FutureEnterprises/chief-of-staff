@@ -77,32 +77,39 @@ export async function POST(req: Request) {
     )
   }
 
-  // Write a single audit row per kill event. The kill itself
-  // supersedes individual grants, so this row is keyed off a
-  // synthetic grantId='__kill__' or the first affected grant —
-  // the lib decides. We write best-effort: audit failure must NOT
-  // block the kill response (the user needs the 1s SLA).
-  try {
-    await writeAuditEntry({
-      grantId: result.affectedGrantIds[0] ?? '__kill__',
-      userId: user.id,
-      llmPartnerId: '__kill__',
-      operation: 'kill',
-      decision: 'allowed',
-      decisionReason: reason,
-      postTermination: false,
-    })
-  } catch (err) {
-    console.warn('[uap/kill-switch] audit write failed', {
-      err: err instanceof Error ? err.message : 'unknown',
-      userId: user.id,
-    })
+  // Write one audit row PER killed grant, keyed to the real grant id
+  // and its real issuing partner. UAPAuditEntry.grantId is FK-
+  // constrained to uap_grants, so the previous synthetic
+  // grantId='__kill__' sentinel could never persist — a kill with zero
+  // matching grants silently wrote NO audit row at all. Zero affected
+  // grants now legitimately writes zero rows (nothing was killed; the
+  // UAPKillSwitchEvent row is still the record of the kill request).
+  // Best-effort: audit failure must NOT block the kill response (1s SLA).
+  for (const grant of result.affectedGrants) {
+    try {
+      await writeAuditEntry({
+        grantId: grant.id,
+        userId: user.id,
+        llmPartnerId: grant.llmPartnerId,
+        operation: 'kill',
+        decision: 'allowed',
+        decisionReason: reason,
+        postTermination: false,
+      })
+    } catch (err) {
+      console.warn('[uap/kill-switch] audit write failed', {
+        err: err instanceof Error ? err.message : 'unknown',
+        userId: user.id,
+        grantId: grant.id,
+      })
+    }
   }
 
   const origin = safeOrigin(req)
   return NextResponse.json({
     killed_at: result.killedAt.toISOString(),
     affected_grant_ids: result.affectedGrantIds,
+    revoked_scope_grant_count: result.revokedScopeGrantCount,
     audit_url: `${origin}/audit/uap?user_id=${encodeURIComponent(user.id)}`,
   })
 }

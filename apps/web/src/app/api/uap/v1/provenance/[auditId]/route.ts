@@ -23,6 +23,17 @@
 
 import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
+import { checkDistributedRateLimit } from '@/lib/rate-limit'
+
+/**
+ * Per-IP rate limit for this UNAUTHENTICATED verifier. Recipients
+ * verify one envelope at a time; 120/10min per IP is generous for
+ * legitimate verification and caps blind id-space scanning. Allow-on-
+ * unconfigured (dev / Redis hiccup) — verification must not hard-fail
+ * on missing Redis.
+ */
+const PROVENANCE_IP_LIMIT = 120
+const PROVENANCE_IP_WINDOW_MS = 10 * 60 * 1000
 
 /**
  * Strict whitelist for audit ids. Our audit ids are minted as
@@ -67,9 +78,23 @@ async function findAuditEntryByValidatedId(id: ValidatedAuditId) {
 }
 
 export async function GET(
-  _req: Request,
+  req: Request,
   ctx: { params: Promise<{ auditId: string }> },
 ) {
+  const ip =
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    req.headers.get('x-real-ip') ??
+    'unknown'
+  const rl = await checkDistributedRateLimit({
+    prefix: 'uap-provenance-ip',
+    identifier: ip,
+    limit: PROVENANCE_IP_LIMIT,
+    windowMs: PROVENANCE_IP_WINDOW_MS,
+  })
+  if (rl.configured && rl.limited) {
+    return NextResponse.json({ error: 'rate_limited' }, { status: 429 })
+  }
+
   const { auditId } = await ctx.params
   if (!auditId) {
     return NextResponse.json(

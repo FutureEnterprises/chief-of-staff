@@ -37,6 +37,8 @@ import bcrypt from 'bcryptjs'
 import { randomBytes } from 'node:crypto'
 import { prisma, Prisma } from '@repo/database'
 import { executeAction } from '@/lib/eap/action-executor'
+import { checkActionRateLimit } from '@/lib/eap/action-rate-limit'
+import { isUserCoachingPathClosed } from '@/lib/rap/store'
 
 export const maxDuration = 25
 
@@ -95,6 +97,37 @@ export async function POST(req: Request) {
   }
   const atomicity = body.atomicity === 'all_or_none' ? 'all_or_none' : 'best_effort'
   const ip = await getRequestIp()
+
+  // 0. RAP gate — ahead of every other gate. A closed coaching path
+  // supersedes every protocol layer (RAP-0.1 §2); a multi-device
+  // orchestration is exactly the kind of partner-initiated reach into
+  // the user's attention that must not fire during a crisis window.
+  // Fail-open on a RAP store read error (matches the PAP/UAP posture).
+  let coachingClosed = false
+  try {
+    coachingClosed = await isUserCoachingPathClosed(safeUserId)
+  } catch {
+    coachingClosed = false
+  }
+  if (coachingClosed) {
+    const denied = await recordDeniedOrchestration({
+      orchestrationKey: body.orchestrationKey,
+      partnerId: partner.partnerId,
+      userId: safeUserId,
+      atomicity,
+      reason: 'rap_coaching_path_closed',
+      ip,
+    })
+    return NextResponse.json({
+      decision: 'denied',
+      reason: 'rap_coaching_path_closed',
+      orchestrationId: denied?.id ?? null,
+      perStepResults: body.steps.map(() => ({
+        decision: 'denied',
+        reason: 'rap_coaching_path_closed',
+      })),
+    })
+  }
 
   // 1. Panic gate up-front.
   // nosemgrep
@@ -251,13 +284,37 @@ export async function POST(req: Request) {
       },
       update: {
         orchestrationId: orchestration.id,
-        decision: 'allowed',
       },
       select: {
         id: true,
         executionToken: true,
+        decision: true,
+        decisionReason: true,
       },
     })
+
+    // Replay guard: the stored executionToken differing from the one
+    // we just minted means the step row pre-existed (orchestrationKey
+    // replay). The actuator must NOT fire a second time — the row is
+    // idempotent but a re-invoked executor would re-push the device —
+    // and the response reports the STORED decision, not a fabricated
+    // fresh allow.
+    const isFreshStep = created.executionToken === executionToken
+
+    if (!isFreshStep) {
+      perStepResults.push({
+        decision: created.decision,
+        ...(created.decision === 'allowed'
+          ? {
+              executionToken: created.executionToken,
+              willExecuteAt: willExecuteAt.toISOString(),
+            }
+          : { reason: created.decisionReason ?? undefined }),
+        actionRequestId: created.id,
+        idempotentReplay: true,
+      })
+      continue
+    }
 
     perStepResults.push({
       decision: 'allowed',
@@ -461,14 +518,10 @@ async function writeAudit(args: {
   }
 }
 
-async function checkActionRateLimit(_args: {
-  partnerId: string
-  userId: string
-  deviceId: string
-  actuator: string
-}): Promise<{ allowed: boolean; reason?: string; retryAfterSec?: number }> {
-  return { allowed: true }
-}
+// Rate limiting: @/lib/eap/action-rate-limit — the SAME two-band
+// limiter the single-action route enforces, consumed per step. The
+// previous local placeholder returned allowed=true unconditionally,
+// which made orchestration a full bypass of the action rate cap.
 
 // ---------- LLM partner auth (mirrored from device/register) ----------
 

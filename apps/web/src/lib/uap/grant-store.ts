@@ -102,6 +102,36 @@ export async function loadGrant(
   return grant
 }
 
+/* ──────────────────── loadGrantWithAllRules ──────────────────── */
+
+/**
+ * The decision-time loader: grant + the FULL merged rule set — both
+ * grant-scoped rules (grantId === this grant) AND user-level rules
+ * (grantId === null) belonging to the grant's owner.
+ *
+ * This is what the PRECHECK/EXECUTE routes MUST wire into the
+ * coordinator's `loadGrantWithRules` dep. Wiring plain `loadGrant`
+ * there silently drops every user-level rule — a user-declared
+ * "never spend more than $50" (RULE_DECLARE with grant_id=null) would
+ * be accepted, stored, surfaced in the UI ... and never enforced.
+ * Per UAP-0.1.md §3, negative authority precedes positive authority;
+ * a rule that never reaches the coordinator enforces nothing.
+ *
+ * Rules are returned in creation order (stable merge) to match
+ * loadRulesForGrant's ordering contract.
+ */
+export async function loadGrantWithAllRules(
+  grantId: string,
+): Promise<(UAPGrant & { rules: UAPRule[] }) | null> {
+  const grant = await prisma.uAPGrant.findUnique({
+    where: { id: grantId },
+  })
+  if (!grant) return null
+
+  const rules = await loadRulesForGrant(grantId, grant.userId)
+  return { ...grant, rules }
+}
+
 /* ──────────────────── revokeGrant ──────────────────── */
 
 /**

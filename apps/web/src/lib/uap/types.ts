@@ -186,6 +186,12 @@ export type UAPProvenanceSignature = {
  * is sha256 of the previous audit row's signature, forming a chain.
  */
 export type UAPAuditInput = {
+  /** Optional externally-minted row id (`aud_<24 hex>`). The execute
+   *  route pre-mints this so the id can be embedded in the provenance
+   *  payload BEFORE signing; writeAuditEntry persists it verbatim so
+   *  GET /api/uap/v1/provenance/{audit_id} resolves the same id the
+   *  recipient holds. When omitted, Prisma mints a cuid. */
+  auditId?: string
   grantId: string
   userId: string
   llmPartnerId: string

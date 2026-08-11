@@ -4,40 +4,51 @@
  * Partner-authenticated. The decision/persistence flow is:
  *
  *   1. Authenticate partner.
- *   2. Load grant + rules + kill-state (fresh, never cached — T2).
- *   3. coordinator.decideExecute() — pure decision over those inputs.
- *   4. If allowed AND action is a representation action: provenance-sign
+ *   2. Idempotency check — when the partner supplies `idempotency_key`,
+ *      the audit id is a deterministic function of (partner, key). A
+ *      replay of an already-recorded EXECUTE returns the ORIGINAL
+ *      decision + envelope without re-deciding or re-signing (threat
+ *      model T5: "replays return the original decision without
+ *      re-executing").
+ *   3. Load grant + FULL merged rule set (grant-scoped + user-level)
+ *      fresh, never cached — T2. User-level rules (RULE_DECLARE with
+ *      grant_id=null) MUST reach the coordinator or negative authority
+ *      is advisory.
+ *   4. coordinator.decideExecute() — pure decision over those inputs.
+ *   5. If allowed AND action is a representation action: provenance-sign
  *      the outgoing payload, then persist the audit row WITH provenance.
- *   5. If allowed AND action is internal: persist audit row without sig.
  *   6. If denied / needs_per_action_confirmation: persist anyway —
  *      denials are audit-worthy per UAP-0.1.md §3.
  *   7. Return decision + audit_id + provenance envelope (when present).
  *
- * To avoid a double-write for representation actions, we pre-mint the
- * auditId, embed it in the provenance payload before signing, then
- * persist the audit row once with the signature attached.
+ * The audit id is pre-minted and embedded in the provenance payload
+ * before signing, and writeAuditEntry persists that exact id — so the
+ * public verifier at GET /api/uap/v1/provenance/{audit_id} resolves the
+ * same id the recipient holds in the signed envelope.
  */
 
-import { randomBytes } from 'node:crypto'
+import { createHash, randomBytes } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { authenticateUAPPartner } from '@/lib/uap/uap-partner-auth'
 import { decideExecute } from '@/lib/uap/coordinator'
 import { isUserCoachingPathClosed } from '@/lib/rap/store'
-import { loadGrant } from '@/lib/uap/grant-store'
+import { loadGrant, loadGrantWithAllRules } from '@/lib/uap/grant-store'
 import { isUserKilledGlobally } from '@/lib/uap/kill-switch'
 import { isPanicActive } from '@/lib/coordinator/panic-check'
 import { isInQuietHours } from '@/lib/coordinator/quiet-hours'
-import { checkLLMPartnerRateLimit } from '@/lib/coordinator/rate-limit'
-import { writeAuditEntry } from '@/lib/uap/audit'
+import { checkUAPPartnerRateLimit } from '@/lib/uap/rate-limit'
+import { writeAuditEntry, loadAuditEntry } from '@/lib/uap/audit'
 import { signProvenance } from '@/lib/uap/provenance'
 import {
   UAP_REPRESENTATION_ACTIONS,
   type UAPExecuteInput,
   type UAPRepresentationAction,
 } from '@/lib/uap/types'
+import type { UAPAuditEntry } from '@repo/database'
 
 type Body = {
   grant_id?: string
+  idempotency_key?: string
   action?: {
     kind?: string
     operation?: string
@@ -54,6 +65,9 @@ type Body = {
     hint?: string
   }
 }
+
+/** Charset + length bound for partner-supplied idempotency keys. */
+const IDEMPOTENCY_KEY_PATTERN = /^[A-Za-z0-9_.\-]{1,128}$/
 
 export async function POST(req: Request) {
   const authResult = await authenticateUAPPartner(req)
@@ -96,8 +110,47 @@ export async function POST(req: Request) {
       '`action.reversibility` must be reversible | irreversible | reversible_within_window.',
     )
   }
+  if (
+    body.idempotency_key !== undefined &&
+    (typeof body.idempotency_key !== 'string' ||
+      !IDEMPOTENCY_KEY_PATTERN.test(body.idempotency_key))
+  ) {
+    return errorResponse(
+      400,
+      'invalid_idempotency_key',
+      '`idempotency_key` must match [A-Za-z0-9_.-]{1,128}.',
+    )
+  }
 
-  // ── Fresh-load grant + rules + kill state (T2 defense) ───────────
+  // ── Audit-id minting ─────────────────────────────────────────────
+  // With an idempotency key: deterministic over (partner, key), so a
+  // replay maps to the SAME audit row — the unique primary key is the
+  // dedupe. Without one: random. Either way the id is embedded in the
+  // provenance payload before signing and persisted verbatim.
+  const auditId = body.idempotency_key
+    ? `aud_${createHash('sha256')
+        .update(`${partner.id}:${body.idempotency_key}`, 'utf8')
+        .digest('hex')
+        .slice(0, 24)}`
+    : `aud_${randomBytes(12).toString('hex')}`
+
+  // ── Idempotent replay short-circuit ──────────────────────────────
+  // T5: a replayed EXECUTE (same partner + same idempotency key) must
+  // return the original decision without re-deciding, re-signing, or
+  // appending a second audit row.
+  if (body.idempotency_key) {
+    let existing: UAPAuditEntry | null = null
+    try {
+      existing = await loadAuditEntry(auditId)
+    } catch {
+      existing = null // fall through to the normal path
+    }
+    if (existing) {
+      return NextResponse.json(replayResponse(existing))
+    }
+  }
+
+  // ── Fresh-load grant (T2 defense) ────────────────────────────────
   let grant
   try {
     grant = await loadGrant(body.grant_id)
@@ -121,9 +174,6 @@ export async function POST(req: Request) {
       'This grant was not issued to your partner account.',
     )
   }
-
-  // Coordinator loads rules + checks kill-switch itself via injected
-  // deps (see decideExecute call below). No pre-load needed.
 
   const input: UAPExecuteInput = {
     grantId: grant.id,
@@ -154,11 +204,17 @@ export async function POST(req: Request) {
   let decision
   try {
     decision = await decideExecute(input, {
-      loadGrantWithRules: loadGrant,
+      // Merged loader: grant-scoped rules + user-level rules (grantId
+      // NULL). Plain loadGrant drops user-level RULE_DECLARE rows —
+      // negative authority must reach the coordinator to be enforced.
+      loadGrantWithRules: loadGrantWithAllRules,
       isUserKilledGlobally,
       isPanicActive,
       isInQuietHours,
-      checkPartnerRateLimit: checkLLMPartnerRateLimit,
+      // UAP-aware limiter: counts UAP execute audit rows (the shared
+      // PAP/EAP limiter counts tables UAP never writes to, so UAP-only
+      // partners were effectively unlimited).
+      checkPartnerRateLimit: checkUAPPartnerRateLimit,
       isUserCoachingPathClosed,
       now: () => now,
     })
@@ -173,13 +229,6 @@ export async function POST(req: Request) {
       'Coordinator threw evaluating the action.',
     )
   }
-
-  // ── Pre-mint the audit id so we can embed it in the provenance
-  //    payload BEFORE signing. The audit lib accepts an externally
-  //    supplied id (`auditId`) when present, or generates one when
-  //    omitted. This keeps representation-action persistence to one
-  //    audit write per execute.
-  const auditId = `aud_${randomBytes(12).toString('hex')}`
 
   const isRepresentation = UAP_REPRESENTATION_ACTIONS.includes(
     action.kind as UAPRepresentationAction,
@@ -212,7 +261,7 @@ export async function POST(req: Request) {
 
   // Single audit write — provenance fields populated only on
   // signed representation actions. Denials still persist (§3).
-  let auditRow
+  let auditRow: UAPAuditEntry
   try {
     auditRow = await writeAuditEntry({
       auditId,
@@ -236,8 +285,19 @@ export async function POST(req: Request) {
             provenancePayload: provenanceEnvelope.payload,
           }
         : {}),
-    } as Parameters<typeof writeAuditEntry>[0])
+    })
   } catch (err) {
+    // Concurrent replay race: two requests with the same idempotency
+    // key can both pass the pre-check; the second insert collides on
+    // the primary key. Resolve by returning the winner's stored row.
+    if (body.idempotency_key) {
+      try {
+        const existing = await loadAuditEntry(auditId)
+        if (existing) return NextResponse.json(replayResponse(existing))
+      } catch {
+        // fall through to the 500 below
+      }
+    }
     console.error('[uap/execute] audit write failed', {
       err: err instanceof Error ? err.message : 'unknown',
       grantId: grant.id,
@@ -271,6 +331,37 @@ export async function POST(req: Request) {
   })
 }
 
+/**
+ * Rebuild the wire response for an idempotent replay from the stored
+ * audit row — the ORIGINAL decision, audit id, timestamp, and (for
+ * signed representation actions) the original provenance envelope.
+ * Nothing is re-decided and nothing is re-signed.
+ */
+function replayResponse(row: UAPAuditEntry): Record<string, unknown> {
+  const isTerminalDenial =
+    row.decision === 'denied' ||
+    row.decision === 'needs_per_action_confirmation'
+  return {
+    decision: row.decision,
+    ...(isTerminalDenial && row.decisionReason
+      ? { reason: row.decisionReason }
+      : {}),
+    audit_id: row.id,
+    executed_at: row.createdAt.toISOString(),
+    idempotent_replay: true,
+    ...(row.provenanceSignature && row.provenancePublicKey && row.provenancePayload
+      ? {
+          provenance: {
+            payload: row.provenancePayload,
+            signature: row.provenanceSignature,
+            public_key: row.provenancePublicKey,
+            algorithm: row.provenanceAlgorithm ?? 'ed25519',
+          },
+        }
+      : {}),
+  }
+}
+
 function errorResponse(
   status: number,
   error: string,
@@ -281,13 +372,4 @@ function errorResponse(
     detail !== undefined ? { error, message, detail } : { error, message },
     { status },
   )
-}
-
-function safeOrigin(req: Request): string {
-  try {
-    const u = new URL(req.url)
-    return `${u.protocol}//${u.host}`
-  } catch {
-    return 'https://coyl.ai'
-  }
 }

@@ -29,8 +29,21 @@
 
 import { NextResponse } from 'next/server'
 import { prisma, Prisma } from '@repo/database'
+import { checkDistributedRateLimit } from '@/lib/rate-limit'
 
 export const maxDuration = 10
+
+/**
+ * Per-IP rate limit for this UNAUTHENTICATED endpoint. The
+ * executionToken is a 128-bit bearer capability, so guessing one is
+ * infeasible — but without any limit the route is an unbounded,
+ * unauthenticated DB-lookup surface. 240/10min accommodates a busy
+ * device coordinator (~1 outcome per 2.5s sustained) while capping
+ * abuse. Distributed-first; allow-on-unconfigured (dev / Redis
+ * hiccup) matching the rest of the EAP plane.
+ */
+const OUTCOME_IP_LIMIT = 240
+const OUTCOME_IP_WINDOW_MS = 10 * 60 * 1000
 
 type OutcomeBody = {
   executionToken?: string
@@ -44,6 +57,20 @@ type OutcomeBody = {
 const ALLOWED_OUTCOMES = ['executed', 'failed', 'rejected', 'expired'] as const
 
 export async function POST(req: Request) {
+  const ip =
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    req.headers.get('x-real-ip') ??
+    'unknown'
+  const rl = await checkDistributedRateLimit({
+    prefix: 'eap-outcome-ip',
+    identifier: ip,
+    limit: OUTCOME_IP_LIMIT,
+    windowMs: OUTCOME_IP_WINDOW_MS,
+  })
+  if (rl.configured && rl.limited) {
+    return NextResponse.json({ error: 'rate_limited' }, { status: 429 })
+  }
+
   let body: OutcomeBody
   try {
     body = (await req.json()) as OutcomeBody

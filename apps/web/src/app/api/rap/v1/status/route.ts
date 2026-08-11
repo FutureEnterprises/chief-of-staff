@@ -24,9 +24,11 @@
  */
 
 import { NextResponse } from 'next/server'
+import { prisma } from '@repo/database'
 import { authenticateUAPPartner } from '@/lib/uap/uap-partner-auth'
 import { requireDbUser } from '@/lib/auth'
 import { isUserCoachingPathClosed } from '@/lib/rap/store'
+import { partnerHasRelationshipWithUser } from '@/lib/rap/partner-user-relationship'
 
 export async function GET(req: Request) {
   const { searchParams } = safeUrlOrEmpty(req.url)
@@ -45,6 +47,7 @@ export async function GET(req: Request) {
   // partner auth returns a 401, fall through to user-session auth.
   let authedAs: 'partner' | 'user' | null = null
   let authedUserId: string | null = null
+  let authedPartnerId: string | null = null
 
   const authHeader = req.headers.get('authorization') ?? req.headers.get('Authorization')
   if (authHeader && /^Bearer\s+coyl_uap_/i.test(authHeader.trim())) {
@@ -58,6 +61,7 @@ export async function GET(req: Request) {
       return partnerResult.error
     }
     authedAs = 'partner'
+    authedPartnerId = partnerResult.partner.id
   } else {
     // No partner header → try user session.
     let user
@@ -77,6 +81,27 @@ export async function GET(req: Request) {
       'forbidden',
       'You can only check your own coaching-path state.',
     )
+  }
+
+  // Partner binding: a coaching-path-closed boolean is health-adjacent
+  // state ("this person was crisis-classified within the last hour").
+  // The route's own contract says partners query it for "users they
+  // have grants on" — enforce exactly that. A partner with no active
+  // UAP grant and no active EAP ScopeGrant from this user gets a
+  // uniform 403, whether or not the user exists.
+  if (authedAs === 'partner' && authedPartnerId) {
+    const related = await partnerHasRelationshipWithUser(
+      prisma,
+      authedPartnerId,
+      userId,
+    )
+    if (!related) {
+      return errorResponse(
+        403,
+        'forbidden',
+        'No active grant from this user to your partner account.',
+      )
+    }
   }
 
   // ── Look up state ─────────────────────────────────────────────────

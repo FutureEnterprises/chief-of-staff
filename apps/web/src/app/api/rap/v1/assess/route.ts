@@ -21,10 +21,12 @@
  */
 
 import { NextResponse } from 'next/server'
+import { prisma } from '@repo/database'
 import { authenticateUAPPartner } from '@/lib/uap/uap-partner-auth'
 import { classify } from '@/lib/rap/classifier'
 import { buildEnvelope } from '@/lib/rap/router'
 import { writeAssessment } from '@/lib/rap/store'
+import { partnerHasRelationshipWithUser } from '@/lib/rap/partner-user-relationship'
 
 type Signal = {
   kind?: string
@@ -65,6 +67,27 @@ export async function POST(req: Request) {
       400,
       'missing_signal_chain',
       'Field `signal_chain` must be a non-empty array.',
+    )
+  }
+
+  // ── Partner ↔ user binding ───────────────────────────────────────
+  // A crisis/emergency assessment CLOSES the user's coaching path,
+  // which then denies the user's entire UAP/EAP surface for the active
+  // window. Without this check, ANY authenticated partner could write
+  // a CRISIS_INDICATION assessment for ANY user id — a one-request
+  // denial-of-service on a stranger's whole authority surface. The
+  // route's own auth note promises "for users they have grants on";
+  // enforce it.
+  const related = await partnerHasRelationshipWithUser(
+    prisma,
+    partner.id,
+    body.user_id,
+  )
+  if (!related) {
+    return errorResponse(
+      403,
+      'forbidden',
+      'No active grant from this user to your partner account.',
     )
   }
 

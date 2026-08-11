@@ -26,8 +26,10 @@
  */
 
 import { NextResponse } from 'next/server'
+import { prisma } from '@repo/database'
 import { authenticateUAPPartner } from '@/lib/uap/uap-partner-auth'
-import { recordEscalation } from '@/lib/rap/store'
+import { loadAssessment, recordEscalation } from '@/lib/rap/store'
+import { partnerHasRelationshipWithUser } from '@/lib/rap/partner-user-relationship'
 
 type Body = {
   assessment_id?: string
@@ -84,12 +86,46 @@ export async function POST(req: Request) {
     )
   }
 
+  // ── Assessment existence + partner ↔ user binding ────────────────
+  // The escalation record is the audit answer to "was the envelope
+  // honored?" — letting any authenticated partner append records to
+  // any assessment id would let an unrelated partner pollute another
+  // partner's (and user's) escalation audit trail. v0.1 has no
+  // per-assessment partner column, so the enforceable binding is: the
+  // calling partner must hold an active grant from the user the
+  // assessment belongs to.
+  let assessment
+  try {
+    assessment = await loadAssessment(body.assessment_id)
+  } catch (err) {
+    console.error('[rap/escalation] loadAssessment failed', {
+      err: err instanceof Error ? err.message : 'unknown',
+      assessmentId: body.assessment_id,
+    })
+    return errorResponse(500, 'load_failed', 'Unable to load assessment.')
+  }
+  if (!assessment) {
+    return errorResponse(
+      404,
+      'assessment_not_found',
+      'No assessment with the supplied id.',
+    )
+  }
+  const related = await partnerHasRelationshipWithUser(
+    prisma,
+    partner.id,
+    assessment.userId,
+  )
+  if (!related) {
+    return errorResponse(
+      403,
+      'partner_not_authorized',
+      'No active grant from this user to your partner account.',
+    )
+  }
+
   let escalationId: string
   try {
-    // partner.id not persisted in v0.1 schema (RAPEscalation has no
-    // llmPartnerId column); attribution lives in the RAPAssessment row
-    // referenced by assessmentId. v0.2: promote to first-class column.
-    void partner
     const result = await recordEscalation({
       assessmentId: body.assessment_id,
       escalatedTo: body.escalated_to,

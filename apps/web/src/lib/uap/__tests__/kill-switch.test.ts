@@ -41,11 +41,22 @@ type KillEvent = {
   affectedGrantIds: string[]
 }
 
+type ScopeGrantRow = {
+  id: string
+  userId: string
+  llmPartnerId: string
+  scope: string
+  active: boolean
+  revokedAt: Date | null
+}
+
 const grantStore: Map<string, Grant> = new Map()
 const killStore: Map<string, KillEvent> = new Map() // keyed by userId (unique)
+const scopeGrantStore: Map<string, ScopeGrantRow> = new Map()
 
 let nextGrantId = 1
 let nextEventId = 1
+let nextScopeGrantId = 1
 
 vi.mock('@repo/database', () => {
   // The `tx` object handed to the $transaction callback is the same
@@ -83,6 +94,27 @@ vi.mock('@repo/database', () => {
             (where.status === undefined || g.status === where.status)
           ) {
             Object.assign(g, data)
+            count++
+          }
+        }
+        return { count }
+      },
+    },
+    scopeGrant: {
+      updateMany: async ({
+        where,
+        data,
+      }: {
+        where: { userId: string; active?: boolean }
+        data: { active?: boolean; revokedAt?: Date }
+      }) => {
+        let count = 0
+        for (const s of scopeGrantStore.values()) {
+          if (
+            s.userId === where.userId &&
+            (where.active === undefined || s.active === where.active)
+          ) {
+            Object.assign(s, data)
             count++
           }
         }
@@ -169,11 +201,27 @@ function seedGrant(overrides: Partial<Grant> = {}): Grant {
   return g
 }
 
+function seedScopeGrant(overrides: Partial<ScopeGrantRow> = {}): ScopeGrantRow {
+  const s: ScopeGrantRow = {
+    id: `sg_${nextScopeGrantId++}`,
+    userId: USER_KILL,
+    llmPartnerId: 'partner_kill_test',
+    scope: 'edge:watch:haptic',
+    active: true,
+    revokedAt: null,
+    ...overrides,
+  }
+  scopeGrantStore.set(s.id, s)
+  return s
+}
+
 beforeEach(() => {
   grantStore.clear()
   killStore.clear()
+  scopeGrantStore.clear()
   nextGrantId = 1
   nextEventId = 1
+  nextScopeGrantId = 1
 })
 
 /* ──────────────────── Atomic flip ──────────────────── */
@@ -363,5 +411,60 @@ describe('loadKillSwitchEvent — read path', () => {
     expect(evt).toBeDefined()
     expect(evt?.userId).toBe(USER_KILL)
     expect(evt?.affectedGrantIds.length).toBe(1)
+  })
+})
+
+/* ──────────────────── EAP standing authority (ScopeGrants) ──────────────────── */
+
+describe('initiateKillSwitch — revokes EAP ScopeGrants in the same transaction', () => {
+  it('flips every active ScopeGrant to inactive + revokedAt (FAILS pre-fix: the kill only touched UAP grants, so an EAP partner kept full device-action authority after the user pressed "revoke ALL standing authority")', async () => {
+    seedGrant()
+    seedScopeGrant({ scope: 'edge:watch:haptic' })
+    seedScopeGrant({ scope: 'proactive_food', llmPartnerId: 'partner_other' })
+    // Already-revoked grant must not be double-counted or clobbered.
+    const alreadyRevoked = seedScopeGrant({
+      scope: 'edge:phone:push',
+      active: false,
+      revokedAt: new Date('2026-01-01T00:00:00Z'),
+    })
+
+    const result = await initiateKillSwitch({ userId: USER_KILL })
+
+    expect(result.revokedScopeGrantCount).toBe(2)
+    for (const s of scopeGrantStore.values()) {
+      expect(s.active).toBe(false)
+      expect(s.revokedAt).toBeInstanceOf(Date)
+    }
+    // The pre-revoked grant keeps its original revocation timestamp.
+    expect(alreadyRevoked.revokedAt?.toISOString()).toBe(
+      '2026-01-01T00:00:00.000Z',
+    )
+  })
+
+  it('does not touch another user\'s ScopeGrants', async () => {
+    seedScopeGrant({ userId: 'user_other' })
+    const result = await initiateKillSwitch({ userId: USER_KILL })
+    expect(result.revokedScopeGrantCount).toBe(0)
+    const other = Array.from(scopeGrantStore.values())[0]!
+    expect(other.active).toBe(true)
+  })
+})
+
+/* ──────────────────── Per-grant audit attribution ──────────────────── */
+
+describe('initiateKillSwitch — affectedGrants carries real partner attribution', () => {
+  it('returns id + llmPartnerId per killed grant so the route can write FK-valid audit rows (FAILS pre-fix: only bare ids were returned and the route wrote a synthetic grantId="__kill__" row that violated the FK and never persisted)', async () => {
+    const g1 = seedGrant({ llmPartnerId: 'partner_one' })
+    const g2 = seedGrant({ llmPartnerId: 'partner_two' })
+
+    const result = await initiateKillSwitch({ userId: USER_KILL })
+
+    expect(result.affectedGrants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: g1.id, llmPartnerId: 'partner_one' }),
+        expect.objectContaining({ id: g2.id, llmPartnerId: 'partner_two' }),
+      ]),
+    )
+    expect(result.affectedGrantIds.sort()).toEqual([g1.id, g2.id].sort())
   })
 })

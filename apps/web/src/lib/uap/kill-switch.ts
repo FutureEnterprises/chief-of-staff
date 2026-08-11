@@ -56,16 +56,26 @@ export async function initiateKillSwitch(params: {
 }): Promise<{
   event: UAPKillSwitchEvent
   affectedGrantIds: string[]
+  /** id + issuing partner of every UAP grant flipped by this kill —
+   *  lets the route write one real per-grant audit row (the grantId
+   *  column is FK-constrained to uap_grants, so synthetic sentinel ids
+   *  like '__kill__' can never persist). */
+  affectedGrants: Array<{ id: string; llmPartnerId: string }>
+  /** Number of EAP ScopeGrant rows revoked by this kill. The /kill
+   *  surface promises "ALL standing authority you've granted to ANY
+   *  AI" — that includes EAP device-action authority, not just UAP
+   *  grants, so the kill revokes both in the same transaction. */
+  revokedScopeGrantCount: number
   killedAt: Date
 }> {
   const { userId } = params
   const killedAt = new Date()
 
-  const { event, affectedGrantIds } = await prisma.$transaction(async (tx) => {
+  const { event, affectedGrants, revokedScopeGrantCount } = await prisma.$transaction(async (tx) => {
     // 1. Snapshot the active grants we're about to kill.
     const activeGrants = await tx.uAPGrant.findMany({
       where: { userId, status: 'ACTIVE' },
-      select: { id: true },
+      select: { id: true, llmPartnerId: true },
     })
     const grantIds = activeGrants.map((g) => g.id)
 
@@ -83,6 +93,19 @@ export async function initiateKillSwitch(params: {
         },
       })
     }
+
+    // 2b. Revoke EAP standing authority in the SAME transaction. The
+    //     kill surface (/kill) and the platform page promise one kill
+    //     switch across every device — an EAP ScopeGrant is standing
+    //     authority for LLM-initiated device actions, so leaving it
+    //     active after a kill would let a partner keep firing
+    //     ActionRequests while the user believes everything is dead.
+    //     Soft-revoke (active=false + revokedAt) matches the ScopeGrant
+    //     lifecycle; the user can re-grant afterward exactly like UAP.
+    const scopeResult = await tx.scopeGrant.updateMany({
+      where: { userId, active: true },
+      data: { active: false, revokedAt: killedAt },
+    })
 
     // 3. Upsert the kill event row. `userId @unique` enforces one
     //    active kill record per user — if the user has killed before
@@ -106,8 +129,14 @@ export async function initiateKillSwitch(params: {
       },
     })
 
-    return { event: eventRow, affectedGrantIds: grantIds }
+    return {
+      event: eventRow,
+      affectedGrants: activeGrants,
+      revokedScopeGrantCount: scopeResult.count,
+    }
   })
+
+  const affectedGrantIds = affectedGrants.map((g) => g.id)
 
   // Fire-and-forget realtime broadcast so subscribers (mobile, browser
   // extension, watch, web) react in ~hundreds of ms instead of waiting
@@ -120,7 +149,7 @@ export async function initiateKillSwitch(params: {
     reason: params.reason ?? 'user_initiated',
   })
 
-  return { event, affectedGrantIds, killedAt }
+  return { event, affectedGrantIds, affectedGrants, revokedScopeGrantCount, killedAt }
 }
 
 /* ──────────────────── isUserKilledGlobally ──────────────────── */

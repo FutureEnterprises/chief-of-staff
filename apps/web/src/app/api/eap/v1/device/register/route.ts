@@ -103,6 +103,28 @@ export async function POST(req: Request) {
     if (!user) {
       return NextResponse.json({ error: 'user_not_found' }, { status: 404 })
     }
+    // Partner ↔ user binding: the partner must hold at least one
+    // active ScopeGrant from the target user — the SAME gate the
+    // capability-discovery route applies to READS of the fleet.
+    // Registering (a WRITE that creates a paired device, sets its
+    // push token, and mints a device credential) must not be more
+    // permissive than listing: without this, any authenticated
+    // partner could plant a paired device with an attacker-controlled
+    // push token onto any user's account.
+    // nosemgrep
+    const anyGrant = await prisma.scopeGrant.findFirst({
+      where: {
+        userId: user.id,
+        llmPartnerId: partner.partnerId,
+        active: true,
+        revokedAt: null,
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+      },
+      select: { id: true },
+    })
+    if (!anyGrant) {
+      return NextResponse.json({ error: 'no_scope_granted' }, { status: 403 })
+    }
     userId = user.id
   } else {
     // Bootstrap path: resolve the user from the Clerk session. body.userId
@@ -153,8 +175,18 @@ export async function POST(req: Request) {
   // upsert key (parameterized SQL, not interpolated). nosemgrep
   const existing = await prisma.device.findUnique({
     where: { deviceFingerprint: body.deviceFingerprint },
-    select: { id: true, paired: true, deviceTokenHash: true },
+    select: { id: true, userId: true, paired: true, deviceTokenHash: true },
   })
+
+  // Cross-user fingerprint guard: the upsert below keys on
+  // deviceFingerprint, and its update branch would happily rewrite
+  // ANOTHER user's device row (manifest, pushToken — i.e. where that
+  // user's action pushes get delivered) if a caller re-registered a
+  // fingerprint it doesn't own. Uniform 409 either way so the endpoint
+  // doesn't become a fingerprint-ownership oracle.
+  if (existing && existing.userId !== userId) {
+    return NextResponse.json({ error: 'fingerprint_conflict' }, { status: 409 })
+  }
 
   const eventKind = existing ? 'device_manifest_updated' : 'device_registered'
 

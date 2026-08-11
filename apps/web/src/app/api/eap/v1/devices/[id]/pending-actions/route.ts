@@ -61,6 +61,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { authenticateDeviceRequest } from '@/lib/eap/device-auth'
+import { loadKillSwitchEvent } from '@/lib/uap/kill-switch'
+import { isUserCoachingPathClosed } from '@/lib/rap/store'
 
 export const maxDuration = 15
 
@@ -110,8 +112,58 @@ export async function GET(
   const now = new Date()
   const ageCutoff = new Date(now.getTime() - MAX_PENDING_AGE_MS)
 
+  // ── Delivery-time gates ──────────────────────────────────────────
+  // An action was gated at REQUEST time, but the world can change
+  // between request and device pickup. The user's protections must
+  // hold at the moment of DELIVERY too, or "panic denies every LLM-
+  // initiated action" and "the kill switch supersedes every in-flight
+  // action" are only true for actions that hadn't been queued yet.
+  //
+  // 1. Panic: while active, the queue reads as empty. Actions are not
+  //    mutated — if the panic window lapses before the 24h pending age
+  //    does, still-live actions resume delivery.
+  // nosemgrep
+  const panic = await prisma.panicState.findUnique({
+    where: { userId: authed.userId },
+    select: { active: true, expiresAt: true },
+  })
+  const panicActive = Boolean(
+    panic?.active &&
+      (!panic.expiresAt || panic.expiresAt.getTime() > Date.now()),
+  )
+  if (panicActive) {
+    return NextResponse.json({ actions: [] })
+  }
+
+  // 2. RAP: a closed coaching path (crisis/emergency window) means the
+  //    user must not be reachable by any partner-initiated actuation —
+  //    including ones queued before the crisis was classified.
+  //    Fail-open on a read error (matches every other RAP call site).
+  let coachingClosed = false
+  try {
+    coachingClosed = await isUserCoachingPathClosed(authed.userId)
+  } catch {
+    coachingClosed = false
+  }
+  if (coachingClosed) {
+    return NextResponse.json({ actions: [] })
+  }
+
+  // 3. Kill switch: anything queued BEFORE the user's most recent
+  //    global kill is dead forever — the kill "supersedes every
+  //    in-flight action" (UAP-0.1 §3). Actions requested after the
+  //    kill under freshly re-granted authority deliver normally.
+  let killCutoff: Date | null = null
+  try {
+    const killEvent = await loadKillSwitchEvent(authed.userId)
+    killCutoff = killEvent?.initiatedAt ?? null
+  } catch {
+    killCutoff = null // fail-open: the request-time gates still ran
+  }
+
   // Pending = allowed by the coordinator, has a minted executionToken,
-  // not yet closed by an outcome, and recent enough to still be live.
+  // not yet closed by an outcome, recent enough to still be live, and
+  // requested after the most recent kill (if any).
   // nosemgrep
   const rows = await prisma.actionRequest.findMany({
     where: {
@@ -119,7 +171,10 @@ export async function GET(
       decision: 'allowed',
       outcome: null,
       executionToken: { not: null },
-      createdAt: { gte: ageCutoff },
+      createdAt:
+        killCutoff && killCutoff.getTime() > ageCutoff.getTime()
+          ? { gt: killCutoff }
+          : { gte: ageCutoff },
     },
     orderBy: { createdAt: 'asc' },
     select: {
