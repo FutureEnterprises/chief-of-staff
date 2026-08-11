@@ -19,7 +19,10 @@ import { loadGrant, loadGrantWithAllRules } from '@/lib/uap/grant-store'
 import { isUserKilledGlobally } from '@/lib/uap/kill-switch'
 import { isPanicActive } from '@/lib/coordinator/panic-check'
 import { isInQuietHours } from '@/lib/coordinator/quiet-hours'
-import { checkUAPPartnerRateLimit } from '@/lib/uap/rate-limit'
+import {
+  checkUAPPartnerRateLimit,
+  countAllowedExecutesInWindow,
+} from '@/lib/uap/rate-limit'
 import type { UAPExecuteInput } from '@/lib/uap/types'
 
 type Body = {
@@ -150,6 +153,13 @@ export async function POST(req: Request) {
       isInQuietHours,
       checkPartnerRateLimit: checkUAPPartnerRateLimit,
       isUserCoachingPathClosed,
+      // frequency_cap is evaluated here too — a PRECHECK that ignored
+      // it would answer 'allowed' for an action EXECUTE will refuse.
+      // Evaluating consumes nothing: the counter reads ALLOWED execute
+      // audit rows, and PRECHECK writes no audit row at all (see the
+      // no-side-effects return at the end of this handler). The read is
+      // the whole interaction with the cap.
+      countRecentAllowedExecutes: (p) => countAllowedExecutesInWindow(p),
       now: () => new Date(),
     })
   } catch (err) {

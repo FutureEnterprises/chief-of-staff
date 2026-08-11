@@ -75,6 +75,11 @@ import { Prisma, prisma } from '@repo/database'
 import type { UAPAuditEntry } from '@repo/database'
 
 import type { UAPAuditInput, UAPProvenancePayload } from './types'
+import {
+  allowedExecuteWindowWhere,
+  type AuditCountClient,
+} from './rate-limit'
+import type { FrequencyGuard } from './rule-params'
 
 /* ────────────────────────── Key management ────────────────────────── */
 
@@ -375,6 +380,78 @@ function computePrevHash(previousSignature: string): string {
   return createHash('sha256').update(previousSignature, 'utf8').digest('hex')
 }
 
+/* ────────────────────────── Frequency-cap serialization ────────────────────────── */
+
+/**
+ * Thrown by `writeAuditEntry` when a supplied frequency guard is at or
+ * over its cap AT APPEND TIME. The audit row is NOT written and the
+ * transaction rolls back, so the caller can safely re-decide the action
+ * as denied and persist that denial instead.
+ */
+export class UAPFrequencyCapExceededError extends Error {
+  readonly guard: FrequencyGuard
+  readonly count: number
+
+  constructor(guard: FrequencyGuard, count: number) {
+    super(
+      `frequency_cap exceeded: action_kind=${guard.actionKind} count=${count} max=${guard.max} window_seconds=${guard.windowSeconds}`,
+    )
+    this.name = 'UAPFrequencyCapExceededError'
+    this.guard = guard
+    this.count = count
+  }
+
+  /** Wire-ready `detail` string matching the coordinator's format. */
+  get detail(): string {
+    return `rule_id=frequency_cap action_kind=${this.guard.actionKind} count=${this.count} max=${this.guard.max} window_seconds=${this.guard.windowSeconds}`
+  }
+}
+
+export type WriteAuditOptions = {
+  /**
+   * Frequency caps to RE-CHECK inside the append transaction.
+   *
+   * Why a second check: the coordinator counts the trailing window
+   * BEFORE the audit row exists, outside any transaction. Two concurrent
+   * EXECUTEs at the cap boundary both read `count = max - 1`, both pass,
+   * and both append — the cap is exceeded by exactly the concurrency.
+   * The existing per-user advisory lock does NOT cover this on its own:
+   * it serializes the two APPENDS (so the hash chain stays valid) but
+   * both COUNTS already happened before either lock was taken.
+   *
+   * Re-counting under the same lock closes it: the loser of the race
+   * now counts the winner's row and throws
+   * UAPFrequencyCapExceededError instead of appending.
+   *
+   * Only supply guards for a decision that is about to be recorded as
+   * ALLOWED — a denial consumes nothing and must always be recordable.
+   */
+  frequencyGuards?: FrequencyGuard[]
+  /** Test-injectable clock for the window's lower bound. */
+  now?: Date
+}
+
+async function assertFrequencyGuards(
+  tx: AuditCountClient,
+  input: UAPAuditInput,
+  guards: FrequencyGuard[],
+  now: Date,
+): Promise<void> {
+  for (const guard of guards) {
+    const count = await tx.uAPAuditEntry.count({
+      where: allowedExecuteWindowWhere({
+        userId: input.userId,
+        grantId: guard.grantId,
+        actionKind: guard.actionKind,
+        since: new Date(now.getTime() - guard.windowSeconds * 1000),
+      }),
+    })
+    if (count >= guard.max) {
+      throw new UAPFrequencyCapExceededError(guard, count)
+    }
+  }
+}
+
 /* ────────────────────────── Public API ────────────────────────── */
 
 /**
@@ -406,11 +483,26 @@ function computePrevHash(previousSignature: string): string {
  */
 export async function writeAuditEntry(
   input: UAPAuditInput,
+  options?: WriteAuditOptions,
 ): Promise<UAPAuditEntry> {
   return prisma.$transaction(async (tx) => {
     // Serialize appends per user. hashtext() maps the userId onto the
     // advisory-lock keyspace; the lock releases at transaction end.
     await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${input.userId}))`
+
+    // ── Atomic frequency-cap re-check ────────────────────────────
+    // Runs INSIDE the lock, immediately before the append, so the
+    // count-then-write pair is serialized per user. See the
+    // WriteAuditOptions docs for why the coordinator's earlier count
+    // is not sufficient on its own.
+    if (options?.frequencyGuards?.length) {
+      await assertFrequencyGuards(
+        tx as unknown as AuditCountClient,
+        input,
+        options.frequencyGuards,
+        options.now ?? new Date(),
+      )
+    }
 
     const previous = await tx.uAPAuditEntry.findFirst({
       where: { userId: input.userId },

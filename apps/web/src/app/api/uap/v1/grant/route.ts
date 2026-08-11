@@ -22,7 +22,14 @@ import { prisma } from '@repo/database'
 import { authenticateUAPPartner } from '@/lib/uap/uap-partner-auth'
 import { createGrant } from '@/lib/uap/grant-store'
 import { writeAuditEntry } from '@/lib/uap/audit'
-import { UAP_SCOPES, type UAPScope, type UAPRuleKind } from '@/lib/uap/types'
+import {
+  UAP_SCOPES,
+  isUAPRuleKind,
+  type UAPScope,
+  type UAPRuleKind,
+  type UAPConsentClass,
+} from '@/lib/uap/types'
+import { validateRuleParams } from '@/lib/uap/rule-params'
 
 const MAX_GRANT_LIFETIME_MS = 90 * 24 * 60 * 60 * 1000 // 90 days
 
@@ -46,8 +53,13 @@ export async function POST(req: Request) {
   //
   //   1. PARTNER (Bearer coyl_uap_*) — the §5 partner-side call. The
   //      partner names the target user and supplies the consent
-  //      artifact it collected. NOTE: the artifact here is partner-
-  //      attested; see the T8 caveat in the route report.
+  //      artifact it collected. The artifact here is PARTNER-ATTESTED:
+  //      the party that benefits from the grant is also the only
+  //      witness that consent happened (T8). The path stays open for
+  //      SDK compatibility, but the grant is now stamped
+  //      `consentClass: 'partner_attested'` and the coordinator refuses
+  //      irreversibility-floor actions under it
+  //      (`consent_class_insufficient`). See lib/uap/consent-class.ts.
   //
   //   2. USER SESSION (Clerk cookie) — the COYL-hosted consent
   //      ceremony at /consent/uap. This is the T8 mitigation path:
@@ -130,7 +142,13 @@ export async function POST(req: Request) {
     llmPartnerId = partnerRow.id
     grantUserId = user.id
   }
-  void issuerKind
+
+  // The consent class is decided by which door the request came in, and
+  // by nothing the caller can put in the body. A partner cannot claim
+  // coordinator-verified consent for an artifact it produced itself.
+  const consentClass: UAPConsentClass =
+    issuerKind === 'user' ? 'coordinator_verified' : 'partner_attested'
+
   if (!Array.isArray(body.scopes) || body.scopes.length === 0) {
     return errorResponse(
       400,
@@ -200,7 +218,11 @@ export async function POST(req: Request) {
     )
   }
 
-  // ── Rule shape validation (light — store does the real work) ─────
+  // ── Rule shape validation ────────────────────────────────────────
+  // Strict now that rules FAIL CLOSED at decision time: an inline rule
+  // this engine cannot evaluate would deny every action under the grant
+  // it is attached to. Rejecting it here is the difference between a
+  // 400 at issuance and a grant that silently never works.
   const rules: Array<{ kind: UAPRuleKind; params: Record<string, unknown> }> = []
   if (Array.isArray(body.rules)) {
     for (const r of body.rules) {
@@ -211,10 +233,25 @@ export async function POST(req: Request) {
           'Each rule needs a `kind` string and a `params` object.',
         )
       }
-      rules.push({
-        kind: r.kind as UAPRuleKind,
-        params: (r.params ?? {}) as Record<string, unknown>,
-      })
+      if (!isUAPRuleKind(r.kind)) {
+        return errorResponse(
+          400,
+          'unknown_rule_kind',
+          'Rule kind is not part of UAP-0.1.',
+          { received: r.kind },
+        )
+      }
+      const params = (r.params ?? {}) as Record<string, unknown>
+      const validated = validateRuleParams(r.kind, params)
+      if (!validated.ok) {
+        return errorResponse(
+          400,
+          'invalid_rule_params',
+          'Rule params are not evaluable by this engine; the rule would deny every action under this grant.',
+          { kind: r.kind, problem: validated.detail },
+        )
+      }
+      rules.push({ kind: r.kind, params })
     }
   }
 
@@ -226,6 +263,7 @@ export async function POST(req: Request) {
       llmPartnerId,
       scopes: body.scopes as UAPScope[],
       expiresAt,
+      consentClass,
       consentArtifact: {
         version: typeof (body.consent_artifact as Record<string, unknown>)?.version === 'string'
           ? ((body.consent_artifact as Record<string, unknown>).version as string)
@@ -279,6 +317,10 @@ export async function POST(req: Request) {
       grant_id: grant.id,
       status: 'active',
       expires_at: expiresAt.toISOString(),
+      // Additive field: tells the partner, at issuance, that a
+      // partner-attested grant will not authorize floor actions — so
+      // the limitation is discoverable before the first refusal.
+      consent_class: consentClass,
       audit_url: `${origin}/audit/uap/${grant.id}`,
       kill_switch_url: `${origin}/kill`,
     },

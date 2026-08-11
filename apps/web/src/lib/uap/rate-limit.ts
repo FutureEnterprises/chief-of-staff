@@ -119,3 +119,67 @@ export async function checkUAPPartnerRateLimit(
     band: 'global_daily',
   }
 }
+
+/**
+ * Trailing-window counter behind the `frequency_cap` rule.
+ *
+ * Counts UAPAuditEntry rows that represent a CONSUMED unit of the
+ * user's cap: operation='execute', decision='allowed', for this exact
+ * (user, grant, action kind) tuple, at or after `since`.
+ *
+ * Why this table and this filter:
+ *   • Same source of truth as the limiter above, so "an action reached
+ *     this user" counts once, in one place, for both gates.
+ *   • decision='allowed' only. Denials and needs_per_action_confirmation
+ *     rows are audit-worthy but consumed nothing, and counting them
+ *     would let a partner exhaust a user's cap by firing actions that
+ *     were REFUSED — a self-inflicted denial of service.
+ *   • PRECHECK writes no audit row at all, so a precheck can evaluate a
+ *     frequency cap without consuming against it. That is the property
+ *     the PRECHECK contract promises ("no side effects"), and it holds
+ *     here by construction rather than by a flag.
+ *
+ * `tx` lets the caller run the count inside an open transaction — the
+ * audit writer passes its advisory-locked transaction client so the
+ * count-then-append is serialized per user. Omit it for the coordinator's
+ * optimistic pre-check.
+ */
+export type AllowedExecuteWindow = {
+  userId: string
+  grantId: string
+  actionKind: string
+  since: Date
+}
+
+/**
+ * The exact `where` clause the cap counts. Exported so the atomic
+ * re-check in lib/uap/audit.ts and the coordinator's optimistic count
+ * are provably the same query, not two clauses that drifted apart.
+ */
+export function allowedExecuteWindowWhere(params: AllowedExecuteWindow) {
+  return {
+    userId: params.userId,
+    grantId: params.grantId,
+    actionKind: params.actionKind,
+    operation: 'execute',
+    decision: 'allowed',
+    createdAt: { gte: params.since },
+  }
+}
+
+/** Minimal structural client — satisfied by both `prisma` and a `$transaction` tx. */
+export type AuditCountClient = {
+  uAPAuditEntry: {
+    count: (args: {
+      where: ReturnType<typeof allowedExecuteWindowWhere>
+    }) => Promise<number>
+  }
+}
+
+export async function countAllowedExecutesInWindow(
+  params: AllowedExecuteWindow,
+  client?: AuditCountClient,
+): Promise<number> {
+  const db = client ?? (prisma as unknown as AuditCountClient)
+  return db.uAPAuditEntry.count({ where: allowedExecuteWindowWhere(params) })
+}

@@ -16,27 +16,26 @@ import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@repo/database'
 import { addRule, loadGrant } from '@/lib/uap/grant-store'
+import { validateRuleParams } from '@/lib/uap/rule-params'
+import { UAP_RULE_KINDS, isUAPRuleKind } from '@/lib/uap/types'
 import type { UAPRuleKind } from '@/lib/uap/types'
 
-const ALLOWED_RULE_KINDS: UAPRuleKind[] = [
-  'spending_cap',
-  'quiet_hours',
-  'irreversible_floor',
-  'recipient_allowlist',
-  'recipient_denylist',
-  'frequency_cap',
-  'time_of_day_block',
-]
-
 /**
- * Rule kinds the coordinator does NOT enforce yet. Per UAP-0.1 §3 a
- * declared rule "supersedes every overlapping grant" — accepting a
- * pre-decline the engine silently ignores would be the worst possible
- * daylight between promise and enforcement (the user believes a cap is
- * live; nothing checks it). Refuse with an explicit reason instead;
- * remove from this set the moment the coordinator gains the check.
+ * Every kind is accepted and every kind is enforced. The list is the
+ * one declared in lib/uap/types.ts, not a second copy of it.
+ *
+ * There used to be an UNENFORCED_RULE_KINDS set here holding
+ * `frequency_cap`: the coordinator's case was a no-op, so rather than
+ * record a pre-decline nothing would check, the route refused the kind
+ * outright. The coordinator now counts the trailing window against the
+ * audit log and denies with `frequency_cap_exceeded`, with an atomic
+ * re-check under the audit advisory lock, so the refusal is gone and
+ * the documented rule kind works. If a kind is ever added to
+ * UAP_RULE_KINDS without a coordinator case, the drift test in
+ * lib/uap/__tests__/rule-fail-closed.test.ts fails CI — that test, not
+ * a hand-maintained deny-list, is what keeps this route honest.
  */
-const UNENFORCED_RULE_KINDS = new Set<UAPRuleKind>(['frequency_cap'])
+const ALLOWED_RULE_KINDS: readonly UAPRuleKind[] = UAP_RULE_KINDS
 
 type Body = {
   grant_id?: string | null
@@ -64,7 +63,7 @@ export async function POST(req: Request) {
   if (!body.kind || typeof body.kind !== 'string') {
     return errorResponse(400, 'missing_kind', 'Field `kind` is required.')
   }
-  if (!ALLOWED_RULE_KINDS.includes(body.kind as UAPRuleKind)) {
+  if (!isUAPRuleKind(body.kind)) {
     return errorResponse(
       400,
       'unknown_rule_kind',
@@ -72,19 +71,28 @@ export async function POST(req: Request) {
       { allowed_kinds: ALLOWED_RULE_KINDS, received: body.kind },
     )
   }
-  if (UNENFORCED_RULE_KINDS.has(body.kind as UAPRuleKind)) {
-    return errorResponse(
-      400,
-      'rule_kind_not_enforced',
-      'This rule kind is not enforced by the v0.1.1 engine yet. Refusing to record a pre-decline that would not actually be checked.',
-      { unenforced_kinds: [...UNENFORCED_RULE_KINDS] },
-    )
-  }
+  const kind: UAPRuleKind = body.kind
 
   const params =
     body.params && typeof body.params === 'object'
       ? (body.params as Record<string, unknown>)
       : {}
+
+  // Params must be EVALUABLE, not merely present. The coordinator now
+  // denies with `rule_unevaluable` on a params blob it cannot parse —
+  // which is the correct posture at decision time, but it means a
+  // typo'd rule stored here would silently deny every action under
+  // every affected grant. Catch it at the only moment a human is
+  // present to fix it.
+  const validated = validateRuleParams(kind, params)
+  if (!validated.ok) {
+    return errorResponse(
+      400,
+      'invalid_rule_params',
+      'Rule params are not evaluable by this engine. A stored rule the coordinator cannot evaluate would deny every affected action, so it is refused here instead.',
+      { kind, problem: validated.detail },
+    )
+  }
 
   // grant_id is optional + nullable. null/undefined → user-level rule.
   const grantId =
@@ -121,14 +129,14 @@ export async function POST(req: Request) {
     rule = await addRule({
       userId: user.id,
       grantId,
-      kind: body.kind as UAPRuleKind,
+      kind,
       params,
     })
   } catch (err) {
     console.error('[uap/rule] addRule failed', {
       err: err instanceof Error ? err.message : 'unknown',
       userId: user.id,
-      kind: body.kind,
+      kind,
     })
     return errorResponse(500, 'rule_persist_failed', 'Unable to persist rule.')
   }

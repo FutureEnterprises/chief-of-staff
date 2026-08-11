@@ -16,7 +16,7 @@
  * Response shape (per spec):
  *   {
  *     audit_id, payload, signature, public_key, algorithm,
- *     grant_status,
+ *     grant_status, consent_class,
  *     audit_chain: { prev_hash, row_signature }
  *   }
  */
@@ -24,6 +24,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@repo/database'
 import { checkDistributedRateLimit } from '@/lib/rate-limit'
+import { consentClassLabel } from '@/lib/uap/consent-class'
 
 /**
  * Per-IP rate limit for this UNAUTHENTICATED verifier. Recipients
@@ -71,6 +72,11 @@ async function findAuditEntryByValidatedId(id: ValidatedAuditId) {
           id: true,
           status: true,
           expiresAt: true,
+          // Consent provenance — which class of consent backed the
+          // decision this envelope attests to. Read from the grant, the
+          // authoritative record, so a relying party does not have to
+          // trust an unsigned field travelling next to the signature.
+          consentArtifact: true,
         },
       },
     },
@@ -156,6 +162,14 @@ export async function GET(
     public_key: row.provenancePublicKey,
     algorithm: row.provenanceAlgorithm ?? 'ed25519',
     grant_status: grantStatus,
+    // 'coordinator_verified' — COYL hosted the consent ceremony and saw
+    // the user accept. 'partner_attested' — the LLM partner asserted the
+    // user consented, on its own credential; such grants cannot
+    // authorize irreversibility-floor actions at all. 'unclassified' —
+    // the grant predates consent classing. A recipient deciding how
+    // much to trust an AI-mediated message should read this alongside
+    // grant_status.
+    consent_class: consentClassLabel(row.grant?.consentArtifact),
     audit_chain: {
       prev_hash: row.prevHash ?? null,
       row_signature: row.signature,

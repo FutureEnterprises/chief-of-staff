@@ -28,9 +28,24 @@
  *   9.  Scope mismatch (per ACTION_SCOPE_MAP)
  *   10. Confidence below DEFAULT_CONFIDENCE_THRESHOLD
  *   11. Partner rate limit (cheap last because it's two DB counts)
- *   12. Rule evaluation (spending_cap, recipient lists, time_of_day_block)
- *   13. Irreversibility floor → needs_per_action_confirmation
- *   14. Allowed
+ *   12. Consent class floor (partner-attested grants can't do floor
+ *       actions)
+ *   13. Rule evaluation (spending_cap, recipient lists, frequency_cap,
+ *       time_of_day_block) — FAIL CLOSED on anything unevaluable
+ *   14. Irreversibility floor → needs_per_action_confirmation
+ *   15. Allowed
+ *
+ * Rules fail CLOSED (step 13). A rule kind this engine does not
+ * recognize, or a known kind whose params don't parse, denies with
+ * `rule_unevaluable`. Rationale: UAP-0.1.md §3 makes negative authority
+ * strictly stronger than positive authority, and the engine cannot
+ * prove an action satisfies a rule it cannot evaluate. The previous
+ * posture (skip what you can't parse, keep going, return `allowed`) is
+ * the exact shape of a silent bypass: a typo in a spending cap removed
+ * the cap. Forward-compat is preserved at the WRITE boundary instead —
+ * POST /api/uap/v1/rule refuses to persist a kind or a params blob this
+ * engine cannot evaluate, so a grant can only carry rules the deployed
+ * coordinator understands.
  *
  * The PAP coordinator's panic / quiet-hours / rate-limit primitives are
  * reused via the injected deps — same semantics, different call sites.
@@ -45,6 +60,9 @@
 import { DEFAULT_CONFIDENCE_THRESHOLD } from '../coordinator/confidence-gate'
 import {
   UAP_IRREVERSIBLE_FLOOR,
+  UAP_REPRESENTATION_ACTIONS,
+  UAP_RULE_KINDS,
+  isUAPRuleKind,
   type UAPExecuteInput,
   type UAPDecision,
   type UAPGrant,
@@ -53,6 +71,20 @@ import {
   type UAPRuleKind,
   type UAPIrreversibleAction,
 } from './types'
+// Pure, Prisma-free sibling modules — same rationale as the types
+// import above: no DB, no module-loading cost, no worktree coupling.
+import {
+  asParamsObject,
+  parseFrequencyCap,
+  parseQuietHours,
+  parseRecipientList,
+  parseSpendingCap,
+  parseTimeOfDayBlock,
+} from './rule-params'
+import {
+  isConsentClassInsufficientForFloor,
+  readConsentClass,
+} from './consent-class'
 
 /* ──────────────────── Dependency contract ──────────────────── */
 
@@ -115,7 +147,55 @@ export type UAPDeps = {
    *  inject a fake. Mirrors PAP coordinator's
    *  EvaluateProposalDeps.isUserCoachingPathClosed. */
   isUserCoachingPathClosed?: (userId: string) => Promise<boolean>
+
+  /** Counts prior ALLOWED executes of this exact (user, grant, action
+   *  kind) tuple at or after `since` — the trailing-window counter a
+   *  `frequency_cap` rule is evaluated against. Backed by UAPAuditEntry
+   *  rows (`lib/uap/rate-limit#countAllowedExecutesInWindow`), the same
+   *  source of truth the UAP rate limiter counts, so "how many actions
+   *  reached this user" means one thing across the plane.
+   *
+   *  Optional ONLY in the sense that a deployment without frequency
+   *  caps never needs it: if a grant carries a `frequency_cap` rule and
+   *  this dep is absent, the rule is unevaluable and the action is
+   *  DENIED (`rule_unevaluable`). Omitting the wiring cannot silently
+   *  disable a user's cap. */
+  countRecentAllowedExecutes?: (params: {
+    userId: string
+    grantId: string
+    actionKind: string
+    since: Date
+  }) => Promise<number>
 }
+
+/* ──────────────────── Rule-kind coverage ──────────────────── */
+
+/**
+ * Every rule kind that has a real `case` in the switch below. This is
+ * the mirror of `UAP_RULE_KINDS` in types.ts, and
+ * `__tests__/rule-fail-closed.test.ts` asserts the two sets are equal
+ * in both directions.
+ *
+ * The drift this guards: rules now fail CLOSED, so a kind added to
+ * types.ts (and therefore accepted by the declare route) with no case
+ * here would deny every action on any grant carrying it. The test turns
+ * that into a red CI run instead of a bricked grant in production. The
+ * reverse direction — a case for a kind types.ts doesn't declare — is
+ * dead code, and the same assertion catches it.
+ */
+export const UAP_COORDINATOR_HANDLED_RULE_KINDS: ReadonlySet<UAPRuleKind> =
+  new Set<UAPRuleKind>([
+    'spending_cap',
+    'recipient_allowlist',
+    'recipient_denylist',
+    'frequency_cap',
+    'time_of_day_block',
+    'irreversible_floor',
+    'quiet_hours',
+  ])
+
+/** Re-exported so tests and callers read the declared set from one place. */
+export { UAP_RULE_KINDS }
 
 /* ──────────────────── Action-kind → scope mapping ──────────────────── */
 
@@ -175,6 +255,29 @@ function isIrreversibleFloorAction(kind: string): kind is UAPIrreversibleAction 
 }
 
 /**
+ * Representation actions — the agent acts AS the user toward a third
+ * party. Used by the recipient-list rules: for these kinds an ABSENT
+ * recipient makes an allow/denylist unevaluable (see the rule cases),
+ * because "who is this going to" is exactly what the rule constrains.
+ */
+const REPRESENTATION_ACTION_SET: Set<string> = new Set(
+  UAP_REPRESENTATION_ACTIONS,
+)
+
+/** Uniform `rule_unevaluable` denial. Names the rule and why. */
+function unevaluable(
+  kind: string,
+  ruleId: string | undefined,
+  detail: string,
+): UAPDecision {
+  return {
+    decision: 'denied',
+    reason: 'rule_unevaluable',
+    detail: `rule_kind=${kind}${ruleId ? ` rule_id=${ruleId}` : ''} ${detail}`,
+  }
+}
+
+/**
  * Find a rule of a given kind in the grant's merged rule list. Rules
  * are unordered; first match wins for kinds where duplicates are
  * meaningless (quiet_hours opt-out, time_of_day_block). Callers that
@@ -188,41 +291,29 @@ function findRule(rules: UAPRule[], kind: UAPRuleKind): UAPRule | undefined {
  * Did the user explicitly opt OUT of quiet-hours enforcement for this
  * grant? In v1 a quiet_hours rule with `{ disabled: true }` skips the
  * gate. Anything else (rule absent, rule with disabled !== true) means
- * "enforce." Errs on the side of enforcing — silent fail is the safe
- * default for a quiet-hours check.
+ * "enforce." Errs on the side of enforcing — a malformed quiet_hours
+ * rule does NOT disable the gate here; it is separately denied as
+ * unevaluable in step 13, so the two paths agree.
  */
 function quietHoursDisabledByRule(rules: UAPRule[]): boolean {
   const rule = findRule(rules, 'quiet_hours')
   if (!rule) return false
-  const params = (rule.params ?? {}) as { disabled?: unknown }
-  return params.disabled === true
+  const obj = asParamsObject(rule.params)
+  if (!obj.ok) return false
+  const parsed = parseQuietHours(obj.value)
+  return parsed.ok && parsed.value.disabled
 }
 
 /**
- * Coerce a rule.params field to a finite number. Returns undefined when
- * the value is missing, NaN, ±Infinity, or non-numeric — the caller
- * skips the check when the threshold is unparseable rather than
- * silently denying with a bogus comparison.
+ * Coerce an ACTION parameter to a finite number. Rule parameters are
+ * parsed by lib/uap/rule-params.ts (which fails closed); this helper is
+ * only for the partner-supplied action side, where "the field is
+ * missing" is a distinct condition the caller handles explicitly.
  */
 function asNumber(value: unknown): number | undefined {
   if (typeof value !== 'number') return undefined
   if (!Number.isFinite(value)) return undefined
   return value
-}
-
-/**
- * Coerce a rule.params field to a string array. Returns undefined when
- * the value is not an array of strings — callers skip the check rather
- * than rendering an empty allowlist (which would deny everything) or a
- * malformed denylist (which would deny nothing). The strict v1 stance:
- * if the rule is malformed, log nothing here (audit is a sibling
- * concern) and don't enforce. The grant-store should reject malformed
- * rules at write time.
- */
-function asStringArray(value: unknown): string[] | undefined {
-  if (!Array.isArray(value)) return undefined
-  if (!value.every((v) => typeof v === 'string')) return undefined
-  return value as string[]
 }
 
 /* ──────────────────── Coordinator ──────────────────── */
@@ -251,9 +342,21 @@ export async function decideExecute(
       closed = await deps.isUserCoachingPathClosed(input.userId)
     } catch {
       // Fail-open on a RAP read error: don't block a legitimate UAP
-      // EXECUTE because the RAP store had a transient outage. PAP uses
-      // the same posture. If RAP availability becomes critical, flip
-      // to fail-closed here and update the threat model.
+      // EXECUTE because the RAP store had a transient outage. PAP and
+      // EAP take the identical posture at their own RAP call sites
+      // (lib/coordinator/index.ts, api/eap/v1/action/request), so
+      // flipping only this one would make the RAP gate mean different
+      // things on different planes.
+      //
+      // This is now the ONLY deliberate fail-open left in the decision
+      // path — rules (step 13) fail closed, and it is a different
+      // category: RAP is an infrastructure-supplied SIGNAL, not an
+      // authority the user declared on this grant. Negative authority
+      // the user wrote down must never depend on our uptime; a
+      // third-party risk classifier degrading to "no crisis detected"
+      // is an availability trade the threat model already documents.
+      // If RAP availability becomes critical, flip all three call
+      // sites together and update the threat model.
       closed = false
     }
     if (closed) {
@@ -388,91 +491,195 @@ export async function decideExecute(
     }
   }
 
-  // ── 12. Rule evaluation ─────────────────────────────────────────
+  // ── 12. Consent class floor ─────────────────────────────────────
+  // A grant whose consent was PARTNER-ATTESTED (the partner told us the
+  // user said yes, on the partner's own Bearer key) is a lower-trust
+  // instrument than one whose consent COYL itself witnessed through the
+  // hosted ceremony at /consent/uap. Both remain issuable — the partner
+  // path is SDK-compatible and fine for routine reversible actions —
+  // but the irreversibility floor is exactly the class of action where
+  // "the partner says the user agreed" is not good enough evidence.
+  //
+  // Note this is STRICTER than step 14: it denies floor-kind actions
+  // outright, regardless of the `reversibility` the partner declared,
+  // because the declaration is made by the same party whose consent
+  // evidence we are discounting. Step 14 only fires when the partner
+  // itself admits the action is irreversible.
+  //
+  // Legacy grants (issued before consent classing) read as null and are
+  // NOT restricted here — see the boundary note in ./consent-class.ts,
+  // which also carries the one-line backfill that closes it.
+  const consentClass = readConsentClass(grant.consentArtifact)
+  if (
+    isConsentClassInsufficientForFloor(consentClass) &&
+    isIrreversibleFloorAction(input.action.kind)
+  ) {
+    return {
+      decision: 'denied',
+      reason: 'consent_class_insufficient',
+      detail: `consent_class=partner_attested action_kind=${input.action.kind} requires coordinator_verified consent`,
+    }
+  }
+
+  // ── 13. Rule evaluation (FAIL CLOSED) ───────────────────────────
   // Walk the merged rule set in deterministic order (the order they
   // appear in the array — the grant-store is responsible for stable
   // ordering when it merges grant-scoped + user-level rules). First
   // failing rule wins; subsequent rules don't run.
+  //
+  // Every exit from a rule case is one of exactly three things:
+  //   • the rule does not apply to this action  → continue
+  //   • the rule applied and the action lost    → rule_violation /
+  //                                               frequency_cap_exceeded
+  //   • the rule could not be evaluated         → rule_unevaluable
+  // There is no fourth "couldn't parse it, carry on" branch. That
+  // branch was the bypass.
   for (const rule of grant.rules) {
-    const params = (rule.params ?? {}) as Record<string, unknown>
+    // Unknown kind: this engine has no evaluator for it, so it cannot
+    // certify the action satisfies it. Deny and name the kind.
+    if (!isUAPRuleKind(rule.kind)) {
+      return unevaluable(
+        String(rule.kind),
+        rule.id,
+        'no evaluator for this rule kind in the deployed coordinator',
+      )
+    }
 
-    switch (rule.kind as UAPRuleKind) {
+    // `irreversible_floor` is a parameterless marker (step 14 does the
+    // real enforcement, unconditionally and additively). It is the one
+    // kind deliberately exempt from params strictness: the floor cannot
+    // be loosened by a malformed marker, and denying on one would turn
+    // a rule that restricts nothing into a rule that denies everything.
+    if (rule.kind === 'irreversible_floor') continue
+
+    const paramsResult = asParamsObject(rule.params)
+    if (!paramsResult.ok) {
+      return unevaluable(rule.kind, rule.id, paramsResult.detail)
+    }
+    const params = paramsResult.value
+
+    switch (rule.kind) {
       case 'spending_cap': {
         // Only relevant for kinds that move money. Per the spec, the
         // rule key is `max_per_action_usd` and the action carries
-        // `amount_usd`. Missing either side skips the check rather
-        // than denying — the partner can be coached during integration.
+        // `amount_usd`.
         if (input.action.kind !== 'purchase' && input.action.kind !== 'payment') {
           break
         }
-        const cap = asNumber(params.max_per_action_usd)
+        const cap = parseSpendingCap(params)
+        if (!cap.ok) return unevaluable(rule.kind, rule.id, cap.detail)
+
         const amount = asNumber(
           (input.action.params as { amount_usd?: unknown } | undefined)?.amount_usd,
         )
-        if (cap === undefined || amount === undefined) break
-        if (amount > cap) {
+        // A money-moving action under a spending cap that declares no
+        // amount is unevaluable, NOT exempt. Skipping here let any
+        // partner defeat every cap by omitting one field.
+        if (amount === undefined) {
+          return unevaluable(
+            rule.kind,
+            rule.id,
+            'action.params.amount_usd is required (and must be a finite number) for a money-moving action under a spending cap',
+          )
+        }
+        if (amount > cap.value.maxPerActionUsd) {
           return {
             decision: 'denied',
             reason: 'rule_violation',
-            detail: `rule_id=spending_cap amount_usd=${amount} max_per_action_usd=${cap}`,
+            detail: `rule_id=spending_cap amount_usd=${amount} max_per_action_usd=${cap.value.maxPerActionUsd}`,
           }
         }
         break
       }
 
-      case 'recipient_allowlist': {
-        // No recipient on the action → no allowlist check (rule
-        // only constrains representation actions).
-        if (!input.recipient) break
-        const allowed = asStringArray(params.allowed_recipients)
-        if (!allowed) break
-        if (!allowed.includes(input.recipient.hint)) {
-          return {
-            decision: 'denied',
-            reason: 'rule_violation',
-            detail: `rule_id=recipient_allowlist recipient=${input.recipient.hint}`,
-          }
-        }
-        break
-      }
-
+      case 'recipient_allowlist':
       case 'recipient_denylist': {
-        if (!input.recipient) break
-        const denied = asStringArray(params.denied_recipients)
-        if (!denied) break
-        if (denied.includes(input.recipient.hint)) {
+        const isAllowlist = rule.kind === 'recipient_allowlist'
+        const list = parseRecipientList(
+          params,
+          isAllowlist ? 'allowed_recipients' : 'denied_recipients',
+        )
+        if (!list.ok) return unevaluable(rule.kind, rule.id, list.detail)
+
+        if (!input.recipient) {
+          // Non-representation actions have no recipient by nature —
+          // the rule simply doesn't apply to them.
+          if (!REPRESENTATION_ACTION_SET.has(input.action.kind)) break
+          // A representation action with no declared recipient under a
+          // recipient rule is unevaluable: the engine cannot tell who
+          // this is going to, which is the whole subject of the rule.
+          return unevaluable(
+            rule.kind,
+            rule.id,
+            `action_kind ${input.action.kind} acts as the user toward a third party but declared no recipient`,
+          )
+        }
+
+        const onList = list.value.recipients.includes(input.recipient.hint)
+        if (isAllowlist ? !onList : onList) {
           return {
             decision: 'denied',
             reason: 'rule_violation',
-            detail: `rule_id=recipient_denylist recipient=${input.recipient.hint}`,
+            detail: `rule_id=${rule.kind} recipient=${input.recipient.hint}`,
           }
         }
         break
       }
 
       case 'frequency_cap': {
-        // TODO(v0.2): requires a historical audit query to count
-        // prior actions in a rolling window. Skipped for v1 — the
-        // route handler will surface this as a known gap in the
-        // grant UI ("frequency caps not yet enforced").
+        // "At most `max` ALLOWED executes of this action kind under
+        // this grant in the trailing `window_seconds`."
+        const cap = parseFrequencyCap(params)
+        if (!cap.ok) return unevaluable(rule.kind, rule.id, cap.detail)
+
+        // No counter wired → the cap cannot be evaluated. Deny rather
+        // than let a wiring omission silently disable a user's cap.
+        if (!deps.countRecentAllowedExecutes) {
+          return unevaluable(
+            rule.kind,
+            rule.id,
+            'no countRecentAllowedExecutes dep wired into this coordinator',
+          )
+        }
+
+        const since = new Date(now.getTime() - cap.value.windowSeconds * 1000)
+        let count: number
+        try {
+          count = await deps.countRecentAllowedExecutes({
+            userId: input.userId,
+            grantId: grant.id,
+            actionKind: input.action.kind,
+            since,
+          })
+        } catch {
+          // A counter outage means we cannot prove the cap is
+          // respected. Unlike the RAP gate (step 0), this failure is
+          // about the USER'S OWN declared limit, so it fails closed.
+          return unevaluable(
+            rule.kind,
+            rule.id,
+            'trailing-window counter unavailable',
+          )
+        }
+
+        if (count >= cap.value.max) {
+          return {
+            decision: 'denied',
+            reason: 'frequency_cap_exceeded',
+            detail: `rule_id=frequency_cap action_kind=${input.action.kind} count=${count} max=${cap.value.max} window_seconds=${cap.value.windowSeconds}`,
+          }
+        }
         break
       }
 
       case 'time_of_day_block': {
-        const blocked = params.blocked_hours
-        if (!Array.isArray(blocked)) break
-        // Accept numeric hour list `[8, 9, 10]` (0–23, user-local
-        // semantics handled upstream — for v1 we treat them as UTC
-        // hours since per-user TZ isn't on the User row yet).
+        // Numeric hour list `[8, 9, 10]` (0–23, user-local semantics
+        // handled upstream — for v1 we treat them as UTC hours since
+        // per-user TZ isn't on the User row yet).
+        const blocked = parseTimeOfDayBlock(params)
+        if (!blocked.ok) return unevaluable(rule.kind, rule.id, blocked.detail)
         const hour = now.getUTCHours()
-        const hours: number[] = []
-        for (const h of blocked) {
-          const n = asNumber(h)
-          if (n !== undefined && Number.isInteger(n) && n >= 0 && n <= 23) {
-            hours.push(n)
-          }
-        }
-        if (hours.includes(hour)) {
+        if (blocked.value.blockedHours.includes(hour)) {
           return {
             decision: 'denied',
             reason: 'rule_violation',
@@ -482,31 +689,19 @@ export async function decideExecute(
         break
       }
 
-      case 'irreversible_floor': {
-        // Marker rule — the actual irreversibility enforcement is
-        // step 13 (the protocol-level floor that can't be opted out
-        // of). This case exists so unknown-rule-kind paranoia doesn't
-        // false-positive on a legitimate marker.
-        break
-      }
-
       case 'quiet_hours': {
-        // Handled in step 8. Nothing to do here.
-        break
-      }
-
-      default: {
-        // Unknown rule kind → ignore. A future protocol version may
-        // introduce kinds this code doesn't recognize; fail-open on
-        // unknown rules is the right call for forward compatibility
-        // (alternative: fail-closed would brick grants on every
-        // protocol upgrade).
+        // Enforcement happens in step 8; all that's left here is to
+        // confirm the rule is well-formed, so a typo'd opt-out surfaces
+        // as an explicit refusal instead of "quiet hours silently still
+        // on" (which is safe but invisible to the user).
+        const quiet = parseQuietHours(params)
+        if (!quiet.ok) return unevaluable(rule.kind, rule.id, quiet.detail)
         break
       }
     }
   }
 
-  // ── 13. Irreversibility floor ───────────────────────────────────
+  // ── 14. Irreversibility floor ───────────────────────────────────
   // Per UAP-0.1.md §3: irreversibles ALWAYS require per-action
   // confirmation, even under a standing grant. This is the protocol
   // floor — implementations MAY extend the list (more kinds confirm),
@@ -524,6 +719,6 @@ export async function decideExecute(
     }
   }
 
-  // ── 14. All gates passed ────────────────────────────────────────
+  // ── 15. All gates passed ────────────────────────────────────────
   return { decision: 'allowed' }
 }

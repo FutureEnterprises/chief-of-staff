@@ -77,14 +77,68 @@ export type UAPRepresentationAction = (typeof UAP_REPRESENTATION_ACTIONS)[number
 
 /* ──────────────────── Rule kinds ──────────────────── */
 
-export type UAPRuleKind =
-  | 'spending_cap'
-  | 'quiet_hours'
-  | 'irreversible_floor'
-  | 'recipient_allowlist'
-  | 'recipient_denylist'
-  | 'frequency_cap'
-  | 'time_of_day_block'
+/**
+ * Every rule kind UAP-0.1.1 recognizes, as a RUNTIME value. The type
+ * union below is derived from this tuple, not written separately — so
+ * there is exactly one place a kind is declared and the runtime set can
+ * never drift from the compile-time union.
+ *
+ * Why the runtime form matters: the coordinator now fails CLOSED on a
+ * rule kind it cannot evaluate (`rule_unevaluable`). A kind added here
+ * with no matching `case` in coordinator.ts would therefore deny every
+ * action on any grant carrying it — a silent brick instead of a silent
+ * bypass. `UAP_COORDINATOR_HANDLED_RULE_KINDS` in coordinator.ts is the
+ * mirror set, and a drift test asserts the two are equal, so adding a
+ * kind here without wiring the case fails CI rather than production.
+ */
+export const UAP_RULE_KINDS = [
+  'spending_cap',
+  'quiet_hours',
+  'irreversible_floor',
+  'recipient_allowlist',
+  'recipient_denylist',
+  'frequency_cap',
+  'time_of_day_block',
+] as const
+
+export type UAPRuleKind = (typeof UAP_RULE_KINDS)[number]
+
+const UAP_RULE_KIND_SET: ReadonlySet<string> = new Set<string>(UAP_RULE_KINDS)
+
+/**
+ * Runtime guard for a persisted `UAPRule.kind` (a bare `string` column
+ * — Prisma does not constrain it, and a row could predate this version
+ * of the protocol or have been written by an older/newer deploy).
+ */
+export function isUAPRuleKind(kind: unknown): kind is UAPRuleKind {
+  return typeof kind === 'string' && UAP_RULE_KIND_SET.has(kind)
+}
+
+/* ──────────────────── Consent provenance class ──────────────────── */
+
+/**
+ * How the consent behind a grant was obtained — the trust class of the
+ * grant itself, distinct from its scopes.
+ *
+ *   coordinator_verified — the consent artifact was produced by a
+ *     COYL-hosted ceremony (/consent/uap) under the USER'S OWN
+ *     authenticated session. COYL saw the user say yes.
+ *
+ *   partner_attested — an LLM partner called POST /api/uap/v1/grant
+ *     with its own Bearer key and told us the user consented. COYL has
+ *     the partner's word and nothing else. This is the T8 residual in
+ *     UAP-0.1.md §6: the artifact is self-reported by the party that
+ *     benefits from it.
+ *
+ * Enforcement (coordinator step 12.5): a `partner_attested` grant may
+ * not authorize any irreversibility-floor action.
+ */
+export const UAP_CONSENT_CLASSES = [
+  'coordinator_verified',
+  'partner_attested',
+] as const
+
+export type UAPConsentClass = (typeof UAP_CONSENT_CLASSES)[number]
 
 /* ──────────────────── Coordinator decision envelope ──────────────────── */
 
@@ -108,6 +162,18 @@ export type UAPDenialReason =
   | 'grant_killed_globally'
   | 'scope_violation'
   | 'rule_violation'
+  /** The engine could not EVALUATE a rule (unknown kind, malformed or
+   *  type-wrong params, missing evaluation input). Negative authority
+   *  fails closed: a rule we cannot check is not a rule we can prove
+   *  the action satisfies. Distinct from `rule_violation`, which means
+   *  the rule WAS evaluated and the action lost. */
+  | 'rule_unevaluable'
+  /** A `frequency_cap` rule's trailing-window count is at or over max. */
+  | 'frequency_cap_exceeded'
+  /** The grant's consent was partner-attested, and the requested action
+   *  is in the irreversibility floor — a class of action that requires
+   *  coordinator-verified consent. */
+  | 'consent_class_insufficient'
   | 'panic_active'
   | 'quiet_hours'
   | 'rate_limited'
@@ -195,7 +261,18 @@ export type UAPAuditInput = {
   grantId: string
   userId: string
   llmPartnerId: string
-  operation: 'execute' | 'precheck' | 'grant' | 'revoke' | 'kill' | 'expire'
+  /** `consume` = a single-use execution receipt was redeemed at the
+   *  effect choke point (lib/uap/execution-receipt.ts). The row IS the
+   *  consumption record: its primary key is derived from the receipt,
+   *  so the insert itself is the atomic once-only claim. */
+  operation:
+    | 'execute'
+    | 'precheck'
+    | 'grant'
+    | 'revoke'
+    | 'kill'
+    | 'expire'
+    | 'consume'
   actionKind?: string
   decision: UAPDecision['decision']
   decisionReason?: string

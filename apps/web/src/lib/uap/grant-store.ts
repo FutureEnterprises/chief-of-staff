@@ -25,7 +25,14 @@
  */
 
 import { prisma } from '@repo/database'
-import type { UAPGrant, UAPRule, UAPScope, UAPRuleKind } from './types'
+import type {
+  UAPGrant,
+  UAPRule,
+  UAPScope,
+  UAPRuleKind,
+  UAPConsentClass,
+} from './types'
+import { CONSENT_CLASS_KEY } from './consent-class'
 
 /* ──────────────────── createGrant ──────────────────── */
 
@@ -41,12 +48,21 @@ import type { UAPGrant, UAPRule, UAPScope, UAPRuleKind } from './types'
  *
  * The consentArtifact is stored verbatim as Json so a Trust & Safety
  * reviewer can later replay exactly what UI elicited the grant.
+ *
+ * `consentClass` is REQUIRED and is stamped into that same artifact.
+ * It records WHO witnessed the consent — the COYL-hosted ceremony
+ * (coordinator_verified) or the partner's own attestation
+ * (partner_attested) — and the coordinator refuses irreversibility-floor
+ * actions under a partner-attested grant. Making it a required argument
+ * (rather than an optional field with a default) means a future
+ * issuance path cannot forget to classify itself: it won't compile.
  */
 export async function createGrant(params: {
   llmPartnerId: string
   userId: string
   scopes: UAPScope[]
   expiresAt: Date
+  consentClass: UAPConsentClass
   rules?: Array<{ kind: UAPRuleKind; params: Record<string, unknown> }>
   consentArtifact: {
     version: string
@@ -66,6 +82,10 @@ export async function createGrant(params: {
         shownToUserAt: params.consentArtifact.shownToUserAt.toISOString(),
         userResponse: params.consentArtifact.userResponse,
         uiSurface: params.consentArtifact.uiSurface,
+        // Consent provenance lives in the artifact, not a new column —
+        // see lib/uap/consent-class.ts for why this is the right home
+        // and what the legacy (unstamped) rows mean.
+        [CONSENT_CLASS_KEY]: params.consentClass,
       },
       rules: params.rules && params.rules.length > 0
         ? {

@@ -13,6 +13,12 @@
  *   5. ScopeGrant check for the exact scope the LLM is asking for
  *   6. Rate-limit check (sibling-agent module; placeholder returns
  *      allowed=true for now)
+ *   6.5 UAP execution-receipt redemption — when the caller presents a
+ *      `rcpt_…` receipt from POST /api/uap/v1/execute, it is redeemed
+ *      before anything is written or dispatched, and must match the
+ *      exact effect being requested. See the gate for the scope
+ *      boundary (this mediates COYL-owned executors, not effects a
+ *      partner performs in its own infrastructure).
  *   7. Mint an executionToken, write the ActionRequest row, schedule
  *      willExecuteAt
  *   8. Fire-and-forget executeAction() so the request returns fast
@@ -31,6 +37,11 @@ import { prisma, Prisma } from '@repo/database'
 import { executeAction } from '@/lib/eap/action-executor'
 import { checkActionRateLimit } from '@/lib/eap/action-rate-limit'
 import { isUserCoachingPathClosed } from '@/lib/rap/store'
+import {
+  computeActionHash,
+  consumeExecutionReceipt,
+  decodeExecutionReceipt,
+} from '@/lib/uap/execution-receipt'
 
 export const maxDuration = 20
 
@@ -44,6 +55,36 @@ type ActionBody = {
   reasoning?: string
   confidence?: number
   ttlSeconds?: number
+  /**
+   * A single-use UAP execution receipt (`rcpt_…`) obtained from
+   * POST /api/uap/v1/execute. When present it is REDEEMED here, before
+   * anything fires, and the redemption must match the effect this
+   * request describes — see the gate below.
+   */
+  executionReceipt?: string
+}
+
+/**
+ * Canonical serialization of the EFFECT this route will produce. This
+ * is the `action_params` half of the UAP action hash, so a partner that
+ * wants a redeemable receipt must have declared the exact actuator,
+ * device and params at UAP EXECUTE time:
+ *
+ *   POST /api/uap/v1/execute
+ *     { action: { kind: <uap kind>,
+ *                 params: { actuator, deviceId, params } } }
+ *
+ * Any divergence between what was authorized and what is being fired
+ * changes the hash, and the receipt is refused with
+ * `action_hash_mismatch`. That is the whole point: the receipt
+ * authorizes ONE effect, not "an effect."
+ */
+function effectParams(body: ActionBody, deviceId: string) {
+  return {
+    actuator: body.actuator,
+    deviceId,
+    params: body.params ?? {},
+  }
 }
 
 export async function POST(req: Request) {
@@ -273,6 +314,91 @@ export async function POST(req: Request) {
       },
       { status: 200 },
     )
+  }
+
+  // 4.5 UAP execution receipt — the effect choke point.
+  //
+  // This is where a UAP decision stops being advisory for effects COYL
+  // itself performs. If the caller presents a receipt, it is redeemed
+  // HERE, before any row is written and before any actuator fires:
+  //
+  //   • the receipt must authenticate (HMAC over its claims),
+  //   • it must not have expired,
+  //   • it must belong to this partner,
+  //   • the effect being requested must hash to the action the receipt
+  //     authorized — actuator, device and params included, and
+  //   • it must be unspent. Redemption is a once-only claim backed by a
+  //     unique primary key, so a replayed receipt fires nothing.
+  //
+  // Any refusal denies the action and records the denial. Nothing runs.
+  //
+  // SCOPE, stated honestly: a receipt is required only when one is
+  // presented. A partner that never asks UAP for a decision cannot be
+  // compelled by this route to obtain one, and an effect a partner
+  // performs inside its own infrastructure never passes through here at
+  // all — no code we ship is in that path. What this DOES guarantee is
+  // that for COYL-owned executors, a presented authorization is real,
+  // matches the effect, and is spent exactly once. Requiring receipts
+  // unconditionally on this route is a breaking protocol change for
+  // existing EAP clients and is deliberately not made here.
+  if (typeof body.executionReceipt === 'string' && body.executionReceipt.length > 0) {
+    const receiptId = body.executionReceipt
+
+    const refuse = async (reason: string, detail?: string) => {
+      const denied = await writeDeniedRequest({
+        body,
+        partnerId: partner.partnerId,
+        userId: safeUserId,
+        deviceId: safeDeviceId,
+        reason,
+        ip,
+      })
+      return NextResponse.json(
+        {
+          decision: 'denied',
+          reason,
+          ...(detail ? { detail } : {}),
+          actionRequestId: denied?.id ?? null,
+        },
+        { status: 200 },
+      )
+    }
+
+    // Authenticate first so the action kind, grant and decision id used
+    // to rebuild the hash come out of the MAC'd claims, not the body.
+    const decoded = decodeExecutionReceipt(receiptId)
+    if (!decoded.ok) return refuse(decoded.reason, decoded.detail)
+
+    const presentedHash = computeActionHash({
+      userId: safeUserId,
+      grantId: decoded.claims.gid,
+      actionKind: decoded.claims.ak,
+      actionParams: effectParams(body, safeDeviceId),
+      decisionId: decoded.claims.aud,
+    })
+
+    // Replays of an already-recorded actionKey must not re-consume: the
+    // row already exists and the executor will not re-fire it (see the
+    // isFreshRow guard below), so nothing new is being authorized.
+    // nosemgrep
+    const prior = await prisma.actionRequest.findUnique({
+      where: { actionKey: body.actionKey },
+      select: { id: true },
+    })
+
+    if (!prior) {
+      const redeemed = await consumeExecutionReceipt({
+        receiptId,
+        actionHash: presentedHash,
+        partnerId: partner.partnerId,
+      })
+      if (!redeemed.ok) {
+        return refuse(redeemed.reason, redeemed.detail)
+      }
+      // Redeemed. Note the target user needs no separate check: userId
+      // is inside the hashed tuple, so a receipt minted for a different
+      // user cannot produce a matching hash here.
+    }
   }
 
   // 5. Irreversible: stash the row in pending_confirmation. Do NOT

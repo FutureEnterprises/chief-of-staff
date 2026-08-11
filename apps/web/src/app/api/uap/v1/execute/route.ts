@@ -36,11 +36,22 @@ import { loadGrant, loadGrantWithAllRules } from '@/lib/uap/grant-store'
 import { isUserKilledGlobally } from '@/lib/uap/kill-switch'
 import { isPanicActive } from '@/lib/coordinator/panic-check'
 import { isInQuietHours } from '@/lib/coordinator/quiet-hours'
-import { checkUAPPartnerRateLimit } from '@/lib/uap/rate-limit'
-import { writeAuditEntry, loadAuditEntry } from '@/lib/uap/audit'
+import {
+  checkUAPPartnerRateLimit,
+  countAllowedExecutesInWindow,
+} from '@/lib/uap/rate-limit'
+import {
+  writeAuditEntry,
+  loadAuditEntry,
+  UAPFrequencyCapExceededError,
+} from '@/lib/uap/audit'
 import { signProvenance } from '@/lib/uap/provenance'
+import { collectFrequencyGuards } from '@/lib/uap/rule-params'
+import { consentClassLabel } from '@/lib/uap/consent-class'
+import { issueExecutionReceipt } from '@/lib/uap/execution-receipt'
 import {
   UAP_REPRESENTATION_ACTIONS,
+  type UAPDecision,
   type UAPExecuteInput,
   type UAPRepresentationAction,
 } from '@/lib/uap/types'
@@ -201,13 +212,23 @@ export async function POST(req: Request) {
   }
 
   const now = new Date()
-  let decision
+  // The MERGED rule set the coordinator actually decided against
+  // (grant-scoped + user-level). Captured from the loader rather than
+  // re-queried so the frequency guards below are built from exactly the
+  // rules that produced the decision — a second load could see a rule
+  // the decision never considered.
+  let decidedRules: Array<{ kind: string; params: unknown }> = []
+  let decision: UAPDecision
   try {
     decision = await decideExecute(input, {
       // Merged loader: grant-scoped rules + user-level rules (grantId
       // NULL). Plain loadGrant drops user-level RULE_DECLARE rows —
       // negative authority must reach the coordinator to be enforced.
-      loadGrantWithRules: loadGrantWithAllRules,
+      loadGrantWithRules: async (grantId) => {
+        const loaded = await loadGrantWithAllRules(grantId)
+        if (loaded) decidedRules = loaded.rules
+        return loaded
+      },
       isUserKilledGlobally,
       isPanicActive,
       isInQuietHours,
@@ -216,6 +237,10 @@ export async function POST(req: Request) {
       // partners were effectively unlimited).
       checkPartnerRateLimit: checkUAPPartnerRateLimit,
       isUserCoachingPathClosed,
+      // Trailing-window counter behind `frequency_cap`. Counts ALLOWED
+      // execute audit rows only, so denials and prechecks consume
+      // nothing against a user's cap.
+      countRecentAllowedExecutes: (p) => countAllowedExecutesInWindow(p),
       now: () => now,
     })
   } catch (err) {
@@ -259,34 +284,92 @@ export async function POST(req: Request) {
     }
   }
 
+  // ── Atomic frequency-cap guard ───────────────────────────────────
+  // The coordinator already counted the trailing window, but that count
+  // happened before this row existed and outside any transaction: two
+  // concurrent EXECUTEs at the boundary would both pass it. Re-checking
+  // INSIDE the advisory-locked append transaction serializes count and
+  // write, so the second one loses. Only ALLOWED decisions carry guards
+  // — a denial consumes nothing and must always be recordable.
+  const frequencyGuards =
+    decision.decision === 'allowed'
+      ? collectFrequencyGuards(decidedRules, grant.id, action.kind)
+      : []
+
+  let auditRow: UAPAuditEntry
+  const buildAuditInput = (
+    finalDecision: UAPDecision,
+    provenance: typeof provenanceEnvelope,
+  ) => ({
+    auditId,
+    grantId: grant.id,
+    userId: grant.userId,
+    llmPartnerId: partner.id,
+    operation: 'execute' as const,
+    actionKind: action.kind,
+    decision: finalDecision.decision,
+    decisionReason:
+      finalDecision.decision === 'denied' ||
+      finalDecision.decision === 'needs_per_action_confirmation'
+        ? finalDecision.reason
+        : undefined,
+    postTermination: grant.status !== 'ACTIVE',
+    ...(provenance
+      ? {
+          provenanceSignature: provenance.signature,
+          provenancePublicKey: provenance.publicKey,
+          provenanceAlgorithm: provenance.algorithm,
+          provenancePayload: provenance.payload,
+        }
+      : {}),
+  })
+
   // Single audit write — provenance fields populated only on
   // signed representation actions. Denials still persist (§3).
-  let auditRow: UAPAuditEntry
   try {
-    auditRow = await writeAuditEntry({
-      auditId,
-      grantId: grant.id,
-      userId: grant.userId,
-      llmPartnerId: partner.id,
-      operation: 'execute',
-      actionKind: action.kind,
-      decision: decision.decision,
-      decisionReason:
-        decision.decision === 'denied' ||
-        decision.decision === 'needs_per_action_confirmation'
-          ? decision.reason
-          : undefined,
-      postTermination: grant.status !== 'ACTIVE',
-      ...(provenanceEnvelope
-        ? {
-            provenanceSignature: provenanceEnvelope.signature,
-            provenancePublicKey: provenanceEnvelope.publicKey,
-            provenanceAlgorithm: provenanceEnvelope.algorithm,
-            provenancePayload: provenanceEnvelope.payload,
-          }
-        : {}),
-    })
+    auditRow = await writeAuditEntry(
+      buildAuditInput(decision, provenanceEnvelope),
+      frequencyGuards.length
+        ? { frequencyGuards, now }
+        : undefined,
+    )
   } catch (err) {
+    // Lost the race at the cap boundary: another EXECUTE for this user
+    // took the last slot while we were deciding. Nothing was written
+    // (the guard throws before the insert and the transaction rolls
+    // back), so re-record the action as the denial it actually is. The
+    // provenance envelope signed above is DISCARDED — it attests to an
+    // authorization that did not happen and must never reach the wire.
+    if (err instanceof UAPFrequencyCapExceededError) {
+      decision = {
+        decision: 'denied',
+        reason: 'frequency_cap_exceeded',
+        detail: err.detail,
+      }
+      provenanceEnvelope = null
+      try {
+        auditRow = await writeAuditEntry(buildAuditInput(decision, null))
+      } catch (writeErr) {
+        console.error('[uap/execute] denial audit write failed', {
+          err: writeErr instanceof Error ? writeErr.message : 'unknown',
+          grantId: grant.id,
+          auditId,
+        })
+        return errorResponse(
+          500,
+          'audit_write_failed',
+          'Unable to write audit row; execution rolled back.',
+        )
+      }
+      return NextResponse.json({
+        decision: decision.decision,
+        reason: decision.reason,
+        detail: decision.detail,
+        audit_id: auditRow.id,
+        executed_at: now.toISOString(),
+        consent_class: consentClassLabel(grant.consentArtifact),
+      })
+    }
     // Concurrent replay race: two requests with the same idempotency
     // key can both pass the pre-check; the second insert collides on
     // the primary key. Resolve by returning the winner's stored row.
@@ -310,6 +393,32 @@ export async function POST(req: Request) {
     )
   }
 
+  // ── Single-consumption execution receipt ─────────────────────────
+  // On ALLOW the decision stops being advice. The receipt is a
+  // single-use capability bound to `action_hash` — a canonical hash of
+  // (user, grant, action kind, action params, THIS decision id) — and
+  // a COYL-owned executor will not fire an effect without redeeming
+  // one that matches the effect it is about to perform. See
+  // lib/uap/execution-receipt.ts, including the honest statement of
+  // what this does NOT cover (effects a partner performs inside its
+  // own infrastructure).
+  //
+  // Not minted on an idempotent replay: the replay path returns the
+  // ORIGINAL decision from the stored audit row and must not hand out
+  // a second capability for one authorization.
+  const receipt =
+    decision.decision === 'allowed'
+      ? issueExecutionReceipt({
+          auditId: auditRow.id,
+          userId: grant.userId,
+          grantId: grant.id,
+          partnerId: partner.id,
+          actionKind: action.kind,
+          actionParams: input.action.params,
+          now,
+        })
+      : null
+
   return NextResponse.json({
     decision: decision.decision,
     ...(decision.decision === 'denied' ||
@@ -318,6 +427,20 @@ export async function POST(req: Request) {
       : {}),
     audit_id: auditRow.id,
     executed_at: now.toISOString(),
+    // Which class of consent backed this decision. `unclassified` means
+    // the grant predates consent classing (see lib/uap/consent-class.ts).
+    consent_class: consentClassLabel(grant.consentArtifact),
+    ...(receipt
+      ? {
+          action_hash: receipt.actionHash,
+          execution_receipt: {
+            receipt: receipt.receiptId,
+            action_hash: receipt.actionHash,
+            expires_at: receipt.expiresAt.toISOString(),
+            single_use: true,
+          },
+        }
+      : {}),
     ...(provenanceEnvelope
       ? {
           provenance: {
@@ -325,6 +448,14 @@ export async function POST(req: Request) {
             signature: provenanceEnvelope.signature,
             public_key: provenanceEnvelope.publicKey,
             algorithm: provenanceEnvelope.algorithm,
+            // Unsigned, advisory field: the §5.5 payload is a pinned
+            // nine-field contract, so binding the class INTO the
+            // signature is a payload-version change (see the report).
+            // The authoritative, tamper-evident surface is
+            // GET /api/uap/v1/provenance/{audit_id} — whose URL IS
+            // inside the signed payload — which returns the same value
+            // resolved from the grant.
+            consent_class: consentClassLabel(grant.consentArtifact),
           },
         }
       : {}),

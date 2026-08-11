@@ -56,6 +56,17 @@
  * double-close. Server-pushed actions (executeAction sets executedAt via
  * Expo) are filtered out here so the poll loop only carries actions that
  * still need device-side pickup.
+ *
+ * ----------------------------------------------------------------------
+ * UAP execution receipts are NOT redeemed here, deliberately. A row only
+ * reaches this queue because /api/eap/v1/action/request already decided
+ * `allowed` — and that route redeems the receipt BEFORE writing the row
+ * (gate 4.5 there). Redeeming at delivery instead would be strictly
+ * weaker: the row would exist, be visible to the push executor, and be
+ * pollable before the authorization was ever checked. Both delivery
+ * paths (server push via executeAction, device poll via this route)
+ * therefore inherit one redemption at the single point where the
+ * authorization decision and the row creation meet.
  */
 
 import { NextResponse } from 'next/server'
