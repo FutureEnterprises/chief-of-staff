@@ -3,14 +3,14 @@
 import { motion } from 'motion/react'
 
 /**
- * AutopilotDemoCard — the "AUTOPILOT DETECTED → paused" chat mock that
+ * AutopilotDemoCard — the "YOUR NIGHT WINDOW → paused" chat mock that
  * appears on the homepage hero, on /caught, and anywhere else we want a
  * viewer to see the product-in-action in the first second.
  *
  * Animation sequence (baked in):
  *   t=0       card floats in (y: 40 → 0, rotateY: -5 → 0)
  *   t=0       card begins slow ambient float (y: 0 → -10 → 0, 6s loop)
- *   t=0       red "AUTOPILOT DETECTED" dot starts pulsing (1.4s loop)
+ *   t=0       red "YOUR NIGHT WINDOW" dot starts pulsing (1.4s loop)
  *   t=1.2s    "You: Opened the fridge. Again." slides in
  *   t=1.6s    "COYL: You're not hungry..." slides in
  *   t=2.2s    "Paused. Didn't binge ✓" fades up
@@ -69,7 +69,7 @@ export function AutopilotDemoCard({
               className="h-3 w-3 rounded-full bg-red-500"
             />
             <span className="text-sm font-bold uppercase tracking-wider text-white">
-              Autopilot detected
+              Your night window
             </span>
           </div>
           <span className="font-mono text-xs text-gray-500">{time}</span>

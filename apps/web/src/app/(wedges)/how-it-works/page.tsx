@@ -80,12 +80,12 @@ export default function HowItWorksPage() {
           {
             n: '01',
             title: 'Detect the script',
-            body: 'COYL learns your danger windows, your excuse patterns, and your failure sequences. It sees the shape of your autopilot before you do.',
+            body: 'COYL learns your danger windows, your excuse patterns, and your failure sequences. It maps the shape of your autopilot before you do.',
           },
           {
             n: '02',
             title: 'Interrupt the moment',
-            body: 'Precision interrupts fire when the script is about to run. Tap a rescue trigger. Ask a decision. Get called out on the exact excuse you were about to use.',
+            body: 'Precision interrupts fire at the windows you mapped, right when the script tends to run. Tap a rescue trigger. Ask a decision. Get called out on the exact excuse you were about to use.',
           },
           {
             n: '03',
@@ -127,7 +127,7 @@ export default function HowItWorksPage() {
             {
               time: '11:07 AM',
               title: 'The tab switch.',
-              body: 'You’re thirty-eight minutes into a deep-work block. The thought arrives — "I should check one thing." Your cursor moves toward the new-tab button. COYL fires in the half-second before the click: "One more thing becomes the morning. The doc isn’t the problem. The switch is. Stay." You stay. The block holds.',
+              body: 'You’re thirty-eight minutes into a deep-work block you told COYL to guard. The thought arrives — "I should check one thing." Your cursor moves toward the new-tab button. The push lands in the half-second the pull hits: "One more thing becomes the morning. The doc isn’t the problem. The switch is. Stay." You stay. The block holds.',
             },
             {
               time: 'After the slip.',

@@ -43,7 +43,7 @@ export function WhyNow() {
     {
       n: '02',
       title: 'Edge devices that are always there',
-      body: 'Watch on wrist. Phone in pocket. Earbuds in ear. Push that lands in the half-second before the gesture completes. Three years ago this was sci-fi; today it ships.',
+      body: 'Watch on wrist. Phone in pocket. Earbuds in ear. A push that reaches you in the seconds that matter, not the next morning. Three years ago this was sci-fi; today it ships.',
     },
     {
       n: '03',
@@ -106,7 +106,7 @@ export function WhyNow() {
         className="mt-16 max-w-3xl font-serif text-2xl font-normal italic leading-[1.4] text-gray-900 md:text-3xl"
       >
         Together they enable something that has never existed: a system
-        that knows you are about to fold and is positioned to say
+        that meets you where you fold and is positioned to say
         something useful in the tiny window where saying something
         useful changes the outcome.
       </motion.p>

@@ -18,7 +18,7 @@ import { BreadcrumbSchema } from '@/app/structured-data'
 export const metadata: Metadata = {
   title: "COYL for procrastination — you don't need another to-do list. You need the moment caught.",
   description:
-    "Productivity tools organize intentions. COYL interrupts avoidance. Fires the moment you reach for the doom scroll — not after the deep-work block is dead.",
+    "Productivity tools organize intentions. COYL interrupts avoidance. Fires at the focus windows you set — not after the deep-work block is dead.",
   keywords: [
     'procrastination app',
     'stop procrastinating',
@@ -100,7 +100,7 @@ const MOMENTS = [
 const CAPABILITIES = [
   {
     title: 'Tab-switch → interrupt',
-    body: 'You reach for the tab. COYL fires before the thumb completes the gesture. "You’re about to do the thing you said you’d stop doing. Three minutes left in the block. Stay."',
+    body: 'You reach for the tab during a focus block you set. COYL fires: "You’re about to do the thing you said you’d stop doing. Three minutes left in the block. Stay."',
   },
   {
     title: 'Excuse → callout',
@@ -140,7 +140,7 @@ export default function ProcrastinationWedgePage() {
             <p className="text-lg leading-[1.7] text-gray-700">
               Productivity tools organize intentions. COYL interrupts avoidance.
               The tab switch takes half a second. Recovery costs 23 minutes &mdash; if you ever
-              actually recover. COYL fires before the gesture completes.
+              actually recover. COYL fires at the focus windows you set.
             </p>
             <p className="text-xs text-gray-500">
               23-minute recovery cost: Mark et al., 2008 &mdash;{' '}

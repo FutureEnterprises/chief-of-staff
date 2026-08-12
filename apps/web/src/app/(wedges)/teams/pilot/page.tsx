@@ -51,7 +51,7 @@ const HOW_IT_WORKS = [
   {
     n: '03',
     title: 'It interrupts at the moment',
-    body: 'A short, voice-matched call-out arrives in Teams at the predicted moment: protect a focus block, send the overdue reply while it’s small, take 60 seconds before the next thing.',
+    body: 'A short, voice-matched call-out arrives in Teams at the windows you set: protect a focus block, send the overdue reply while it’s small, take 60 seconds before the next thing.',
   },
 ]
 
@@ -110,7 +110,7 @@ export default async function TeamsPilotPage() {
           </h2>
           <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
             Focus apps block; COYL interrupts. The difference is the mechanic: a
-            short, well-timed call-out at the predicted moment of slippage, not a
+            short, well-timed call-out at the danger windows you map, not a
             30-minute timer. Three patterns it catches most:
           </p>
           <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -118,14 +118,14 @@ export default async function TeamsPilotPage() {
               <p className="font-serif text-lg text-gray-900">Procrastination</p>
               <p className="mt-2 text-sm leading-[1.6] text-gray-700">
                 The 11 a.m. tab-switch that turns into 40 minutes lost. Caught in the
-                half-second before the gesture completes.
+                focus window you mapped, before the 40 minutes vanish.
               </p>
             </li>
             <li className="border-t border-gray-200 pt-4">
               <p className="font-serif text-lg text-gray-900">Broken focus</p>
               <p className="mt-2 text-sm leading-[1.6] text-gray-700">
-                Deep-work blocks that die at the first ping. COYL fires before the
-                reach for the notification badge — and keeps the block alive.
+                Deep-work blocks that die at the first ping. COYL fires in the
+                focus windows you protect — and keeps the block alive.
               </p>
             </li>
             <li className="border-t border-gray-200 pt-4">

@@ -96,10 +96,10 @@ export default function PressPage() {
           <ul className="space-y-6 text-base text-gray-700">
             <li className="border-l border-gray-200 pl-6 transition-colors hover:border-orange-500">
               <strong className="text-gray-900">What it is.</strong> A real-time
-              AI that detects autopilot patterns (the 9 PM kitchen, the
+              AI that learns your autopilot patterns (the 9 PM kitchen, the
               tab-switch, the post-GLP-1 rebound, the &ldquo;I already messed
-              up&rdquo; spiral) and interrupts them in the 3-second window
-              before behavior runs.
+              up&rdquo; spiral) and interrupts them at the windows you name,
+              in the 3-second window before behavior runs.
             </li>
             <li className="border-l border-gray-200 pl-6 transition-colors hover:border-orange-500">
               <strong className="text-gray-900">What it is not.</strong> A

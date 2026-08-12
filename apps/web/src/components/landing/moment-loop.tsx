@@ -86,7 +86,7 @@ export function MomentLoop() {
               className="h-2 w-2 rounded-full bg-orange-500 shadow-[0_0_10px_rgba(255,102,0,0.8)]"
             />
             <span className="font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-orange-400">
-              Autopilot detected
+              Your night window
             </span>
           </div>
           <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">

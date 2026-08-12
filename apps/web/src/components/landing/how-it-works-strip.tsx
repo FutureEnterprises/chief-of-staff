@@ -44,7 +44,7 @@ export function HowItWorksStrip() {
       n: '02',
       title: 'Interrupt',
       Icon: Zap,
-      body: 'At the exact moment the script is about to run, a 30-second voice-matched intervention. Not motivation. Not a coach. Pattern recognition in your own voice.',
+      body: 'At the danger windows you mapped, right when the script tends to run, a 30-second voice-matched intervention. Not motivation. Not a coach. Pattern recognition in your own voice.',
     },
     {
       n: '03',

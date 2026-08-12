@@ -40,7 +40,7 @@ export function ProofStrip() {
   const comparison = [
     {
       product: 'COYL',
-      timing: 'Fires at the 3-second window',
+      timing: 'Fires at the windows you name',
       shame: 'Recovery engine · no Monday reset',
       price: 'Free · $12 · $29 (Rebound)',
       highlight: true,

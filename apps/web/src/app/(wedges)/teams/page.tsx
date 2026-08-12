@@ -99,11 +99,11 @@ const STAT_ROWS = [
 const USE_CASES = [
   {
     title: 'Software + product teams',
-    body: 'Deep-work blocks die at the first Slack ping. COYL fires before the user reaches for the notification badge — keeps the block alive.',
+    body: 'Deep-work blocks die at the first Slack ping. COYL fires in the focus windows you protect — keeps the block alive.',
   },
   {
     title: 'Designers + writers + analysts',
-    body: 'The 11 a.m. tab-switch to research one thing turns into 40 minutes lost. COYL catches the switch in the half-second before the gesture completes.',
+    body: 'The 11 a.m. tab-switch to research one thing turns into 40 minutes lost. COYL fires in the focus window you named, before the 40 minutes vanish.',
   },
   {
     title: 'Lawyers, consultants, finance',
@@ -126,7 +126,7 @@ const FAQ = [
   },
   {
     q: 'How is this different from the focus apps employees already use?',
-    a: 'Forest, Cold Turkey, Freedom — they block. COYL interrupts. Different mechanic: a 30-second voice-matched call-out at the predicted moment, not a 30-minute Pomodoro timer. Employees keep their tools; COYL adds the layer the tools don\'t have.',
+    a: 'Forest, Cold Turkey, Freedom — they block. COYL interrupts. Different mechanic: a 30-second voice-matched call-out at the windows you name, not a 30-minute Pomodoro timer. Employees keep their tools; COYL adds the layer the tools don\'t have.',
   },
   {
     q: 'Pilot terms?',
@@ -316,7 +316,7 @@ export default function TeamsWedgePage() {
           <p className="max-w-2xl text-base leading-[1.7] text-gray-700">
             COYL ships as a Microsoft Teams bot, installed at the tenant level. The
             interrupt arrives where your people already work &mdash; a short, voice-matched
-            call-out at the predicted moment, delivered as a Teams message. No separate app
+            call-out at the windows you map, delivered as a Teams message. No separate app
             to roll out, no new login. Four interrupt classes ship today: protect a focus
             block, nudge an overdue follow-up, surface meetings worth declining, and a
             60-second recovery beat after a heavy stretch.

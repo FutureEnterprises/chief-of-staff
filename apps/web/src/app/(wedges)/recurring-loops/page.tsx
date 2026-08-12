@@ -157,7 +157,7 @@ export default function AutopilotLoopsPage() {
           ))}
         </div>
         <p className="max-w-2xl pt-4 text-base leading-[1.7] text-gray-700">
-          COYL detects the cue, names the excuse, and interrupts the sequence
+          COYL learns the cue, names the excuse, and interrupts the sequence
           before the lapse becomes the night.
         </p>
       </section>

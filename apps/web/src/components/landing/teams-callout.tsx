@@ -49,7 +49,7 @@ export function TeamsCallout() {
             <h2 className="text-2xl font-black leading-tight text-white md:text-3xl">
               Your team loses 23 minutes per interrupt.{' '}
               <span className="text-orange-400">
-                COYL fires before the tab switch.
+                COYL fires at your focus windows.
               </span>
             </h2>
 

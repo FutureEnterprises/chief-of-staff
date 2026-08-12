@@ -240,7 +240,7 @@ export default function ManifestoPage() {
               {
                 n: '02',
                 t: 'Edge devices that are always there',
-                d: 'Watch on wrist. Phone in pocket. Earbuds in ear. Push that lands in the half-second before the gesture completes.',
+                d: 'Watch on wrist. Phone in pocket. Earbuds in ear. A push that reaches you in the seconds that matter, not the next morning.',
               },
               {
                 n: '03',
@@ -258,8 +258,8 @@ export default function ManifestoPage() {
 
           <p className="max-w-2xl pt-4 text-lg leading-[1.7] text-gray-700">
             Each of these alone is interesting. Together they enable
-            something that has never existed: a system that knows you are
-            about to fold and is positioned to say something useful in the
+            something that has never existed: a system that meets you where
+            you fold and is positioned to say something useful in the
             tiny window where saying something useful changes the outcome.
           </p>
         </section>
@@ -290,7 +290,7 @@ export default function ManifestoPage() {
               </p>
               <ul className="mt-5 space-y-3 text-base leading-[1.6] text-gray-900">
                 <li>A precision interrupt at the moment of drift.</li>
-                <li>A voice-matched call-out before the gesture completes.</li>
+                <li>A voice-matched call-out at your window, before the script runs.</li>
                 <li>A real-time map of your danger windows and excuse scripts.</li>
                 <li>A recovery engine that stops one slip from becoming the night.</li>
                 <li>The behavioral layer underneath every app you already use.</li>

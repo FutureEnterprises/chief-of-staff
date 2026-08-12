@@ -82,9 +82,9 @@ export function ProofCaseBand() {
           </p>
           <p className="mt-8 text-lg leading-[1.7] text-gray-600">
             Sixty-second audit, then your archetype. First interrupt
-            inside an hour — the cue your autopilot uses, named in your
-            own language, caught in the three-second window before the
-            pattern runs. At 8 PM the daily-number ritual: one number,
+            inside an hour — at a danger window you set, the cue your
+            autopilot uses spoken back in your own language, in the
+            three-second window before the pattern runs. At 8 PM the daily-number ritual: one number,
             one screenshot, one share. By day thirty, a model of your
             year mapped against the six archetypes — the same engine
             that ran your interrupts, now reflecting them back.

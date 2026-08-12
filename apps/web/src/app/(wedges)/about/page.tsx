@@ -289,8 +289,8 @@ export default async function AboutPage() {
             understand patterns in real human language, edge devices that
             are always on your wrist or in your pocket, and twenty years
             of behavioral science about the cue-action-recovery loop. COYL
-            stands in that gap. It is a 30-second call-out from a system
-            that already knows your script is about to load.
+            stands in that gap. It is a 30-second call-out that fires at
+            the windows where your script loads.
           </p>
 
           <p className="pt-2">

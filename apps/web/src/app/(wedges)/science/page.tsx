@@ -51,7 +51,7 @@ type Citation = {
 const CITATIONS: Citation[] = [
   {
     claim: 'Behavior in stable contexts can become automatic, reducing the role of conscious intention.',
-    explanation: 'This is why reminders and willpower often fail — the script runs before the user decides. COYL is designed around detecting and interrupting those automatic moments.',
+    explanation: 'This is why reminders and willpower often fail — the script runs before the user decides. COYL is designed around interrupting those automatic moments at the danger windows you map.',
     sources: [
       { title: 'Time to Form a Habit: systematic review and meta-analysis (2024)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC11641623/' },
       { title: 'Habits automatically achieve long-term goals (2024)', url: 'https://pubmed.ncbi.nlm.nih.gov/39321606/' },

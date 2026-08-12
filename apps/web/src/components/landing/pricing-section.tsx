@@ -23,7 +23,7 @@ const TIERS = [
     excluded: [
       'Rescue flows',
       'Recovery engine',
-      'Pattern detection',
+      'Pattern learning',
       'Precision interrupts',
     ],
     cta: 'Start free',

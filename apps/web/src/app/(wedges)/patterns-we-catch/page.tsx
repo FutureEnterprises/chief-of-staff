@@ -158,7 +158,7 @@ export default function PatternsPage() {
             </span>
           </div>
           <h2 className="max-w-3xl font-serif text-3xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-5xl">
-            Detect the danger window.{' '}
+            Name the danger window.{' '}
             <span className="italic text-orange-600">
               Interrupt before the script runs.
             </span>{' '}

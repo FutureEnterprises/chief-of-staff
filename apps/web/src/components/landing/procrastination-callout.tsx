@@ -58,7 +58,7 @@ export function ProcrastinationCallout() {
 
             <p className="mt-3 max-w-xl text-sm text-gray-400 md:text-base">
               The tab switch happens in half a second. The recovery from it costs 23 minutes —
-              if you ever actually recover. COYL fires before the gesture completes, not after
+              if you ever actually recover. COYL fires at your focus windows, not after
               the deep-work block is already dead.
             </p>
           </div>
