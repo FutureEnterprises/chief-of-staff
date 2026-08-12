@@ -271,7 +271,7 @@ export default function PatternsPage() {
               href="/audit"
               className="rounded-full border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:border-orange-300"
             >
-              General autopilot audit
+              60-second autopilot audit
             </Link>
           </div>
         </section>

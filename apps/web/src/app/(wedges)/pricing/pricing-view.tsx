@@ -381,8 +381,10 @@ export function PricingView() {
           </h2>
           <p className="text-base leading-[1.7] text-gray-700">
             Clinics, telehealth groups, and employers run COYL on member panels
-            with outcomes-tracked enrollment. Slide your headcount; the price
-            is the price. No “contact us” gating.
+            with outcomes-tracked enrollment. Base is $12&ndash;18 PMPM by
+            volume, plus an outcomes bonus tied to the 24-hour-recovery
+            metric &mdash; priced on outcomes, not headcount. Slide your
+            headcount; the base is the base. No “contact us” gating.
           </p>
         </div>
 

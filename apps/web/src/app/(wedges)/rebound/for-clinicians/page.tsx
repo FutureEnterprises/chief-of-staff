@@ -32,7 +32,8 @@ import { allReboundFamilies } from '@/lib/rebound-archetype'
  *      Reward Rebounders) — pulled from lib/rebound-archetype so the
  *      copy stays in sync with the consumer quiz
  *   4. The offer — free for the first 25 patients on the panel,
- *      $9/patient/mo after, co-branded /rebound landing page with the
+ *      $12/patient/mo after (the floor of the published $12–18 PMPM
+ *      clinic band), co-branded /rebound landing page with the
  *      clinic logo + NPI
  *   5. The ask — /clinician/onboarding (existing 4-step flow)
  *
@@ -344,15 +345,16 @@ export default async function ReboundForCliniciansPage() {
               </p>
               <div className="mt-3 flex items-baseline gap-2">
                 <span className="font-serif text-5xl font-normal tracking-[-0.03em] text-gray-900 tabular-nums">
-                  $9
+                  $12
                 </span>
                 <span className="text-sm text-gray-600">/patient/mo</span>
               </div>
               <p className="mt-4 max-w-xs text-sm leading-[1.6] text-gray-600">
-                Per-patient seat. Paid by the patient on the consumer
-                Rebound tier, or by the clinic at a negotiated PMPM.
-                Clinician dashboard, BAA, and white-label included at no
-                additional cost.
+                Per-patient seat — the floor of the published
+                $12&ndash;18 PMPM clinic band. Paid by the patient on
+                the consumer Rebound tier, or by the clinic at a
+                negotiated PMPM. Clinician dashboard, BAA, and
+                white-label included at no additional cost.
               </p>
               <p className="mt-4 max-w-xs text-xs leading-[1.6] text-gray-500">
                 The math: if 60% of GLP-1 patients regain within a year

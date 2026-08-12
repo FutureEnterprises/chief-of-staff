@@ -185,6 +185,18 @@ export function HeroVariants({ variant }: { variant: Variant }) {
               </Link>
             </motion.div>
 
+            {/* The toy promise — 60 seconds, no signup. Sits directly
+                under the CTA row so the audit reads as zero-commitment
+                before anything else asks for attention. */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.15, duration: 0.6 }}
+              className="mt-4 font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-[#a59a87]"
+            >
+              60 seconds &middot; no signup &middot; your archetype on the other side
+            </motion.p>
+
             {/* Specialty path — GLP-1 visitors get an explicit chip
                 routing to the Rebound funnel. Smaller, lighter than the
                 primary CTAs so general-autopilot stays the front door,

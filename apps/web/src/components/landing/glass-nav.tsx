@@ -24,10 +24,15 @@ import { CoylLogo } from '@/components/brand/logo'
  * Consumer-facing structure (the only structure now):
  *
  *   PRIMARY (consumer)
- *     Rebound          — the anti-regain wedge landing
- *     Take the audit   — the viral funnel entry
+ *     Rebound          — the anti-regain wedge landing (the money path)
  *     How it works     — the 3-second-window mechanism
  *     Pricing          — Recover / Rewire / Rebound
+ *     Waitlist         — invite-only capture + referral surface
+ *
+ *   CTA (signed-out)   — "Take the 60-sec audit" → /audit. The audit
+ *     is the funnel's front door (60 seconds, no signup), so the nav's
+ *     one CTA slot belongs to it; the waitlist stays one click away as
+ *     a link. Signed-in users see Dashboard/Sign out as before.
  *
  * Other surfaces (research, manifesto, advisors, vertical-specific
  * wedge pages) live in the footer for direct-link traffic.
@@ -82,12 +87,6 @@ export function GlassNav() {
             Rebound
           </Link>
           <Link
-            href="/audit"
-            className="rounded-full px-3 py-1.5 transition-colors hover:text-gray-900"
-          >
-            Take the audit
-          </Link>
-          <Link
             href="/how-it-works"
             className="rounded-full px-3 py-1.5 transition-colors hover:text-gray-900"
           >
@@ -99,10 +98,10 @@ export function GlassNav() {
           >
             Pricing
           </Link>
-          {/* Invite-only front door — the waitlist is the craze launch's
-              capture + referral surface (audit → card → waitlist). Given
-              a subtle accent so it reads as the "join" action without
-              displacing the auth CTA. */}
+          {/* Invite-only capture — the waitlist stays a link now that
+              the CTA slot belongs to the audit (quiz-first funnel:
+              audit → card → waitlist). Subtle accent so it still reads
+              as the "join" action. */}
           <Link
             href="/waitlist"
             className="rounded-full px-3 py-1.5 font-semibold text-orange-600 transition-colors hover:text-orange-700"
@@ -173,9 +172,9 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
             For you
           </p>
           <ul className="space-y-1">
+            <MobileLink href="/audit" label="Take the 60-second audit" description="Three questions. No signup. Your autopilot family on the other side." onClose={onClose} />
             <MobileLink href="/rebound" label="Rebound" description="The anti-regain layer for GLP-1 users." onClose={onClose} />
-            <MobileLink href="/audit" label="Take the 60-second audit" description="Find your autopilot family." onClose={onClose} />
-            <MobileLink href="/how-it-works" label="How it works" description="Detect, interrupt, recover — the 3-step loop." onClose={onClose} />
+            <MobileLink href="/how-it-works" label="How it works" description="Fires at the windows you name, learns as you check in." onClose={onClose} />
             <MobileLink href="/pricing" label="Pricing" description="Recover (free) + Rewire ($12/mo) + Rebound." onClose={onClose} />
             <MobileLink href="/waitlist" label="Join the waitlist" description="COYL is invite-only. Request access + jump the line." onClose={onClose} />
           </ul>
@@ -196,7 +195,9 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
 
 /**
  * NavAuthCta — the auth-aware CTA cluster shared by desktop nav + mobile
- * drawer. Signed-out users see a single "Request access" button. Signed-in
+ * drawer. Signed-out users see a single "Take the 60-sec audit" button —
+ * the quiz is the funnel's front door, so the nav's one CTA slot sells
+ * the toy (60 seconds, no signup), not the queue. Signed-in
  * users see two: a primary "Dashboard" link going to /today plus a
  * secondary "Sign out" pill. While Clerk loads (useUser.isLoaded is
  * false) we render a soft skeleton placeholder to avoid CLS — if we
@@ -222,7 +223,7 @@ function NavAuthCta({
         className={
           fullWidth
             ? 'flex h-12 w-full rounded-full bg-white/40'
-            : 'hidden h-10 w-28 rounded-full bg-white/40 md:block'
+            : 'hidden h-10 w-40 rounded-full bg-white/40 md:block'
         }
       />
     )
@@ -270,10 +271,12 @@ function NavAuthCta({
     )
   }
 
-  // Signed-out — keep cold traffic inside the launch waitlist/referral loop.
+  // Signed-out — the audit is the front door. 60 seconds, no signup,
+  // archetype card on the other side; the card funnels into the
+  // waitlist/referral loop on its own.
   return (
     <Link
-      href={fullWidth ? '/waitlist?source=nav-mobile' : '/waitlist?source=nav'}
+      href={fullWidth ? '/audit?ref=nav-mobile' : '/audit?ref=nav'}
       onClick={onCloseDropdowns}
       className={
         fullWidth
@@ -281,7 +284,7 @@ function NavAuthCta({
           : 'hidden items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_0_16px_rgba(255,102,0,0.3)] transition-all hover:shadow-[0_0_24px_rgba(255,102,0,0.5)] md:flex'
       }
     >
-      Request access
+      Take the 60-sec audit
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
         <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>

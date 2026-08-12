@@ -163,12 +163,12 @@ export default function AutopilotLoopsPage() {
       </section>
 
       <section className="border-t border-gray-200 pt-16">
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/audit"
             className="inline-block rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(255,102,0,0.3)]"
           >
-            Start the audit
+            Start the 60-second audit
           </Link>
           <Link
             href="/how-it-works"
@@ -176,6 +176,9 @@ export default function AutopilotLoopsPage() {
           >
             See how it works
           </Link>
+          <p className="text-sm text-gray-500">
+            Three questions. No signup.
+          </p>
         </div>
       </section>
     </div>

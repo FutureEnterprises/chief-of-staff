@@ -72,7 +72,7 @@ export function FinalCta() {
         transition={{ delay: 0.4, duration: 0.5 }}
         className="mt-8 font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500"
       >
-        No signup for the audit. Invite waves for the app.
+        60 seconds &middot; no signup for the audit. Invite waves for the app.
       </motion.p>
     </section>
   )

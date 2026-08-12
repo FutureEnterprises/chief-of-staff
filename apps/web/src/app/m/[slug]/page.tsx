@@ -396,9 +396,16 @@ async function SharePageBody({ params }: PageProps) {
                 Find your own autopilot,{' '}
                 <span className="italic text-orange-600">on a card.</span>
               </h2>
+              {/* Honesty fix (Aug 2026): the audit is 60 seconds / 3
+                  questions and yields your archetype + your 3 moments —
+                  the four weekly numbers above come from using COYL,
+                  not from the audit itself. The old copy claimed "4
+                  minutes / the same four numbers." */}
               <p className="mt-5 text-base leading-[1.65] text-gray-700">
-                The audit takes 4 minutes. At the end you get the same four
-                numbers, your own. Share it, screenshot it, or keep it.
+                The audit takes 60 seconds. No signup. You leave with
+                your archetype and the three moments your autopilot
+                runs &mdash; your own map starts there. Share it,
+                screenshot it, or keep it.
               </p>
             </div>
             <Link

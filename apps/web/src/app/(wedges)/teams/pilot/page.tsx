@@ -19,10 +19,10 @@ import { BreadcrumbSchema } from '@/app/structured-data'
  * procrastination / focus / follow-through. ZERO weight, eating, GLP-1,
  * or body language anywhere on this page.
  *
- * Pricing: matches the live PMPMCalculator on /teams ($4–7 PMPM by
- * volume) and the published $5–15 PMPM band (docs/pitch, Microsoft Viva
- * spec). The pilot itself is free. We do NOT invent a flat per-seat
- * number that contradicts the on-site calculator.
+ * Pricing: matches the live PMPMCalculator on /teams ($12–18 PMPM base
+ * by volume, repriced Aug 2026) plus the outcomes bonus tied to the
+ * 24-hour-recovery metric. The pilot itself is free. We do NOT invent
+ * a flat per-seat number that contradicts the on-site calculator.
  *
  * Print-friendly: uses Tailwind `print:` utilities to drop the screen
  * chrome (CTA buttons, dark accents) and tighten margins so a browser
@@ -187,12 +187,15 @@ export default async function TeamsPilotPage() {
           <div className="rounded-2xl border border-orange-200 bg-orange-50 p-6 print:border-gray-300 print:bg-white">
             <p className="text-base leading-[1.7] text-gray-800">
               <strong className="font-semibold text-gray-900">The pilot is free.</strong>{' '}
-              At rollout, COYL is priced PMPM (per member, per month) — published bands
-              from <strong className="font-semibold text-gray-900">$7 PMPM</strong> at
-              small headcounts down to <strong className="font-semibold text-gray-900">$4 PMPM</strong>{' '}
-              at 1,000+ seats, with a 15% annual-prepay discount. The live calculator on
-              the team page shows the exact band for your headcount — no &ldquo;contact
-              us&rdquo; gate.
+              At rollout, COYL is priced PMPM (per member, per month) — published base bands
+              from <strong className="font-semibold text-gray-900">$18 PMPM</strong> at
+              small headcounts down to <strong className="font-semibold text-gray-900">$12 PMPM</strong>{' '}
+              at 1,000+ seats, with a 15% annual-prepay discount. On top of the base sits
+              an <strong className="font-semibold text-gray-900">outcomes bonus</strong> tied
+              to the 24-hour-recovery metric, scoped at pilot exit — we earn it only when
+              your people recover the same day. Priced on outcomes, not headcount — a story
+              no EAP can tell. The live calculator on the team page shows the exact base
+              band for your headcount — no &ldquo;contact us&rdquo; gate.
             </p>
           </div>
         </section>

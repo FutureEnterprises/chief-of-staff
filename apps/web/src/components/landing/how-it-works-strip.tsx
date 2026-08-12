@@ -105,7 +105,7 @@ export function HowItWorksStrip() {
           href="/audit?ref=how-it-works"
           className="rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(255,102,0,0.45)] transition-all hover:bg-orange-600"
         >
-          Take the audit
+          Take the 60-second audit
         </Link>
       </div>
     </section>

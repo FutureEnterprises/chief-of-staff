@@ -193,7 +193,7 @@ async function DailyContent({ params }: PageProps) {
         >
           <span>Take the audit yourself</span>
           <span className="font-mono text-xs uppercase tracking-[0.18em] text-[#ff6600]">
-            &rarr;
+            60 sec &middot; no signup &rarr;
           </span>
         </Link>
 

@@ -293,14 +293,53 @@ export default async function AboutPage() {
             the windows where your script loads.
           </p>
 
-          <p className="pt-2">
+        </section>
+
+        {/* THE TECHNOLOGY — the demoted protocol surface's home base
+            (Aug 2026 consumer-vortex recut: "technical things move into
+            about-us"). One short section, three links. The consumer
+            funnel never routes here; the technical audience and search
+            traffic land on the full pages. */}
+        <section className="space-y-8 border-t border-gray-200 pt-16">
+          <div className="flex items-center gap-3">
+            <span aria-hidden className="block h-px w-10 bg-orange-500" />
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-orange-600">
+              The technology
+            </span>
+          </div>
+
+          <h2 className="max-w-3xl font-serif text-4xl font-normal leading-[1.05] tracking-[-0.02em] text-gray-900 md:text-6xl">
+            The specs <span className="italic text-orange-600">underneath.</span>
+          </h2>
+
+          <p className="max-w-2xl text-lg leading-[1.7] text-gray-700">
+            COYL the product runs on COYL the protocol stack: the
+            Behavioral Interrupt Protocol and four open specs underneath
+            it, published Apache 2.0, with a reference engine and SDK in
+            alpha. If you build with LLMs and want the interrupt layer
+            in your own product, that surface is documented in full.
+          </p>
+
+          <div className="flex flex-wrap gap-x-8 gap-y-3 pt-2">
             <Link
               href="/protocol"
               className="font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-orange-600 underline-offset-4 hover:underline"
             >
-              Read the protocol &rarr;
+              The protocol &rarr;
             </Link>
-          </p>
+            <Link
+              href="/platform"
+              className="font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-orange-600 underline-offset-4 hover:underline"
+            >
+              The platform &rarr;
+            </Link>
+            <Link
+              href="/developers"
+              className="font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-orange-600 underline-offset-4 hover:underline"
+            >
+              For developers &rarr;
+            </Link>
+          </div>
         </section>
 
         {/* ADVISORY + CLINICAL BOARD CALLOUTS — temporarily hidden per

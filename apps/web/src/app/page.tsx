@@ -5,11 +5,13 @@ import { cookies } from 'next/headers'
 import { SoftwareApplicationSchema, FAQSchema } from './structured-data'
 import { GlassNav } from '@/components/landing/glass-nav'
 import { HeroVariants } from '@/components/landing/hero-variants'
-// PlatformBand is intentionally NOT imported here — the protocol-stack
-// surface lives at /platform and /protocol per the May 2026 audit.
-// The homepage stays consumer-led.
-import { ProofCaseBand } from '@/components/landing/proof-case-band'
+// PlatformBand and ProofCaseBand are intentionally NOT imported here —
+// the protocol-stack surface (including the "coyl.ai proves the
+// protocol" acquirer framing) lives at /platform and /protocol,
+// reachable via the footer's Technology column. The homepage stays
+// consumer-led per the Aug 2026 consumer-vortex recut.
 import { RescueDemo } from '@/components/landing/rescue-demo'
+import { Glp1Callout } from '@/components/landing/glp1-callout'
 import { WhatItCatches } from '@/components/landing/what-it-catches'
 import { YouArePatterned } from '@/components/landing/you-are-patterned'
 import { ArchetypesStrip } from '@/components/landing/archetypes-strip'
@@ -40,7 +42,8 @@ import { LandingFooter } from '@/components/landing/footer'
  *   8. FINAL CTA         → single moment, single CTA
  *
  * What got cut from the homepage (still exist for other pages):
- *   - Glp1Callout, ProcrastinationCallout, TeamsCallout (absorbed into WhatItCatches)
+ *   - ProcrastinationCallout, TeamsCallout (absorbed into WhatItCatches;
+ *     Glp1Callout returned in v7 as the Rebound money-path band)
  *   - BrandStatement, IconicLine (the iconic line is the hero subhead now)
  *   - ComparisonTable (absorbed into ProofStrip)
  *   - YouIf, LiveExample (the rescue demo does this job better)
@@ -115,12 +118,14 @@ async function HomePageContent({
         <GlassNav />
 
         <main className="relative z-10">
-          {/* HOMEPAGE v6 — 10-beat category-launch flow per the May 2026
-              virality dispatch. Order reflects: myth first, mechanism
-              second, viral surface third (archetypes), category arrival
-              fourth (why now), use cases fifth (patterns), proof + safety
-              sixth, audit CTA last. Pricing is intentionally NOT on the
-              homepage — strategist's rule: "do not lead with pricing." */}
+          {/* HOMEPAGE v7 — the consumer acquisition vortex (Aug 2026
+              recut). Reading order: quiz-vortex (hero → audit) →
+              identity (archetypes) → proof → Rebound money path.
+              The protocol/acquirer surface (ProofCaseBand) is OFF the
+              homepage; it lives at /platform + /protocol via the
+              footer's Technology column. Pricing is intentionally NOT
+              a homepage section — but Rebound, the money path, gets
+              one band right after the proof strip. */}
 
           {/* 1. Hero — cinematic cold-open recognition + auto-playing
               MomentLoop. Per the May 2026 full-site audit overhaul. */}
@@ -147,12 +152,13 @@ async function HomePageContent({
             <RescueDemo />
           </div>
 
-          {/* 5a. The proof case — coyl.ai, the consumer product, as
-              evidence the protocol works in real life. Stripe-style
-              "look at our merchants" surface. Sits between the rescue
-              demo (the moment) and the catch-yourself break (the
-              mythic line). Added May 2026. */}
-          <ProofCaseBand />
+          {/* ProofCaseBand ("coyl.ai proves the protocol works" +
+              open-protocol stats + "Read the protocol" CTA) was
+              previously here as section 5a. Pulled in the Aug 2026
+              consumer-vortex recut — it is acquirer/platform messaging,
+              not consumer funnel. The protocol surface lives at
+              /platform + /protocol, linked from the footer's
+              Technology column. */}
 
           {/* 5b. Section break — the footer tagline, promoted to the spine
               per the May 2026 brief. Sits as a full-bleed breath between
@@ -200,6 +206,13 @@ async function HomePageContent({
           {/* 9. Proof + safety — research outcomes + the safety frame.
               Behavioral support, not medical treatment. */}
           <ProofStrip />
+
+          {/* 9b. Rebound — the money path, elevated to sit right after
+              the proof strip (Aug 2026 recut). The visitor has just
+              seen the timing moat; this is the "built for the GLP-1
+              cliff" version of it. $29/mo. */}
+          <Glp1Callout />
+
           <div className="mx-auto max-w-5xl px-6 pb-16 md:px-12">
             <SafetyBanner variant="inline" />
           </div>

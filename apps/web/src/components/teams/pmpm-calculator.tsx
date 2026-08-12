@@ -18,21 +18,27 @@ import { Users, ArrowRight } from 'lucide-react'
  * SMB + mid-market is more valuable than reserve pricing power for
  * 5000-seat enterprise deals we aren't ready for yet.
  *
- * Tiers (mirror the brand-promise PMPM bands from the strategy doc):
- *   10–50 seats   → $7  PMPM
- *   51–250 seats  → $6  PMPM
- *   251–1000      → $5  PMPM
- *   1001+         → custom (display $4 PMPM as the indicative anchor)
+ * Tiers (repriced Aug 2026 to the $12–18 PMPM band; supersedes the
+ * May 2026 $4–7 bands):
+ *   10–50 seats   → $18 PMPM
+ *   51–250 seats  → $16 PMPM
+ *   251–1000      → $14 PMPM
+ *   1001+         → custom (display $12 PMPM as the indicative anchor)
+ *
+ * The base PMPM is only half the model: an outcomes bonus tied to the
+ * 24-hour-recovery metric is scoped per engagement at pilot exit. The
+ * bonus is the story ("priced on outcomes, not headcount") — the
+ * calculator estimates the base only and says so.
  *
  * Annual prepay: 15% discount applied to the same PMPM rate. Lock-in
  * is the secondary commitment-device play described in the strategy doc.
  */
 
 const TIERS = [
-  { min: 10, max: 50, pmpm: 7, label: '10–50 seats' },
-  { min: 51, max: 250, pmpm: 6, label: '51–250 seats' },
-  { min: 251, max: 1000, pmpm: 5, label: '251–1,000 seats' },
-  { min: 1001, max: Infinity, pmpm: 4, label: '1,001+ seats (custom)' },
+  { min: 10, max: 50, pmpm: 18, label: '10–50 seats' },
+  { min: 51, max: 250, pmpm: 16, label: '51–250 seats' },
+  { min: 251, max: 1000, pmpm: 14, label: '251–1,000 seats' },
+  { min: 1001, max: Infinity, pmpm: 12, label: '1,001+ seats (custom)' },
 ] as const
 
 const ANNUAL_DISCOUNT = 0.15
@@ -82,10 +88,18 @@ export function PMPMCalculator() {
       <h2 className="mb-2 text-2xl font-bold text-gray-900 md:text-3xl">
         PMPM pricing, no &ldquo;contact us&rdquo;.
       </h2>
-      <p className="mb-8 max-w-2xl text-base text-gray-600">
-        Slide to your headcount. The price is the price. Annual prepay
-        saves {Math.round(ANNUAL_DISCOUNT * 100)}%. We&rsquo;ll send the
-        full proposal pack when you&rsquo;re ready to talk.
+      <p className="mb-3 max-w-2xl text-base text-gray-600">
+        Slide to your headcount. The base is $12&ndash;18 PMPM by
+        volume; annual prepay saves {Math.round(ANNUAL_DISCOUNT * 100)}%.
+        We&rsquo;ll send the full proposal pack when you&rsquo;re ready
+        to talk.
+      </p>
+      <p className="mb-8 max-w-2xl text-sm text-gray-600">
+        On top of the base sits an <strong className="font-semibold text-gray-900">outcomes
+        bonus</strong> tied to the 24-hour-recovery metric &mdash; we earn
+        it only when your people recover the same day, scoped at pilot
+        exit. Priced on outcomes, not headcount &mdash; a story no EAP
+        can tell. Estimates below are base only.
       </p>
 
       {/* Seats input */}

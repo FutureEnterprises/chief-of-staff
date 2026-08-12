@@ -68,11 +68,11 @@ export const metadata: Metadata = {
  * fabricate; we cite. If the recipient is the head of People Ops at
  * Stripe, the numbers have to survive a Slack DM to a stats-savvy peer.
  *
- * Pricing model: $3-6 PMPM per the May 2026 strategy doc, anchored
- * against Big Health ($75M Series C selling roughly the same shape of
- * benefit) and Wysa ($25M raise selling slightly more clinical depth).
- * We don't put numbers on this page yet — pricing is "let's talk"
- * because at <10 enterprise customers, every contract is bespoke.
+ * Pricing model: $12–18 PMPM base (repriced Aug 2026; supersedes the
+ * May 2026 $3-6 band) plus an outcomes bonus tied to the
+ * 24-hour-recovery metric, scoped per engagement at pilot exit. The
+ * live numbers are published in the PMPMCalculator below — no
+ * "contact us" gate on the base bands.
  */
 
 const STAT_ROWS = [
